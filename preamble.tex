@@ -6,8 +6,15 @@
 \usepackage{framed}
 \usepackage[colorlinks=true]{hyperref}
 \usepackage[nameinlink,capitalise]{cleveref}
+\usepackage[style=trad-abbrv,doi=false,url=false,isbn=false,backend=biber]{biblatex}
+\usepackage[outputdir=build]{minted}
 \usepackage{setspace}
 \onehalfspacing
+
+% Fonts for lualatex
+\usepackage{fontspec}
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+% \setmainfont{DejaVu Serif}
 
 % Colors
 \definecolor{lightblue}{HTML}{eef6f8}
@@ -26,14 +33,13 @@
 \theoremstyle{plain}% default
 \newtheorem{prototheorem}{Theorem}[chapter]
 \newtheorem{protoproposition}[prototheorem]{Proposition}
-\newtheorem{protolemma}[prototheorem]{\textcolor{darkblue}{Lemma}}
+\newtheorem{protolemma}[prototheorem]{Lemma}
 \newtheorem{protocorollary}[prototheorem]{Corollary}
-\theoremstyle{example}
-\newtheorem{protoexample}{Example}[chapter]
 \theoremstyle{definition}
 \newtheorem{protodefinition}{Definition}[chapter]
 \newtheorem{protonotation}{Notation}[chapter]
 \theoremstyle{remark}
+\newtheorem{protoexample}{Example}[chapter]
 \newtheorem{protoremark}{Remark}[chapter]
 
 % Styling of Theorems
@@ -78,3 +84,11 @@
 \crefname{protoexample}{Example}{Examples}
 \crefname{protodefinition}{Definition}{Definitions}
 \crefname{protoremark}{Remark}{Remarks}
+
+% Bibliography
+\addbibresource{notes.bib}
+\DeclareFieldFormat{volume}{volume \textbf{#1}}
+\DeclareFieldFormat[article]{volume}{\textbf{#1}}
+\DeclareFieldFormat[book]{note}{}
+\DeclareFieldFormat[book]{pages}{}
+\renewcommand*{\bibfont}{\normalsize}
