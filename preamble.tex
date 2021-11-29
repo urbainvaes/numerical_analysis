@@ -1,0 +1,80 @@
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{sectsty}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{framed}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[nameinlink,capitalise]{cleveref}
+\usepackage{setspace}
+\onehalfspacing
+
+% Colors
+\definecolor{lightblue}{HTML}{eef6f8}
+\definecolor{darkblue}{HTML}{315a88}
+\definecolor{lightgreen}{HTML}{eef8f6}
+\definecolor{lightred}{HTML}{f8f6ee}
+
+% Style of sections
+\allsectionsfont{\sffamily}
+\sectionfont{\sffamily\color{darkblue}}
+
+% Numbering of equations
+\numberwithin{equation}{chapter}
+
+% Equations and theorems
+\theoremstyle{plain}% default
+\newtheorem{prototheorem}{Theorem}[chapter]
+\newtheorem{protoproposition}[prototheorem]{Proposition}
+\newtheorem{protolemma}[prototheorem]{\textcolor{darkblue}{Lemma}}
+\newtheorem{protocorollary}[prototheorem]{Corollary}
+\theoremstyle{example}
+\newtheorem{protoexample}{Example}[chapter]
+\theoremstyle{definition}
+\newtheorem{protodefinition}{Definition}[chapter]
+\newtheorem{protonotation}{Notation}[chapter]
+\theoremstyle{remark}
+\newtheorem{protoremark}{Remark}[chapter]
+
+% Styling of Theorems
+\colorlet{theoremcolor}{lightblue}
+\colorlet{propositioncolor}{lightblue}
+\colorlet{lemmacolor}{lightblue}
+\colorlet{corollarycolor}{lightblue}
+\colorlet{examplecolor}{lightblue}
+\colorlet{definitioncolor}{lightblue}
+\colorlet{notationcolor}{lightblue}
+\colorlet{remarkcolor}{lightblue}
+\newenvironment{theorem}
+   {\colorlet{shadecolor}{theoremcolor}\begin{shaded}\begin{prototheorem}}
+   {\end{prototheorem}\end{shaded}}
+\newenvironment{proposition}
+   {\colorlet{shadecolor}{propositioncolor}\begin{shaded}\begin{protoproposition}}
+   {\end{protoproposition}\end{shaded}}
+\newenvironment{lemma}
+   {\colorlet{shadecolor}{lemmacolor}\begin{shaded}\begin{protolemma}}
+   {\end{protolemma}\end{shaded}}
+\newenvironment{corollary}
+   {\colorlet{shadecolor}{corollarycolor}\begin{shaded}\begin{protocorollary}}
+   {\end{protocorollary}\end{shaded}}
+\newenvironment{example}
+   {\colorlet{shadecolor}{examplecolor}\begin{shaded}\begin{protoexample}}
+   {\end{protoexample}\end{shaded}}
+\newenvironment{definition}
+   {\colorlet{shadecolor}{definitioncolor}\begin{shaded}\begin{protodefinition}}
+   {\end{protodefinition}\end{shaded}}
+\newenvironment{notation}
+   {\colorlet{shadecolor}{notationcolor}\begin{shaded}\begin{protonotation}}
+   {\end{protonotation}\end{shaded}}
+\newenvironment{remark}
+   {\colorlet{shadecolor}{remarkcolor}\begin{shaded}\begin{protoremark}}
+   {\end{protoremark}\end{shaded}}
+
+% Links
+\crefname{protolemma}{Lemma}{Lemmas}
+\crefname{prototheorem}{Theorem}{Theorems}
+\crefname{protoproposition}{Proposition}{Propositions}
+\crefname{protocorollary}{Corollary}{Corollarys}
+\crefname{protoexample}{Example}{Examples}
+\crefname{protodefinition}{Definition}{Definitions}
+\crefname{protoremark}{Remark}{Remarks}
