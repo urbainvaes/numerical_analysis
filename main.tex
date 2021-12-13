@@ -1,6 +1,6 @@
-\documentclass[a4paper]{report}
+\documentclass[11pt,a4paper]{report}
 \input{preamble}
-\renewcommand{\d}{\mathrm d}
+\input{macros}
 
 \title{Numerical Analysis}
 \author{Urbain Vaes}
@@ -8,14 +8,9 @@
 \begin{document}
 \maketitle
 
+\input{license.tex}
+\input{introduction.tex}
 \tableofcontents
-
-\chapter*{Introduction}%
-Scientists translate physical phenomena into mathematical equations.
-More often than not,
-these equations are too difficult to be solved analytically,
-and so one has to recur to \emph{numerical simulation}.
-One may think, for example,
 
 \chapter{Floating point arithmetic}%
 \label{cha:rounding_errors}
@@ -46,8 +41,6 @@ end
         x^2 - \varepsilon x + 1 = 0
     \]
 \end{example}
-
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 \section{Test section}%
 \label{sec:test_section}
