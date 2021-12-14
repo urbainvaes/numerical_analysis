@@ -1,3 +1,4 @@
+# +
 import Polynomials
 import Plots
 import LaTeXStrings
@@ -36,12 +37,13 @@ Plots.plot(x_plot, f.(x_plot), linewidth=4, ticks=false)
 Plots.plot!(x_plot, p.(x_plot), linewidth=4)
 Plots.scatter!(x, y, markersize=4)
 Plots.xlims!(-1, 1)
-Plots.savefig("figures/chebychev_cover.pdf")
+# Plots.savefig("figures/chebychev_cover.pdf")
 
+# +
 # Full figure
 Plots.plot(x_plot, f.(x_plot), linewidth=4, label="Function", ticks=true)
 Plots.plot!(x_plot, p.(x_plot), linewidth=4, label="Interpolating polynomial")
 Plots.scatter!(x, y, markersize=4, legend=:bottomright)
 Plots.title!("Chebychev interpolation")
 Plots.xlims!(-1, 1)
-Plots.savefig("figures/chebychev.pdf")
+# Plots.savefig("figures/chebychev.pdf")

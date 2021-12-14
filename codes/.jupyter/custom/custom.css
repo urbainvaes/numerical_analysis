@@ -1,0 +1,12 @@
+p {
+    line-height: 2em;
+    font-family: "Computer Modern";
+    /* src: url('http://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunss.otf'); */
+    /* font-weight: normal; */
+    font-size: 110%;
+}
+
+div.MathJax_Display {
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+}
