@@ -3,18 +3,25 @@ Scientists across a variety of disciplines translate physical phenomena into mat
 More often than not,
 these equations are too difficult to be solved analytically,
 and so one has to recur to \emph{numerical simulation} in order to calculate an approximate solution.
-One may think, for example,
+The aim of this course is to understand the standard numerical methods for tasks ubiquitous in applied mathematics:
+the solution of linear and nonlinear equations, 
+the solution of eigenvalue problems,
+interpolation and approximation of functions,
+and numerical integration using quadrature.
+Throughout the course, the \texttt{Julia} programming language will be employed to exemplify the concepts.
 
 These lecture notes cover six important topics in numerical analysis.
 
 \begin{itemize}
-    \item 
-        \textbf{Floating point arithmetic.} 
-        We discuss how numbers are stored on a computer, 
-        and present in particular according the~\emph{IEEE 754} standard that is widely accepted today.
+    \item
+        \textbf{Floating point arithmetic.}
+        In~\cref{cha:rounding_errors},
+        we discuss how real numbers are represented and stored on a computer.
+        We discuss in particular the~\emph{IEEE 754} standard, which is widely accepted today
+        and employed in most programming languages, including \texttt{Julia}.
 
-    \item 
-        \textbf{Solution of linear systems.} 
-        Linear systems occur in all branches of science. 
-        Important linear systems are those resulting from the discretization of a partial differential equation.
+    \item
+        \textbf{Solution of linear systems.}
+        Linear systems occur in all branches of science.
+        Importantly, they arise resulting from the discretization of a linear partial differential equation.
 \end{itemize}
