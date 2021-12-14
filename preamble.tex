@@ -22,63 +22,60 @@
 
 % Fonts for lualatex
 \usepackage{fontspec}
-\setmonofont{Liberation Mono}[Scale=MatchLowercase]
-% \setmonofont{Monaco}[Scale=MatchLowercase]
-% \setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
-% \setfont{DejaVu}[Scale=MatchLowercase]
+\setmonofont{Monaco}[Scale=MatchLowercase]
 % \setmainfont{DejaVu Serif}
 \usepackage{newunicodechar}
 % To check that a font supports Greek letters, try 'albatross α'
 \newfontfamily{\fallbackfont}{DejaVu Sans Mono}[Scale=MatchLowercase]
-% \DeclareTextFontCommand{\textfallback}{\fallbackfont}
+\DeclareTextFontCommand{\textfallback}{\fallbackfont}
 \newunicodechar{α}{\textfallback{α}}
 \newunicodechar{β}{\textfallback{β}}
 \newunicodechar{γ}{\textfallback{γ}}
 \newunicodechar{δ}{\textfallback{δ}}
-% \newunicodechar{ε}{\textfallback{ε}}
-% \newunicodechar{ζ}{\textfallback{ζ}}
-% \newunicodechar{η}{\textfallback{η}}
-% \newunicodechar{θ}{\textfallback{θ}}
-% \newunicodechar{ι}{\textfallback{ι}}
-% \newunicodechar{κ}{\textfallback{κ}}
-% \newunicodechar{λ}{\textfallback{λ}}
-% \newunicodechar{μ}{\textfallback{μ}}
-% \newunicodechar{ν}{\textfallback{ν}}
-% \newunicodechar{ξ}{\textfallback{ξ}}
-% \newunicodechar{ο}{\textfallback{ο}}
-% \newunicodechar{π}{\textfallback{π}}
-% \newunicodechar{ρ}{\textfallback{ρ}}
-% \newunicodechar{σ}{\textfallback{σ}}
-% \newunicodechar{τ}{\textfallback{τ}}
-% \newunicodechar{υ}{\textfallback{υ}}
-% \newunicodechar{φ}{\textfallback{φ}}
-% \newunicodechar{χ}{\textfallback{χ}}
-% \newunicodechar{ψ}{\textfallback{ψ}}
-% \newunicodechar{ω}{\textfallback{ω}}
-% \newunicodechar{Α}{\textfallback{Α}}
-% \newunicodechar{Β}{\textfallback{Β}}
-% \newunicodechar{Γ}{\textfallback{Γ}}
-% \newunicodechar{Δ}{\textfallback{Δ}}
-% \newunicodechar{Ε}{\textfallback{Ε}}
-% \newunicodechar{Ζ}{\textfallback{Ζ}}
-% \newunicodechar{Η}{\textfallback{Η}}
-% \newunicodechar{Θ}{\textfallback{Θ}}
-% \newunicodechar{Ι}{\textfallback{Ι}}
-% \newunicodechar{Κ}{\textfallback{Κ}}
-% \newunicodechar{Λ}{\textfallback{Λ}}
-% \newunicodechar{Μ}{\textfallback{Μ}}
-% \newunicodechar{Ν}{\textfallback{Ν}}
-% \newunicodechar{Ξ}{\textfallback{Ξ}}
-% \newunicodechar{Ο}{\textfallback{Ο}}
-% \newunicodechar{Π}{\textfallback{Π}}
-% \newunicodechar{Ρ}{\textfallback{Ρ}}
-% \newunicodechar{Σ}{\textfallback{Σ}}
-% \newunicodechar{Τ}{\textfallback{Τ}}
-% \newunicodechar{Υ}{\textfallback{Υ}}
-% \newunicodechar{Φ}{\textfallback{Φ}}
-% \newunicodechar{Χ}{\textfallback{Χ}}
-% \newunicodechar{Ψ}{\textfallback{Ψ}}
-% \newunicodechar{Ω}{\textfallback{Ω}}
+\newunicodechar{ε}{\textfallback{ε}}
+\newunicodechar{ζ}{\textfallback{ζ}}
+\newunicodechar{η}{\textfallback{η}}
+\newunicodechar{θ}{\textfallback{θ}}
+\newunicodechar{ι}{\textfallback{ι}}
+\newunicodechar{κ}{\textfallback{κ}}
+\newunicodechar{λ}{\textfallback{λ}}
+\newunicodechar{μ}{\textfallback{μ}}
+\newunicodechar{ν}{\textfallback{ν}}
+\newunicodechar{ξ}{\textfallback{ξ}}
+\newunicodechar{ο}{\textfallback{ο}}
+\newunicodechar{π}{\textfallback{π}}
+\newunicodechar{ρ}{\textfallback{ρ}}
+\newunicodechar{σ}{\textfallback{σ}}
+\newunicodechar{τ}{\textfallback{τ}}
+\newunicodechar{υ}{\textfallback{υ}}
+\newunicodechar{φ}{\textfallback{φ}}
+\newunicodechar{χ}{\textfallback{χ}}
+\newunicodechar{ψ}{\textfallback{ψ}}
+\newunicodechar{ω}{\textfallback{ω}}
+\newunicodechar{Α}{\textfallback{Α}}
+\newunicodechar{Β}{\textfallback{Β}}
+\newunicodechar{Γ}{\textfallback{Γ}}
+\newunicodechar{Δ}{\textfallback{Δ}}
+\newunicodechar{Ε}{\textfallback{Ε}}
+\newunicodechar{Ζ}{\textfallback{Ζ}}
+\newunicodechar{Η}{\textfallback{Η}}
+\newunicodechar{Θ}{\textfallback{Θ}}
+\newunicodechar{Ι}{\textfallback{Ι}}
+\newunicodechar{Κ}{\textfallback{Κ}}
+\newunicodechar{Λ}{\textfallback{Λ}}
+\newunicodechar{Μ}{\textfallback{Μ}}
+\newunicodechar{Ν}{\textfallback{Ν}}
+\newunicodechar{Ξ}{\textfallback{Ξ}}
+\newunicodechar{Ο}{\textfallback{Ο}}
+\newunicodechar{Π}{\textfallback{Π}}
+\newunicodechar{Ρ}{\textfallback{Ρ}}
+\newunicodechar{Σ}{\textfallback{Σ}}
+\newunicodechar{Τ}{\textfallback{Τ}}
+\newunicodechar{Υ}{\textfallback{Υ}}
+\newunicodechar{Φ}{\textfallback{Φ}}
+\newunicodechar{Χ}{\textfallback{Χ}}
+\newunicodechar{Ψ}{\textfallback{Ψ}}
+\newunicodechar{Ω}{\textfallback{Ω}}
 
 % Colors
 \definecolor{lightblue}{HTML}{eef6f8}
