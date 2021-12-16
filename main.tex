@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{report}
+\documentclass[11pt,a4paper,oneside]{book}
 \input{preamble}
 \input{macros}
 
@@ -22,70 +22,15 @@
 \begin{document}
 \maketitle
 
-\input{license.tex}
-\input{introduction.tex}
+\frontmatter
+\input{frontmatter/license.tex}
 \tableofcontents
+
+\mainmatter
+\input{mainmatter/introduction.tex}
+
+\dominitoc%
 \input{mainmatter/roundoff.tex}
-
-\begin{example}
-    [Computation of the standard deviation]
-\end{example}
-
-\begin{example}
-    [Calculation of the derivative]
-    A classic π example of cancellation is when calculating derivatives.
-    Consider the following approximation of $\frac{\d}{\d x}\log(x) \vert_{x=1}$:
-    \[
-        	\frac{\log(x + \varepsilon) - \log(x)}{\varepsilon}
-    \]
-\begin{minted}{julia}
-f(x) = log(x)
-for δ in 10 .^(-collect(0.:20.))
-    println(1 - (f(1+δ) - f(1))/δ)
-end
-\end{minted}
-\end{example}
-
-\begin{example}
-    [Second-degree equation]
-    Consider the equation
-    \[
-        x^2 - \varepsilon x + 1 = 0
-    \]
-\end{example}
-
-\section{Test section}%
-\label{sec:test_section}
-
-\begin{theorem}
-    {Title of theorem}
-    \label{thm:test}
-    hello
-\end{theorem}
-
-\begin{example}
-    [A test example]
-    hello
-\end{example}
-
-\begin{lemma}
-    [Title of the lemma]
-    {Title of theorem}
-    \label{lemma:test}
-    hello
-\end{lemma}
-
-\begin{remark}
-    [Hello]
-    test
-\end{remark}
-
-\begin{theorem}
-    {Title of theorem}
-    test
-\end{theorem}
-
-\cref{lemma:test}
 
 \chapter{Solution of linear systems}
 \label{cha:solution_of_linear_systems}

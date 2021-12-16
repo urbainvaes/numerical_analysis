@@ -1,0 +1,107 @@
+\chapter{Floating point arithmetic}%
+\label{cha:rounding_errors}
+\minitoc
+
+When we study numerical algorithms in the next chapters,
+we assume implicitly that the operations involved are performed exactly.
+On a computer, however, only a subset of the real numbers can be stored and,
+consequently, many arithmetic operations are performed only approximately.
+This is the source of the so-called \emph{round-off errors}.
+Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
+depends on the \emph{numerical stability} of the method.
+A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
+and \emph{numerically stable} otherwise.
+% these errors generally need not be a cause worry when they appear in methods that are numerically stables.
+
+
+
+Our aims in this chapter are the following:
+\begin{itemize}
+    \item To describe the set of floating point numbers that can be represented in a typical computer;
+    \item To briefly present how these numbers are usually encoded;
+    \item To understand how arithmetic operations between floating point numbers work.
+\end{itemize}
+
+\section{An example: numerical differentiation}%
+To illustrate this point,
+consider the following program for calculating the derivative of the function $f(x) = \log(x)$ at $x = 1$.
+\[
+    f'(x) \approx \frac{\log(x + \varepsilon) - \log(x)}{\varepsilon}
+\]
+\begin{minted}{julia}
+f(x) = log(x)
+for δ in 10 .^(-collect(0.:20.))
+    println(1 - (f(1+δ) - f(1))/δ)
+end
+\end{minted}
+
+\begin{exercise}
+    [Avoiding overflow]
+\end{exercise}
+
+% \begin{exercise}
+%     Show that $31_{8} = 25_{10}$,
+%     an equation sometimes written as~${\rm Oct} 31 = {\rm Dec} 25$.
+% \end{exercise}
+
+% \begin{example}
+%     In the HTML language,
+%     colors are represented by strings of the type $\texttt{\#rrggbb}$.
+% \end{example}
+
+% \begin{example}
+%     [Computation of the standard deviation]
+% \end{example}
+
+% \begin{example}
+%     [Calculation of the derivative]
+%     A classic π example of cancellation is when calculating derivatives.
+%     Consider the following approximation of $\frac{\d}{\d x}\log(x) \vert_{x=1}$:
+%     \[
+%         	\frac{\log(x + \varepsilon) - \log(x)}{\varepsilon}
+%     \]
+% \end{example}
+
+% \begin{example}
+%     [Second-degree equation]
+%     Consider the equation
+%     \[
+%         x^2 - \varepsilon x + 1 = 0
+%     \]
+% \end{example}
+
+% \begin{theorem}
+%     {Title of theorem}
+%     \label{thm:test}
+%     hello
+% \end{theorem}
+
+% \begin{example}
+%     [A test example]
+%     hello
+% \end{example}
+
+% \begin{lemma}
+%     [Title of the lemma]
+%     {Title of theorem}
+%     \label{lemma:test}
+%     hello
+% \end{lemma}
+
+% \begin{remark}
+%     [Hello]
+%     test
+% \end{remark}
+
+% \begin{theorem}
+%     {Title of theorem}
+%     test
+% \end{theorem}
+
+% \cref{lemma:test}
+
+% \section{Discussion and bibliography}%
+% \label{sec:discussion_and_bibliograhpy}
+% The IEEE754 standard is defined in~\cite{ieee754}
+% % In this chapters,
+% % we covered the fundamentals of floating point arithmetics,

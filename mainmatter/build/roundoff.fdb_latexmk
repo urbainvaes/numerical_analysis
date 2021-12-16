@@ -1,0 +1,9 @@
+# Fdb version 3
+["pdflatex"] 1639580542 "roundoff.tex" "build/roundoff.pdf" "roundoff" 1639580542
+  "/usr/share/texmf-dist/web2c/texmf.cnf" 1617738065 39911 2da6c67557ec033436fe5418a70a8a61 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1637784162 2812687 71b5bb0955c91d2318fb035203c23a33 ""
+  "build/roundoff.aux" 1639580532 8 a94a2480d3289e625eea47cd1b285758 ""
+  "roundoff.tex" 1639580541 146 bf54a8d6ce76586ccbe8b46459073161 ""
+  (generated)
+  "build/roundoff.log"
+  "build/roundoff.pdf"
