@@ -30,13 +30,18 @@ consider the following program for calculating the derivative of the function $f
 \]
 \begin{minted}{julia}
 f(x) = log(x)
-for δ in 10 .^(-collect(0.:20.))
-    println(1 - (f(1+δ) - f(1))/δ)
 end
 \end{minted}
 
 \begin{exercise}
     [Avoiding overflow]
+    Write a code to calculate the weighted average
+    \[
+        S := \frac
+        {\sum_{x=0}^{L} \e^x i}
+        {\sum_{x=0}^{L} \e^x}, 
+        \qquad L = 1000.
+    \]
 \end{exercise}
 
 % \begin{exercise}
