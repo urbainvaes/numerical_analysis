@@ -2,25 +2,63 @@
 \label{cha:rounding_errors}
 \minitoc
 
+\section{Introduction}%
+\label{sec:introduction}
 When we study numerical algorithms in the next chapters,
 we assume implicitly that the operations involved are performed exactly.
 On a computer, however, only a subset of the real numbers can be stored and,
 consequently, many arithmetic operations are performed only approximately.
 This is the source of the so-called \emph{round-off errors}.
-Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
-depends on the \emph{numerical stability} of the method.
-A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
-and \emph{numerically stable} otherwise.
+% Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
+% depends in general on the \emph{numerical stability} of the method.
+% A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
+% and \emph{numerically stable} otherwise.
 % these errors generally need not be a cause worry when they appear in methods that are numerically stables.
-
-
-
-Our aims in this chapter are the following:
+The rest of this chapter is organized as follows.
 \begin{itemize}
-    \item To describe the set of floating point numbers that can be represented in a typical computer;
-    \item To briefly present how these numbers are usually encoded;
-    \item To understand how arithmetic operations between floating point numbers work.
+    \item
+        In \cref{sec:set_of_values},
+        we describe the set of floating point numbers that can be represented in the usual floating point formats;
+    \item
+        In \cref{sec:encoding_of_floating_point_numbers},
+        we briefly present how these numbers are encoded
+        according to the IEEE754 standard, widely accepted today.
+        We discuss in particular the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+    \item
+        In \cref{sec:arithmetic_operations_between_floating_point_formats}
+        we seek to understand how arithmetic operations between floating point numbers behave.
+        We insist in particular on the fact that,
+        in a calculation involving several successive arithmetic operations,
+        the result of each intermediate operation is stored as a floating point number,
+        with a possible error.
+        This is why \texttt{1.0 + 1e-100 - 1.0} returns \texttt{0.0},
+        in the usual double-precision format.
 \end{itemize}
+In order to completely describe a floating-point system,
+one would in principle need to also specify the storage of integer numbers
+and the conversion mechanisms between different number formats,
+as well as a number of edge cases.
+For instance, the reference IEEE754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
+which is somewhat arbitrary but may be useful in some situations.
+Needless to say,
+a comprehensive discussion of the subject is beyond the scope of this course;
+our aim in this chapter is only to introduce the key concepts.
+
+\section{Set of values representable in floating point formats}%
+\label{sec:set_of_values}
+In order to understand how calculations involving floating point numbers work on a computer,
+one 
+
+\section{Encoding of floating point numbers}%
+\label{sec:encoding_of_floating_point_numbers}
+
+\section{Arithmetic operations between floating point formats}%
+\label{sec:arithmetic_operations_between_floating_point_formats}
+
+
+
+
+On computer, a floating point format is typically composed of a set of values and an
 
 \section{An example: numerical differentiation}%
 To illustrate this point,
@@ -39,10 +77,12 @@ end
     \[
         S := \frac
         {\sum_{x=0}^{L} \e^x i}
-        {\sum_{x=0}^{L} \e^x}, 
+        {\sum_{x=0}^{L} \e^x},
         \qquad L = 1000.
     \]
 \end{exercise}
+
+
 
 % \begin{exercise}
 %     Show that $31_{8} = 25_{10}$,
@@ -105,8 +145,9 @@ end
 
 % \cref{lemma:test}
 
-% \section{Discussion and bibliography}%
-% \label{sec:discussion_and_bibliograhpy}
-% The IEEE754 standard is defined in~\cite{ieee754}
-% % In this chapters,
-% % we covered the fundamentals of floating point arithmetics,
+\section{Discussion and bibliography}%
+\label{sec:discussion_and_bibliograhpy}
+\Cref{sec:set_of_values} is based on the IEEE754 standard~\cite{ieee754} and~\cite{MR2265914}.
+The interested reader may refer
+% In this chapters,
+% we covered the fundamentals of floating point arithmetics,

@@ -6,20 +6,28 @@
 \usepackage{amsthm}
 \usepackage{framed}
 \usepackage{hyperref}
-\hypersetup{%
-    linktocpage=true,
-    colorlinks=true,
-    urlcolor=gray,
-    pdfauthor={Urbain Vaes}
-    pdftitle={Lecture notes in Numerical Analysis}
-    pdfsubject={Applied mathematics}
-}
 \usepackage[nameinlink,capitalise]{cleveref}
 \usepackage[style=trad-abbrv,doi=false,url=true,isbn=false,backend=biber]{biblatex}
 \usepackage[outputdir=build]{minted}
 \usepackage{setspace}
 % \setlength{\parskip}{6pt}
 \onehalfspacing
+
+
+% Colors
+\definecolor{lightblue}{HTML}{eef6f8}
+\definecolor{darkblue}{HTML}{315a88}
+\definecolor{lightgreen}{HTML}{eef8f6}
+\definecolor{lightred}{HTML}{f8f6ee}
+\hypersetup{%
+    linktocpage=true,
+    colorlinks=true,
+    urlcolor=gray,
+    citecolor=darkblue,
+    pdfauthor={Urbain Vaes}
+    pdftitle={Lecture notes in Numerical Analysis}
+    pdfsubject={Applied mathematics}
+}
 
 % Fonts for lualatex
 \usepackage{fontspec}
@@ -77,12 +85,6 @@
 \newunicodechar{Χ}{\textfallback{Χ}}
 \newunicodechar{Ψ}{\textfallback{Ψ}}
 \newunicodechar{Ω}{\textfallback{Ω}}
-
-% Colors
-\definecolor{lightblue}{HTML}{eef6f8}
-\definecolor{darkblue}{HTML}{315a88}
-\definecolor{lightgreen}{HTML}{eef8f6}
-\definecolor{lightred}{HTML}{f8f6ee}
 
 % Style of sections
 \allsectionsfont{\sffamily}
