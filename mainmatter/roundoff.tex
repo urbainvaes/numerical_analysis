@@ -46,8 +46,14 @@ our aim in this chapter is only to introduce the key concepts.
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
-In order to understand how calculations involving floating point numbers work on a computer,
-one 
+As mentioned in the introduction,
+only a subset of the real numbers can be represented exactly in a computer.
+In all the programming languages and software that follow the IEEE754 standard,
+there numbers are of the form
+\[
+    \floating (p, E_{\max}, E_{\min})
+    = \bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1}) \colon b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \bigr\} 
+\]
 
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
