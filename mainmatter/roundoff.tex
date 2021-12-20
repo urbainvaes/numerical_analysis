@@ -189,7 +189,7 @@ According to the IEEE 754 standard,
 the first bit is the sign $s$,
 the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
 and the last 23 bits $b_1 b_2 \dots b_{p-2} b_{p-1}$ encode the significand.
-Let us introduce the integer number $\widethat e = (e_0 e_1 \dots e_6 e_7)_2$;
+Let us introduce the integer number $e = (e_0 e_1 \dots e_6 e_7)_2$;
 that is to say, $0 \leq e \leq 2^8 -1$ is the integer number whose binary representation
 is given by $e_0 e_1 \dots e_6 e_7$.
 One may determine the exponent and significand of a floating point number from the following rules.
@@ -225,12 +225,8 @@ One may determine the exponent and significand of a floating point number from t
         then $x = \texttt{NaN}$.
         Notice in particular that the special value \texttt{NaN} can be encoded in many different manners.
         These extra degrees of freedom were reserved for passing information on the reason for the occurrence of $\texttt{NaN}$,
-        which is usally an indication that something has gone wrong in the calculation.
+        which is usually an indication that something has gone wrong in the calculation.
 \end{itemize}
-
-\begin{exercise}
-    Determine the encoding of the \texttt{Float32} number $x = 2^{E_{\min}}$.
-\end{exercise}
 
 \begin{table}[hb]
     \centering
@@ -248,6 +244,16 @@ One may determine the exponent and significand of a floating point number from t
     \caption{Encoding parameters for floating point formats}%
     \label{table:floating_point_formats_encoding}
 \end{table}
+
+\begin{exercise}
+    Determine the encoding of the \texttt{Float32} numbers:
+    \begin{itemize}
+        \item $x = 2.0^{E_{\min}}$.
+        \item $x = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
+        \item $x = 2.0^{E_{\max}} (2-2^{-p+1})$
+    \end{itemize}
+    Check your results using the Julia function \texttt{bitstring}.
+\end{exercise}
 
 \section{An example: numerical differentiation}%
 To illustrate this point,
