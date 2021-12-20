@@ -20,11 +20,6 @@ The rest of this chapter is organized as follows.
         In \cref{sec:set_of_values},
         we describe the set of floating point numbers that can be represented in the usual floating point formats;
     \item
-        In \cref{sec:encoding_of_floating_point_numbers},
-        we briefly present how these numbers are encoded
-        according to the IEEE754 standard, widely accepted today.
-        We discuss in particular the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
-    \item
         In \cref{sec:arithmetic_operations_between_floating_point_formats}
         we seek to understand how arithmetic operations between floating point numbers behave.
         We insist in particular on the fact that,
@@ -33,6 +28,11 @@ The rest of this chapter is organized as follows.
         with a possible error.
         This is why \texttt{1.0 + 1e-100 - 1.0} returns \texttt{0.0},
         in the usual double-precision format.
+    \item
+        In \cref{sec:encoding_of_floating_point_numbers},
+        we briefly present how these numbers are encoded
+        according to the IEEE754 standard, widely accepted today.
+        We discuss in particular the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 \end{itemize}
 In order to completely describe a floating-point system,
 one would in principle need to also specify the storage of integer numbers
@@ -52,7 +52,7 @@ In all the programming languages and software that follow the IEEE754 standard,
 there numbers are of the form
 \[
     \floating (p, E_{\max}, E_{\min})
-    = \bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1}) \colon b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \bigr\} 
+    = \bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1}) \colon b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \bigr\}
 \]
 
 \section{Encoding of floating point numbers}%
@@ -74,7 +74,10 @@ consider the following program for calculating the derivative of the function $f
 \]
 \begin{minted}{julia}
 f(x) = log(x)
+x + δ
+for i in 1:10
 end
+abcdefghijklmnopqr
 \end{minted}
 
 \begin{exercise}
