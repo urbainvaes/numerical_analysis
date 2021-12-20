@@ -26,8 +26,8 @@ The rest of this chapter is organized as follows.
         in a calculation involving several successive arithmetic operations,
         the result of each intermediate operation is stored as a floating point number,
         with a possible error.
-        This is why \texttt{1.0 + 1e-100 - 1.0} returns \texttt{0.0},
-        in the usual double-precision format.
+        % This is why \texttt{1.0 + 1e-100 - 1.0} returns \texttt{0.0},
+        % in the usual double-precision format.
     \item
         In \cref{sec:encoding_of_floating_point_numbers},
         we briefly present how these numbers are encoded
@@ -47,20 +47,73 @@ our aim in this chapter is only to introduce the key concepts.
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
 As mentioned in the introduction,
-only a subset of the real numbers can be represented exactly in a computer.
+only a subset of the real numbers can be stored exactly in a computer.
 In all the programming languages and software that follow the IEEE754 standard,
-there numbers are of the form
+the set of representable numbers is of the form
+\begin{align*}
+    \floating (p, E_{\min}, E_{\max})
+    &= \Bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\}.
+\end{align*}
+In addition to these, floating number formats provide the special entities \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+Three parameters appear in the definition of this set.
+The parameter $p$ is the number of significant bits (also called the precision),
+and $E_{\min}, E_{\max}$ are respectively the minimum and maximum exponents.
+The subscript $_2$ is employed to indicate that the number $b_0. b_1 b_2 \dots b_{p-1}$ is expressed in base 2:
 \[
-    \floating (p, E_{\max}, E_{\min})
-    = \bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1}) \colon b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \bigr\}
+    (b_0. b_1 b_2 \dots b_{p-1})_2 := \sum_{i=0}^{p-1} b_i 2^{-i}.
 \]
+For a number $x \in \floating(p, E_{\min}, E_{\max})$,
+$s$ is called the \emph{sign}, $E$ is the \emph{exponent} and
+$b_0. b_1 b_2 \dots b_{p-1}$ is the \emph{significand}.
+The latter can be divided into a \emph{leading bit} $b_0$ and the fraction $b_1 b_2 \dots b_{p-1}$,
+to the right of the binary point.
+The most widely used floating point formats are the \emph{single} and \emph{double precision} formats,
+which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
+Their parameters are summarized in~\cref{table:floating_point_formats}.
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & Single precision & Double precision
+        \\ \hline
+        $p$ & 24 & 53
+        \\ \hline
+        $E_{\min}$ & -126 & -1022
+        \\ \hline
+        $E_{\max}$ & 127 & 1023
+        \\ \hline
+    \end{tabular}
+    \caption{Floating point formats}%
+    \label{table:floating_point_formats}
+\end{table}
 
-\section{Encoding of floating point numbers}%
-\label{sec:encoding_of_floating_point_numbers}
+At this point, the exponent $E$ and the significand of some number $x \in \floating(p, E_{\min}, E_{\max})$ are generally not uniquely defined.
+For example, the number $2.0 \in \floating(53, -1022, 1023)$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or as $(-1)^0 2^{2} (0.100\dots00)_2$.
+In a computer, however, each number in a floating point format is always represented in the same manner,
+which is useful in order to perform comparisons:
+since the representation is unique,
+two numbers are equal if only if their sign, exponent and significand are equal.
+The representation is made unique by requiring that
+\begin{itemize}
+    \item either $E > E_{\min}$ and $b_0 = 1$;
+    \item or $E = E_{\min}$, in which case the leading bit may be 0.
+\end{itemize}
+Floating point numbers with a leading bit equal to 1 are called \emph{normalized},
+whereas those with a leading bit equal to zero are called \emph{subnormal} or \emph{denormalized}.
+We give more information on this in~\cref{sec:encoding_of_floating_point_numbers},
+which is devoted specifically to the encoding of floating point numbers.
+
+In \texttt{Julia}, non-integer numbers are interpreted as \texttt{Float64} by default,
+which you may verify by using the \texttt{typeof} function.
+In order to define a number of type \texttt{Float32}, 
+the suffix $\texttt{f0}$ must be appended to the decimal expansion.
+For instance, the command $\texttt{a = 4.0f0}$ defines a number $a$ of type \texttt{Float64}.
 
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
 
+\section{Encoding of floating point numbers}%
+\label{sec:encoding_of_floating_point_numbers}
 
 
 
