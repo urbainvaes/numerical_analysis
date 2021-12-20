@@ -200,12 +200,14 @@ One may determine the exponent and significand of a floating point number from t
         the fraction is $b_1 b_2 \dots b_{p-2} b_{p-1}$, and the exponent is $E = E_{\min}$.
         In the format of~\cref{sec:set_of_values},
         one may write $x = (-1)^s 2^{E_{\min}} 0.b_1b_2 \dots b_{p-2} b_{p-1}$.
-    \item 
+        In particular, if $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
+        then it holds that $x = 0$.
+    \item
         \textbf{Normalized numbers}:
         If $0 < e < 255$,
         then the implicit leading bit $b_0$ of the significand is $1$
         and the fraction is given by $b_1 b_2 \dots b_{p-2} b_{p-1}$.
-        The exponent is given by 
+        The exponent is given by
         \[
             E = e - \mathrm{bias} = E_{\min} + e - 1.
         \]
