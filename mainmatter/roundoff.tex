@@ -31,14 +31,14 @@ The rest of this chapter is organized as follows.
     \item
         In \cref{sec:encoding_of_floating_point_numbers},
         we briefly present how these numbers are encoded
-        according to the IEEE754 standard, widely accepted today.
+        according to the IEEE 754 standard, widely accepted today.
         We discuss in particular the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 \end{itemize}
 In order to completely describe a floating-point system,
 one would in principle need to also specify the storage of integer numbers
 and the conversion mechanisms between different number formats,
 as well as a number of edge cases.
-For instance, the reference IEEE754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
+For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
 which is somewhat arbitrary but may be useful in some situations.
 Needless to say,
 a comprehensive discussion of the subject is beyond the scope of this course;
@@ -48,9 +48,10 @@ our aim in this chapter is only to introduce the key concepts.
 \label{sec:set_of_values}
 As mentioned in the introduction,
 only a subset of the real numbers can be stored exactly in a computer.
-In all the programming languages and software that follow the IEEE754 standard,
+In all the programming languages and software that follow the IEEE 754 standard,
 the set of representable numbers is of the form
 \begin{align*}
+    % \label{eq:number_format}%
     \floating (p, E_{\min}, E_{\max})
     &= \Bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\}.
 \end{align*}
@@ -131,18 +132,120 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
+Once a number format is specified through parameters $(p, E_{\min}, E_{\max})$,
+the choice of encoding,
+i.e.\ the machine representation of numbers in this format,
+has no bearing on the magnitude and propagation of roundoff errors.
+Studying encodings is, therefore, not essential for our purposes in this course,
+but we opted to cover the topic anyway in the hope that this will help the students build intuition on floating point numbers.
+The material in this section is for information purposes only.
+
 We already mentioned, in~\cref{sec:set_of_values},
-that the representation (sign, exponent and significand) of a nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ can be made unique.
+that the representation (sign, exponent and significand) of any nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ can be made unique.
 In this section,
 we discuss how these numbers are stored on the computer in practice.
-As their name suggests, the \texttt{Float32} and \texttt{Float64} formats are using 32 and 64 bits of memory, respectively.
-A naive encoding approach would be to store the sign, exponent and significand in full.
-For the \texttt{Float32} format, 1 bit is required for the sign,
-8 bits are needed to represent the 253 values of the exponent, and 24 bits are required for the significand,
+As their names suggest, the \texttt{Float32} and \texttt{Float64} formats use 32 and 64 bits of memory, respectively.
+A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
+For the \texttt{Float32} format,
+this approach would requires 1 bit for the sign,
+8 bits to cover the 254 possible values of the exponent, and 24 bits for the significand,
 i.e.\ for storing $b_0, \dots, b_{p-1}$.
 This leads to a total number of 33 bits,
+which is one more than is available,
 and this is without the special values \texttt{NaN}, \texttt{Inf} and \texttt{-Inf}.
-How can we do better?
+So how are numbers in the $\floating_{32}$ and $\floating_{64}$ formats actually stored?
+To answer this question,
+we begin with two observations:
+\begin{itemize}
+    \item
+        If $E > E_{\min}$,
+        then necessarily $b_0 = 1$ in the unique representation of the significand.
+        Consequently, the leading bit need not be explicitly specified in the case;
+        in this case it is said to be \emph{implicit}.
+        We will see that $p-1$ bits are in fact sufficient for the significand.
+    \item
+        In the $\floating_{32}$ format,
+        8 bits are reserved for the exponent,
+        which enable the representation of $2^8 = 256$ different values,
+        but there are only 254 possible values for the exponent.
+        This suggests that $256 - 254 = 2$ combinations of the 8 bits can be exploited in order to,
+        for example, represent the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+\end{itemize}
+
+Simplifying a bit,
+we may view a single precision floating point number as an array of bits with indices 0 to 31:
+\begin{center}
+    \definecolor{lightcyan}{rgb}{0.84,1,1}
+    \definecolor{lightgreen}{rgb}{0.64,1,0.71}
+    \definecolor{lightred}{rgb}{1,0.7,0.71}
+    \begin{bytefield}[bitheight=\widthof{~Sign~}, boxformatting={\centering\small}]{32}
+        \bitheader[endianness=little]{0, 8, 31} \\
+        \bitbox{1}[bgcolor=lightcyan]{\rotatebox{90}{Sign}} &
+        \bitbox{8}[bgcolor=lightgreen]{Encoded exponent} &
+        \bitbox{23}[bgcolor=lightred]{Encoded significand}
+    \end{bytefield}
+\end{center}
+According to the IEEE 754 standard,
+the first bit is the sign $s$,
+the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
+and the last 23 bits $b_1 b_2 \dots b_{p-2} b_{p-1}$ encode the significand.
+Let us introduce the integer number $\widethat e = (e_0 e_1 \dots e_6 e_7)_2$;
+that is to say, $0 \leq e \leq 2^8 -1$ is the integer number whose binary representation
+is given by $e_0 e_1 \dots e_6 e_7$.
+One may determine the exponent and significand of a floating point number from the following rules.
+\begin{itemize}
+    \item
+        \textbf{Subnormal numbers}:
+        If $e = 0$, then the implicit leading bit $b_0$ is zero,
+        the fraction is $b_1 b_2 \dots b_{p-2} b_{p-1}$, and the exponent is $E = E_{\min}$.
+        In the format of~\cref{sec:set_of_values},
+        one may write $x = (-1)^s 2^{E_{\min}} 0.b_1b_2 \dots b_{p-2} b_{p-1}$.
+    \item 
+        \textbf{Normalized numbers}:
+        If $0 < e < 255$,
+        then the implicit leading bit $b_0$ of the significand is $1$
+        and the fraction is given by $b_1 b_2 \dots b_{p-2} b_{p-1}$.
+        The exponent is given by 
+        \[
+            E = e - \mathrm{bias} = E_{\min} + e - 1.
+        \]
+        where the exponent bias for the single and double precision formats are given in~\cref{table:floating_point_formats_encoding}.
+        In this case $x = (-1)^s 2^{e - \mathrm{bias}} 1.b_1b_2 \dots b_{p-2} b_{p-1}$.
+        Notice that $E = E_{\min}$ if $e = 1$,
+        as in the case of subnormal numbers.
+    \item
+        \textbf{Infinities}:
+        If $e = 255$ and $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
+        then $x = (-1)^s \texttt{Inf}$.
+    \item
+        \textbf{Not a Number}:
+        If $e = 255$ and  $b_1 b_2 \dots b_{p-2} b_{p-1} \neq 00\dots00$,
+        then $x = \texttt{NaN}$.
+        Notice in particular that the special value \texttt{NaN} can be encoded in many different manners.
+        These extra degrees of freedom were reserved for passing information on the reason for the occurrence of $\texttt{NaN}$,
+        which is usally an indication that something has gone wrong in the calculation.
+\end{itemize}
+
+\begin{exercise}
+    Determine the encoding of the \texttt{Float32} number $x = 2^{E_{\min}}$.
+\end{exercise}
+
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & Single precision & Double precision
+        \\ \hline
+        Exponent bias & $127 = -E_{\min} + 1$ & $1023 = -E_{\min} + 1$
+        \\ \hline
+        Exponent encoding (bits) & 8 & 11
+        \\ \hline
+        Significand encoding (bits) & 23 & 52
+        \\ \hline
+    \end{tabular}
+    \caption{Encoding parameters for floating point formats}%
+    \label{table:floating_point_formats_encoding}
+\end{table}
 
 \section{An example: numerical differentiation}%
 To illustrate this point,
@@ -234,7 +337,7 @@ abcdefghijklmnopqr
 
 \section{Discussion and bibliography}%
 \label{sec:discussion_and_bibliograhpy}
-\Cref{sec:set_of_values} is based on the IEEE754 standard~\cite{ieee754} and~\cite{MR2265914}.
+\Cref{sec:set_of_values} is based on the IEEE 754 standard~\cite{ieee754} and~\cite{MR2265914}.
 The interested reader may refer
 % In this chapters,
 % we covered the fundamentals of floating point arithmetics,

@@ -7,3 +7,13 @@ Plots.plot(δs, dfdx)
 
 
 δs = 10 .^(-collect(0.:20.))
+
+
+
+f = nextfloat(-Inf)
+10.0 .^(range(-2,stop=2,length=50))
+while nextfloat(f) != f
+    next = nextfloat(f, 10000000000)
+    println(f, (next-f)/f)
+    f = next
+end
