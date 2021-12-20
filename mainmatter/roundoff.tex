@@ -69,7 +69,8 @@ The latter can be divided into a \emph{leading bit} $b_0$ and the fraction $b_1 
 to the right of the binary point.
 The most widely used floating point formats are the \emph{single} and \emph{double precision} formats,
 which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
-Their parameters are summarized in~\cref{table:floating_point_formats}.
+Their parameters are summarized in~\cref{table:floating_point_formats},
+and in the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
 \begin{table}[hb]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -93,7 +94,7 @@ In a computer, however, each number in a floating point format is always represe
 which is useful in order to perform comparisons:
 since the representation is unique,
 two numbers are equal if only if their sign, exponent and significand are equal.
-The representation is made unique by requiring that
+The exponent and significand are made unique by requiring that
 \begin{itemize}
     \item either $E > E_{\min}$ and $b_0 = 1$;
     \item or $E = E_{\min}$, in which case the leading bit may be 0.
@@ -103,9 +104,24 @@ whereas those with a leading bit equal to zero are called \emph{subnormal} or \e
 We give more information on this in~\cref{sec:encoding_of_floating_point_numbers},
 which is devoted specifically to the encoding of floating point numbers.
 
+\begin{remark}
+    [Nonuniqueness of the floating point represention of 0.0]
+    The sign $s$ is clearly unique for any number in a floating point format,
+    except for $0.0$,
+    which could in principle be represented as
+    \[
+        (-1)^0 2^{E_{\min}} (0.00\dots00)_2
+        \qquad \text{or} \qquad
+        (-1)^1 2^{E_{\min}} (0.00\dots00)_2.
+    \]
+    In practice, both representations of 0.0 are available on most machines,
+    and these behave slightly differently.
+    For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
+\end{remark}
+
 In \texttt{Julia}, non-integer numbers are interpreted as \texttt{Float64} by default,
 which you may verify by using the \texttt{typeof} function.
-In order to define a number of type \texttt{Float32}, 
+In order to define a number of type \texttt{Float32},
 the suffix $\texttt{f0}$ must be appended to the decimal expansion.
 For instance, the command $\texttt{a = 4.0f0}$ defines a number $a$ of type \texttt{Float64}.
 
@@ -115,9 +131,10 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a number $a$ of type \tex
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
-
-
-On computer, a floating point format is typically composed of a set of values and an
+We already presented, in~\cref{sec:set_of_values},
+how the representation (sign, exponent and significand) of a nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ can be made unique.
+In this section,
+we discuss how these numbers are stored in practice.
 
 \section{An example: numerical differentiation}%
 To illustrate this point,
