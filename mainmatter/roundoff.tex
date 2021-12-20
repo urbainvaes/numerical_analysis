@@ -123,7 +123,7 @@ In \texttt{Julia}, non-integer numbers are interpreted as \texttt{Float64} by de
 which you may verify by using the \texttt{typeof} function.
 In order to define a number of type \texttt{Float32},
 the suffix $\texttt{f0}$ must be appended to the decimal expansion.
-For instance, the command $\texttt{a = 4.0f0}$ defines a number $a$ of type \texttt{Float64}.
+For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\texttt{a} of type \texttt{Float64}.
 
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
@@ -131,10 +131,18 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a number $a$ of type \tex
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
-We already presented, in~\cref{sec:set_of_values},
-how the representation (sign, exponent and significand) of a nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ can be made unique.
+We already mentioned, in~\cref{sec:set_of_values},
+that the representation (sign, exponent and significand) of a nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ can be made unique.
 In this section,
-we discuss how these numbers are stored in practice.
+we discuss how these numbers are stored on the computer in practice.
+As their name suggests, the \texttt{Float32} and \texttt{Float64} formats are using 32 and 64 bits of memory, respectively.
+A naive encoding approach would be to store the sign, exponent and significand in full.
+For the \texttt{Float32} format, 1 bit is required for the sign,
+8 bits are needed to represent the 253 values of the exponent, and 24 bits are required for the significand,
+i.e.\ for storing $b_0, \dots, b_{p-1}$.
+This leads to a total number of 33 bits,
+and this is without the special values \texttt{NaN}, \texttt{Inf} and \texttt{-Inf}.
+How can we do better?
 
 \section{An example: numerical differentiation}%
 To illustrate this point,
