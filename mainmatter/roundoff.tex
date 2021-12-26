@@ -129,6 +129,31 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
 
+Now that we know the set of values representable on a computer,
+we endeavour in this section to understand precisely how arithmetic operations between floating point formats are performed.
+The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
+the process by which any infinitely precise real number is approximated by a floating point number of the type presented in the previous section.
+The basic principles of rounding as specified by the IEEE 754 standard are the following:
+\begin{itemize}
+    \item 
+        An infinitely precise real number is rounded to the \emph{nearest representable number},
+        if this number is unique.
+    \item 
+        When there are two equally near representable numbers in the floating point format,
+        the one with the least significant bit equal to zero is delivered.
+\end{itemize}
+
+\begin{itemize}
+    \item An infinite binary expansion of the number is calculated;
+    \item The 
+\end{itemize}
+
+
+% For example,
+% we endeavour in this section to understand precisely what happens when an operation of the form
+% ``\texttt{a = 2.0 + 0.1 * 3.0}''
+% is issued to the computer.
+
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
