@@ -134,6 +134,21 @@ In order to define a number of type \texttt{Float32},
 the suffix $\texttt{f0}$ must be appended to the decimal expansion.
 For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\texttt{a} of type \texttt{Float64}.
 
+\begin{exercise}
+    Write down the values of the smallest and largest, in absolute value,
+    nonzero real numbers representable in the $\floating_{32}$ and $\floating_{64}$ formats.
+\end{exercise}
+
+\begin{exercise}
+    Let us denote by $x_{\min}$ and $x_{\max}$ the smallest and largest \emph{normalized} positive numbers in a format $\floating(p, E_{\min}, E_{\max})$.
+    Show that, if $x \in \real$ is such that $x_{\min} \leq x \leq x_{\max}$,
+    then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
+    \[
+        \frac{x - \widehat x}{x} \leq \frac{1}{2} 2^{-(p-1)} := \frac{1}{2} \varepsilon_M.
+    \]
+    The quantity $\varepsilon_M$ on the right-hand side of this equation is known as the \emph{machine epsilon}.
+\end{exercise}
+
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
 
@@ -141,9 +156,10 @@ Now that we have presented the set of values representable on a computer,
 we endeavour in this section to understand precisely how arithmetic operations between floating point formats are performed.
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
 the process by which an infinitely precise real number is approximated by a floating point number of the type presented in the previous section.
-The basic principles of rounding to a floating point format,
-as specified by the IEEE 754 standard,
-are the following:
+The IEEE 754 standard specifies several mechanisms for rounding numbers,
+known as \emph{rounding modes}.
+The default rounding mode is \emph{round to nearest},
+which behaves as follows:
 \begin{itemize}
     \item
         \textbf{Standard case}:
@@ -289,7 +305,7 @@ We content ourselves here with a couple remarks:
         \[
             \frac{x_{+} - x}{x} = \frac{2^{-(p-1)}}{(1.b_1 b_2 \dots b_{p-2} b_{p-1})_2} \leq 2^{-(p-1)}.
         \]
-        It is therefore not unreasonable that only 4 digits should be included in the decimal representation of half-precision numbers.
+        It is therefore not unreasonable that only 4 digits should be included (most of the time) in the decimal representation of half-precision numbers.
 
         The distance between adjacent floating point numbers is usually known as the \emph{machine epsilon},
         and it is accessible in Julia using the~\texttt{eps} function.
@@ -521,7 +537,7 @@ abcdefghijklmnopqr
 
 \section{Discussion and bibliography}%
 \label{sec:discussion_and_bibliograhpy}
-This chapter is based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
+This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
 A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
 adding for example specifications for the half-precision and quad precsision formats,
 and a minor revision was published in 2019~\cite{ieee2019}.

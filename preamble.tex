@@ -107,13 +107,13 @@
 \newtheorem{protoproposition}[prototheorem]{Proposition}
 \newtheorem{protolemma}[prototheorem]{Lemma}
 \newtheorem{protocorollary}[prototheorem]{Corollary}
+\newtheorem{protoexercise}{Exercise}[chapter]
 \theoremstyle{definition}
 \newtheorem{protodefinition}{Definition}[chapter]
 \newtheorem{protonotation}{Notation}[chapter]
 \theoremstyle{remark}
 \newtheorem{protoexample}{Example}[chapter]
 \newtheorem{protoremark}{Remark}[chapter]
-\newtheorem{protoexercise}{Exercise}[chapter]
 
 % Minitoc
 \usepackage[nohints]{minitoc}
@@ -154,8 +154,8 @@
    {\colorlet{shadecolor}{remarkcolor}\begin{shaded}\begin{protoremark}}
    {\end{protoremark}\end{shaded}}
 \newenvironment{exercise}
-   {\colorlet{shadecolor}{remarkcolor}\begin{shaded}\begin{protoexercise}}
-   {\end{protoexercise}\end{shaded}}
+   {\colorlet{shadecolor}{white}\begin{protoexercise}}
+   {\end{protoexercise}}
 
 % Links
 \crefname{protolemma}{Lemma}{Lemmas}
