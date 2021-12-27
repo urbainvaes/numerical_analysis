@@ -10,11 +10,16 @@
 \usepackage{hyperref}
 \usepackage[nameinlink,capitalise]{cleveref}
 \usepackage[style=trad-abbrv,doi=false,url=true,isbn=false,backend=biber]{biblatex}
-\usepackage[outputdir=build]{minted}
 \usepackage{setspace}
 % \setlength{\parskip}{6pt}
 \onehalfspacing
 
+
+% Code listings
+\usepackage[outputdir=build,newfloat]{minted}
+\usepackage{caption}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Julia snippet}
 
 % Colors
 \definecolor{lightblue}{HTML}{eef6f8}
@@ -25,6 +30,7 @@
     linktocpage=true,
     colorlinks=true,
     urlcolor=gray,
+    linkcolor=blue,
     citecolor=darkblue,
     pdfauthor={Urbain Vaes}
     pdftitle={Lecture notes in Numerical Analysis}
@@ -107,7 +113,7 @@
 \theoremstyle{remark}
 \newtheorem{protoexample}{Example}[chapter]
 \newtheorem{protoremark}{Remark}[chapter]
-\newtheorem{exercise}{Exercise}[chapter]
+\newtheorem{protoexercise}{Exercise}[chapter]
 
 % Minitoc
 \usepackage[nohints]{minitoc}
@@ -147,6 +153,9 @@
 \newenvironment{remark}
    {\colorlet{shadecolor}{remarkcolor}\begin{shaded}\begin{protoremark}}
    {\end{protoremark}\end{shaded}}
+\newenvironment{exercise}
+   {\colorlet{shadecolor}{remarkcolor}\begin{shaded}\begin{protoexercise}}
+   {\end{protoexercise}\end{shaded}}
 
 % Links
 \crefname{protolemma}{Lemma}{Lemmas}
@@ -167,3 +176,20 @@
 \DeclareFieldFormat[book]{pages}{}
 \DeclareFieldFormat{url}{\newline URL: \url{#1}}
 \renewcommand*{\bibfont}{\small}
+
+% Headers
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+
+% Clear defaults
+\fancyhead{}
+
+% Left-Odd, Right-Even
+\definecolor{darkgrey}{RGB}{120,120,120}
+\fancyhead[LE,RO]{\color{darkgrey}\textit{\nouppercase{\leftmark}}}
+\fancyhead[LO,RE]{\color{darkgrey}\textit{\thepage}}
+\fancyfoot[C]{}
+\pagestyle{fancy}
+\let\oldheadrule\headrule
+\renewcommand{\headrule}{\color{darkgrey}\oldheadrule}
+\setlength{\headheight}{13.59999pt}

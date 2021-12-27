@@ -74,18 +74,26 @@ Their parameters are summarized in~\cref{table:floating_point_formats},
 and in the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
 \begin{table}[hb]
     \centering
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{|c|c|c|c|}
         \hline
-        & Single precision & Double precision
+        & Half precision & Single precision & Double precision
         \\ \hline
-        $p$ & 24 & 53
+        $p$ & 11 & 24 & 53
         \\ \hline
-        $E_{\min}$ & -126 & -1022
+        $E_{\min}$ & -14 & -126 & -1022
         \\ \hline
-        $E_{\max}$ & 127 & 1023
+        $E_{\max}$ & 15 & 127 & 1023
         \\ \hline
     \end{tabular}
-    \caption{Floating point formats}%
+    \caption{%
+        Floating point formats.
+        The first column corresponds to the lesser known \emph{half-precision} format.
+        This format,
+        which is available through the \texttt{Float16} type in Julia,
+        is more recent than the single and double precision formats.
+        It was introduced in the 2008 revision to the IEEE 754 standard of 1985,
+        a revision known as IEEE 754-2008.
+    }%
     \label{table:floating_point_formats}
 \end{table}
 
@@ -129,24 +137,162 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
 
-Now that we know the set of values representable on a computer,
+Now that we have presented the set of values representable on a computer,
 we endeavour in this section to understand precisely how arithmetic operations between floating point formats are performed.
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
-the process by which any infinitely precise real number is approximated by a floating point number of the type presented in the previous section.
-The basic principles of rounding as specified by the IEEE 754 standard are the following:
+the process by which an infinitely precise real number is approximated by a floating point number of the type presented in the previous section.
+The basic principles of rounding to a floating point format,
+as specified by the IEEE 754 standard,
+are the following:
 \begin{itemize}
-    \item 
+    \item
+        \textbf{Standard case}:
         An infinitely precise real number is rounded to the \emph{nearest representable number},
         if this number is unique.
-    \item 
+    \item
+        \textbf{Edge case}:
         When there are two equally near representable numbers in the floating point format,
         the one with the least significant bit equal to zero is delivered.
+    \item
+        \textbf{Infinities}:
+        If the real number $x$ is larger than the largest representable number in the format,
+        that is larger than or equal to $x_{\max} = 2^{E_{\max}} (2 - 2^{-p-1})$,
+        then there are two cases,
+        \begin{itemize}
+            \item If $x < 2^{E_{\max}} (2 - 2^{-p})$, then $x_{\max}$ is delivered;
+            \item Otherwise, the special value~\texttt{Inf} is delivered.
+        \end{itemize}
+        In other words, $x_{\max}$ is delivered if it would be delivered by following the rules of the first two bullet points
+        in a different floating point format with the same precision but an exponent $E_{\max}$ larger by one.
+        A similar rule applies for large negative numbers.
 \end{itemize}
 
+\begin{exercise}
+    In the \texttt{Float16} format, explain why
+    \begin{minted}{julia}
+        Float16(1 + 2^-10 + 2^-11) == Float16(1 + 2^-10)
+    \end{minted}
+    evaluates to \texttt{false}
+    but
+    \begin{minted}{julia}
+        Float16(1 + 2^-11) == Float16(1)
+    \end{minted}
+    evaluates to \texttt{true}.
+\end{exercise}
+
+When a binary arithmetic operation ($+$, $-$, $\times$, $/$) is performed on a computer,
+the result delivered by the computer coincides is the exact result of the operation,
+up to rounding according to the rules given above.
+More precisely,
+the arithmetic operation is performed as if the computer first calculated an intermediate exact result,
+and then rounded this intermediate result in order to provide a final result in the appropriate floating point format.
+The format of the end result,
+known as the \emph{destination format},
+depends on that of the arguments of the arithmetic operation:
+as a rule of thumb,
+the destination format is the most precise among the formats of the arguments.
+\begin{example}
+This can be readily verified in Julia using the \texttt{typeof} function.
+\begin{minted}{julia}
+julia> typeof(Float16(1) + Float32(1))
+Float32
+
+julia> typeof(Float32(1) + Float64(1))
+Float64
+
+julia> typeof(Float16(1) + Float64(1))
+Float64
+\end{minted}
+\end{example}
+
+If an mathematical expression contains several binary arithmetic operations to be performed in succession,
+the floating point result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
+and this floating point number is employed in the next binary operation.
+A consequence of this mechanism of arithmetic operations is that the operands $+$ and $*$ are generally not associative.
+Consider for example the following \emph{Julia} expressions:
+\begin{code}
+    \captionof{listing}{Non-associativity of floating point addition}
+    \label{code:non_associativity}
+\begin{minted}{julia}
+julia> (Float16(1) + Float16(2^-11)) + Float16(2^-11)
+Float16(1.0)
+
+julia> Float16(1) + (Float16(2^-11) + Float16(2^-11))
+Float16(1.001)
+\end{minted}
+\end{code}
+Can you explain this difference in behavior?
+For the computer, each these expressions contains two binary additions,
+with one involving the result of the other as an argument.
+To explain this somewhat surprising result,
+we begin by writing the binary representations of the floating point numbers in the $\floating_{16}$ representation.
+\begin{align*}
+    1 &= (-1)^0 \times 2^0 \times \texttt{1.0000000000} \\
+    2^{-11} &= (-1)^0 \times 2^{-11} \times \texttt{1.0000000000}.
+\end{align*}
+In the first expression,
+the addition \mintinline{julia}{Float16(1) + Float16(2^-11)} is first performed.
+The exact result of this operation is $r = 1 + 2^{-11}$,
+which in normalized binary notation is
+\[
+    r_2 = 1.\underbrace{0000000000}_{\text{10 zeros}}1.
+\]
+Since the length of the significand in the half-precision (\texttt{Float16}) format is only $p = 11$,
+this number is not representable in $\floating_{16}$.
+The result of the addition is therefore rounded to the member of $\floating_{16}$ nearest to $r$,
+provided this is unique.
+In this example, there are two members of~$\floating_{16}$ equally near~$r$,
+which we denote by $\widehat r$ and $\widetilde r$:
+\begin{align*}
+    \widehat r_2 = 1.\underbrace{0000000000}_{\text{10 zeros}},
+    \qquad
+    \widetilde r_2 = 1.\underbrace{000000000}_{\text{9 zeros}}1.
+\end{align*}
+According to the standard,
+the former is delivered, since its least significant bit is zero.
+Therefore, the result of the addition \mintinline{julia}{Float16(1) + Float16(2^-11)}
+is \mintinline{julia}{Float16(1)}.
+In order to complete the evaluation of the first expression,
+it remains to evaluate
+\mintinline{julia}{Float16(1) + Float16(2^-11)},
+which of course also evaluates to \mintinline{julia}{Float16(1)}.
+
+In the second expression,
+the first addition performed is \mintinline{julia}{Float16(2^{-11}) + Float16(2^-11)},
+the exact result of which is representable in $\floating_{16}$.
+The second addition that is performed is then \mintinline{julia}{Float16(1) + Float16(2^-10)},
+which also results in a number representable in $\floating_{16}$.
+
+\begin{remark}
+To be complete,
+one should explain why the result of the addition
+in the second expression of~\cref{code:non_associativity},
+equal to $1.0000000001$ in binary format and 1.0009765625 in decimal format,
+is rendered as $1.001$ by Julia.
+A detailed explanation would require a careful study of the rules specified in the standard regarding conversion between binary and decimal formats.
+We content ourselves here with a couple remarks:
 \begin{itemize}
-    \item An infinite binary expansion of the number is calculated;
-    \item The 
+    \item
+        Although the string representation of the result given by Julia is only approximate,
+        internally the value of the result is stored exactly:
+        \begin{minted}{julia}
+        julia> Float16(1 + 2^-10) == 1.0009765625
+        true
+        \end{minted}
+    \item
+        The relative precision of a number in $\floating_{16}$ is generally of the order of $2^{-(p-1)} = 2^{-10} \approx 10^{-3}$,
+        except for subnormal numbers.
+        By relative precision, we mean here the relative distance between a floating point number $x$
+        and the one immediately succeeding it, which we denote by $x_{+}$.
+        In fact, if $b_0 = 1$ and $x_{++} \neq \texttt{Inf}$,
+        this distance is equal to
+        \[
+            \frac{x_{+} - x}{x} = \frac{2^{-(p-1)}}{(1.b_1 b_2 \dots b_{p-2} b_{p-1})_2} \leq 2^{-(p-1)}.
+        \]
+        It is therefore not unreasonable that only 4 digits should be included in the decimal representation of half-precision numbers.
 \end{itemize}
+\end{remark}
+
 
 
 % For example,
@@ -255,15 +401,15 @@ One may determine the exponent and significand of a floating point number from t
 
 \begin{table}[hb]
     \centering
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{|c|c|c|c|}
         \hline
-        & Single precision & Double precision
+        & Half precision & Single precision & Double precision
         \\ \hline
-        Exponent bias & $127 = -E_{\min} + 1$ & $1023 = -E_{\min} + 1$
+        Exponent bias ($-E_{\min} + 1$) & $15$ & $127$ & $1023$
         \\ \hline
-        Exponent encoding (bits) & 8 & 11
+        Exponent encoding (bits) & 5 & 8 & 11
         \\ \hline
-        Significand encoding (bits) & 23 & 52
+        Significand encoding (bits) & 10 & 23 & 52
         \\ \hline
     \end{tabular}
     \caption{Encoding parameters for floating point formats}%
@@ -370,7 +516,7 @@ abcdefghijklmnopqr
 
 \section{Discussion and bibliography}%
 \label{sec:discussion_and_bibliograhpy}
-\Cref{sec:set_of_values} is based on the IEEE 754 standard~\cite{ieee754} and~\cite{MR2265914}.
-The interested reader may refer
+\Cref{sec:set_of_values} is based on the 1985 IEEE 754 standard~\cite{ieee754} and on the reference book~\cite{MR2265914}.
+The former reference presents a much more complete picture of the material than is possible the present in this chapter.
 % In this chapters,
 % we covered the fundamentals of floating point arithmetics,
