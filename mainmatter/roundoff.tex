@@ -284,12 +284,17 @@ We content ourselves here with a couple remarks:
         except for subnormal numbers.
         By relative precision, we mean here the relative distance between a floating point number $x$
         and the one immediately succeeding it, which we denote by $x_{+}$.
-        In fact, if $b_0 = 1$ and $x_{++} \neq \texttt{Inf}$,
-        this distance is equal to
+        In fact, if $b_0 = 1$ and $x_{+} \neq \texttt{Inf}$,
+        then this distance is equal to
         \[
             \frac{x_{+} - x}{x} = \frac{2^{-(p-1)}}{(1.b_1 b_2 \dots b_{p-2} b_{p-1})_2} \leq 2^{-(p-1)}.
         \]
         It is therefore not unreasonable that only 4 digits should be included in the decimal representation of half-precision numbers.
+
+        The distance between adjacent floating point numbers is usually known as the \emph{machine epsilon},
+        and it is accessible in Julia using the~\texttt{eps} function.
+        For example, \mintinline{julia}{eps(Float64)} returns the machine epsilon for the \texttt{Float64} type,
+        which is equal to approximately $2 \times 10^{-16}$.
 \end{itemize}
 \end{remark}
 
@@ -445,7 +450,7 @@ abcdefghijklmnopqr
     Write a code to calculate the weighted average
     \[
         S := \frac
-        {\sum_{x=0}^{L} \e^x i}
+        {\sum_{x=0}^{L} \e^x x}
         {\sum_{x=0}^{L} \e^x},
         \qquad L = 1000.
     \]
@@ -516,7 +521,14 @@ abcdefghijklmnopqr
 
 \section{Discussion and bibliography}%
 \label{sec:discussion_and_bibliograhpy}
-\Cref{sec:set_of_values} is based on the 1985 IEEE 754 standard~\cite{ieee754} and on the reference book~\cite{MR2265914}.
-The former reference presents a much more complete picture of the material than is possible the present in this chapter.
+This chapter is based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
+A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
+adding for example specifications for the half-precision and quad precsision formats,
+and a minor revision was published in 2019~\cite{ieee2019}.
+The original IEEE standard and its revisions constitute the authoritative guide on floating point formats.
+It was intended to be widely disseminated and is written very clearly and concisely,
+but is not available for free online.
+Another excellent source for learning about floating point numbers and roundoff errors is D.\ Goldberg~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
+freely available online.
 % In this chapters,
 % we covered the fundamentals of floating point arithmetics,
