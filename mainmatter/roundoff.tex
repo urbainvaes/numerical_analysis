@@ -546,5 +546,38 @@ It was intended to be widely disseminated and is written very clearly and concis
 but is not available for free online.
 Another excellent source for learning about floating point numbers and roundoff errors is D.\ Goldberg~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
 freely available online.
+
+\section{Exercises}%
+\label{sec:exercises}
+
+\begin{exercise}
+    [Calculating the sample variance]
+    Assume that $(x_n)_{1 \leq n \leq n}$ are independent random variables distributed according to
+    the uniform distribution $\mathcal U(L, L+1)$.
+    That is, each~$x_n$ takes a random value uniformly distributed between $L$ and $L+1$.
+    In Julia, these samples can be generated with the following lines of code:
+    \begin{minted}{julia}
+        N, L = 10^9, 10^9
+        x = L .+ rand(N)
+    \end{minted}
+    It is well know that the variance of $x_n \in \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
+    Numerically, the variance can be estimated from the \emph{sample variance}:
+    \begin{equation}
+        \label{eq:sample_variance_1}
+        s^2 = \frac{1}{N-1} \sum_{n=1}^{N} (x_n - \bar x)^2,
+        \qquad \bar x = \frac{1}{N} x_n.
+    \end{equation}
+    The sample variance may also be written as
+    \begin{equation}
+        \label{eq:sample_variance_2}
+        s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right).
+    \end{equation}
+    Implement both~\eqref{eq:sample_variance_1} and~\eqref{eq:sample_variance_2}
+    and compare the accuracy of the result.
+    In order to estimate the true value of $s^2$,
+    use the \texttt{BigFloat} format.
+\end{exercise}
+
+
 % In this chapters,
 % we covered the fundamentals of floating point arithmetics,
