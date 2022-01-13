@@ -1,0 +1,47 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[style=trad-abbrv,doi=false,url=true,isbn=false,backend=biber]{biblatex}
+\addbibresource{main.bib}
+\renewcommand*{\mkbibnamegiven}[1]{\textsc{#1}}
+\renewcommand*{\mkbibnamefamily}[1]{\textsc{#1}}
+\DeclareFieldFormat{volume}{volume \textbf{#1}}
+% \DeclareFieldFormat[book]{pages}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\begin{document}
+
+\section*{Numerical Analysis: course syllabus}%
+
+\paragraph{Course content.}%
+This course is addressed at undergraduate students and aimed at giving a first introduction to classical topics in numerical analysis,
+including floating point arithmetics and round-off errors,
+the numerical solution of linear and nonlinear equations,
+iterative methods for eigenvalue problems,
+interpolation and extrapolation of functions,
+and numerical quadrature.
+If time permits, we will also cover numerical methods for solving ordinary differential equations.
+
+\paragraph{Prerequisites.}%
+The course assumes a basic knowledge of linear algebra and calculus.
+Prior programming experience in Julia, Python or a similar language is desirable but not required.
+
+\paragraph{Study goals.}%
+After the course,
+the students will be familiar with the key concepts of \emph{stability}, \emph{convergence} and \emph{computational complexity} in the context of numerical algorithms.
+They will have gained a broad understanding of the classical numerical methods available for performing fundamental computational tasks,
+and be able to produce efficient computer implementations of these methods.
+
+\paragraph{Education method.}%
+The weekly schedule comprises lectures (2h30 per week) and exercise sessions (1h30 per week).
+The course material includes rigorous proofs as well as illustrative numerical examples in the Julia programming language,
+and the weekly exercises blend theoretical questions and practical computer implementation tasks.
+
+\paragraph{Assessment.}%
+\label{par:assessment}
+Computational coursework will be handed out on a biweekly basis,
+each of them focusing on one of the main topics of the course.
+
+\paragraph{Literature and study material.}%
+A comprehensive reference for this course is the following textbook:~\fullcite{MR2265914}.
+Other pointers to the literature will be given within each chapter.
+
+\end{document}
