@@ -2,52 +2,28 @@
 \input{preamble}
 \input{macros}
 
-\title{
-    \vspace{-2cm}
-    \includegraphics[width=.3\textwidth]{figures/nyu-logo.jpg}\\
-    \vspace{1.5cm}
-    \textbf{Numerical Analysis} \\[1cm]
-    \includegraphics[width=.7\textwidth]{figures/chebychev_cover.pdf}
-    % \includegraphics[width=.7\textwidth]{figures/extrapolating.png}
-}
-\author{%
-    Urbain \textsc{Vaes} \\
-    \texttt{urbain.vaes@nyu.edu}
-}
-\date{\vspace{1cm} {\large\textsc{NYU Paris}, Spring term 2022} \\[2cm]
-    \vfill
-    \flushleft \textbf{Weekly schedule}:
-    \begin{itemize}
-        \item Lectures on Tuesday and Thursday afternoon (2 $\times$ 1h15);
-        \item Recitation on Thursday afternoon (1h30);
-        \item Office hour on Tuesday, after the lecture.
-    \end{itemize}
-}
 \begin{document}
 \dominitoc
-\maketitle
+
+% Control whether full or chapter-only document is produced
+\newif\iftitleincluded\titleincludedfalse
+\include{frontmatter/title.tex}
 
 \frontmatter
 \include{frontmatter/license.tex}
 \include{frontmatter/syllabus.tex}
+
+\iftitleincluded
 \tableofcontents
+\fi
 
 \mainmatter
 \include{mainmatter/introduction.tex}
-
 \include{mainmatter/roundoff.tex}
-
-\chapter{Solution of linear systems}
-\label{cha:solution_of_linear_systems}
-
-\chapter{Solution of nonlinear systems}
-\label{cha:solution_of_nonlinear_systems}
-
-\chapter{Numerical computation of eigenvalues}%
-\label{cha:numerical_computation_of_eigenvalues}
-
-\chapter{Interpolation and approximation}%
-\label{cha:interpolation_and_approximation}
+\include{mainmatter/linear_equations.tex}
+\include{mainmatter/nonlinear_equations.tex}
+\include{mainmatter/eigenproblems.tex}
+\include{mainmatter/interpolation_approximation.tex}%
 
 \chapter{Numerical integration}
 \label{cha:quadrature}
