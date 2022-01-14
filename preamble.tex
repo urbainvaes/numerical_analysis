@@ -194,3 +194,16 @@
 \let\oldheadrule\headrule
 \renewcommand{\headrule}{\color{darkgrey}\oldheadrule}
 \setlength{\headheight}{13.59999pt}
+
+\DeclareCiteCommand{\fullcite}
+  {\usebibmacro{prenote}}
+  {\clearfield{doi}%
+   \clearfield{pages}%
+   \clearfield{pagetotal}%
+   \clearfield{edition}%
+   \clearfield{labelyear}%
+   \usedriver
+     {\DeclareNameAlias{sortname}{default}}
+     {\thefield{entrytype}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
