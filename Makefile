@@ -1,17 +1,25 @@
-all : build/main.pdf build/roundoff.pdf
+TEX_FILES := main.tex $(notdir frontmatter/syllabus.tex $(wildcard mainmatter/*.tex))
+PDF_OUTPUTS := $(addprefix build/, $(TEX_FILES:.tex=.pdf))
+
+all : $(PDF_OUTPUTS)
+
+main : build/main.pdf
 
 build/main.pdf: main.tex
-	lualatex \
-		--result=$@ \
-		--output-directory='build' \
-		--shell-escape \
-		main.tex
+	latexmk $^
 
-
-build/roundoff.pdf: mainmatter/roundoff.tex
+build/syllabus.pdf: frontmatter/syllabus.tex build/main.pdf
 	lualatex \
 		--result=$@ \
 		--output-directory='build' \
 		-shell-escape \
-		-jobname=roundoff \
-		"\includeonly{mainmatter/roundoff.tex}\input{main.tex}"
+		-jobname=syllabus \
+		"\includeonly{$<}\input{main.tex}"
+
+build/%.pdf: mainmatter/%.tex build/main.pdf
+	lualatex \
+		--result=$@ \
+		--output-directory='build' \
+		-shell-escape \
+		-jobname=$* \
+		"\includeonly{$<}\input{main.tex}"
