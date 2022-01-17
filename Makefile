@@ -6,11 +6,11 @@ all : $(PDF_OUTPUTS)
 main : build/main.pdf
 
 build/main.pdf: main.tex
-	mkdir -p build/{frontmatter,mainmatter}
 	latexmk $^
 
 build/syllabus.pdf: frontmatter/syllabus.tex build/main.pdf
-	mkdir -p build/{frontmatter,mainmatter}
+	cp build/main.aux build/syllabus.aux
+	cp build/main.bbl build/syllabus.bbl
 	lualatex \
 		--output-directory='build' \
 		-shell-escape \
@@ -18,7 +18,8 @@ build/syllabus.pdf: frontmatter/syllabus.tex build/main.pdf
 		"\includeonly{$<}\input{main.tex}"
 
 build/%.pdf: mainmatter/%.tex build/main.pdf
-	mkdir -p build/{frontmatter,mainmatter}
+	cp build/main.aux build/$*.aux
+	cp build/main.bbl build/$*.bbl
 	lualatex \
 		--output-directory='build' \
 		-shell-escape \
