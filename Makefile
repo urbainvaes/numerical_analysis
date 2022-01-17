@@ -18,11 +18,10 @@ build/syllabus.pdf: frontmatter/syllabus.tex build/main.pdf $(COMMON_DEPS)
 		--output-directory='build' \
 		-shell-escape \
 		-jobname=syllabus \
-		"\includeonly{frontmatter/$*}\input{main.tex}"
+		"\includeonly{frontmatter/syllabus}\input{main.tex}"
 
 build/%.pdf: mainmatter/%.tex build/main.pdf $(COMMON_DEPS)
 	cp build/main.aux build/$*.aux
-	cp build/main.bbl build/$*.bbl
 	cp build/main.bbl build/$*.bbl
 	lualatex \
 		--output-directory='build' \
