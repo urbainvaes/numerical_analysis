@@ -7,24 +7,24 @@
 
 % Control whether full or chapter-only document is produced
 \newif\iftitleincluded\titleincludedfalse
-\include{frontmatter/title.tex}
+\include{frontmatter/title}
 
 \frontmatter
-\include{frontmatter/license.tex}
-\include{frontmatter/syllabus.tex}
+\include{frontmatter/license}
+\include{frontmatter/syllabus}
 
 \iftitleincluded
 \tableofcontents
 \fi
 
 \mainmatter
-\include{mainmatter/introduction.tex}
-\include{mainmatter/roundoff.tex}
-\include{mainmatter/linear_equations.tex}
-\include{mainmatter/nonlinear_equations.tex}
-\include{mainmatter/eigenproblems.tex}
-\include{mainmatter/interpolation_approximation.tex}%
-\include{mainmatter/numerical_integration.tex}%
-\include{mainmatter/bib.tex}%
+\include{mainmatter/introduction}
+\include{mainmatter/roundoff}
+\include{mainmatter/linear_equations}
+\include{mainmatter/nonlinear_equations}
+\include{mainmatter/eigenproblems}
+\include{mainmatter/interpolation_approximation}%
+\include{mainmatter/numerical_integration}%
+\include{mainmatter/bib}%
 
 \end{document}
