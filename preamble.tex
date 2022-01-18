@@ -29,8 +29,8 @@
 \hypersetup{%
     linktocpage=true,
     colorlinks=true,
-    urlcolor=gray,
-    linkcolor=blue,
+    urlcolor=darkblue,
+    linkcolor=darkblue,
     citecolor=darkblue,
     pdfauthor={Urbain Vaes}
     pdftitle={Lecture notes in Numerical Analysis}
@@ -176,8 +176,8 @@
 \DeclareFieldFormat[article]{volume}{\textbf{#1}}
 \DeclareFieldFormat[book]{note}{}
 \DeclareFieldFormat[book]{pages}{}
-\DeclareFieldFormat{url}{\newline \textsc{url}: \url{#1}}
-\DeclareFieldFormat{doi}{\newline \textsc{doi}: \url{#1}}
+\DeclareFieldFormat{url}{\newline {\scriptsize\textsc{url}: \url{#1}}}
+\DeclareFieldFormat{doi}{\newline {\scriptsize\textsc{doi}: \url{#1}}}
 \renewcommand*{\bibfont}{\small}
 
 % Custom cite command
