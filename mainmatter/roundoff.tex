@@ -70,9 +70,10 @@ our aim in this chapter is only to introduce the key concepts.
 
 Given any integer number $b > 0$, called the \emph{base},
 a real number $x$ can always be expressed as a finite or infinite series of the form
-\[
+\begin{equation}
+    \label{eq:base_representation}
     x = \sum_{k=-n}^{\infty} a_k b^{-k}, \qquad 0 \leq a_k < b.
-\]
+\end{equation}
 The number $x$ may then be denoted as $(a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{b}$,
 where the subscript $b$ indicates the base.
 This numeral system is called the \emph{positional notation} and is universally used today,
@@ -95,14 +96,65 @@ for example the following:
         16 different symbols are required, which are conventionally denoted by $\{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F\}$.
         With this notation, we have $(FF)_{16} = (255)_{10}$, for example.
 
-        The hexadecimal notation is often used for describing colors specified by a triplet $(r,g,b)$ of values between 0 and 255,
+        The hexadecimal notation is often used in programming languages for describing colors specified by a triplet $(r,g,b)$ of values between 0 and 255,
         corresponding to the primary colors \emph{red}, \emph{blue} and \emph{green}.
         Since the number of possible values for the components is $256 = 16^2$,
         only 2 digits are required to represent these in the hexadecimal notation.
         Hexadecimal numbers are also employed in IPv6 addresses.
 \end{itemize}
 
+\subsection*{Conversion between binary and decimal formats}%
+Obtaining the decimal representation of a binary number can be achieved from~\eqref{eq:base_representation},
+using the decimal representations of the powers of 2.
+Since all the positive and negative powers of 2 have finite decimal representations,
+any real number with a finite representation in base 2 has a finite representation also in base 10.
+For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = 0.875$.
+\begin{example}
+    [Converting a binary number to decimal notation]
+    Let us calculate the decimal representation of $x = (0.\overline{10})_2$,
+    where the horizontal line indicates repetition: $x = (0.101010\dots)_2$.
+    By definition, it holds that
+    \[
+        x = \sum_{k=0}^{\infty} a_k 2^{-k},
+    \]
+    where $a_k = 0$ if $k$ is even and 1 otherwise.
+    Thus, the series may be rewritten as
+    \[
+        x = \sum_{k=0}^{\infty} 2^{-(2k+1)} = \frac{1}{2} \sum_{k=0}^{\infty} (2^{-2})^k.
+    \]
+    We recognize on the right-hand side a geometric series with common ratio $r = 2^{-2} = \frac{1}{4}$,
+    and so we obtain
+    \[
+        x = \frac{1}{2} \left( \frac{1}{1-r} \right) = \frac{2}{3} = 0.\overline 6.
+    \]
+\end{example}
 
+Obtaining the binary representation of a decimal number may prove more difficult,
+because negative powers of 10 have \emph{infinite} binary representations,
+as the example below demonstrates.
+There is, however, a simple procedure to perform the conversion,
+which we present for the specific case of a real number $x$ with decimal representation of the form $x = (0.a_1\dots a_n)_{10}$.
+In this setting,
+the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \dots)_2$ may be obtained as follows:
+\begin{algorithm}
+\caption{Conversion from decimal to binary}
+\begin{algorithmic}
+\State $i \gets 1$
+\While{$x \neq 0$}
+    \State $x \gets 2x$
+    \If{$x \geq 1$}
+        \State $b_i \gets 1$
+    \Else
+        \State $b_i \gets 0$
+    \EndIf
+    \State $x \gets b_i 2^{-i}$
+    \State $i \gets i+1$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\begin{enumerate}
+    \item Multiply $x$ by 2
+\end{enumerate}
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
