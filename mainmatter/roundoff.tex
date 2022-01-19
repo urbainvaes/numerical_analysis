@@ -2,7 +2,7 @@
 \label{cha:rounding_errors}
 \minitoc
 
-\section{Introduction}%
+\section*{Introduction}%
 \label{sec:introduction}
 % In numerical simulation,
 % errors arise from four distinct sources:
@@ -35,11 +35,14 @@ This is the source of the so-called \emph{round-off errors}.
 The rest of this chapter is organized as follows.
 \begin{itemize}
     \item
+        In \cref{sec:binary_representation_of_real_numbers},
+        we briefly discuss the binary representation of real numbers.
+    \item
         In \cref{sec:set_of_values},
         we describe the set of floating point numbers that can be represented in the usual floating point formats;
     \item
         In \cref{sec:arithmetic_operations_between_floating_point_formats}
-        we seek to understand how arithmetic operations between floating point numbers behave.
+        we explain how arithmetic operations between floating point numbers behave.
         We insist in particular on the fact that,
         in a calculation involving several successive arithmetic operations,
         the result of each intermediate operation is stored as a floating point number,
@@ -48,12 +51,12 @@ The rest of this chapter is organized as follows.
         % in the usual double-precision format.
     \item
         In \cref{sec:encoding_of_floating_point_numbers},
-        we briefly present how these numbers are encoded
+        we briefly present how floating point numbers are encoded
         according to the IEEE 754 standard, widely accepted today.
-        We discuss in particular the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+        We discuss also the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 \end{itemize}
 In order to completely describe a floating-point system,
-one would in principle need to also specify the storage of integer numbers
+one would in principle need to also discuss the storage of integer numbers
 and the conversion mechanisms between different number formats,
 as well as a number of edge cases.
 For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
@@ -61,6 +64,45 @@ which is somewhat arbitrary but may be useful in some situations.
 Needless to say,
 a comprehensive discussion of the subject is beyond the scope of this course;
 our aim in this chapter is only to introduce the key concepts.
+
+\section{Binary representation of real numbers}%
+\label{sec:binary_representation_of_real_numbers}
+
+Given any integer number $b > 0$, called the \emph{base},
+a real number $x$ can always be expressed as a finite or infinite series of the form
+\[
+    x = \sum_{k=-n}^{\infty} a_k b^{-k}, \qquad 0 \leq a_k < b.
+\]
+The number $x$ may then be denoted as $(a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{b}$,
+where the subscript $b$ indicates the base.
+This numeral system is called the \emph{positional notation} and is universally used today,
+both by humans (usually with $b=10$) and machines (usually with $b=2$).
+If the base~$b$ is omitted,
+it is always assumed that $b = 10$ unless otherwise specified
+-- this is the \emph{decimal} representation.
+In computer science, several bases other than 10 are regularly employed,
+for example the following:
+\begin{itemize}
+    \item
+        Base 2 (binary) is the usual choice for storing numbers on a machine.
+        The binary format is convenient because each digit has only two possible values, 0 or 1,
+        and so it can be stored using a simple electrical circuit with two states.
+        We employ the binary notation extensively in the rest of this chapter.
+
+    \item
+        Base 16 (hexadecimal) is sometimes convenient to represent numbers in a compact manner.
+        In order to represent the values 0-15 by a single digit,
+        16 different symbols are required, which are conventionally denoted by $\{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F\}$.
+        With this notation, we have $(FF)_{16} = (255)_{10}$, for example.
+
+        The hexadecimal notation is often used for describing colors specified by a triplet $(r,g,b)$ of values between 0 and 255,
+        corresponding to the primary colors \emph{red}, \emph{blue} and \emph{green}.
+        Since the number of possible values for the components is $256 = 16^2$,
+        only 2 digits are required to represent these in the hexadecimal notation.
+        Hexadecimal numbers are also employed in IPv6 addresses.
+\end{itemize}
+
+
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
@@ -77,10 +119,7 @@ In addition to these, floating number formats provide the special entities \text
 Three parameters appear in the definition of this set.
 The parameter $p$ is the number of significant bits (also called the precision),
 and $E_{\min}, E_{\max}$ are respectively the minimum and maximum exponents.
-The subscript $_2$ is employed to indicate that the number $b_0. b_1 b_2 \dots b_{p-1}$ is expressed in base 2:
-\[
-    (b_0. b_1 b_2 \dots b_{p-1})_2 := \sum_{i=0}^{p-1} b_i 2^{-i}.
-\]
+
 For a number $x \in \floating(p, E_{\min}, E_{\max})$,
 $s$ is called the \emph{sign}, $E$ is the \emph{exponent} and
 $b_0. b_1 b_2 \dots b_{p-1}$ is the \emph{significand}.
