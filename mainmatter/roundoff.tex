@@ -86,9 +86,13 @@ for example the following:
 \begin{itemize}
     \item
         Base 2 (binary) is the usual choice for storing numbers on a machine.
-        The binary format is convenient because each digit has only two possible values, 0 or 1,
-        and so it can be stored using a simple electrical circuit with two states.
+        The binary format is convenient because the digits have only two possible values, 0 or 1,
+        and so they can be stored using simple electrical circuits with two states.
         We employ the binary notation extensively in the rest of this chapter.
+        Notice that, just like multiplying and dividing by~10 is easy in base 10,
+        multiplying and dividing by 2 is very simple in base 2:
+        these operations amount to shifting all the bits by one position to the left or right,
+        respectively.
 
     \item
         Base 16 (hexadecimal) is sometimes convenient to represent numbers in a compact manner.
@@ -111,6 +115,7 @@ any real number with a finite representation in base 2 has a finite representati
 For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = 0.875$.
 \begin{example}
     [Converting a binary number to decimal notation]
+    \label{example:converting_binary_to_decimal}
     Let us calculate the decimal representation of $x = (0.\overline{10})_2$,
     where the horizontal line indicates repetition: $x = (0.101010\dots)_2$.
     By definition, it holds that
@@ -137,24 +142,64 @@ which we present for the specific case of a real number $x$ with decimal represe
 In this setting,
 the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \dots)_2$ may be obtained as follows:
 \begin{algorithm}
-\caption{Conversion from decimal to binary}
-\begin{algorithmic}
+\caption{Conversion of a number to binary format}%
+\label{algo:conversion_to_binary}%
+\begin{algorithmic}[1]
 \State $i \gets 1$
 \While{$x \neq 0$}
-    \State $x \gets 2x$
+    \State $x \gets 2x$%
+    \label{line:after_while}
     \If{$x \geq 1$}
         \State $b_i \gets 1$
     \Else
         \State $b_i \gets 0$
     \EndIf
-    \State $x \gets b_i 2^{-i}$
+    \State $x \gets x - b_i 2^{-i}$
     \State $i \gets i+1$
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
-\begin{enumerate}
-    \item Multiply $x$ by 2
-\end{enumerate}
+
+\begin{example}
+    [Converting a decimal number to binary notation]
+    Let us calculate the binary representation of $x = \frac{1}{3} = (0.\overline{3})_{10}$.
+    We apply~\cref{algo:conversion_to_binary} and collate the values of $i$ and $x$ at the beginning of each iteration,
+    i.e.\ just before~\cref{line:after_while}, in the table below.
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $i$ & $x$ & Result \\ \hline
+        $1$ & $\frac{1}{3}$ & 0.\textbf{0}000\dots \\ \hline
+        $2$ & $\frac{2}{3}$ & 0.0\textbf{1}00\dots \\ \hline
+        $3$ & $\frac{1}{3}$ & 0.00\textbf{0}0\dots \\ \hline
+    \end{tabular}
+    \end{center}
+    Since $x$ in the last row is again $\frac{1}{3}$,
+    successive bits alternate between 0 and 1,
+    and the binary representation of $x$ is given by $(0.\overline{01})_2$.
+    This is not surprising since $2x = (0.66)_{10} = (0.\overline{10})_2$,
+    as we saw in~\cref{example:converting_binary_to_decimal}.
+\end{example}
+
+\begin{exercise}
+    How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
+    What about the hexadecimal format?
+\end{exercise}
+
+\begin{exercise}
+    Find the decimal representation of $(0.000\overline{1100})_2$.
+\end{exercise}
+
+\begin{exercise}
+    Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
+    Your function should take as argument an array of integers containing the digits after the decimal point,
+    that is an array of the form \verb?[a_1, ..., a_n]?.
+\end{exercise}
+
+\begin{exercise}
+    As mentioned above, \cref{algo:conversion_to_binary} works only for decimal numbers of the specific form~$x = (0.a_1\dots a_n)_{10}$.
+    Find and implement a similar algorithm for integer numbers of the form $x = (a_{-n} \dots a_{0})_{10}$.
+\end{exercise}
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
