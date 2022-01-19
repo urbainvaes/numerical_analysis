@@ -203,19 +203,23 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
-As mentioned in the introduction,
+We mentioned in the introduction that,
+because of memory limitations,
 only a subset of the real numbers can be stored exactly in a computer.
-In all the programming languages and software that follow the IEEE 754 standard,
-the set of representable numbers is of the form
-\begin{align*}
-    % \label{eq:number_format}%
+Nowadays, the vast majority of programming languages and software comply with the IEEE 754 standard,
+which requires that the set of representable numbers be of the form
+\begin{align}
+    \notag
     \floating (p, E_{\min}, E_{\max})
-    &= \Bigl\{ (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\}.
-\end{align*}
+    = \Bigl\{ & (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon \\ 
+    \label{eq:number_format}%
+              & \qquad s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\}.
+\end{align}
 In addition to these, floating number formats provide the special entities \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
-Three parameters appear in the definition of this set.
-The parameter $p$ is the number of significant bits (also called the precision),
-and $E_{\min}, E_{\max}$ are respectively the minimum and maximum exponents.
+Three parameters appear in the set definition~\eqref{eq:number_format}.
+The parameter $p \in \nat_{>0}$ is the number of significant bits (also called the precision),
+and $(E_{\min}, E_{\max}) \in \integer^2$ are respectively the minimum and maximum exponents.
+From the precision, the \emph{machine epsilon} is defined as $\varepsilon_{M} = 2^{-p-1}$.
 
 For a number $x \in \floating(p, E_{\min}, E_{\max})$,
 $s$ is called the \emph{sign}, $E$ is the \emph{exponent} and
@@ -251,8 +255,9 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
     \label{table:floating_point_formats}
 \end{table}
 
-At this point, the exponent $E$ and the significand of some number $x \in \floating(p, E_{\min}, E_{\max})$ are generally not uniquely defined.
-For example, the number $2.0 \in \floating(53, -1022, 1023)$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or as $(-1)^0 2^{2} (0.100\dots00)_2$.
+Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
+the exponent $E$ and significand  are generally not uniquely defined.
+For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or as $(-1)^0 2^{2} (0.100\dots00)_2$.
 In a computer, however, each number in a floating point format is always represented in the same manner,
 which is useful in order to perform comparisons:
 since the representation is unique,
@@ -290,7 +295,7 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 
 \begin{exercise}
     Write down the values of the smallest and largest, in absolute value,
-    nonzero real numbers representable in the $\floating_{32}$ and $\floating_{64}$ formats.
+    positive real numbers representable in the $\floating_{32}$ and $\floating_{64}$ formats.
 \end{exercise}
 
 \begin{exercise}
@@ -301,6 +306,16 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
         \frac{x - \widehat x}{x} \leq \frac{1}{2} 2^{-(p-1)} := \frac{1}{2} \varepsilon_M.
     \]
     The quantity $\varepsilon_M$ on the right-hand side of this equation is known as the \emph{machine epsilon}.
+\end{exercise}
+
+\begin{exercise}
+    Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly 
+    \[
+        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
+    \]
+    \emph{distinct real numbers}. 
+    (In particular, the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN} are not counted.)
+    \textbf{Hint:} Count first the normalized and then the denormalized numbers.
 \end{exercise}
 
 \section{Arithmetic operations between floating point formats}%
