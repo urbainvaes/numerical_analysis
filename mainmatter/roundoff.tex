@@ -72,10 +72,10 @@ Given any integer number $\beta > 0$, called the \emph{base},
 a real number $x$ can always be expressed as a finite or infinite series of the form
 \begin{equation}
     \label{eq:base_representation}
-    x = \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad 0 \leq a_k < \beta.
+    x = (-1)^s \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad 0 \leq a_k < \beta.
 \end{equation}
-The number $x$ may then be denoted as $(a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{\beta}$,
-where the subscript $\beta$ indicates the base.
+The number $x$ may then be denoted as $(-1)^s (a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{\beta}$,
+where the subscript $\beta$ indicates the base and $s \in \{0, 1\}$ encodes the sign.
 This numeral system is called the \emph{positional notation} and is universally used today,
 both by humans (usually with $\beta=10$) and machines (usually with $\beta=2$).
 If the base~$\beta$ is omitted,
@@ -186,6 +186,13 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 \subsection{Exercises}%
 
 \begin{exercise}
+    \label{exercise:non_unique_representation}
+    Show that if a number $x \in \real$ admits a finite representation~\eqref{eq:base_representation} in base $\beta$,
+    then it also admits an infinite representation.
+    \textbf{Hint:} You may have seen that $(0.\overline 9)_{10} = 1$.
+\end{exercise}
+
+\begin{exercise}
     How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
     What about the hexadecimal format?
 \end{exercise}
@@ -236,7 +243,7 @@ The most widely used floating point formats are the \emph{single} and \emph{doub
 which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
 Their parameters are summarized in~\cref{table:floating_point_formats},
 and in the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
-\begin{table}[hb]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -283,19 +290,53 @@ We define the absolute and relative errors of the approximation as follows.
     \]
 \end{definition}
 
-The following, whose proof is postponed to \cref{exercise:machine_epsilon},
-establishes a link between the machine $\varepsilon_M$ and
+The following establishes a link between the machine $\varepsilon_M$ and
 the relative error between a real number and the closest member of a floating point format.
 \begin{proposition}
     \label{prop:relative_error_and_machine_epsilon}
     Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{normalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
     If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, \leq x_{\max}]$,
     then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
-    \[
+    \begin{equation}
+        \label{eq:bound_epsilon_machine}
         \min_{\widehat x \in F} \frac{|x - \widehat x|}{|x|} \leq \frac{1}{2} 2^{-(p-1)}
         \leq \frac{1}{2} \varepsilon_M.
-    \]
+    \end{equation}
 \end{proposition}
+\begin{proof}
+    For simplicity, we also assume that $x > 0$.
+    Let us introduce $n = \lfloor \log_2(x) \rfloor$ and $y := 2^{-n} x$.
+    Since $y \in [1, 2)$,
+    it has a binary representation of the form
+    \(
+        (1.b_1 b_2\dots)_2,
+    \)
+    where the bits after the binary point are not all equal to 1 ad infinitum.
+    It follows that,
+    \(
+        x = 2^{n} (1.b_1 b_2\dots)_2,
+    \)
+    and from the assumption that $x_{\min} \leq x \leq x_{\max}$ 
+    we deduce hat $E_{\min} \leq n \leq E_{\max}$.
+    % \footnote{%
+    %     The inequality here is strict,
+    %     because $2^{E_{\min} - 1} (1.\overline{1})_2 = 2^{E_{\min}} = x_{\min}$.
+    %     Remember that the binary expansion of a real number is generally not unique!
+    %     See~\cref{exercise:non_unique_representation}.
+    % }
+    % which is excluded by assumption.
+    Then we define the truncated number $x_- \in F$ as follows:
+    \[
+        x_- = 2^n (1.b_1 \dots b_{p-1})_2.
+    \]
+    The distance between $x_-$ and its successor $x_+$ in $F$ is given by $2^{n-p+1}$,
+    and so
+    \[
+        (x_+ - x) + (x-x_-) = x_+ - x_- = 2^{n-p+1}.
+    \]
+    Clearly, this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
+    which concludes the proof.
+\end{proof}
 
 \subsection{Disambiguating the floating point representation}%
 \label{sub:defining_a_unique_representation}
@@ -376,7 +417,7 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \begin{exercise}
     [Relative error and machine epsilon]
     \label{exercise:machine_epsilon}
-    Prove \cref{prop:uniqueness_standard_representation}.
+    Prove that the inequality~\eqref{eq:bound_epsilon_machine} is sharp.
 \end{exercise}
 
 \begin{exercise}
