@@ -81,6 +81,8 @@ both by humans (usually with $b=10$) and machines (usually with $b=2$).
 If the base~$b$ is omitted,
 it is always assumed that $b = 10$ unless otherwise specified
 -- this is the \emph{decimal} representation.
+% It is likely that the prevalence of base 10 in human writing is a consequence of human morphology,
+% although this fact has not been demonstrated by historians.
 In computer science, several bases other than 10 are regularly employed,
 for example the following:
 \begin{itemize}
@@ -181,6 +183,8 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     as we saw in~\cref{example:converting_binary_to_decimal}.
 \end{example}
 
+% \subsection*{Exercises}%
+
 \begin{exercise}
     How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
     What about the hexadecimal format?
@@ -211,15 +215,17 @@ which requires that the set of representable numbers be of the form
 \begin{align}
     \notag
     \floating (p, E_{\min}, E_{\max})
-    = \Bigl\{ & (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon \\ 
+    = \Bigl\{ & (-1)^s 2^E (b_0. b_1 b_2 \dots b_{p-1})_2 \colon \\
     \label{eq:number_format}%
               & \qquad s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\}.
 \end{align}
-In addition to these, floating number formats provide the special entities \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+In addition to these, floating number formats provide the special entities \texttt{Inf}, \texttt{-Inf} and \texttt{NaN},
+the latter being an abbreviation for \emph{Not a Number}.
 Three parameters appear in the set definition~\eqref{eq:number_format}.
 The parameter $p \in \nat_{>0}$ is the number of significant bits (also called the precision),
 and $(E_{\min}, E_{\max}) \in \integer^2$ are respectively the minimum and maximum exponents.
-From the precision, the \emph{machine epsilon} is defined as $\varepsilon_{M} = 2^{-p-1}$.
+From the precision, the \emph{machine epsilon} is defined as $\varepsilon_{M} = 2^{-p-1}$;
+its significance is discussed in~\cref{exercise:machine_epsilon}.
 
 For a number $x \in \floating(p, E_{\min}, E_{\max})$,
 $s$ is called the \emph{sign}, $E$ is the \emph{exponent} and
@@ -255,22 +261,52 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
     \label{table:floating_point_formats}
 \end{table}
 
+\subsection*{Defining a unique representation}%
+\label{sub:defining_a_unique_representation}
+
 Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
 the exponent $E$ and significand  are generally not uniquely defined.
-For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or as $(-1)^0 2^{2} (0.100\dots00)_2$.
-In a computer, however, each number in a floating point format is always represented in the same manner,
-which is useful in order to perform comparisons:
-since the representation is unique,
-two numbers are equal if only if their sign, exponent and significand are equal.
-The exponent and significand are made unique by requiring that
+For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or equivalently as $(-1)^0 2^{2} (0.100\dots00)_2$.
+To remove this ambiguity,
+one may define the \emph{standard representation} of a number by requiring that
 \begin{itemize}
     \item either $E > E_{\min}$ and $b_0 = 1$;
     \item or $E = E_{\min}$, in which case the leading bit may be 0.
 \end{itemize}
-Floating point numbers with a leading bit equal to 1 are called \emph{normalized},
-whereas those with a leading bit equal to zero are called \emph{subnormal} or \emph{denormalized}.
-We give more information on this in~\cref{sec:encoding_of_floating_point_numbers},
+One may prove that these rules define the exponent and significand uniquely.
+\begin{proposition}
+    \label{prop:uniqueness_standard_representation}
+    Assume that
+    \begin{equation}
+        \label{eq:equality_floating_point}
+        x = (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
+    \end{equation}
+    where the representation parameters $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
+    Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
+\end{proposition}
+\begin{proof}
+    We show that $E = \widetilde E$,
+    after which the equality of significands follows trivially,
+    Let us assume for contradiction that $E > \widetilde E$
+    and denote the left and right-hand side of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
+    Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
+    On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
+    Since $E \geq \widetilde E + 1$ by assumption, 
+    we deduce that $|\widetilde x| < 2^E \leq |x|$,
+    which contradicts the equality $x = \widetilde x$.
+\end{proof}
+
+In view of \cref{prop:uniqueness_standard_representation},
+we can talk without ambiguity about \emph{the} exponent or \emph{the} significand of a number in $\floating (p, E_{\min}, E_{\max})$.
+A floating point number whose standard representation has a leading bit equal to 1 is called \emph{normalized},
+whereas one with a leading bit equal to zero is called \emph{subnormal} or \emph{denormalized}.
+We give more information on this subject in~\cref{sec:encoding_of_floating_point_numbers},
 which is devoted specifically to the encoding of floating point numbers.
+
+% In a computer, however, each number in a floating point format is always represented in the same manner,
+% which is useful in order to perform comparisons:
+% since the representation is unique,
+% two numbers are equal if only if their sign, exponent and significand are equal.
 
 \begin{remark}
     [Nonuniqueness of the floating point represention of 0.0]
@@ -299,6 +335,8 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \end{exercise}
 
 \begin{exercise}
+    [Relative error and machine epsilon]
+    \label{exercise:machine_epsilon}
     Let us denote by $x_{\min}$ and $x_{\max}$ the smallest and largest \emph{normalized} positive numbers in a format $\floating(p, E_{\min}, E_{\max})$.
     Show that, if $x \in \real$ is such that $x_{\min} \leq x \leq x_{\max}$,
     then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
@@ -309,11 +347,12 @@ For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\
 \end{exercise}
 
 \begin{exercise}
-    Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly 
+    [Cardinality of the set of floating point numbers]
+    Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly
     \[
         (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
     \]
-    \emph{distinct real numbers}. 
+    \emph{distinct real numbers}.
     (In particular, the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN} are not counted.)
     \textbf{Hint:} Count first the normalized and then the denormalized numbers.
 \end{exercise}
