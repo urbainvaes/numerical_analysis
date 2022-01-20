@@ -281,7 +281,7 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
     we focus on this case for simplicity in most of this chapter.
 \end{remark}
 
-\subsection{Disambiguating the floating point representation}%
+\subsection{Make the floating point representation unique}%
 \label{sub:defining_a_unique_representation}
 
 Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
@@ -301,7 +301,7 @@ One may prove that these rules define the exponent and significand uniquely.
         \label{eq:equality_floating_point}
         x = (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
     \end{equation}
-    where the representation parameters $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
+    where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
     Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
 \end{proposition}
 \begin{proof}
@@ -415,31 +415,54 @@ the relative error between a real number and the closest member of a floating po
 
 The machine epsilon can be viewed as the maximum relative difference between a normalized floating point number $x$ and its successor,
 defined as the smallest number in the floating point format that is strictly larger than $x$.
-The left panel of~\cref{fig:float64} depicts the density of double-precision floating point numbers.
+\Cref{fig:float64_density} depicts the density of double-precision floating point numbers.
 The figure shows that, as the absolute value increases,
 the density of floating point number decreases.
 We also notice that the density is piecewise constant with discontinuities at powers of 2,
 which correspond to a change of exponent.
-The right panel of~\cref{fig:float64} illustrates the relative spacing between successive floating point numbers,
+\Cref{fig:float64_spacing} illustrates the relative spacing between successive floating point numbers,
 in units of machine precision.
 Although the absolute spacing increases with the absolute value of $x$,
-the relative spacing oscillates between $f
-
-
-(left panel) and the relative spacing between successive floating point (right panel)
-
+the relative spacing oscillates between~$\frac{1}{2} \varepsilon_{M}$ and~$\varepsilon_M$.
 
 \begin{figure}
-    \label{fig:float64}%
-    \includegraphics[width=.49\textwidth]{figures/float64_density.pdf}%
-    \includegraphics[width=.49\textwidth]{figures/float64_spacing.pdf}%
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/float64_density.pdf}
     \caption{%
-        \textbf{Left:} Density of the double-precision floating point numbers,
+        Density of the double-precision floating point numbers,
         measured here as~$1/\Delta(x)$ where,
         for $x \in \floating_{64}$,
         $\Delta(x)$ denotes the distance between $x$ and its successor in $\floating_{64}$.
-        \textbf{Right:} Relative spacing between successive double-precision floating point numbers.
     }%
+    \label{fig:float64_density}%
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/float64_spacing.pdf}
+    \caption{%
+        Relative spacing between successive double-precision floating point numbers in the ``normal range''.
+        The relative spacing oscillates between $\frac{1}{2} \varepsilon_M$ and $\varepsilon_M$.
+    }%
+    \label{fig:float64_spacing}
+\end{figure}
+
+The picture of the relative spacing between successive floating point numbers looks quite different for denormalized numbers.
+This is illustrated in \cref{fig:float64_spacing_denormalized},
+which shows that the relative spacing increases beyond the machine epsilon in the denormalized range.
+Fortunately, in the usual $\floating_{32}$ and $\floating_{64}$ formats,
+the transition between normalized and denormalized numbers occurs at such a small value that
+rarely it needs worrying about.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.8\textwidth]{figures/float64_spacing_denormalized.pdf}
+    \caption{%
+        Relative spacing between successive double-precision floating point numbers,
+        over a range which includes denormalized number.
+        The vertical red line indicates the transition between denormalized and normalized numbers.
+    }%
+    \label{fig:float64_spacing_denormalized}
 \end{figure}
 
 \subsection{Exercises}%
