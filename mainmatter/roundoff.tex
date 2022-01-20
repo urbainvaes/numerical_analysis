@@ -312,11 +312,11 @@ the relative error between a real number and the closest member of a floating po
         (1.b_1 b_2\dots)_2,
     \)
     where the bits after the binary point are not all equal to 1 ad infinitum.
-    It follows that,
+    Thus
     \(
         x = 2^{n} (1.b_1 b_2\dots)_2,
     \)
-    and from the assumption that $x_{\min} \leq x \leq x_{\max}$ 
+    and from the assumption that $x_{\min} \leq x \leq x_{\max}$
     we deduce hat $E_{\min} \leq n \leq E_{\max}$.
     % \footnote{%
     %     The inequality here is strict,
@@ -325,16 +325,18 @@ the relative error between a real number and the closest member of a floating po
     %     See~\cref{exercise:non_unique_representation}.
     % }
     % which is excluded by assumption.
-    Then we define the truncated number $x_- \in F$ as follows:
+    Then we define the truncated number $x_- \in F$ by truncating the binary expansion of $x$ as follows:
     \[
         x_- = 2^n (1.b_1 \dots b_{p-1})_2.
     \]
-    The distance between $x_-$ and its successor $x_+$ in $F$ is given by $2^{n-p+1}$,
-    and so
+    The distance between $x_-$ and its successor in $F$,
+    which we denote by $x_+$, is given by $2^{n-p+1}$.
+    Consequently, it holds that
     \[
         (x_+ - x) + (x-x_-) = x_+ - x_- = 2^{n-p+1}.
     \]
-    Clearly, this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
+    Clearly, since both summands on the left-hand side are positive,
+    this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
     which concludes the proof.
 \end{proof}
 
