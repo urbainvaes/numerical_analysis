@@ -494,17 +494,16 @@ rarely it needs worrying about.
 \label{sec:arithmetic_operations_between_floating_point_formats}
 
 Now that we have presented the set of values representable on a computer,
-we endeavour in this section to understand precisely how arithmetic operations between floating point formats are performed.
+we attempt in this section to understand precisely how arithmetic operations between floating point formats are performed.
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
-the process by which an infinitely precise real number is approximated by a floating point number of the type presented in the previous section.
-The IEEE 754 standard specifies several mechanisms for rounding numbers,
-known as \emph{rounding modes}.
-The default rounding mode is \emph{round to nearest},
-which behaves as follows:
+the action of approximating an infinitely precise real number by a number in a floating point format $\floating (p, E_{\min}, E_{\max})$.
+The IEEE 754 standard specifies stipulates that the default mechanism for rounding a real number $x$,
+called \emph{round to nearest},
+should behave as follows:
 \begin{itemize}
     \item
         \textbf{Standard case}:
-        An infinitely precise real number is rounded to the \emph{nearest representable number},
+        The number $x$ is rounded to the \emph{nearest representable number},
         if this number is unique.
     \item
         \textbf{Edge case}:
@@ -520,25 +519,12 @@ which behaves as follows:
             \item Otherwise, the special value~\texttt{Inf} is delivered.
         \end{itemize}
         In other words, $x_{\max}$ is delivered if it would be delivered by following the rules of the first two bullet points
-        in a different floating point format with the same precision but an exponent $E_{\max}$ larger by one.
+        in a different floating point format with the same precision but a larger exponent $E_{\max}$.
         A similar rule applies for large negative numbers.
 \end{itemize}
 
-\begin{exercise}
-    In the \texttt{Float16} format, explain why
-    \begin{minted}{julia}
-        Float16(1 + 2^-10 + 2^-11) == Float16(1 + 2^-10)
-    \end{minted}
-    evaluates to \texttt{false}
-    but
-    \begin{minted}{julia}
-        Float16(1 + 2^-11) == Float16(1)
-    \end{minted}
-    evaluates to \texttt{true}.
-\end{exercise}
-
 When a binary arithmetic operation ($+$, $-$, $\times$, $/$) is performed on a computer,
-the result delivered by the computer coincides is the exact result of the operation,
+the result delivered by the computer is the exact result of the operation,
 up to rounding according to the rules given above.
 More precisely,
 the arithmetic operation is performed as if the computer first calculated an intermediate exact result,
@@ -562,10 +548,10 @@ Float64
 \end{minted}
 \end{example}
 
-If an mathematical expression contains several binary arithmetic operations to be performed in succession,
+If a mathematical expression contains several binary arithmetic operations to be performed in succession,
 the floating point result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
 and this floating point number is employed in the next binary operation.
-A consequence of this mechanism of arithmetic operations is that the operands $+$ and $*$ are generally not associative.
+A consequence of this mechanism of arithmetic operations is that the operands $+$ and $*$ are generally \emph{not associative}.
 Consider for example the following \emph{Julia} expressions:
 \begin{code}
     \captionof{listing}{Non-associativity of floating point addition}
@@ -654,6 +640,23 @@ We content ourselves here with a couple remarks:
         which is equal to approximately $2 \times 10^{-16}$.
 \end{itemize}
 \end{remark}
+
+\subsection{Exercises}%
+\label{sub:exercises}
+
+
+\begin{exercise}
+    In the \texttt{Float16} format, explain why
+    \begin{minted}{julia}
+        Float16(1 + 2^-10 + 2^-11) == Float16(1 + 2^-10)
+    \end{minted}
+    evaluates to \texttt{false}
+    but
+    \begin{minted}{julia}
+        Float16(1 + 2^-11) == Float16(1)
+    \end{minted}
+    evaluates to \texttt{true}.
+\end{exercise}
 
 
 
