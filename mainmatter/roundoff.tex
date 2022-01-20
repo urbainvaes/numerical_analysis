@@ -281,69 +281,6 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
     we focus on this case for simplicity in most of this chapter.
 \end{remark}
 
-\subsection{Relative error and epsilon machine}%
-\label{sub:relative_error_and_epsilon_machine}
-Let $x$ be a nonzero real number and $\widehat x$ be an approximation.
-We define the absolute and relative errors of the approximation as follows.
-\begin{definition}
-    [Absolute and relative error]
-    The absolute error is given by $|x - \widehat x|$,
-    whereas the relative error is
-    \[
-        \frac{|x - \widehat x|}{|x|}
-    \]
-\end{definition}
-
-The following establishes a link between the machine $\varepsilon_M$ and
-the relative error between a real number and the closest member of a floating point format.
-\begin{proposition}
-    \label{prop:relative_error_and_machine_epsilon}
-    Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{normalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
-    If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, \leq x_{\max}]$,
-    then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
-    \begin{equation}
-        \label{eq:bound_epsilon_machine}
-        \min_{\widehat x \in F} \frac{|x - \widehat x|}{|x|} \leq \frac{1}{2} 2^{-(p-1)}
-        \leq \frac{1}{2} \varepsilon_M.
-    \end{equation}
-\end{proposition}
-\begin{proof}
-    For simplicity, we also assume that $x > 0$.
-    Let us introduce $n = \lfloor \log_2(x) \rfloor$ and $y := 2^{-n} x$.
-    Since $y \in [1, 2)$,
-    it has a binary representation of the form
-    \(
-        (1.b_1 b_2\dots)_2,
-    \)
-    where the bits after the binary point are not all equal to 1 ad infinitum.
-    Thus
-    \(
-        x = 2^{n} (1.b_1 b_2\dots)_2,
-    \)
-    and from the assumption that $x_{\min} \leq x \leq x_{\max}$
-    we deduce hat $E_{\min} \leq n \leq E_{\max}$.
-    % \footnote{%
-    %     The inequality here is strict,
-    %     because $2^{E_{\min} - 1} (1.\overline{1})_2 = 2^{E_{\min}} = x_{\min}$.
-    %     Remember that the binary expansion of a real number is generally not unique!
-    %     See~\cref{exercise:non_unique_representation}.
-    % }
-    % which is excluded by assumption.
-    Then we define the truncated number $x_- \in F$ by truncating the binary expansion of $x$ as follows:
-    \[
-        x_- = 2^n (1.b_1 \dots b_{p-1})_2.
-    \]
-    The distance between $x_-$ and its successor in $F$,
-    which we denote by $x_+$, is given by $2^{n-p+1}$.
-    Consequently, it holds that
-    \[
-        (x_+ - x) + (x-x_-) = x_+ - x_- = 2^{n-p+1}.
-    \]
-    Clearly, since both summands on the left-hand side are positive,
-    this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
-    which concludes the proof.
-\end{proof}
-
 \subsection{Disambiguating the floating point representation}%
 \label{sub:defining_a_unique_representation}
 
@@ -411,6 +348,99 @@ which you may verify by using the \texttt{typeof} function.
 In order to define a number of type \texttt{Float32},
 the suffix $\texttt{f0}$ must be appended to the decimal expansion.
 For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\texttt{a} of type \texttt{Float64}.
+
+
+\subsection{Relative error and epsilon machine}%
+\label{sub:relative_error_and_epsilon_machine}
+Let $x$ be a nonzero real number and $\widehat x$ be an approximation.
+We define the absolute and relative errors of the approximation as follows.
+\begin{definition}
+    [Absolute and relative error]
+    The absolute error is given by $|x - \widehat x|$,
+    whereas the relative error is
+    \[
+        \frac{|x - \widehat x|}{|x|}
+    \]
+\end{definition}
+
+The following establishes a link between the machine $\varepsilon_M$ and
+the relative error between a real number and the closest member of a floating point format.
+\begin{proposition}
+    \label{prop:relative_error_and_machine_epsilon}
+    Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{normalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
+    If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, \leq x_{\max}]$,
+    then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
+    \begin{equation}
+        \label{eq:bound_epsilon_machine}
+        \min_{\widehat x \in F} \frac{|x - \widehat x|}{|x|} \leq \frac{1}{2} 2^{-(p-1)}
+        \leq \frac{1}{2} \varepsilon_M.
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    For simplicity, we also assume that $x > 0$.
+    Let us introduce $n = \lfloor \log_2(x) \rfloor$ and $y := 2^{-n} x$.
+    Since $y \in [1, 2)$,
+    it has a binary representation of the form
+    \(
+        (1.b_1 b_2\dots)_2,
+    \)
+    where the bits after the binary point are not all equal to 1 ad infinitum.
+    Thus
+    \(
+        x = 2^{n} (1.b_1 b_2\dots)_2,
+    \)
+    and from the assumption that $x_{\min} \leq x \leq x_{\max}$
+    we deduce hat $E_{\min} \leq n \leq E_{\max}$.
+    % \footnote{%
+    %     The inequality here is strict,
+    %     because $2^{E_{\min} - 1} (1.\overline{1})_2 = 2^{E_{\min}} = x_{\min}$.
+    %     Remember that the binary expansion of a real number is generally not unique!
+    %     See~\cref{exercise:non_unique_representation}.
+    % }
+    % which is excluded by assumption.
+    Then we define the truncated number $x_- \in F$ by truncating the binary expansion of $x$ as follows:
+    \[
+        x_- = 2^n (1.b_1 \dots b_{p-1})_2.
+    \]
+    The distance between $x_-$ and its successor in $F$,
+    which we denote by $x_+$, is given by $2^{n-p+1}$.
+    Consequently, it holds that
+    \[
+        (x_+ - x) + (x-x_-) = x_+ - x_- = 2^{n-p+1}.
+    \]
+    Clearly, since both summands on the left-hand side are positive,
+    this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
+    which concludes the proof.
+\end{proof}
+
+The machine epsilon can be viewed as the maximum relative difference between a normalized floating point number $x$ and its successor,
+defined as the smallest number in the floating point format that is strictly larger than $x$.
+The left panel of~\cref{fig:float64} depicts the density of double-precision floating point numbers.
+The figure shows that, as the absolute value increases,
+the density of floating point number decreases.
+We also notice that the density is piecewise constant with discontinuities at powers of 2,
+which correspond to a change of exponent.
+The right panel of~\cref{fig:float64} illustrates the relative spacing between successive floating point numbers,
+in units of machine precision.
+Although the absolute spacing increases with the absolute value of $x$,
+the relative spacing oscillates between $f
+
+
+(left panel) and the relative spacing between successive floating point (right panel)
+
+
+\begin{figure}
+    \label{fig:float64}%
+    \includegraphics[width=.49\textwidth]{figures/float64_density.pdf}%
+    \includegraphics[width=.49\textwidth]{figures/float64_spacing.pdf}%
+    \caption{%
+        \textbf{Left:} Density of the double-precision floating point numbers,
+        measured here as~$1/\Delta(x)$ where,
+        for $x \in \floating_{64}$,
+        $\Delta(x)$ denotes the distance between $x$ and its successor in $\floating_{64}$.
+        \textbf{Right:} Relative spacing between successive double-precision floating point numbers.
+    }%
+\end{figure}
 
 \subsection{Exercises}%
 \label{sub:exercises}
