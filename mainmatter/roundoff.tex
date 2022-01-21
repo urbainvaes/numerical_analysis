@@ -114,7 +114,7 @@ Obtaining the decimal representation of a binary number can be achieved from~\eq
 using the decimal representations of the powers of 2.
 Since all the positive and negative powers of 2 have finite decimal representations,
 any real number with a finite representation in base 2 has a finite representation also in base 10.
-For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = 0.875$.
+For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = (0.875)_{10}$.
 \begin{example}
     [Converting a binary number to decimal notation]
     \label{example:converting_binary_to_decimal}
@@ -132,13 +132,13 @@ For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = 0.875$.
     We recognize on the right-hand side a geometric series with common ratio $r = 2^{-2} = \frac{1}{4}$,
     and so we obtain
     \[
-        x = \frac{1}{2} \left( \frac{1}{1-r} \right) = \frac{2}{3} = 0.\overline 6.
+        x = \frac{1}{2} \left( \frac{1}{1-r} \right) = \frac{2}{3} = (0.\overline 6)_{10}.
     \]
 \end{example}
 
-Obtaining the binary representation of a decimal number may prove more difficult,
+Obtaining the binary representation of a decimal number is more difficult,
 because negative powers of 10 have \emph{infinite} binary representations,
-as the example below demonstrates.
+as \cref{exercise:binary_zero_point_one} demonstrates.
 There is, however, a simple procedure to perform the conversion,
 which we present for the specific case of a real number $x$ with decimal representation of the form $x = (0.a_1\dots a_n)_{10}$.
 In this setting,
@@ -165,7 +165,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 \begin{example}
     [Converting a decimal number to binary notation]
     Let us calculate the binary representation of $x = \frac{1}{3} = (0.\overline{3})_{10}$.
-    We apply~\cref{algo:conversion_to_binary} and collate the values of $i$ and $x$ at the beginning of each iteration,
+    We apply~\cref{algo:conversion_to_binary} and collate the values of $i$ and $x$ obtained at the beginning of each iteration,
     i.e.\ just before~\cref{line:after_while}, in the table below.
     \begin{center}
     \begin{tabular}{|c|c|c|}
@@ -202,13 +202,14 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:binary_zero_point_one}
     Find the binary representation of $(0.1)_{10}$.
 \end{exercise}
 
 \begin{exercise}
     Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
-    Your function should take as argument an array of integers containing the digits after the decimal point,
-    that is an array of the form \verb?[a_1, ..., a_n]?.
+    Your function should take as argument an array of integers containing the digits after the decimal point;
+    that is, an array of the form \verb?[a_1, ..., a_n]?.
 \end{exercise}
 
 \begin{exercise}
@@ -241,12 +242,15 @@ its significance is discussed in~\cref{sub:relative_error_and_epsilon_machine}.
 For a number $x \in \floating(p, E_{\min}, E_{\max})$,
 $s$ is called the \emph{sign}, $E$ is the \emph{exponent} and
 $b_0. b_1 b_2 \dots b_{p-1}$ is the \emph{significand}.
-The latter can be divided into a \emph{leading bit} $b_0$ and the fraction $b_1 b_2 \dots b_{p-1}$,
+The latter can be divided into a \emph{leading bit} $b_0$ and the \emph{fraction} $b_1 b_2 \dots b_{p-1}$,
 to the right of the binary point.
 The most widely used floating point formats are the \emph{single} and \emph{double precision} formats,
 which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
-Their parameters are summarized in~\cref{table:floating_point_formats},
-and in the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
+Their parameters,
+together with those of the lesser-known half-precision format,
+are summarized in~\cref{table:floating_point_formats}.
+In the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
+Note that $\floating_{32} \subset \floating_{64}$.
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|}
@@ -262,7 +266,7 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
     \end{tabular}
     \caption{%
         Floating point formats.
-        The first column corresponds to the lesser known \emph{half-precision} format.
+        The first column corresponds to the \emph{half-precision} format.
         This format,
         which is available through the \texttt{Float16} type in Julia,
         is more recent than the single and double precision formats.
@@ -275,31 +279,31 @@ and in the rest of this section we use the shorthand notation $\floating_{32}$ a
 \begin{remark}
     Some definitions,
     notably that in~\cite[Section 2.5.2]{MR2265914},
-    include the base~$\beta$
+    include a general base~$\beta$ instead of the base 2
     as an additional parameter in the definition of the number format~\eqref{eq:number_format}.
     Since the binary format ($\beta = 2$) is always employed in practice,
     we focus on this case for simplicity in most of this chapter.
 \end{remark}
 
-\subsection{Make the floating point representation unique}%
+\subsection{Making the floating point representation unique}%
 \label{sub:defining_a_unique_representation}
 
 Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
 the exponent $E$ and significand  are generally not uniquely defined.
-For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or equivalently as $(-1)^0 2^{2} (0.100\dots00)_2$.
+For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or, equivalently, as $(-1)^0 2^{2} (0.100\dots00)_2$.
 To remove this ambiguity,
 one may define the \emph{standard representation} of a number by requiring that
 \begin{itemize}
     \item either $E > E_{\min}$ and $b_0 = 1$;
     \item or $E = E_{\min}$, in which case the leading bit may be 0.
 \end{itemize}
-One may prove that these rules define the exponent and significand uniquely.
+The following result proves that these rules define the exponent and significand uniquely.
 \begin{proposition}
     \label{prop:uniqueness_standard_representation}
     Assume that
     \begin{equation}
         \label{eq:equality_floating_point}
-        x = (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
+        (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
     \end{equation}
     where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
     Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
@@ -308,7 +312,7 @@ One may prove that these rules define the exponent and significand uniquely.
     We show that $E = \widetilde E$,
     after which the equality of significands follows trivially,
     Let us assume for contradiction that $E > \widetilde E$
-    and denote the left and right-hand side of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
+    and denote the left and right-hand sides of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
     Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
     On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
     Since $E \geq \widetilde E + 1$ by assumption,
@@ -317,7 +321,8 @@ One may prove that these rules define the exponent and significand uniquely.
 \end{proof}
 
 In view of \cref{prop:uniqueness_standard_representation},
-we can talk without ambiguity about \emph{the} exponent or \emph{the} significand of a number in $\floating (p, E_{\min}, E_{\max})$.
+we can talk without ambiguity about \emph{the} exponent or \emph{the} significand of a number in $\floating (p, E_{\min}, E_{\max})$,
+the standard representation being implicitly assumed.
 A floating point number whose standard representation has a leading bit equal to 1 is called \emph{normalized},
 whereas one with a leading bit equal to zero is called \emph{subnormal} or \emph{denormalized}.
 We give more information on this subject in~\cref{sec:encoding_of_floating_point_numbers},
@@ -343,14 +348,15 @@ which is devoted specifically to the encoding of floating point numbers.
     For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
 \end{remark}
 
-In \texttt{Julia}, non-integer numbers are interpreted as \texttt{Float64} by default,
-which you may verify by using the \texttt{typeof} function.
-In order to define a number of type \texttt{Float32},
-the suffix $\texttt{f0}$ must be appended to the decimal expansion.
-For instance, the command $\texttt{a = 4.0f0}$ defines a floating point number~\texttt{a} of type \texttt{Float64}.
+In \texttt{Julia}, non-integer numbers are interpreted as \julia{Float64} by default,
+which you may verify by using the \julia{typeof} function.
+For example, the instruction ``\julia{a = 0.1}'' is equivalent to~``\julia{a = Float64(0.1)}''.
+In order to define a number of type \julia{Float32},
+the suffix $\julia{f0}$ must be appended to the decimal expansion.
+For instance, the instruction ``$\julia{a = 4.0f0}$'' defines a floating point number~\julia{a} of type \julia{Float32};
+it is equivalent to ``\julia{a = Float32(4.0)}''.
 
-
-\subsection{Relative error and epsilon machine}%
+\subsection{Relative error and machine epsilon}%
 \label{sub:relative_error_and_epsilon_machine}
 Let $x$ be a nonzero real number and $\widehat x$ be an approximation.
 We define the absolute and relative errors of the approximation as follows.
@@ -363,17 +369,17 @@ We define the absolute and relative errors of the approximation as follows.
     \]
 \end{definition}
 
-The following establishes a link between the machine $\varepsilon_M$ and
+The following result establishes a link between the machine $\varepsilon_M$ and
 the relative error between a real number and the closest member of a floating point format.
 \begin{proposition}
     \label{prop:relative_error_and_machine_epsilon}
     Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{normalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
-    If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, \leq x_{\max}]$,
+    If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, x_{\max}]$,
     then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
     \begin{equation}
         \label{eq:bound_epsilon_machine}
         \min_{\widehat x \in F} \frac{|x - \widehat x|}{|x|} \leq \frac{1}{2} 2^{-(p-1)}
-        \leq \frac{1}{2} \varepsilon_M.
+        = \frac{1}{2} \varepsilon_M.
     \end{equation}
 \end{proposition}
 \begin{proof}
@@ -398,7 +404,7 @@ the relative error between a real number and the closest member of a floating po
     %     See~\cref{exercise:non_unique_representation}.
     % }
     % which is excluded by assumption.
-    Then we define the truncated number $x_- \in F$ by truncating the binary expansion of $x$ as follows:
+    We now define the number $x_- \in F$ by truncating the binary expansion of $x$ as follows:
     \[
         x_- = 2^n (1.b_1 \dots b_{p-1})_2.
     \]
@@ -408,18 +414,19 @@ the relative error between a real number and the closest member of a floating po
     \[
         (x_+ - x) + (x-x_-) = x_+ - x_- = 2^{n-p+1}.
     \]
-    Clearly, since both summands on the left-hand side are positive,
+    Since both summands on the left-hand side are positive,
     this implies that either $x_+ - x$ or $x - x_-$ is bounded from above by $\frac{1}{2} 2^{n-p+1} \leq \frac{1}{2} 2^{-p+1}x$,
     which concludes the proof.
 \end{proof}
 
 The machine epsilon can be viewed as the maximum relative difference between a normalized floating point number $x$ and its successor,
 defined as the smallest number in the floating point format that is strictly larger than $x$.
-\Cref{fig:float64_density} depicts the density of double-precision floating point numbers.
-The figure shows that, as the absolute value increases,
-the density of floating point number decreases.
-We also notice that the density is piecewise constant with discontinuities at powers of 2,
-which correspond to a change of exponent.
+
+\Cref{fig:float64_density} depicts the density of double-precision floating point numbers,
+i.e.\ the number of~$\floating_{64}$ members per unit on the real line.
+The figure shows that the density decreases as the absolute value of $x$ increases.
+We also notice that the density is piecewise constant with discontinuities at powers of 2;
+each discontinuity corresponds to a change of exponent in the standard representation.
 \Cref{fig:float64_spacing} illustrates the relative spacing between successive floating point numbers,
 in units of machine precision.
 Although the absolute spacing increases with the absolute value of $x$,
@@ -452,7 +459,7 @@ This is illustrated in \cref{fig:float64_spacing_denormalized},
 which shows that the relative spacing increases beyond the machine epsilon in the denormalized range.
 Fortunately, in the usual $\floating_{32}$ and $\floating_{64}$ formats,
 the transition between normalized and denormalized numbers occurs at such a small value that
-rarely it needs worrying about.
+it rarely needs worrying about.
 
 \begin{figure}[ht]
     \centering
@@ -464,6 +471,12 @@ rarely it needs worrying about.
     }%
     \label{fig:float64_spacing_denormalized}
 \end{figure}
+
+\begin{remark}
+    In Julia,
+    the machine epsilon can be obtained using the \texttt{eps} function.
+    For example, the instruction \julia{eps(Float16)} returns $\varepsilon_M$ for the half-precision format.
+\end{remark}
 
 \subsection{Exercises}%
 \label{sub:exercises}
@@ -496,9 +509,9 @@ rarely it needs worrying about.
 Now that we have presented the set of values representable on a computer,
 we attempt in this section to understand precisely how arithmetic operations between floating point formats are performed.
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
-the action of approximating an infinitely precise real number by a number in a floating point format $\floating (p, E_{\min}, E_{\max})$.
+the action of approximating a real number regarded as infinitely precise by a number in a floating point format $\floating (p, E_{\min}, E_{\max})$.
 The IEEE 754 standard specifies stipulates that the default mechanism for rounding a real number $x$,
-called \emph{round to nearest},
+called \emph{round to nearest, ties to even},
 should behave as follows:
 \begin{itemize}
     \item
@@ -523,27 +536,47 @@ should behave as follows:
         A similar rule applies for large negative numbers.
 \end{itemize}
 
-When a binary arithmetic operation ($+$, $-$, $\times$, $/$) is performed on a computer,
-the result delivered by the computer is the exact result of the operation,
-up to rounding according to the rules given above.
-More precisely,
+When a binary arithmetic operation ($+$, $-$, $\times$, $/$) is performed on floating point numbers in format $\floating$,
+the result delivered by the computer is equal the exact result of the operation,
+rounded according to the rules given above.
+In other words,
 the arithmetic operation is performed as if the computer first calculated an intermediate exact result,
-and then rounded this intermediate result in order to provide a final result in the appropriate floating point format.
-The format of the end result,
+and then rounded this intermediate result in order to provide a final result in $\floating$.
+
+Mathematically,
+arithmetic operations between floating point numbers in a given format $\floating$ may be formalized by introducing
+the rounding operator ${\rm fl}: \real \to \floating$ and
+by defining , for any binary operation $\circ \in \{+, -, \times, /\}$,
+the corresponding machine operation
+\[
+    \widehat \circ\colon \floating \times \floating \rightarrow \floating; (x, y) \mapsto {\rm fl}(x \circ y).
+\]
+We defined this operator for arguments in the same floating point format~$\floating$.
+If the arguments of a binary arithmetic operation are of different types,
+the format of the end result,
 known as the \emph{destination format},
-depends on that of the arguments of the arithmetic operation:
+depends on that of the arguments:
 as a rule of thumb,
-the destination format is the most precise among the formats of the arguments.
+it is given by the most precise among the formats of the arguments.
+In addition, recall that a floating point literal whose format is not explicitly specified is rounded to double-precision format
+and so, for example, the addition \julia{0.1 + 0.1} produces the result ${\rm fl_{64}}\bigl(\rm fl_{64}(0.1) + \rm fl_{64}(0.1)\bigr)$,
+where ${\rm fl}_{64}$ is the rounding operator to the double-precision format.
+
 \begin{example}
-This can be readily verified in Julia using the \texttt{typeof} function.
+    Using the \julia{typeof} function,
+    we check that the floating point literal \texttt{1.0} is indeed interpreted as a double-precision number:
+\begin{minted}{julia}
+julia> a = 1.0; typeof(a)
+Float64
+\end{minted}
+
+When two numbers in different floating point formats are passed to a binary operation,
+the result is in the more precise format.
 \begin{minted}{julia}
 julia> typeof(Float16(1) + Float32(1))
 Float32
 
 julia> typeof(Float32(1) + Float64(1))
-Float64
-
-julia> typeof(Float16(1) + Float64(1))
 Float64
 \end{minted}
 \end{example}
@@ -552,113 +585,164 @@ If a mathematical expression contains several binary arithmetic operations to be
 the floating point result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
 and this floating point number is employed in the next binary operation.
 A consequence of this mechanism of arithmetic operations is that the operands $+$ and $*$ are generally \emph{not associative}.
-Consider for example the following \emph{Julia} expressions:
-\begin{code}
-    \captionof{listing}{Non-associativity of floating point addition}
-    \label{code:non_associativity}
-\begin{minted}{julia}
-julia> (Float16(1) + Float16(2^-11)) + Float16(2^-11)
-Float16(1.0)
-
-julia> Float16(1) + (Float16(2^-11) + Float16(2^-11))
-Float16(1.001)
-\end{minted}
-\end{code}
-Can you explain this difference in behavior?
-For the computer, each these expressions contains two binary additions,
-with one involving the result of the other as an argument.
-To explain this somewhat surprising result,
-we begin by writing the binary representations of the floating point numbers in the $\floating_{16}$ representation.
-\begin{align*}
-    1 &= (-1)^0 \times 2^0 \times \texttt{1.0000000000} \\
-    2^{-11} &= (-1)^0 \times 2^{-11} \times \texttt{1.0000000000}.
-\end{align*}
-In the first expression,
-the addition \mintinline{julia}{Float16(1) + Float16(2^-11)} is first performed.
-The exact result of this operation is $r = 1 + 2^{-11}$,
-which in normalized binary notation is
+For example, in general
 \[
-    r_2 = 1.\underbrace{0000000000}_{\text{10 zeros}}1.
+    (x \madd y) \madd  z \neq x \madd (y \madd z)
 \]
-Since the length of the significand in the half-precision (\texttt{Float16}) format is only $p = 11$,
-this number is not representable in $\floating_{16}$.
-The result of the addition is therefore rounded to the member of $\floating_{16}$ nearest to $r$,
-provided this is unique.
-In this example, there are two members of~$\floating_{16}$ equally near~$r$,
-which we denote by $\widehat r$ and $\widetilde r$:
-\begin{align*}
-    \widehat r_2 = 1.\underbrace{0000000000}_{\text{10 zeros}},
-    \qquad
-    \widetilde r_2 = 1.\underbrace{000000000}_{\text{9 zeros}}1.
-\end{align*}
-According to the standard,
-the former is delivered, since its least significant bit is zero.
-Therefore, the result of the addition \mintinline{julia}{Float16(1) + Float16(2^-11)}
-is \mintinline{julia}{Float16(1)}.
-In order to complete the evaluation of the first expression,
-it remains to evaluate
-\mintinline{julia}{Float16(1) + Float16(2^-11)},
-which of course also evaluates to \mintinline{julia}{Float16(1)}.
+\begin{example}
+    Let $x = 1$ and $y = 3 \times 2^{-13}$.
+    Both of these numbers belong to $\floating_{16}$ and,
+    denoting by $\widehat +$ machine addition in~$\floating_{16}$,
+    we have
+    \begin{equation}
+        \label{eq:non_associativity_1}
+        (x \madd y) \madd y = 1
+    \end{equation}
+    but
+    \begin{equation}
+        \label{eq:non_associativity_2}
+        x \madd (y \madd y) = 1 + 2^{-10}.
+    \end{equation}
+    To explain this somewhat surprising result,
+    we begin by writing the normalized representations of~$x$ and $y$ in the $\floating_{16}$ format:
+    \begin{align*}
+        x &= (-1)^0 \times 2^0 \times (\texttt{1.0000000000})_2 \\
+        y &= (-1)^0 \times 2^{-12} \times (\texttt{1.1000000000})_2.
+    \end{align*}
+    The exact result of the addition $x + y$ is given by $r = 1 + 3 \times 2^{-13}$,
+    which in binary notation is
+    \[
+        r = (1.\underbrace{00000000000}_{\text{11 zeros}}11)_2.
+    \]
+    Since the length of the significand in the half-precision ($\floating_{16}$) format is only $p = 11$,
+    this number is not part of $\floating_{16}$.
+    The result of the machine addition $\madd$ is therefore obtained by rounding $r$ to the nearest member of~$\floating_{16}$,
+    which is 1.
+    This reasoning can then be repeated in order to conclude that, indeed,
+    \[
+        (x \madd y) \madd y = x \madd y = 1.
+    \]
 
-In the second expression,
-the first addition performed is \mintinline{julia}{Float16(2^{-11}) + Float16(2^-11)},
-the exact result of which is representable in $\floating_{16}$.
-The second addition that is performed is then \mintinline{julia}{Float16(1) + Float16(2^-10)},
-which also results in a number representable in $\floating_{16}$.
+    In order to explain the result of~\eqref{eq:non_associativity_2},
+    note that the exact result of the addition $y + y$ is $r = 3 \times 2^{-12}$,
+    so it also holds that $y \madd y = 3 \times 2^{-12}$.
+    Therefore,
+    \[
+        x \madd (y \madd y) = 1 \madd 3 \times 2^{-12} = {\rm fl}_{16} (1 + 3 \times 2^{-12}).
+    \]
+    The argument of the $\floating_{16}$ rounding operator does not belong to $\floating_{16}$,
+    since its binary representation is given by
+    \[
+        (1.\underbrace{0000000000}_{\text{10 zeros}}11)_2.
+    \]
+    This time the nearest member of $\floating_{16}$ is given by $1 + 2^{-10}$.
+\end{example}
 
-\begin{remark}
-To be complete,
-one should explain why the result of the addition
-in the second expression of~\cref{code:non_associativity},
-equal to $1.0000000001$ in binary format and 1.0009765625 in decimal format,
-is rendered as $1.001$ by Julia.
-A detailed explanation would require a careful study of the rules specified in the standard regarding conversion between binary and decimal formats.
-We content ourselves here with a couple remarks:
-\begin{itemize}
-    \item
-        Although the string representation of the result given by Julia is only approximate,
-        internally the value of the result is stored exactly:
-        \begin{minted}{julia}
-        julia> Float16(1 + 2^-10) == 1.0009765625
-        true
-        \end{minted}
-    \item
-        The relative precision of a number in $\floating_{16}$ is generally of the order of $2^{-(p-1)} = 2^{-10} \approx 10^{-3}$,
-        except for subnormal numbers.
-        By relative precision, we mean here the relative distance between a floating point number $x$
-        and the one immediately succeeding it, which we denote by $x_{+}$.
-        In fact, if $b_0 = 1$ and $x_{+} \neq \texttt{Inf}$,
-        then this distance is equal to
-        \[
-            \frac{x_{+} - x}{x} = \frac{2^{-(p-1)}}{(1.b_1 b_2 \dots b_{p-2} b_{p-1})_2} \leq 2^{-(p-1)}.
-        \]
-        It is therefore not unreasonable that only 4 digits should be included (most of the time) in the decimal representation of half-precision numbers.
-
-        The distance between adjacent floating point numbers is usually known as the \emph{machine epsilon},
-        and it is accessible in Julia using the~\texttt{eps} function.
-        For example, \mintinline{julia}{eps(Float64)} returns the machine epsilon for the \texttt{Float64} type,
-        which is equal to approximately $2 \times 10^{-16}$.
-\end{itemize}
-\end{remark}
+When a numerical computation unexpectedly returns \texttt{Inf} or \texttt{Inf},
+we say that an \emph{overflow error} occurred.
+Similarly, \emph{underflow} occurs when a number
+is smaller than the smallest representable number in a floating point format.
 
 \subsection{Exercises}%
 \label{sub:exercises}
 
+% \begin{exercise}
+%     [Tie to even]
+%     Explain why,
+%     in the $\floating_{16}$ format,
+%     \[
+%         1 \madd 2^{-10} \madd 2^{-11} = 1 \madd 2^{-10}
+%     \]
+%     but
+%     \[
+%         1 \madd 2^{-11} = 1 \madd 2^{-10}.
+%     \]
+% \end{exercise}
 
 \begin{exercise}
-    In the \texttt{Float16} format, explain why
-    \begin{minted}{julia}
-        Float16(1 + 2^-10 + 2^-11) == Float16(1 + 2^-10)
-    \end{minted}
-    evaluates to \texttt{false}
-    but
-    \begin{minted}{julia}
-        Float16(1 + 2^-11) == Float16(1)
-    \end{minted}
-    evaluates to \texttt{true}.
+    Calculate the machine epsilon $\varepsilon_{16}$ for the $\floating_{16}$ format.
+    Write the results of the arithmetic operations $1 \madd \varepsilon_{16}$ and $1 \msub \varepsilon_{16}$ in $\floating_{16}$ normalized representation.
 \end{exercise}
 
+\begin{exercise}
+    [Catastrophic cancellation]
+    Let $\varepsilon_{16}$ be the machine epsilon for the $\floating_{16}$ format,
+    and define $y = \frac{3}{2} \varepsilon_{16}$.
+    What is the relative error between $\Delta = (1 + y) - 1$,
+    and the machine approximation $\widehat \Delta = (1 \madd x) \msub 1$?
+\end{exercise}
 
+\begin{exercise}
+    [Numerical differentiation]
+    Let $f(x) = \exp(x)$.
+    By definition, the derivative of~$f$ at~$0$ is
+    \[
+        f'(0) = \lim_{\delta \to 0} \left( \frac{f(\delta) - f(0)}{\delta} \right).
+    \]
+    It is natural to use the expression within brackets on the right-hand side
+    with a small but nonzero $\delta$ as an approximation for $f'(0)$.
+    Implement this approach using double-precision numbers and the same values of $\delta$ as in the table below,
+    and explain the results.
+    \begin{center}
+        \begin{tabular}{c|c|c|c}
+            $\delta$ & $\frac{1}{4} \varepsilon_{64}$ & $\frac{1}{2} \varepsilon_{64}$ & $\varepsilon_{64}$ \\
+            \hline
+            $f'(0)$ & 0 & 2 & 1
+        \end{tabular}
+    \end{center}
+\end{exercise}
+
+\begin{exercise}
+    [Avoiding overflow]
+    Write a code to calculate the weighted average
+    \[
+        S := \frac
+        {\sum_{j=0}^{J} w_j j}
+        {\sum_{j=0}^{J} w_j},
+        \qquad w_j = \exp(j),
+        \qquad J = 1000.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    [Calculating the sample variance]
+    Assume that $(x_n)_{1 \leq n \leq N}$, with $N = 10^6$, are independent random variables distributed according to
+    the uniform distribution $\mathcal U(L, L+1)$.
+    That is, each~$x_n$ takes a random value uniformly distributed between $L$ and $L+1$ where $L = 10^9$.
+    In Julia, these samples can be generated with the following lines of code:
+    \begin{minted}{julia}
+        N, L = 10^9, 10^9
+        x = L .+ rand(N)
+    \end{minted}
+    It is well know that the variance of $x_n \in \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
+    Numerically, the variance can be estimated from the \emph{sample variance}:
+    % \begin{equation}
+    %     \label{eq:sample_variance_1}
+    %     s^2 = \frac{1}{N-1} \sum_{n=1}^{N} (x_n - \bar x)^2,
+    %     \qquad \bar x = \frac{1}{N} x_n.
+    % \end{equation}
+    % The sample variance may also be written as
+    \begin{equation}
+        \label{eq:sample_variance_2}
+        s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right).
+    \end{equation}
+    Write a computer code to calculate $s^2$ with the best possible accuracy.
+    % ~\eqref{eq:sample_variance_2}
+    % and compare the accuracy of the result.
+    In order to estimate the true value of $s^2$ for your samples,
+    use the \julia{BigFloat} format,
+    to which the array $x$ can be converted by using the instruction \julia{x = BigFloat.(x)}.
+\end{exercise}
+
+\begin{exercise}
+    Let $x$ and $y$ be positive real numbers,
+    and let us extend the machine addition operator $\madd$ to the real numbers by defining it as $\madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr)$.
+    Prove the following bound on the relative error between the sum $x+y$ and its machine approximation:
+    \[
+        \frac{\bigl| (x + y) - (x \madd  y ) \bigr|}{|x + y|}
+        \leq \frac{\varepsilon_M}{2}  \left(2 + \frac{\varepsilon_M}{2}\right).
+    \]
+\end{exercise}
 
 % For example,
 % we endeavour in this section to understand precisely what happens when an operation of the form
@@ -764,7 +848,7 @@ One may determine the exponent and significand of a floating point number from t
         which is usually an indication that something has gone wrong in the calculation.
 \end{itemize}
 
-\begin{table}[hb]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -789,31 +873,6 @@ One may determine the exponent and significand of a floating point number from t
         \item $x = 2.0^{E_{\max}} (2-2^{-p+1})$
     \end{itemize}
     Check your results using the Julia function \texttt{bitstring}.
-\end{exercise}
-
-\section{An example: numerical differentiation}%
-To illustrate this point,
-consider the following program for calculating the derivative of the function $f(x) = \log(x)$ at $x = 1$.
-\[
-    f'(x) \approx \frac{\log(x + \varepsilon) - \log(x)}{\varepsilon}
-\]
-\begin{minted}{julia}
-f(x) = log(x)
-x + δ
-for i in 1:10
-end
-abcdefghijklmnopqr
-\end{minted}
-
-\begin{exercise}
-    [Avoiding overflow]
-    Write a code to calculate the weighted average
-    \[
-        S := \frac
-        {\sum_{x=0}^{L} \e^x x}
-        {\sum_{x=0}^{L} \e^x},
-        \qquad L = 1000.
-    \]
 \end{exercise}
 
 
@@ -890,37 +949,6 @@ It was intended to be widely disseminated and is written very clearly and concis
 but is not available for free online.
 Another excellent source for learning about floating point numbers and roundoff errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
 freely available online.
-
-\section{Exercises}%
-\label{sec:exercises}
-
-\begin{exercise}
-    [Calculating the sample variance]
-    Assume that $(x_n)_{1 \leq n \leq n}$ are independent random variables distributed according to
-    the uniform distribution $\mathcal U(L, L+1)$.
-    That is, each~$x_n$ takes a random value uniformly distributed between $L$ and $L+1$.
-    In Julia, these samples can be generated with the following lines of code:
-    \begin{minted}{julia}
-        N, L = 10^9, 10^9
-        x = L .+ rand(N)
-    \end{minted}
-    It is well know that the variance of $x_n \in \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
-    Numerically, the variance can be estimated from the \emph{sample variance}:
-    \begin{equation}
-        \label{eq:sample_variance_1}
-        s^2 = \frac{1}{N-1} \sum_{n=1}^{N} (x_n - \bar x)^2,
-        \qquad \bar x = \frac{1}{N} x_n.
-    \end{equation}
-    The sample variance may also be written as
-    \begin{equation}
-        \label{eq:sample_variance_2}
-        s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right).
-    \end{equation}
-    Implement both~\eqref{eq:sample_variance_1} and~\eqref{eq:sample_variance_2}
-    and compare the accuracy of the result.
-    In order to estimate the true value of $s^2$,
-    use the \texttt{BigFloat} format.
-\end{exercise}
 
 
 % In this chapters,
