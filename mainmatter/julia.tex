@@ -4,14 +4,8 @@
 
 In this chapter,
 we very briefly present  some of the basic features and commands of Julia.
-Most of the information contained in this chapter can be found in the online manual:
-see the following links for documentation on
-\href{https://docs.julialang.org/en/v1/stdlib/Pkg/}{packages},
-\href{https://docs.julialang.org/en/v1/manual/control-flow/} {ifs and loops},
-\href{https://docs.julialang.org/en/v1/manual/functions/} {functions},
-\href{https://docs.juliaplots.org/latest/tutorial/} {plots},
-\href{https://docs.julialang.org/en/v1/manual/variables-and-scoping/#man-scope-table} {scopes},
-\href{https://docs.julialang.org/en/v1/manual/arrays/} {multi-dimensional arrays}.
+Most of the information contained in this chapter can be found in the online manual,
+to which we provide pointers in each section.
 
 \subsection*{Installing Julia}%
 \label{sub:installing_julia}
@@ -33,7 +27,10 @@ Tab completion is helpful for listing available function names.
 
 \begin{task}
     Read the help pages for \julia{if}, \julia{while} and \julia{for}.
+    If you find the information in the help pages insufficiently detailed,
+    see the online documentation~\href{https://docs.julialang.org/en/v1/manual/control-flow/} {here}.
 \end{task}
+
 
 \begin{remark}
     [Shorthand \julia{if} notation]
@@ -53,7 +50,18 @@ condition || println("false")
 \end{minted}
 \end{remark}
 
-\subsection*{Installing and using a package}%
+% \begin{remark}
+%     [Short-hand \julia{for} notation]
+%     There is also a convenient short-hand notation for nested \julia{for} loops,
+%     which is sometimes useful for iterating over matrix elements:
+% \begin{minted}{julia}
+% for greeting in ["Bonjour ", "Hello "], person in ["Alice", "Bob"]
+%     println(greeting * person)
+% end
+% \end{minted}
+% \end{remark}
+
+\subsection*{Installing and using a package {\footnotesize \href{https://docs.julialang.org/en/v1/stdlib/Pkg/}{[link to relevant manual section]}}}%
 \label{sub:installing_and_using_a_package}
 To install a package for the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia shell),
 first type ``\texttt{]}'' to enter the package REPL,
@@ -77,8 +85,8 @@ especially in a large codebase.
     Install the \texttt{Plots} package,
     read the documentation of the \texttt{Plots.plot} function,
     and to plot the function $f(x) = \sin(x)$.
-    The tutorial on plotting, linked at the beginning of the chapter,
-    is useful for this exercise.
+    The tutorial on plotting available at \href{https://docs.juliaplots.org/latest/tutorial/} {this link}
+    may be useful for this exercise.
 \end{task}
 
 \subsection*{Printing output}%
@@ -86,7 +94,7 @@ The functions \julia{println} or \julia{print} enable to display output.
 The former adds a new line at the end and the latter does not.
 
 
-\subsection*{Defining functions}%
+\subsection*{Defining functions {\footnotesize \href{https://docs.julialang.org/en/v1/manual/functions/} {[link to relevant manual section]}}}%
 \label{sub:defining_functions}
 Functions can be defined using a \julia{function} block.
 For example, the following code block defines a function that prints ``Hello, NAME!''.
@@ -149,7 +157,7 @@ end
 
 \end{task}
 
-\subsection*{Local and global scopes}%
+\subsection*{Local and global scopes {\footnotesize \href{https://docs.julialang.org/en/v1/manual/variables-and-scoping/}{[link to relevant manual section]}}}
 Some constructs in Julia introduce scope blocks, notably \julia{for} and \julia{while} loops,
 as well as \julia{function} blocks.
 The variables defined within these structures are not available outside them.
@@ -186,9 +194,105 @@ modifies the global variable \julia{a} and prints 4.
 A more detailed discussion is beyond the scope of this course,
 and we refer to Julia manual for additional documentation.
 
-\subsection*{Multi-dimensional arrays}%
+\subsection*{Multi-dimensional arrays {\footnotesize \href{https://docs.julialang.org/en/v1/manual/arrays/} {[link to relevant manual section]}}}%
 \label{sub:multi_dimensional_arrays}
 
 A working knowledge of multi-dimensional arrays is important for this course,
-as vectors and matrices are ubiquitous in numerical algorithms.
+because vectors and matrices are ubiquitous in numerical algorithms.
+In Julia, a two-dimensional array can be created by writing its lines one by one,
+separating them with a semicolon \julia{;}.
+Within a line, elements are separated by a space.
+For example,
+the instruction
+\begin{minted}{julia}
+M = [1 2 3; 4 5 6]
+\end{minted}
+creates the matrix
+\[
+    M =
+    \begin{pmatrix}
+        1 & 2 & 3 \\ 4 & 5 & 6
+    \end{pmatrix}
+\]
+More generally,
+the semicolon enables vertical concatenation
+while space concatenates horizontally.
+For example, \julia{[M M]} defines is the matrix
+\[
+    \begin{pmatrix}
+        1 & 2 & 3 & 1 & 2 & 3 \\ 4 & 5 & 6 & 4 & 5 & 6
+    \end{pmatrix}
+\]
+The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$,
+and \julia{M'} is the transpose of $M$.
+There are many built-in functions for quickly creating commonly used arrays.
+For example,
+\begin{itemize}
+    \item \julia{zeros(Int, 4, 5)} creates a $4\times 5$ matrix of zeros of type \julia{Int};
+    \item \julia{ones(2, 2)} creates a $2 \times 2$ matrix of ones;
+    \item \julia{range(0, 1, length=101)} creates an array of size 101 with elements evenly spaced between 0 and 1 included.
+        More precisely, \julia{range} returns an array-like object,
+        which can be converted to a vector using the \julia{collect} function.
+    \item \julia{collect(reshape(1:9, 3, 3))} creates a $3 \times 3$ matrix with elements
+        \[
+            \begin{pmatrix}
+                1 & 4 & 7 \\
+                2 & 5 & 8 \\
+                3 & 6 & 9
+            \end{pmatrix}
+        \]
+\end{itemize}
+Let us also mention the following shorthand notation for creating vectors and matrices:
+\begin{itemize}
+    \item \julia{[i^2 for i in 1:5]} creates the vector $(1, 4, 9, 16, 25]$.
+    \item \julia{[i + 10*j for i in 1:4, j in 1:4]} creates the matrix
+        \[
+            \begin{pmatrix}
+                11  & 21  & 31  & 41 \\
+                12  & 22  & 32  & 42 \\
+                13  & 23  & 33  & 43 \\
+                14  & 24  & 34  & 44
+            \end{pmatrix}
+        \]
+\end{itemize}
+
+\subsection*{Broadcasting}%
+\label{sub:broadcasting}
+To conclude this section,
+we briefly discuss \emph{broadcasting},
+which enables to apply functions to array elements or perform operations on arrays of different sizes.
+Julia really shines in this area,
+with syntax that is both explicit and concise.
+Rather than providing a detailed definition of broadcasting,
+which is available in a part of the Julia manual dedicated to multi-dimensional array,
+we illustrate the concept using examples.
+Consider first the following code block:
+\begin{minted}{julia}
+function welcome(name)
+    println "Hello, " * name * "!"
+end
+result = broadcast(welcome, ["Alice", "Bob"])
+\end{minted}
+Here \julia{broadcast} returns an array with elements \julia{"Hello, Alice!"} and \julia{"Hello, Bob!"},
+as would the \julia{map} function.
+Broadcasting, however, is much more flexible,
+in that it can take arrays with different sizes.
+For instance, \julia{broadcast(gcd, 24, [10, 20, 30])} returns an array of size 3 with the greatest common divisors of $(24, 10)$, $(24, 20)$ and $(24, 30)$.
+Likewise, the instruction \julia{broadcast(+, 1, [1, 2, 3])} returns \julia{[2, 3, 4]}.
+To understand the latter example, note that \julia{+} (as well as \julia{*}, \julia{-} and \julia{/}) can be called like any other Julia functions;
+the notation \julia{a + b} is just syntactic sugar for \julia{+(a, b)}.
+
+Since broadcasting is so often useful in numerical mathematics,
+Julia provides a shorthand notation for it: the instruction \julia{broadcast(welcome, ["Alice", "Bob"])}
+can be written compactly as \julia{welcome.(["Alice", "Bob"])}.
+Likewise, the expression \julia{1 .+ [1, 2, 3]} returns the array \julia{[2, 3, 4]}.
+
+\begin{task}
+    Explain in words what the following instructions do?
+    \begin{minted}{julia}
+    reshape(1:9, 3, 3) .+ [1 2 3]
+    reshape(1:9, 3, 3) .+ [1; 2; 3]
+    \end{minted}
+\end{task}
+
 
