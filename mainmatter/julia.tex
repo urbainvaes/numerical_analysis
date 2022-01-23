@@ -2,32 +2,61 @@
 \chapter{Brief introduction to Julia}%
 \label{cha:a_very_short_introduction_to_julia}
 
-In this chapter, 
+In this chapter,
 we very briefly present  some of the basic features and commands of Julia.
-Most of the information contained in this chapter can be found in the online manual: 
-\begin{itemize}
-    \item \url{https://docs.julialang.org/en/v1/stdlib/Pkg/} (packages);
-    \item \url{https://docs.julialang.org/en/v1/manual/control-flow/} (if, while, for);
-    \item \url{https://docs.julialang.org/en/v1/manual/functions/} (functions);
-    \item \url{https://docs.julialang.org/en/v1/manual/arrays/} (multi-dimensional arrays);
-    \item \url{https://docs.juliaplots.org/latest/tutorial/} (plots).
-\end{itemize}
+Most of the information contained in this chapter can be found in the online manual:
+see the following links for documentation on
+\href{https://docs.julialang.org/en/v1/stdlib/Pkg/}{packages},
+\href{https://docs.julialang.org/en/v1/manual/control-flow/} {ifs and loops},
+\href{https://docs.julialang.org/en/v1/manual/functions/} {functions},
+\href{https://docs.juliaplots.org/latest/tutorial/} {plots},
+\href{https://docs.julialang.org/en/v1/manual/variables-and-scoping/#man-scope-table} {scopes},
+\href{https://docs.julialang.org/en/v1/manual/arrays/} {multi-dimensional arrays}.
+
+\subsection*{Installing Julia}%
+\label{sub:installing_julia}
+The suggested programming environment for this course is the open-source text editor Visual Studio Code.
+You may also use \emph{Vim} or \emph{Emacs},
+if you are familiar with any of these.
+
+\begin{task}
+    Install Visual Studio Code.
+    Install also the Julia and Jupyter Notebook extensions.
+\end{task}
 
 \subsection*{Obtaining documentation}%
 \label{sub:getting_documentation}
 
-To get help on a function from the Julia shell, 
-type ``?'' and then the name of the function.
-Tab completion is helpful to see available names.
+To find documentation on a function from the Julia shell,
+type ``\texttt{?}'' and then the name of the function.
+Tab completion is helpful for listing available function names.
 
-\begin{exercise}
+\begin{task}
     Read the help pages for \julia{if}, \julia{while} and \julia{for}.
-\end{exercise}
+\end{task}
+
+\begin{remark}
+    [Shorthand \julia{if} notation]
+If there is no \julia{elseif} clause,
+it is sometimes convenient to use the following shorthand notations instead of an \julia{if} block.
+\begin{minted}{julia}
+condition = true
+
+# Assign 0 to x if `condition' is true, else assign 2
+x = condition ? 0 : 2
+
+# Print "true" if `condition' is true
+condition && println("true")
+
+# Print "false" if `condition' is false
+condition || println("false")
+\end{minted}
+\end{remark}
 
 \subsection*{Installing and using a package}%
 \label{sub:installing_and_using_a_package}
 To install a package for the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia shell),
-first type ``]'' to enter the package REPL,
+first type ``\texttt{]}'' to enter the package REPL,
 and then type \julia{add} followed the name of the package to install.
 For example, to use the \julia{Plots} package, write
 \begin{minted}{julia}
@@ -39,60 +68,127 @@ it can be accessed as \julia{Plots.plot}.
 
 Alternatively, you may import the package with the \julia{using} keyword,
 and then functions can be accessed without specifying the package name.
-While convenient, this approach is less explicit, 
-and does not enable to quickly know what package a function comes from.
+While convenient, this approach is less descriptive;
+it does not explicitly show what package a function comes from.
+For this reason, it is often recommended to use \julia{import},
+especially in a large codebase.
 
-\begin{exercise}
+\begin{task}
     Install the \texttt{Plots} package,
     read the documentation of the \texttt{Plots.plot} function,
-    and use it to plot the function $f(x) = \sin(x)$.
+    and to plot the function $f(x) = \sin(x)$.
     The tutorial on plotting, linked at the beginning of the chapter,
     is useful for this exercise.
-\end{exercise}
-
+\end{task}
 
 \subsection*{Printing output}%
 The functions \julia{println} or \julia{print} enable to display output.
 The former adds a new line at the end and the latter does not.
 
-\subsection*{Conditional construct}%
-The basic structure of an ``if'' block is the following.
-The \julia{elseif} and \julia{else} clauses are not necessary.
+
+\subsection*{Defining functions}%
+\label{sub:defining_functions}
+Functions can be defined using a \julia{function} block.
+For example, the following code block defines a function that prints ``Hello, NAME!''.
+
 \begin{minted}{julia}
-a = 1
-if a == 0
-    x = 0
-elseif a == 1
-    x = 1
-else
-    x = 2
+function hello(name)
+    # Here * is the string concatenation operator
+    println("Hello, " * name)
+end
+
+# Call the function
+hello("Bob")
+\end{minted}
+
+If the function definition is short,
+it may be convenient to define it using the following more compact syntax:
+\begin{minted}{julia}
+hello(name) = println("Hello, " * name)
+\end{minted}
+
+Sometimes, it is useful to define a function without giving it a name, called an \emph{anonymous function}.
+This can be achieved in Julia using the arrow notation \julia{->}.
+For example, the following lines calculates the squares and cubes of the first 5 natural numbers.
+Here, the function \julia{map} enables to transform a collection by applying a function to each element.
+\begin{minted}{julia}
+squares = map(x -> x^2, [1, 2, 3, 4, 5])
+cubes = map(x -> x^3, [1, 2, 3, 4, 5])
+\end{minted}
+
+\begin{task}
+    [Tower of Hanoi]
+    We consider a variation on the popular Tower of Hanoi problem
+    where the number $r$ of pegs is allowed to be larger than 3.
+    We denote the pegs by $p_1, \dots, p_r$,
+    and assume that the problem includes $n$ disks with radii $1$ to $n$.
+    The tower is initially constructed in~$p_1$,
+    with the disks arranged in order of decreasing radius, the largest at the bottom.
+    The goal of the problem is to reconstruct the tower at $p_r$ by moving the disks one at the time,
+    with the constraint that a disk may be placed on top of another only if its radius is smaller.
+
+    It has been conjectured that the optimal solution,
+    which requires the minimum number of moves,
+    can always be decomposed into the following three steps:
+    \begin{itemize}
+        \item First move the top $k$ disks of the tower to peg $p_2$;
+        \item Then move the bottom $n-k$ disks of the tower to $p_r$ without using $p_2$;
+        \item Finally, move the top of the tower for $p_2$ to $p_r$.
+    \end{itemize}
+    This suggests a natural recursive procedure for solving the problem, known as the Frame-Steward algorithm.
+    Write a Julia function \julia{T(n, r)} returning the minimal number of moves necessary.
+\begin{minted}{julia}
+function T(n, r)
+    # Particular case
+    if n == 1
+        return 1
+    end
+    # Your code comes here
 end
 \end{minted}
-If there is no \julia{elseif} clause,
-it is sometimes convenient to use the shorthand notation
+
+\end{task}
+
+\subsection*{Local and global scopes}%
+Some constructs in Julia introduce scope blocks, notably \julia{for} and \julia{while} loops,
+as well as \julia{function} blocks.
+The variables defined within these structures are not available outside them.
+For example
 \begin{minted}{julia}
-x = (a == 0) ? 0 : 2
+if true
+    a = 1
+end
+println(a)
 \end{minted}
-
-\subsection*{While and For loops}%
-
-Examples of while and for are presented below loops.
+prints one,
+because \julia{if} does not introduce a scope block,
+but
 \begin{minted}{julia}
-julia> i, j = 1, 3;
-julia> while i <= j
-           println(i)
-           global i += 1
-       end
-
-1
-2
-3
+for i in [1, 2, 3]
+    a = 1
+end
+println(a)
 \end{minted}
+produces \julia{ERROR: LoadError: UndefVarError: a not defined}.
+The variable \julia{a} defined the \julia{for} loop is said to be in the \emph{local scope} of the loop,
+whereas a variable defined outside of it is in the \emph{global scope}.
+In order to modify a global variable from a local scope,
+the \julia{global} keyword must be used.
+For instance, the following code
+\begin{minted}{julia}
+a = 1
+for i in [1, 2, 3]
+    global a += 1
+end
+println(a)
+\end{minted}
+modifies the global variable \julia{a} and prints 4.
+A more detailed discussion is beyond the scope of this course,
+and we refer to Julia manual for additional documentation.
 
+\subsection*{Multi-dimensional arrays}%
+\label{sub:multi_dimensional_arrays}
 
-For more information,
-see \url{https://docs.julialang.org/en/v1/manual/control-flow/}.
-
-\subsection*{}%
-
+A working knowledge of multi-dimensional arrays is important for this course,
+as vectors and matrices are ubiquitous in numerical algorithms.
 
