@@ -1,0 +1,138 @@
+\chapter{Vectors and matrices}%
+\label{cha:vectors_and_matrices}
+
+In this chapter,
+we collect basic results on vectors and matrices that are useful for this course.
+Throughout these lecture notes,
+we use lower case and bold font to denote vectors, e.g.\ $\vect x \in \real^n$,
+and upper case to denote matrices, e.g.\ $A \in \real^{m \times n}$.
+The entries of a vector $\vect x \in \real^n$ are denoted by~$(x_i)$,
+and those of a matrix $A \in \real^{m \times n}$ are denoted by~$(a_{ij})$.
+
+% \begin{definition}
+%     The transpose of $A$, denoted by $A^\t$, is the matrix with entries $a^\t_{ij} = a_{ji}$.
+% \end{definition}
+% A matrix is \emph{symmetric} if it is equal to its transpose.
+
+\section{Vector norms}%
+\label{sub:vector_norms}
+
+A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
+\begin{itemize}
+    \item
+        \textbf{Positivity}:
+        \[
+            \forall \vect x \in \mathcal X \backslash \{\vect 0\}, \qquad
+            \norm{x} > 0.
+        \]
+
+    \item
+        \textbf{Homogeneity}:
+        \[
+            \forall (c, \vect x) \in \real \times \mathcal X, \qquad
+            \norm{cx} = \abs{c} \, \norm{x} .
+        \]
+
+    \item
+        \textbf{Triangular inequality}:
+        \[
+            \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+            \norm{x + y} \leq \norm{x} + \norm{y}.
+        \]
+\end{itemize}
+
+We say that two norms $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ on $\mathcal X$ are equivalent if
+there exists positive real numbers~$c_{\ell}$ and $c_u$ such that
+\begin{equation}
+    \label{eq:norm_equilavence}
+    \forall \vect x \in \mathcal X,
+    \qquad c_{\ell} \norm{\vect x}_1
+    \leq \norm{\vect x}_2
+    \leq c_u \norm{\vect x}_1.
+\end{equation}
+When working with norms on finite-dimensional vector spaces,
+it is important to keep in mind the following result.
+The proof is provided for information purposes.
+\begin{proposition}
+    Assume that $\mathcal X$ is a finite-dimensional vector space.
+    Then all the norms defined on~$\mathcal X$ are pairwise equivalent.
+\end{proposition}
+\begin{proof}
+    Let $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ be two norms on $\mathcal X$,
+    and let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$,
+    where $n$ is the dimension of the vector space.
+    % Assume for contradiction that there exists a sequence $(x_i)_{i \in \nat}$ in the limit as $i \to \infty$ such that $\norm{x_i}_1 \to 0$ but $\norm{x_n}_2 > \varepsilon > 0$.
+    % Upon replacing $x_i$ by $x_i/\norm{x_i}_2$, we may assume without loss of generality that $\norm{x_n}_2 = 1$.
+    Any $\vect x \in \mathcal X$ can be represented as $x = \alpha_1 \vect e_1 + \dotsb + \alpha_n \vect e_n$.
+    By the triangle inequality,
+    it holds that
+    \begin{equation}
+        \label{eq:bound1}
+        \norm{\vect x}_1 \leq \abs{\alpha_1} \norm{\vect e_1}_1 + \dotsb + \abs{\alpha_n} \norm{\vect e_n}_1 \leq \Bigl(\abs{\alpha_1} + \dotsb + \abs{\alpha_n}\Bigr) \, \max \Bigl\{\norm{\vect e_1}_1, \dotsc, \norm{\vect e_n}_1\Bigr\}.
+    \end{equation}
+    On the other hand, as we prove below,
+    there exists a constant $\ell$ such that
+    \begin{equation}
+        \label{eq:bound2}
+        \forall \vect x \in \mathcal X, \qquad
+        \norm{\vect x}_2
+        \geq \ell \Bigl( \abs{\alpha_1} + \dotsb + \abs{\alpha_n} \Bigr).
+    \end{equation}
+    Combining~\eqref{eq:bound1} and~\eqref{eq:bound2},
+    we conclude that
+    \[
+        \norm{\vect x}_1 \leq \frac{1}{\ell} \max \Bigl\{\norm{\vect e_1}_1, \dotsc, \norm{\vect e_n}_1\Bigr\} \norm{\vect x}_2.
+    \]
+    This proves the first inequality in~\eqref{eq:norm_equilavence},
+    and reversing the roles of $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ yields the second inequality.
+
+    Let us now prove~\eqref{eq:bound2} by contradiction.
+    If this inequality were not true,
+    then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
+    that~$\norm{\vect x^{(i)}}_2 \to 0$ as $i \to \infty$ but $\abs{\alpha_1^{(i)}} + \dotsb + \abs{\alpha_n^{(i)}} = 1$ for all $i \in \nat$.
+    Since $\alpha_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
+    we can extract a subsequence, still denoted by $(\vect x^{(i)})_{i \in \nat}$ for simplicity,
+    such that the corresponding coefficient $\alpha_1^{(i)}$ satisfies $\alpha_1^{(i)} \to \alpha_1^* \in [-1, 1]$,
+    by compactness of the interval~$[-1, 1]$.
+    Iterating this procedure for $\alpha_2, \alpha_3, \dots$,
+    by taking a new subsequence every time,
+    we obtain a subsequence such that $\alpha^{(i)}_j \to \alpha_j^*$ for all $j \in \{1, \dotsc, n\}$.
+    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \alpha_1^* \vect e_1 + \dotsb \alpha_n^* \vect e_n$ in the $\norm{\placeholder}_2$ norm.
+    Since $\vect x^{(i)} \to 0$ by assumption and the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
+    this implies that $\alpha_1^* = \dots = \alpha_n^* = 0$,
+    which is a contradiction because we also have that
+    \[
+        \abs{\alpha_1^*} + \dotsb + \abs{\alpha_n^*} = \lim_{i \to \infty} \abs{\alpha_1^{(i)}} + \dotsb + \abs{\alpha_n^{(i)}} = 1.
+    \]
+    This concludes the proof of~\eqref{eq:bound2}.
+\end{proof}
+
+Several norms can be defined on the same vector space.
+In the case of $\real^n$,
+the most common ones are particular cases of the $p$-norm, or H\"older norm.
+\begin{definition}
+    Given $1 \leq p < \infty$,
+    the $p$-norm of a vector $\vect x \in \real^n$ is defined by
+    \[
+        \norm{\vect x}_p := \left( \sum_{i=1}^{n} \abs{x^i}^p \right)^{\frac{1}{p}}.
+    \]
+\end{definition}
+The values of $p$ most commonly encountered in applications are $1$ and $2$,
+the latter being called the \emph{Eulidean norm}:
+\[
+    \norm{\vect x}_1 = \sum_{i=1}^{n} \abs{x_i},
+    \qquad
+    \norm{\vect x}_2 = \sqrt{\sum_{i=1}^{n} \abs{x_i}^2}.
+\]
+Another often-used norm is the \emph{maximum} or \emph{infinity} norm,
+which may be defined as the limit of the $p$-norm as $p \to \infty$.
+\[
+    \norm{\vect x}_{\infty}
+    := \lim_{p \to \infty} \norm{\vect x}_p = \max \Bigl\{ \abs{x_1}, \dotsc, \abs{x_n} \Bigr\}.
+\]
+
+\section{Matrix norms}%
+\label{sec:matrix_norms}
+
+% is finite-dimensional,
+% all norms defined on it
