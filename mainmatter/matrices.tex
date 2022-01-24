@@ -17,38 +17,77 @@ and those of a matrix $A \in \real^{m \times n}$ are denoted by~$(a_{ij})$.
 \section{Vector norms}%
 \label{sub:vector_norms}
 
+We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
+\begin{definition}
+    An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \real$ satisfying the following axioms:
+    \begin{itemize}
+        \item
+            \textbf{Symmetry}:
+            \[
+                \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+                \ip{\vect x, \vect y} = \ip{\vect y, \vect x}.
+            \]
+
+        \item
+            \textbf{Linearity}:
+            For all $(\alpha, \beta) \in \real^2$ and all $(\vect x, \vect y, \vect z) \in \mathcal X^3$,
+            it holds that
+            \[
+                \ip{\alpha \vect x + \beta \vect y, \vect z}
+                = \alpha \ip{\vect x, \vect y} + \beta \ip{\vect x, \vect z}.
+            \]
+
+        \item
+            \textbf{Positive-definiteness}:
+            \[
+                \forall \vect x \in \mathcal X \backslash \{0\}, \qquad
+                \ip{\vect x, \vect x} > 0.
+            \]
+    \end{itemize}
+\end{definition}
+For example, the familiar Euclidean inner product on $\real^n$ is given by
+\[
+    \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i y_i.
+\]
+
+\begin{definition}
 A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
 \begin{itemize}
     \item
         \textbf{Positivity}:
         \[
             \forall \vect x \in \mathcal X \backslash \{\vect 0\}, \qquad
-            \norm{x} > 0.
+            \norm{\vect x} > 0.
         \]
 
     \item
         \textbf{Homogeneity}:
         \[
             \forall (c, \vect x) \in \real \times \mathcal X, \qquad
-            \norm{cx} = \abs{c} \, \norm{x} .
+            \norm{c \vect x} = \abs{c} \, \norm{\vect x} .
         \]
 
     \item
         \textbf{Triangular inequality}:
         \[
             \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
-            \norm{x + y} \leq \norm{x} + \norm{y}.
+            \norm{\vect x + \vect y} \leq \norm{\vect x} + \norm{\vect y}.
         \]
 \end{itemize}
+\end{definition}
+Any inner product on $\mathcal X$ induces a norm via the formula
+\[
+    \norm{\vect x} = \sqrt{\ip{\vect x, \vect x}}.
+\]
 
-We say that two norms $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ on $\mathcal X$ are equivalent if
+We say that two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\mathcal X$ are equivalent if
 there exists positive real numbers~$c_{\ell}$ and $c_u$ such that
 \begin{equation}
     \label{eq:norm_equilavence}
     \forall \vect x \in \mathcal X,
-    \qquad c_{\ell} \norm{\vect x}_1
-    \leq \norm{\vect x}_2
-    \leq c_u \norm{\vect x}_1.
+    \qquad c_{\ell} \norm{\vect x}_{\alpha}
+    \leq \norm{\vect x}_{\beta}
+    \leq c_u \norm{\vect x}_{\alpha}.
 \end{equation}
 When working with norms on finite-dimensional vector spaces,
 it is important to keep in mind the following result.
@@ -58,51 +97,51 @@ The proof is provided for information purposes.
     Then all the norms defined on~$\mathcal X$ are pairwise equivalent.
 \end{proposition}
 \begin{proof}
-    Let $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ be two norms on $\mathcal X$,
+    Let $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ be two norms on $\mathcal X$,
     and let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$,
     where $n$ is the dimension of the vector space.
-    % Assume for contradiction that there exists a sequence $(x_i)_{i \in \nat}$ in the limit as $i \to \infty$ such that $\norm{x_i}_1 \to 0$ but $\norm{x_n}_2 > \varepsilon > 0$.
-    % Upon replacing $x_i$ by $x_i/\norm{x_i}_2$, we may assume without loss of generality that $\norm{x_n}_2 = 1$.
-    Any $\vect x \in \mathcal X$ can be represented as $x = \alpha_1 \vect e_1 + \dotsb + \alpha_n \vect e_n$.
+    % Assume for contradiction that there exists a sequence $(x_i)_{i \in \nat}$ in the limit as $i \to \infty$ such that $\norm{x_i}_{\alpha} \to 0$ but $\norm{x_n}_{\beta} > \varepsilon > 0$.
+    % Upon replacing $x_i$ by $x_i/\norm{x_i}_{\beta}$, we may assume without loss of generality that $\norm{x_n}_{\beta} = 1$.
+    Any $\vect x \in \mathcal X$ can be represented as $x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
     By the triangle inequality,
     it holds that
     \begin{equation}
         \label{eq:bound1}
-        \norm{\vect x}_1 \leq \abs{\alpha_1} \norm{\vect e_1}_1 + \dotsb + \abs{\alpha_n} \norm{\vect e_n}_1 \leq \Bigl(\abs{\alpha_1} + \dotsb + \abs{\alpha_n}\Bigr) \, \max \Bigl\{\norm{\vect e_1}_1, \dotsc, \norm{\vect e_n}_1\Bigr\}.
+        \norm{\vect x}_{\alpha} \leq \abs{\lambda_1} \norm{\vect e_1}_{\alpha} + \dotsb + \abs{\lambda_n} \norm{\vect e_n}_{\alpha} \leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \, \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}_{\alpha}\Bigr\}.
     \end{equation}
     On the other hand, as we prove below,
     there exists a constant $\ell$ such that
     \begin{equation}
         \label{eq:bound2}
         \forall \vect x \in \mathcal X, \qquad
-        \norm{\vect x}_2
-        \geq \ell \Bigl( \abs{\alpha_1} + \dotsb + \abs{\alpha_n} \Bigr).
+        \norm{\vect x}_{\beta}
+        \geq \ell \Bigl( \abs{\lambda_1} + \dotsb + \abs{\lambda_n} \Bigr).
     \end{equation}
     Combining~\eqref{eq:bound1} and~\eqref{eq:bound2},
     we conclude that
     \[
-        \norm{\vect x}_1 \leq \frac{1}{\ell} \max \Bigl\{\norm{\vect e_1}_1, \dotsc, \norm{\vect e_n}_1\Bigr\} \norm{\vect x}_2.
+        \norm{\vect x}_{\alpha} \leq \frac{1}{\ell} \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}_{\alpha}\Bigr\} \norm{\vect x}_{\beta}.
     \]
     This proves the first inequality in~\eqref{eq:norm_equilavence},
-    and reversing the roles of $\norm{\placeholder}_1$ and $\norm{\placeholder}_2$ yields the second inequality.
+    and reversing the roles of $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ yields the second inequality.
 
     Let us now prove~\eqref{eq:bound2} by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
-    that~$\norm{\vect x^{(i)}}_2 \to 0$ as $i \to \infty$ but $\abs{\alpha_1^{(i)}} + \dotsb + \abs{\alpha_n^{(i)}} = 1$ for all $i \in \nat$.
-    Since $\alpha_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
+    that~$\norm{\vect x^{(i)}}_{\beta} \to 0$ as $i \to \infty$ but $\abs{\lambda_1^{(i)}} + \dotsb + \abs{\lambda_n^{(i)}} = 1$ for all $i \in \nat$.
+    Since $\lambda_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
     we can extract a subsequence, still denoted by $(\vect x^{(i)})_{i \in \nat}$ for simplicity,
-    such that the corresponding coefficient $\alpha_1^{(i)}$ satisfies $\alpha_1^{(i)} \to \alpha_1^* \in [-1, 1]$,
+    such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
     by compactness of the interval~$[-1, 1]$.
-    Iterating this procedure for $\alpha_2, \alpha_3, \dots$,
+    Iterating this procedure for $\lambda_2, \lambda_3, \dots$,
     by taking a new subsequence every time,
-    we obtain a subsequence such that $\alpha^{(i)}_j \to \alpha_j^*$ for all $j \in \{1, \dotsc, n\}$.
-    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \alpha_1^* \vect e_1 + \dotsb \alpha_n^* \vect e_n$ in the $\norm{\placeholder}_2$ norm.
+    we obtain a subsequence such that $\lambda^{(i)}_j \to \lambda_j^*$ for all $j \in \{1, \dotsc, n\}$.
+    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the $\norm{\placeholder}_{\beta}$ norm.
     Since $\vect x^{(i)} \to 0$ by assumption and the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
-    this implies that $\alpha_1^* = \dots = \alpha_n^* = 0$,
+    this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
     which is a contradiction because we also have that
     \[
-        \abs{\alpha_1^*} + \dotsb + \abs{\alpha_n^*} = \lim_{i \to \infty} \abs{\alpha_1^{(i)}} + \dotsb + \abs{\alpha_n^{(i)}} = 1.
+        \abs{\lambda_1^*} + \dotsb + \abs{\lambda_n^*} = \lim_{i \to \infty} \abs{\lambda_1^{(i)}} + \dotsb + \abs{\lambda_n^{(i)}} = 1.
     \]
     This concludes the proof of~\eqref{eq:bound2}.
 \end{proof}
@@ -111,28 +150,122 @@ Several norms can be defined on the same vector space.
 In the case of $\real^n$,
 the most common ones are particular cases of the $p$-norm, or H\"older norm.
 \begin{definition}
-    Given $1 \leq p < \infty$,
+    Given $p \in [1, \infty]$,
     the $p$-norm of a vector $\vect x \in \real^n$ is defined by
     \[
-        \norm{\vect x}_p := \left( \sum_{i=1}^{n} \abs{x^i}^p \right)^{\frac{1}{p}}.
+        \norm{\vect x}_p :=
+        \begin{cases}
+            \left( \sum_{i=1}^{n} \abs{x^i}^p \right)^{\frac{1}{p}} & \text{if $p < \infty$}, \\
+            \max \Bigl\{ \abs{x_1}, \dotsc, \abs{x_n} \Bigr\} & \text{if $p = \infty$}.
+        \end{cases}
     \]
 \end{definition}
-The values of $p$ most commonly encountered in applications are $1$ and $2$,
-the latter being called the \emph{Eulidean norm}:
+The values of $p$ most commonly encountered in applications are $1$, $2$ and $\infty$.
+The $2$-norm is also called the \emph{Eulidean norm}.
+The explicit expressions of the 1-norm and 2-norm are
 \[
     \norm{\vect x}_1 = \sum_{i=1}^{n} \abs{x_i},
     \qquad
-    \norm{\vect x}_2 = \sqrt{\sum_{i=1}^{n} \abs{x_i}^2}.
+    \norm{\vect x}_2 = \sqrt{\sum_{i=1}^{n} \abs{x_i}^2}
 \]
-Another often-used norm is the \emph{maximum} or \emph{infinity} norm,
-which may be defined as the limit of the $p$-norm as $p \to \infty$.
+Notice that the infinity norm $\norm{\placeholder}_{\infty}$ may be defined as the limit of the $p$-norm as $p \to \infty$:
 \[
     \norm{\vect x}_{\infty}
-    := \lim_{p \to \infty} \norm{\vect x}_p = \max \Bigl\{ \abs{x_1}, \dotsc, \abs{x_n} \Bigr\}.
+    := \lim_{p \to \infty} \norm{\vect x}_p.
 \]
 
 \section{Matrix norms}%
 \label{sec:matrix_norms}
 
-% is finite-dimensional,
-% all norms defined on it
+Any matrix $A \in \real^{m \times n}$ induces a linear operator from $\real^n$ to $\real^m$,
+with action given by~$\vect x \mapsto A \vect x$.
+If we endow $\real^m$ and $\real^n$ with norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ respectively,
+then $A$ may be viewed as an operator between normed vector spaces,
+and the corresponding \emph{operator norm} of $A$ is given by
+\begin{equation}
+    \label{eq:subordinate_norm}
+    \norm{A}_{\alpha,\beta} = \sup \bigl\{ \norm{A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}
+\end{equation}
+\begin{proposition}
+    Equation~\eqref{eq:subordinate_norm} defines a norm on $\real^{m \times n}$.
+\end{proposition}
+\begin{proof}
+    We need to verify that~\eqref{eq:subordinate_norm} satisfies the properties of positivity and homogeneity,
+    together with the triangle inequality.
+    \begin{itemize}
+        \item
+            \textbf{Positivity}. If $A \neq 0$,
+            then there is a column of $A$, say the $i$-th one, that is nonzero.
+            Let~$\vect y$ be the vector with all entries equal to zero except the $j$-th one which is equal to 1,
+            and let~$\vect x = \vect y / \norm{\vect y}_{\beta}$ so that $\norm{\vect x}_{\beta} = 1$.
+            It is clear that $A \vect x \neq \vect 0$,
+            and so $\norm{A \vect x}_{\alpha} > 0$ since $\norm{\placeholder}_{\alpha}$ is a norm and $\vect x \neq \vect 0$,
+            implying that $\norm{A}_{\alpha,\beta} > 0$.
+
+        \item
+            \textbf{Homogeneity} follows trivially from the definition~\eqref{eq:subordinate_norm}
+            and the homogeneity of $\norm{\placeholder}_{\alpha}$.
+
+        \item
+            \textbf{Triangle inequality.}
+            Let $A$ and $B$ be two elements of $\real^{m \times n}$.
+            Employing the triangle inequality for the norm $\norm{\placeholder}_{\alpha}$,
+            we have
+            \begin{align*}
+                \forall \vect x \in \real^{n} ~ \text{with} ~ \norm{\vect x}_{\beta}\leq 1, \qquad
+                \norm{(A + B) \vect x}_{\alpha}
+                &= \norm{A \vect x + B \vect x}_{\alpha} \\
+                &\leq \norm{A \vect x}_{\alpha} + \norm{B \vect x}_{\alpha}
+                \leq \norm{A}_{\alpha,\beta} + \norm{B}_{\alpha,\beta}.
+            \end{align*}
+            Therefore, taking the supremum as in~\eqref{eq:subordinate_norm},
+            we obtain $\norm{A+B}_{\alpha,\beta} \leq \norm{A}_{\alpha,\beta} + \norm{B}_{\alpha,\beta}$.
+    \end{itemize}
+    Since the three properties are satisfied, $\norm{\placeholder}_{\alpha,\beta}$ is indeed a norm.
+\end{proof}
+
+In numerical analysis applications,
+it is often the case that the relevant norms for~$\real^m$ and~$\real^n$ are $p$-norms with the same $p$ for both spaces.
+\begin{definition}
+Given $p \in [1, \infty]$,
+the $p$-norm of a matrix $A \in \real^{m\times n}$ is given by
+\begin{equation}
+    \label{eq:subordinate_norm}
+    \norm{A}_{p} := \sup \bigl\{ \norm{A \vect x}_{p} : \vect x \in \real^n, \norm{\vect x}_{p} \leq 1 \bigr\}.
+\end{equation}
+\end{definition}
+We emphasize that this definition is just a particular case of~\eqref{eq:subordinate_norm}.
+Not all matrix norms are induced by vector norms.
+For example, the Frobenius norm,
+which is widely used in applications,
+is not induced by a vector norm.
+It is, however, induced by an inner product on~$\real^{m \times n}$. (Can you find which one?)
+
+\begin{definition}
+    The Frobenius norm of $A \in \real^{m\times n}$ is defined by
+    \[
+        \norm{A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{m} \abs{a_{ij}}^2.
+    \]
+\end{definition}
+
+\section{Diagonalization}%
+\label{sec:diagonalization}
+
+\begin{definition}
+    A square matrix $A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $P \in \real^{n \times n}$
+    and a diagonal matrix $D \in \real^{n \times n}$ such that
+    \[
+        AP = PD.
+    \]
+    In this case,
+    the diagonal elements of $D$ are called the eigenvalues of~$A$,
+    and the columns of $P$ are called the eigenvectors of~$A$.
+\end{definition}
+
+The transpose of a matrix $A \in \real^{m \times n}$, denoted by $A^\t \in \real^{n \times n}$,
+is the matrix with entries~$a^\t_{ij} = a_{ji}$.
+A matrix equal to its transpose is necessarily square and called \emph{symmetric}.
+Symmetric matrices enjoy many nice properties,
+the main one being that they are diagonalizable with an orthogonal matrix,
+i.e.\ a matrix $Q \in \real^{n \times n}$ such that $Q^\t Q = I$,
+where $I$ is the identity matrix.
