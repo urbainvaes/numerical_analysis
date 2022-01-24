@@ -51,8 +51,8 @@ condition || println("false")
 \end{remark}
 
 % \begin{remark}
-%     [Short-hand \julia{for} notation]
-%     There is also a convenient short-hand notation for nested \julia{for} loops,
+%     [Shorthand \julia{for} notation]
+%     There is also a convenient shorthand notation for nested \julia{for} loops,
 %     which is sometimes useful for iterating over matrix elements:
 % \begin{minted}{julia}
 % for greeting in ["Bonjour ", "Hello "], person in ["Alice", "Bob"]
@@ -68,7 +68,7 @@ first type ``\texttt{]}'' to enter the package REPL,
 and then type \julia{add} followed the name of the package to install.
 For example, to use the \julia{Plots} package, write
 \begin{minted}{julia}
-import Plots
+    import Plots
 \end{minted}
 in your the Julia shell or in a script.
 If a function, say \julia{plot}, is defined by the package,
@@ -92,7 +92,13 @@ especially in a large codebase.
 \subsection*{Printing output}%
 The functions \julia{println} or \julia{print} enable to display output.
 The former adds a new line at the end and the latter does not.
-
+The symbol \texttt{\$}, followed by a variable name or an expression within brackets,
+can be employed to perform \emph{string interpolation}.
+For instance, the following code prints \julia{a = 2, a^2 = 4}.
+\begin{minted}{julia}
+    a = 2
+    println("a = $a, a^2 = $(a*a))
+\end{minted}
 
 \subsection*{Defining functions {\footnotesize \href{https://docs.julialang.org/en/v1/manual/functions/} {[link to relevant manual section]}}}%
 \label{sub:defining_functions}
@@ -100,19 +106,19 @@ Functions can be defined using a \julia{function} block.
 For example, the following code block defines a function that prints ``Hello, NAME!''.
 
 \begin{minted}{julia}
-function hello(name)
-    # Here * is the string concatenation operator
-    println("Hello, " * name)
-end
-
-# Call the function
-hello("Bob")
+    function hello(name)
+        # Here * is the string concatenation operator
+        println("Hello, " * name)
+    end
+    
+    # Call the function
+    hello("Bob")
 \end{minted}
 
 If the function definition is short,
 it may be convenient to define it using the following more compact syntax:
 \begin{minted}{julia}
-hello(name) = println("Hello, " * name)
+    hello(name) = println("Hello, " * name)
 \end{minted}
 
 Sometimes, it is useful to define a function without giving it a name, called an \emph{anonymous function}.
@@ -120,23 +126,23 @@ This can be achieved in Julia using the arrow notation \julia{->}.
 For example, the following lines calculates the squares and cubes of the first 5 natural numbers.
 Here, the function \julia{map} enables to transform a collection by applying a function to each element.
 \begin{minted}{julia}
-squares = map(x -> x^2, [1, 2, 3, 4, 5])
-cubes = map(x -> x^3, [1, 2, 3, 4, 5])
+    squares = map(x -> x^2, [1, 2, 3, 4, 5])
+    cubes = map(x -> x^3, [1, 2, 3, 4, 5])
 \end{minted}
 
 The \julia{return} keyword can used for returning a value to the function caller.
 Several values, separated by commas, can be returned at once.
 The following function, for example, takes a number $x$ and returns a tuple $(x, x^2, x^3)$.
 \begin{minted}{julia}
-function powers(x)
-    return x, x^2, x^3
-end
-
-# This is equivalent to the following inline notation
-short_powers(x) = x, x^2 x^3
-
-# This assigns a = 2, b = 4, c = 8
-a, b, c = powers(2)
+    function powers(x)
+        return x, x^2, x^3
+    end
+    
+    # This is equivalent to the following inline notation
+    short_powers(x) = x, x^2 x^3
+    
+    # This assigns a = 2, b = 4, c = 8
+    a, b, c = powers(2)
 \end{minted}
 
 \begin{task}
@@ -161,13 +167,13 @@ a, b, c = powers(2)
     This suggests a natural recursive procedure for solving the problem, known as the Frame-Steward algorithm.
     Write a Julia function \julia{T(n, r)} returning the minimal number of moves necessary.
 \begin{minted}{julia}
-function T(n, r)
-    # Particular case
-    if n == 1
-        return 1
+    function T(n, r)
+        # Particular case
+        if n == 1
+            return 1
+        end
+        # Your code comes here
     end
-    # Your code comes here
-end
 \end{minted}
 
 \end{task}
@@ -178,19 +184,19 @@ as well as \julia{function} blocks.
 The variables defined within these structures are not available outside them.
 For example
 \begin{minted}{julia}
-if true
-    a = 1
-end
-println(a)
+    if true
+        a = 1
+    end
+    println(a)
 \end{minted}
 prints one,
 because \julia{if} does not introduce a scope block,
 but
 \begin{minted}{julia}
-for i in [1, 2, 3]
-    a = 1
-end
-println(a)
+    for i in [1, 2, 3]
+        a = 1
+    end
+    println(a)
 \end{minted}
 produces \julia{ERROR: LoadError: UndefVarError: a not defined}.
 The variable \julia{a} defined the \julia{for} loop is said to be in the \emph{local scope} of the loop,
@@ -199,11 +205,11 @@ In order to modify a global variable from a local scope,
 the \julia{global} keyword must be used.
 For instance, the following code
 \begin{minted}{julia}
-a = 1
-for i in [1, 2, 3]
-    global a += 1
-end
-println(a)
+    a = 1
+    for i in [1, 2, 3]
+        global a += 1
+    end
+    println(a)
 \end{minted}
 modifies the global variable \julia{a} and prints 4.
 A more detailed discussion is beyond the scope of this course,
@@ -220,7 +226,7 @@ Within a line, elements are separated by a space.
 For example,
 the instruction
 \begin{minted}{julia}
-M = [1 2 3; 4 5 6]
+    M = [1 2 3; 4 5 6]
 \end{minted}
 creates the matrix
 \[
@@ -241,13 +247,13 @@ For example, \julia{[M M]} defines is the matrix
 The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$.
 The special entry \texttt{end} can be used to access the last row or column.
 For instance, \julia{M[end-1, end]} gives the matrix entry in the second to last row and the last column.
-From the matrix $M$ above, 
+From the matrix $M$ above,
 the submatrix \julia{[2  3; 5 6]} can be obtained with \julia{M[:, 2:3]}.
 Here the row index \julia{:} means ``select all line'' and the column index~\julia{2:3} means ``select columns 2 and 3''.
 Likewise, the submatrix \julia{[1 3; 4 6]} may be extracted with \julia{M[:, [1; 3]]}.
 \begin{remark}
     [One-dimensional arrays]
-    When creating one-dimensional vectors, 
+    When creating one-dimensional vectors,
     it is equivalent to use the semicolon~\julia{;} or the comma~\julia{,} in order to separate entries.
     That is, \julia{x = [1, 2, 3]} and \julia{x = [1; 2; 3]} both produce the same result:
     a \julia{Vector} object with elements $(1, 2, 3)$.
@@ -258,7 +264,7 @@ Likewise, the submatrix \julia{[1 3; 4 6]} may be extracted with \julia{M[:, [1;
 There are many built-in functions for quickly creating commonly used arrays.
 For example,
 \begin{itemize}
-    \item 
+    \item
         \julia{transpose(M)} gives the transpose of $M$, and \julia{adjoint(M)} or \julia{M'} gives the transpose conjugate.
         For a matrix with real-valued entries,
         both functions deliver the same result.
@@ -276,7 +282,8 @@ For example,
             \end{pmatrix}
         \]
 \end{itemize}
-Let us also mention the following shorthand notation for creating vectors and matrices:
+Let us also mention the following shorthand notation,
+called \emph{array comprehensien} for creating vectors and matrices:
 \begin{itemize}
     \item \julia{[i^2 for i in 1:5]} creates the vector \julia{[1, 4, 9, 16, 25]}.
     \item \julia{[i + 10*j for i in 1:4, j in 1:4]} creates the matrix
@@ -288,7 +295,7 @@ Let us also mention the following shorthand notation for creating vectors and ma
                 14  & 24  & 34  & 44
             \end{pmatrix}.
         \]
-    \item 
+    \item
         \julia{[i for i in 1:10 if ispow2(i)]} creates the vector \julia{[1, 2, 4, 8]}.
         The same result can be achieved with the \julia{filter} function: \julia{filter(ispow2, 1:10)}.
 \end{itemize}
@@ -309,10 +316,10 @@ which is available in \href{https://docs.julialang.org/en/v1/manual/arrays/#Broa
 we illustrate the concept using examples.
 Consider first the following code block:
 \begin{minted}{julia}
-function welcome(name)
-    println "Hello, " * name * "!"
-end
-result = broadcast(welcome, ["Alice", "Bob"])
+    function welcome(name)
+        println "Hello, " * name * "!"
+    end
+    result = broadcast(welcome, ["Alice", "Bob"])
 \end{minted}
 Here \julia{broadcast} returns an array with elements \julia{"Hello, Alice!"} and \julia{"Hello, Bob!"},
 as would the \julia{map} function.
@@ -332,6 +339,14 @@ Likewise, the expression \julia{1 .+ [1, 2, 3]} returns the array \julia{[2, 3, 
     \begin{minted}{julia}
     reshape(1:9, 3, 3) .+ [1 2 3]
     reshape(1:9, 3, 3) .+ [1; 2; 3]
+    \end{minted}
+\end{task}
+
+\begin{task}
+    Given that \julia{string(s1, s2, ...)} enables to convert the arguments to strings and concatenate them,
+    what does the following expression do?
+    \begin{minted}{julia}
+    string.(1:3, ". ", ["First", "Second", "Third"])
     \end{minted}
 \end{task}
 
