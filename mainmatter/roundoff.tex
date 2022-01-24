@@ -32,9 +32,11 @@ The rest of this chapter is organized as follows.
     \item
         In \cref{sec:binary_representation_of_real_numbers},
         we briefly discuss the binary representation of real numbers.
+
     \item
         In \cref{sec:set_of_values},
         we describe the set of floating point numbers that can be represented in the usual floating point formats;
+
     \item
         In \cref{sec:arithmetic_operations_between_floating_point_formats}
         we explain how arithmetic operations between floating point numbers behave.
@@ -42,13 +44,18 @@ The rest of this chapter is organized as follows.
         in a calculation involving several successive arithmetic operations,
         the result of each intermediate operation is stored as a floating point number,
         with a possible error.
-        % This is why \texttt{1.0 + 1e-100 - 1.0} returns \texttt{0.0},
-        % in the usual double-precision format.
+
     \item
         In \cref{sec:encoding_of_floating_point_numbers},
         we briefly present how floating point numbers are encoded
         according to the IEEE 754 standard, widely accepted today.
         We discuss also the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+
+    \item
+        In \cref{sec:conditioning},
+        we introduce the concept of \emph{conditioning}.
+        The condition number associated with a problem provides information on the sensitivity of the solution to errors in the data,
+        so it is useful for determining the potential impact of round-off errors.
 \end{itemize}
 In order to completely describe a floating-point system,
 one would in principle need to also discuss the storage of integer numbers
@@ -244,8 +251,8 @@ which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
 Their parameters,
 together with those of the lesser-known half-precision format,
 are summarized in~\cref{table:floating_point_formats}.
-In the rest of this section we use the shorthand notation $\floating_{32}$ and $\floating_{64}$.
-Note that $\floating_{32} \subset \floating_{64}$.
+In the rest of this section we use the shorthand notation $\floating_{16}$, $\floating_{32}$ and $\floating_{64}$.
+Note that $\floating_{16} \subset \floating_{32} \subset \floating_{64}$.
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|}
@@ -619,6 +626,7 @@ For example, in general
 
     In order to explain the result of~\eqref{eq:non_associativity_2},
     note that the exact result of the addition $y + y$ is $r = 3 \times 2^{-12}$,
+    which belongs to the floating point format,
     so it also holds that $y \madd y = 3 \times 2^{-12}$.
     Therefore,
     \[
@@ -677,10 +685,13 @@ is smaller than the smallest representable number in a floating point format.
     Implement this approach using double-precision numbers and the same values for $\delta$ as in the table below.
     Explain the results you obtain.
     \begin{center}
-        \begin{tabular}{c|c|c|c}
-            $\delta$ & $\frac{1}{4} \varepsilon_{64}$ & $\frac{1}{2} \varepsilon_{64}$ & $\varepsilon_{64}$ \\
+        \def\arraystretch{1.5}
+        \begin{tabular}{|c|c|c|c|}
             \hline
-            $f'(0)$ & 0 & 2 & 1
+            $\delta$ & $\frac{\varepsilon_{64}}{4} $ & $\frac{\varepsilon_{64}}{2}$ & $\varepsilon_{64}$ \\
+            \hline
+            $f'(0)$ & 0 & 2 & 1 \\
+            \hline
         \end{tabular}
     \end{center}
 \end{exercise}
@@ -736,6 +747,11 @@ is smaller than the smallest representable number in a floating point format.
         \frac{\bigl| (x + y) - (x \madd  y ) \bigr|}{|x + y|}
         \leq \frac{\varepsilon_M}{2}  \left(2 + \frac{\varepsilon_M}{2}\right).
     \]
+\end{exercise}
+
+\begin{exercise}
+    Is \julia{Float32(0.1) * 10 == 1} equal to \julia{true} or \julia{false}
+    given the rounding rule defined by the IEEE standard? Explain.
 \end{exercise}
 
 \section{Encoding of floating point numbers}%
@@ -863,6 +879,10 @@ One may determine the exponent and significand of a floating point number from t
     \end{itemize}
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
+
+\section{Conditioning}%
+\label{sec:conditioning}
+
 
 % Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
 % depends in general on the \emph{numerical stability} of the method.
