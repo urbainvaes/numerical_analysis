@@ -110,7 +110,7 @@ For example, the following code block defines a function that prints ``Hello, NA
         # Here * is the string concatenation operator
         println("Hello, " * name)
     end
-    
+
     # Call the function
     hello("Bob")
 \end{minted}
@@ -137,10 +137,10 @@ The following function, for example, takes a number $x$ and returns a tuple $(x,
     function powers(x)
         return x, x^2, x^3
     end
-    
+
     # This is equivalent to the following inline notation
     short_powers(x) = x, x^2 x^3
-    
+
     # This assigns a = 2, b = 4, c = 8
     a, b, c = powers(2)
 \end{minted}
@@ -332,7 +332,8 @@ the notation \julia{a + b} is just syntactic sugar for \julia{+(a, b)}.
 Since broadcasting is so often useful in numerical mathematics,
 Julia provides a shorthand notation for it: the instruction \julia{broadcast(welcome, ["Alice", "Bob"])}
 can be written compactly as \julia{welcome.(["Alice", "Bob"])}.
-Likewise, the expression \julia{1 .+ [1, 2, 3]} returns the array \julia{[2, 3, 4]}.
+Likewise, the line \julia{broadcast(+, 1, [1, 2, 3])} can be shortened to \julia{+.(1, [1, 2, 3])},
+or to the more readable expression \julia{1 .+ [1, 2, 3]}.
 
 \begin{task}
     Explain in words what the following instructions do.
