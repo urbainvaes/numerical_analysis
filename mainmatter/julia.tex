@@ -317,7 +317,7 @@ we illustrate the concept using examples.
 Consider first the following code block:
 \begin{minted}{julia}
     function welcome(name)
-        println "Hello, " * name * "!"
+        println("Hello, " * name * "!")
     end
     result = broadcast(welcome, ["Alice", "Bob"])
 \end{minted}
