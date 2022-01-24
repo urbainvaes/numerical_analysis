@@ -785,19 +785,15 @@ we begin with two observations:
 \end{itemize}
 
 Simplifying a little,
-we may view a single precision floating point number as an array of bits with indices 0 to 31:
-\begin{center}
-    \definecolor{lightcyan}{rgb}{0.84,1,1}
-    \definecolor{lightgreen}{rgb}{0.64,1,0.71}
-    \definecolor{lightred}{rgb}{1,0.7,0.71}
-    \begin{bytefield}[bitheight=\widthof{~Sign~}, boxformatting={\centering\small}]{32}
-        \bitheader[endianness=little]{0, 8, 31} \\
-        \bitbox{1}[bgcolor=lightcyan]{\rotatebox{90}{Sign}} &
-        \bitbox{8}[bgcolor=lightgreen]{Encoded exponent} &
-        \bitbox{23}[bgcolor=lightred]{Encoded significand}
-    \end{bytefield}
-    % s e_0 e_1 e_2 e_3 e_4 e_5 e_6 e_7 e_8
-\end{center}
+we may view single precision floating point number as an array of 32 bits as illustrated below:
+\begin{alignat*}{3}
+    &\fcolorbox{black}{lightcyan}{\text{Sign}}
+    \hspace{.1cm}
+    &&\fcolorbox{black}{lightgreen}{\quad\text{Encoded exponent}\quad}
+    \hspace{.1cm}
+    &&\fcolorbox{black}{lightred}{\qquad\qquad\text{Encoded significand}\qquad\qquad}\\[-.1cm]
+    &\text{\small 1 bit} &&\text{\small 8 bits} &&\text{\small 23 bits}
+\end{alignat*}
 According to the IEEE 754 standard,
 the first bit is the sign $s$,
 the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
