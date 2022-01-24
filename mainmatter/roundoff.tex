@@ -474,7 +474,6 @@ it rarely needs worrying about.
 \end{remark}
 
 \subsection{Exercises}%
-\label{sub:exercises}
 
 \begin{exercise}
     Write down the values of the smallest and largest, in absolute value,
@@ -639,7 +638,6 @@ Similarly, \emph{underflow} occurs when a number
 is smaller than the smallest representable number in a floating point format.
 
 \subsection{Exercises}%
-\label{sub:exercises}
 
 % \begin{exercise}
 %     [Tie to even]
@@ -674,10 +672,10 @@ is smaller than the smallest representable number in a floating point format.
     \[
         f'(0) = \lim_{\delta \to 0} \left( \frac{f(\delta) - f(0)}{\delta} \right).
     \]
-    It is natural to use the expression within brackets on the right-hand side
-    with a small but nonzero $\delta$ as an approximation for $f'(0)$.
-    Implement this approach using double-precision numbers and the same values of $\delta$ as in the table below,
-    and explain the results.
+    Therefore, it is natural to use the expression within brackets on the right-hand side
+    with a small but nonzero~$\delta$ as an approximation for $f'(0)$.
+    Implement this approach using double-precision numbers and the same values for $\delta$ as in the table below.
+    Explain the results you obtain.
     \begin{center}
         \begin{tabular}{c|c|c|c}
             $\delta$ & $\frac{1}{4} \varepsilon_{64}$ & $\frac{1}{2} \varepsilon_{64}$ & $\varepsilon_{64}$ \\
@@ -861,13 +859,13 @@ One may determine the exponent and significand of a floating point number from t
 \end{table}
 
 \begin{exercise}
-    Determine the encoding of the \texttt{Float32} numbers:
+    Determine the encoding of the following \julia{Float32} numbers:
     \begin{itemize}
         \item $x = 2.0^{E_{\min}}$.
         \item $x = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
         \item $x = 2.0^{E_{\max}} (2-2^{-p+1})$
     \end{itemize}
-    Check your results using the Julia function \texttt{bitstring}.
+    Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
 
 % Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
