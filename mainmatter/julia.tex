@@ -124,6 +124,21 @@ squares = map(x -> x^2, [1, 2, 3, 4, 5])
 cubes = map(x -> x^3, [1, 2, 3, 4, 5])
 \end{minted}
 
+The \julia{return} keyword can used for returning a value to the function caller.
+Several values, separated by commas, can be returned at once.
+The following function, for example, takes a number $x$ and returns a tuple $(x, x^2, x^3)$.
+\begin{minted}{julia}
+function powers(x)
+    return x, x^2, x^3
+end
+
+# This is equivalent to the following inline notation
+short_powers(x) = x, x^2 x^3
+
+# This assigns a = 2, b = 4, c = 8
+a, b, c = powers(2)
+\end{minted}
+
 \begin{task}
     [Tower of Hanoi]
     We consider a variation on the popular Tower of Hanoi problem
@@ -223,11 +238,30 @@ For example, \julia{[M M]} defines is the matrix
         1 & 2 & 3 & 1 & 2 & 3 \\ 4 & 5 & 6 & 4 & 5 & 6
     \end{pmatrix}
 \]
-The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$,
-and \julia{M'} is the transpose of $M$.
+The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$.
+The special entry \texttt{end} can be used to access the last row or column.
+For instance, \julia{M[end-1, end]} gives the matrix entry in the second to last row and the last column.
+From the matrix $M$ above, 
+the submatrix \julia{[2  3; 5 6]} can be obtained with \julia{M[:, 2:3]}.
+Here the row index \julia{:} means ``select all line'' and the column index~\julia{2:3} means ``select columns 2 and 3''.
+Likewise, the submatrix \julia{[1 3; 4 6]} may be extracted with \julia{M[:, [1; 3]]}.
+\begin{remark}
+    [One-dimensional arrays]
+    When creating one-dimensional vectors, 
+    it is equivalent to use the semicolon~\julia{;} or the comma~\julia{,} in order to separate entries.
+    That is, \julia{x = [1, 2, 3]} and \julia{x = [1; 2; 3]} both produce the same result:
+    a \julia{Vector} object with elements $(1, 2, 3)$.
+    We emphasize that \julia{x} is \emph{not} a \julia{Matrix} object.
+    In contrast, the expression \julia{x = [1 2 3]} produces a matrix with one row and three columns.
+\end{remark}
+
 There are many built-in functions for quickly creating commonly used arrays.
 For example,
 \begin{itemize}
+    \item 
+        \julia{transpose(M)} gives the transpose of $M$, and \julia{adjoint(M)} or \julia{M'} gives the transpose conjugate.
+        For a matrix with real-valued entries,
+        both functions deliver the same result.
     \item \julia{zeros(Int, 4, 5)} creates a $4\times 5$ matrix of zeros of type \julia{Int};
     \item \julia{ones(2, 2)} creates a $2 \times 2$ matrix of ones;
     \item \julia{range(0, 1, length=101)} creates an array of size 101 with elements evenly spaced between 0 and 1 included.
@@ -244,7 +278,7 @@ For example,
 \end{itemize}
 Let us also mention the following shorthand notation for creating vectors and matrices:
 \begin{itemize}
-    \item \julia{[i^2 for i in 1:5]} creates the vector $(1, 4, 9, 16, 25]$.
+    \item \julia{[i^2 for i in 1:5]} creates the vector \julia{[1, 4, 9, 16, 25]}.
     \item \julia{[i + 10*j for i in 1:4, j in 1:4]} creates the matrix
         \[
             \begin{pmatrix}
@@ -252,9 +286,16 @@ Let us also mention the following shorthand notation for creating vectors and ma
                 12  & 22  & 32  & 42 \\
                 13  & 23  & 33  & 43 \\
                 14  & 24  & 34  & 44
-            \end{pmatrix}
+            \end{pmatrix}.
         \]
+    \item 
+        \julia{[i for i in 1:10 if ispow2(i)]} creates the vector \julia{[1, 2, 4, 8]}.
+        The same result can be achieved with the \julia{filter} function: \julia{filter(ispow2, 1:10)}.
 \end{itemize}
+
+\begin{task}
+    Create a 10 by 10 diagonal matrix with the $i$-th entry on the diagonal equal to $i$.
+\end{task}
 
 \subsection*{Broadcasting}%
 \label{sub:broadcasting}
@@ -264,7 +305,7 @@ which enables to apply functions to array elements or perform operations on arra
 Julia really shines in this area,
 with syntax that is both explicit and concise.
 Rather than providing a detailed definition of broadcasting,
-which is available in a part of the Julia manual dedicated to multi-dimensional array,
+which is available in \href{https://docs.julialang.org/en/v1/manual/arrays/#Broadcasting}{this part} of the official documentation,
 we illustrate the concept using examples.
 Consider first the following code block:
 \begin{minted}{julia}
@@ -275,10 +316,9 @@ result = broadcast(welcome, ["Alice", "Bob"])
 \end{minted}
 Here \julia{broadcast} returns an array with elements \julia{"Hello, Alice!"} and \julia{"Hello, Bob!"},
 as would the \julia{map} function.
-Broadcasting, however, is much more flexible,
-in that it can take arrays with different sizes.
-For instance, \julia{broadcast(gcd, 24, [10, 20, 30])} returns an array of size 3 with the greatest common divisors of $(24, 10)$, $(24, 20)$ and $(24, 30)$.
-Likewise, the instruction \julia{broadcast(+, 1, [1, 2, 3])} returns \julia{[2, 3, 4]}.
+Broadcasting, however, is much more flexible because it can handle arrays with different sizes.
+For instance, \julia{broadcast(gcd, 24, [10, 20, 30])} returns an array of size 3 containing the greatest common divisors of the pairs $(24, 10)$, $(24, 20)$ and $(24, 30)$.
+Similarly, the instruction \julia{broadcast(+, 1, [1, 2, 3])} returns \julia{[2, 3, 4]}.
 To understand the latter example, note that \julia{+} (as well as \julia{*}, \julia{-} and \julia{/}) can be called like any other Julia functions;
 the notation \julia{a + b} is just syntactic sugar for \julia{+(a, b)}.
 
@@ -288,11 +328,10 @@ can be written compactly as \julia{welcome.(["Alice", "Bob"])}.
 Likewise, the expression \julia{1 .+ [1, 2, 3]} returns the array \julia{[2, 3, 4]}.
 
 \begin{task}
-    Explain in words what the following instructions do?
+    Explain in words what the following instructions do.
     \begin{minted}{julia}
     reshape(1:9, 3, 3) .+ [1 2 3]
     reshape(1:9, 3, 3) .+ [1; 2; 3]
     \end{minted}
 \end{task}
-
 
