@@ -1,3 +1,5 @@
+\setlength{\OuterFrameSep}{0pt}
+
 \chapter{Vectors and matrices}%
 \label{cha:vectors_and_matrices}
 
@@ -18,6 +20,10 @@ and those of a matrix $A \in \real^{m \times n}$ are denoted by~$(a_{ij})$.
 \label{sub:vector_norms}
 
 We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
+For simplicity,
+we consider only the case of a \emph{real} vector space,
+i.e.\ a vector space for which the scalar field is $\real$,
+but the concepts can be extended to the case of a \emph{complex} vector space.
 \begin{definition}
     An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \real$ satisfying the following axioms:
     \begin{itemize}
@@ -34,7 +40,7 @@ We begin by recalling the definitions of the fundamental concepts of \emph{inner
             it holds that
             \[
                 \ip{\alpha \vect x + \beta \vect y, \vect z}
-                = \alpha \ip{\vect x, \vect y} + \beta \ip{\vect x, \vect z}.
+                = \alpha \ip{\vect x, \vect z} + \beta \ip{\vect y, \vect z}.
             \]
 
         \item
@@ -49,6 +55,7 @@ For example, the familiar Euclidean inner product on $\real^n$ is given by
 \[
     \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i y_i.
 \]
+A vector space with an inner product is called an \emph{inner product space}.
 
 \begin{definition}
 A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
@@ -76,9 +83,44 @@ A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \
 \end{itemize}
 \end{definition}
 Any inner product on $\mathcal X$ induces a norm via the formula
-\[
+\begin{equation}
+    \label{eq:induced_norm}
     \norm{\vect x} = \sqrt{\ip{\vect x, \vect x}}.
-\]
+\end{equation}
+The fundamental Cauchy--Schwarz inequality enables to bound inner products using norms.
+\begin{proposition}
+    [Cauchy--Schwarz inequality]
+    \label{proposition:cauchy_shwartz}
+    Let $\mathcal X$ be an inner product space.
+    It holds that
+    \begin{equation}
+        \label{eq:cauchy_shwartz}
+        \forall  (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+        \abs[big]{\ip{\vect x, \vect y}} \leq \norm{\vect x} \norm{\vect y}.
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    Let us define $p(t) = \norm{\vect x + t \vect y}^2$.
+    Using the bilinearity of the inner product,
+    we have
+    \[
+        p(t) = \norm{\vect x}^2 + 2 t \ip{\vect x, \vect y} + t^2 \norm{\vect y}^2.
+    \]
+    This shows that $p$ is a convex second-order polynomial with a minimum at $t_* = - \ip{\vect x, \vect y} / \norm{\vect y}^2$.
+    Substituting this value in the expression of $p$,
+    we obtain
+    \[
+        p(t_*) = \norm{\vect x}^2 - 2 \frac{\abs[big]{\ip{\vect x, \vect y}}^2}{\norm{\vect y}^2} +  \frac{\abs[big]{\ip{\vect x, \vect y}}^2}{\norm{\vect y}^2}
+        = \norm{\vect x}^2 - \frac{\abs[big]{\ip{\vect x, \vect y}}^2}{\norm{\vect y}^2}.
+    \]
+    Since $p(t_*) \geq 0$ by definition of $p$,
+    we obtain~\eqref{eq:cauchy_shwartz}.
+\end{proof}
+
+\begin{exercise}
+    Using~\cref{proposition:cauchy_shwartz},
+    show that the norm in~\eqref{eq:induced_norm} satisfies the triangle inequality.
+\end{exercise}
 
 We say that two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\mathcal X$ are equivalent if
 there exists positive real numbers~$c_{\ell}$ and $c_u$ such that
@@ -125,7 +167,7 @@ The proof is provided for information purposes.
     This proves the first inequality in~\eqref{eq:norm_equilavence},
     and reversing the roles of $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ yields the second inequality.
 
-    Let us now prove~\eqref{eq:bound2} by contradiction.
+    We now prove~\eqref{eq:bound2} by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
     that~$\norm{\vect x^{(i)}}_{\beta} \to 0$ as $i \to \infty$ but $\abs{\lambda_1^{(i)}} + \dotsb + \abs{\lambda_n^{(i)}} = 1$ for all $i \in \nat$.
@@ -133,7 +175,7 @@ The proof is provided for information purposes.
     we can extract a subsequence, still denoted by $(\vect x^{(i)})_{i \in \nat}$ for simplicity,
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
     by compactness of the interval~$[-1, 1]$.
-    Iterating this procedure for $\lambda_2, \lambda_3, \dots$,
+    Repeating this procedure for $\lambda_2, \lambda_3, \dots$,
     by taking a new subsequence every time,
     we obtain a subsequence such that $\lambda^{(i)}_j \to \lambda_j^*$ for all $j \in \{1, \dotsc, n\}$.
     Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the $\norm{\placeholder}_{\beta}$ norm.
@@ -177,14 +219,14 @@ Notice that the infinity norm $\norm{\placeholder}_{\infty}$ may be defined as t
 \section{Matrix norms}%
 \label{sec:matrix_norms}
 
-Any matrix $A \in \real^{m \times n}$ induces a linear operator from $\real^n$ to $\real^m$,
+To any matrix $A \in \real^{m \times n}$, there corresponds a linear operator from $\real^n$ to $\real^m$
 with action given by~$\vect x \mapsto A \vect x$.
-If we endow $\real^m$ and $\real^n$ with norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ respectively,
-then $A$ may be viewed as an operator between normed vector spaces,
-and the corresponding \emph{operator norm} of $A$ is given by
+If $\real^m$ and $\real^n$ are endowed with norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ respectively,
+then the linear operator induced by $A$ is between normed vector spaces,
+and the corresponding \emph{operator norm} is given by
 \begin{equation}
     \label{eq:subordinate_norm}
-    \norm{A}_{\alpha,\beta} = \sup \bigl\{ \norm{A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}
+    \norm{A}_{\alpha,\beta} = \sup \bigl\{ \norm{A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}.
 \end{equation}
 \begin{proposition}
     Equation~\eqref{eq:subordinate_norm} defines a norm on $\real^{m \times n}$.
@@ -195,11 +237,11 @@ and the corresponding \emph{operator norm} of $A$ is given by
     \begin{itemize}
         \item
             \textbf{Positivity}. If $A \neq 0$,
-            then there is a column of $A$, say the $i$-th one, that is nonzero.
+            then there is a column of $A$, say the $j$-th one, that is nonzero.
             Let~$\vect y$ be the vector with all entries equal to zero except the $j$-th one which is equal to 1,
             and let~$\vect x = \vect y / \norm{\vect y}_{\beta}$ so that $\norm{\vect x}_{\beta} = 1$.
             It is clear that $A \vect x \neq \vect 0$,
-            and so $\norm{A \vect x}_{\alpha} > 0$ since $\norm{\placeholder}_{\alpha}$ is a norm and $\vect x \neq \vect 0$,
+            so $\norm{A \vect x}_{\alpha} > 0$ by positivity of the norm $\norm{\placeholder}_{\alpha}$,
             implying that $\norm{A}_{\alpha,\beta} > 0$.
 
         \item
@@ -225,12 +267,13 @@ and the corresponding \emph{operator norm} of $A$ is given by
 \end{proof}
 
 In numerical analysis applications,
-it is often the case that the relevant norms for~$\real^m$ and~$\real^n$ are $p$-norms with the same $p$ for both spaces.
+it is frequently the case that the relevant norms for~$\real^m$ and~$\real^n$ are $p$-norms with the same value $p$ for both spaces.
+It is therefore natural to define the matrix $p$-norm as follows.
 \begin{definition}
 Given $p \in [1, \infty]$,
 the $p$-norm of a matrix $A \in \real^{m\times n}$ is given by
 \begin{equation}
-    \label{eq:subordinate_norm}
+    \label{eq:matrix_p_norm}
     \norm{A}_{p} := \sup \bigl\{ \norm{A \vect x}_{p} : \vect x \in \real^n, \norm{\vect x}_{p} \leq 1 \bigr\}.
 \end{equation}
 \end{definition}
@@ -239,14 +282,17 @@ Not all matrix norms are induced by vector norms.
 For example, the Frobenius norm,
 which is widely used in applications,
 is not induced by a vector norm.
-It is, however, induced by an inner product on~$\real^{m \times n}$. (Can you find which one?)
-
+It is, however, induced by an inner product on~$\real^{m \times n}$.
 \begin{definition}
     The Frobenius norm of $A \in \real^{m\times n}$ is defined by
-    \[
+    \begin{equation}
+        \label{eq:frobenius_norm}
         \norm{A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{m} \abs{a_{ij}}^2.
-    \]
+    \end{equation}
 \end{definition}
+\begin{exercise}
+    Write down the inner product on $\real^{m \times n}$ corresponding to~\eqref{eq:frobenius_norm}.
+\end{exercise}
 
 \section{Diagonalization}%
 \label{sec:diagonalization}
@@ -254,18 +300,48 @@ It is, however, induced by an inner product on~$\real^{m \times n}$. (Can you fi
 \begin{definition}
     A square matrix $A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $P \in \real^{n \times n}$
     and a diagonal matrix $D \in \real^{n \times n}$ such that
-    \[
+    \begin{equation}
+        \label{eq:eigen_decomposition}
         AP = PD.
-    \]
+    \end{equation}
     In this case,
     the diagonal elements of $D$ are called the eigenvalues of~$A$,
     and the columns of $P$ are called the eigenvectors of~$A$.
 \end{definition}
+Denoting by $\vect e_i$ the $i$-th column of $P$ and by $\lambda_i$ the $i$-th diagonal element of $D$,
+we have by~\eqref{eq:eigen_decomposition} that $A \vect e_i = \lambda_i \vect e_i$ or,
+equivalently, $(A - \lambda_i I_n) \vect e_i = \vect 0$. Here $I_n$ is the~$\real^{n \times n}$ identity matrix.
+Therefore, $\lambda$ is an eigenvalue of $A$ if and only if $\det(A - \lambda I_n) = 0$.
+In other words, the eigenvalues of $A$ are the roots of $\det(A - \lambda I_n)$,
+called the \emph{characteristic polynomial}.
 
-The transpose of a matrix $A \in \real^{m \times n}$, denoted by $A^\t \in \real^{n \times n}$,
-is the matrix with entries~$a^\t_{ij} = a_{ji}$.
+\begin{exercise}
+    Prove that if $A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
+    then $A^n = P D^n P^{-1}$.
+\end{exercise}
+
+\subsection*{Symmetric matrices and spectral theorem}%
+The transpose of a matrix $A \in \real^{m \times n}$ is denoted by $A^\t \in \real^{n \times m}$
+and defined as the matrix with entries~$a^\t_{ij} = a_{ji}$.
 A matrix equal to its transpose is necessarily square and called \emph{symmetric}.
 Symmetric matrices enjoy many nice properties,
-the main one being that they are diagonalizable with an orthogonal matrix,
-i.e.\ a matrix $Q \in \real^{n \times n}$ such that $Q^\t Q = I$,
-where $I$ is the identity matrix.
+the main one being that they are diagonalizable with real eigenvalue and a matrix $P$ that is orthogonal,
+i.e. such that $P^{-1} = P^\t$.
+This is the content of the \emph{spectral theorem},
+a pillar of linear algebra which admits important generalizations to infinite-dimensional operators.
+
+Before stating the spectral theorem,
+we note that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a symmetric matrix associated with different eigenvalues,
+then they are necessarily orthogonal for the Euclidean inner product.
+Indeed, since $A = A^\t$ it holds that
+\[
+    (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
+    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2}
+    = \ip{A \vect e_1, \vect e_2} - \ip{\vect e_1, A \vect e_2}
+    = \ip{A \vect e_1, \vect e_2} - \ip{A^\t \vect e_1, \vect e_2} = 0.
+\]
+
+
+\begin{theorem}
+    [Spectral theorem for real symmetric matrices]
+\end{theorem}
