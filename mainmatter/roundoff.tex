@@ -443,7 +443,7 @@ the relative spacing oscillates between~$\frac{1}{2} \varepsilon_{M}$ and~$\vare
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.8\textwidth]{figures/float64_spacing.pdf}
+    \includegraphics[width=.65\textwidth]{figures/float64_spacing.pdf}
     \caption{%
         Relative spacing between successive double-precision floating point numbers in the ``normal range''.
         The relative spacing oscillates between $\frac{1}{2} \varepsilon_M$ and $\varepsilon_M$.
@@ -460,7 +460,7 @@ it rarely needs worrying about.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.8\textwidth]{figures/float64_spacing_denormalized.pdf}
+    \includegraphics[width=.65\textwidth]{figures/float64_spacing_denormalized.pdf}
     \caption{%
         Relative spacing between successive double-precision floating point numbers,
         over a range which includes denormalized number.
@@ -725,7 +725,7 @@ is smaller than the smallest representable number in a floating point format.
     \begin{equation}
         \label{eq:sample_variance_2}
         s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right),
-        \qquad \bar x = \frac{1}{N} x_n.
+        \qquad \bar x = \frac{1}{N} \sum_{n=1}^{N} x_n.
     \end{equation}
     Write a computer code to calculate $s^2$ with the best possible accuracy.
     Can you find a formula that enables better accuracy than~\eqref{eq:sample_variance_2}?
@@ -740,8 +740,18 @@ is smaller than the smallest representable number in a floating point format.
 \end{remark}
 
 \begin{exercise}
+    Euler proved that
+    \[
+        \frac{\pi^2}{6} = \lim_{N \to \infty} \sum_{n=1}^{N} \frac{1}{n^2}.
+    \]
+    Using the default \julia{Float64} format,
+    estimate the error obtained when the series on the right-hand side is truncated after $10^{10}$ terms.
+    Can you rearrange the sum for best accuracy?
+\end{exercise}
+
+\begin{exercise}
     Let $x$ and $y$ be positive real numbers,
-    and let us extend the domain of the machine addition operator $\madd$ to the real numbers by defining it as 
+    and let us extend the domain of the machine addition operator $\madd$ to the real numbers by defining it as
     \[
         \madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr).
     \]
@@ -757,6 +767,7 @@ is smaller than the smallest representable number in a floating point format.
     given the rounding rule defined by the IEEE standard? Explain.
 \end{exercise}
 
+\newpage
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
@@ -824,7 +835,7 @@ is given by $e_0 e_1 \dots e_6 e_7$.
 One may determine the exponent and significand of a floating point number from the following rules.
 \begin{itemize}
     \item
-        \textbf{Subnormal numbers}:
+        \textbf{Denormalized numbers}:
         If $e = 0$, then the implicit leading bit $b_0$ is zero,
         the fraction is $b_1 b_2 \dots b_{p-2} b_{p-1}$, and the exponent is $E = E_{\min}$.
         In other words, using the notation of~\cref{sec:set_of_values},
@@ -876,12 +887,12 @@ One may determine the exponent and significand of a floating point number from t
 
 \begin{remark}
     [Encoding efficiency]
-    With 32 bits, 
+    With 32 bits,
     at most $2^{32}$ different numbers could in principle be represented.
     In practice, as we saw in \cref{exercise:cardinality_floating},
     the \julia{Float32} format enables to represent
     \[
-        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1 
+        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
         = 253 \times 2^{23} + 2^{25} - 1
         = 2^{32} - 2^{24} - 1
         \approx 99.6 \% \times 2^{32},
@@ -893,10 +904,15 @@ One may determine the exponent and significand of a floating point number from t
 \begin{exercise}
     Determine the encoding of the following \julia{Float32} numbers:
     \begin{itemize}
-        \item $x = 2.0^{E_{\min}}$.
-        \item $x = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
-        \item $x = 2.0^{E_{\max}} (2-2^{-p+1})$
+        \item $x_1 = 2.0^{E_{\min}}$
+        \item $x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
+        \item $x_3 =2.0^{E_{\max}} (2-2^{-p+1})$
     \end{itemize}
+    % \[
+    %     x_1 = 2.0^{E_{\min}},
+    %     \qquad x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149},
+    %     \qquad x_3 = 2.0^{E_{\max}} (2-2^{-p+1}).
+    % \]
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
 
