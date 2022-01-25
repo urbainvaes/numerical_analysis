@@ -1,10 +1,26 @@
 \chapter{Solution of linear systems of equation}
 \label{cha:solution_of_linear_systems}
 
-Systems of linear equations appear in a wide variety of applications.
+Systems of linear equations appear in a variety of applications.
 They naturally arise after discretization of linear partial differential equation,
-which are ubiquitous in physics.
-Laplace and Poisson equation is  Newtonian gravity, heat transfer, fluid flows.
+which govern a wide range of physical phenomena including heat and wave propagation, 
+gravity, fluid flows and electromagnetism.
+In the context of partial differential equations,
+the matrices appearing in linear systems are often very sparse: many of the entries are equal to 0.
+Additionally, they are often symmetric and positive definite,
+provided these properties are satisfied by the underlying partial differential operator.
+
+There are two main approaches for solving linear systems: 
+\begin{itemize}
+    \item 
+        Direct methods enable to calculate the exact solution to the system of equations, 
+        up to round-off errors.
+        Although this is an attractive property,
+        they are usually too computationally costly for large systems.
+
+    \item 
+        Iterative methods
+\end{itemize}
 
 % Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
 % depends in general on the \emph{numerical stability} of the method.
