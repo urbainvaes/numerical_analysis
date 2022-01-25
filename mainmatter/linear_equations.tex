@@ -1,3 +1,19 @@
 \chapter{Solution of linear systems}
 \label{cha:solution_of_linear_systems}
 
+% Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
+% depends in general on the \emph{numerical stability} of the method.
+% A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
+% and \emph{numerically stable} otherwise.
+% these errors generally need not be a cause worry when they appear in methods that are numerically stables.
+
+\begin{itemize}
+    \item 
+        In \cref{sec:conditioning},
+        we introduce the concept of \emph{conditioning}.
+        The condition number associated with a problem provides information on the sensitivity of the solution to errors in the data,
+        so it is useful for determining the potential impact of round-off errors.
+\end{itemize}
+
+\section{Conditioning}%
+\label{sec:conditioning}
