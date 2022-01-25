@@ -511,7 +511,7 @@ Now that we have presented the set of values representable on a computer,
 we attempt in this section to understand precisely how arithmetic operations between floating point formats are performed.
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
 the action of approximating a real number regarded as infinitely precise by a number in a floating point format $\floating (p, E_{\min}, E_{\max})$.
-The IEEE 754 standard specifies stipulates that the default mechanism for rounding a real number $x$,
+The IEEE 754 standard stipulates that the default mechanism for rounding a real number $x$,
 called \emph{round to nearest, ties to even},
 should behave as follows:
 \begin{itemize}
@@ -583,9 +583,9 @@ Float64
 \end{example}
 
 If a mathematical expression contains several binary arithmetic operations to be performed in succession,
-the floating point result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
+the result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
 and this floating point number is employed in the next binary operation.
-A consequence of this mechanism of arithmetic operations is that the operands $+$ and $*$ are generally \emph{not associative}.
+A consequence of this mechanism of arithmetic operations is that the machine operands $\madd$ and $\mtimes$ are generally \emph{not associative}.
 For example, in general
 \[
     (x \madd y) \madd  z \neq x \madd (y \madd z)
@@ -670,7 +670,7 @@ is smaller than the smallest representable number in a floating point format.
     Let $\varepsilon_{16}$ be the machine epsilon for the $\floating_{16}$ format,
     and define $y = \frac{3}{2} \varepsilon_{16}$.
     What is the relative error between $\Delta = (1 + y) - 1$,
-    and the machine approximation $\widehat \Delta = (1 \madd x) \msub 1$?
+    and the machine approximation $\widehat \Delta = (1 \madd y) \msub 1$?
 \end{exercise}
 
 \begin{exercise}
@@ -680,7 +680,7 @@ is smaller than the smallest representable number in a floating point format.
     \[
         f'(0) = \lim_{\delta \to 0} \left( \frac{f(\delta) - f(0)}{\delta} \right).
     \]
-    Therefore, it is natural to use the expression within brackets on the right-hand side
+    It is natural to use the expression within brackets on the right-hand side
     with a small but nonzero~$\delta$ as an approximation for $f'(0)$.
     Implement this approach using double-precision numbers and the same values for $\delta$ as in the table below.
     Explain the results you obtain.
