@@ -216,6 +216,10 @@ Notice that the infinity norm $\norm{\placeholder}_{\infty}$ may be defined as t
     := \lim_{p \to \infty} \norm{\vect x}_p.
 \]
 
+In the rest of this chapter,
+the notations $\ip{\placeholder,\placeholder}$ and $\norm{\placeholder}$ without indices always refer to the Euclidean inner product~\eqref{eq:induced_norm} and induced norm,
+unless specified otherwise.
+
 \section{Matrix norms}%
 \label{sec:matrix_norms}
 
@@ -299,16 +303,16 @@ It is, however, induced by an inner product on~$\real^{m \times n}$.
 
 \begin{definition}
     A square matrix $A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $P \in \real^{n \times n}$
-    and a diagonal matrix $D \in \real^{n \times n}$ such that
+    and a diagonal matrix $\Lambda \in \real^{n \times n}$ such that
     \begin{equation}
         \label{eq:eigen_decomposition}
-        AP = PD.
+        A P = P D.
     \end{equation}
     In this case,
-    the diagonal elements of $D$ are called the eigenvalues of~$A$,
+    the diagonal elements of $\Lambda$ are called the eigenvalues of~$A$,
     and the columns of $P$ are called the eigenvectors of~$A$.
 \end{definition}
-Denoting by $\vect e_i$ the $i$-th column of $P$ and by $\lambda_i$ the $i$-th diagonal element of $D$,
+Denoting by $\vect e_i$ the $i$-th column of $P$ and by $\lambda_i$ the $i$-th diagonal element of $\Lambda$,
 we have by~\eqref{eq:eigen_decomposition} that $A \vect e_i = \lambda_i \vect e_i$ or,
 equivalently, $(A - \lambda_i I_n) \vect e_i = \vect 0$. Here $I_n$ is the~$\real^{n \times n}$ identity matrix.
 Therefore, $\lambda$ is an eigenvalue of $A$ if and only if $\det(A - \lambda I_n) = 0$.
@@ -317,7 +321,7 @@ called the \emph{characteristic polynomial}.
 
 \begin{exercise}
     Prove that if $A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
-    then $A^n = P D^n P^{-1}$.
+    then $A^n = P \Lambda^n P^{-1}$.
 \end{exercise}
 
 \subsection*{Symmetric matrices and spectral theorem}%
@@ -328,7 +332,7 @@ Symmetric matrices enjoy many nice properties,
 the main one being that they are diagonalizable with real eigenvalue and a matrix $P$ that is orthogonal,
 i.e. such that $P^{-1} = P^\t$.
 This is the content of the \emph{spectral theorem},
-a pillar of linear algebra which admits important generalizations to infinite-dimensional operators.
+a pillar of linear algebra with important generalizations to infinite-dimensional operators.
 
 Before stating the spectral theorem,
 we note that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a symmetric matrix associated with different eigenvalues,
@@ -340,8 +344,128 @@ Indeed, since $A = A^\t$ it holds that
     = \ip{A \vect e_1, \vect e_2} - \ip{\vect e_1, A \vect e_2}
     = \ip{A \vect e_1, \vect e_2} - \ip{A^\t \vect e_1, \vect e_2} = 0.
 \]
-
-
 \begin{theorem}
     [Spectral theorem for real symmetric matrices]
+    If $A \in \real^{n \times n}$ is symmetric,
+    then there exists a real orthogonal matrix $Q$ and a real diagonal matrix $\Lambda$ such that
+    \[
+        A Q = Q \Lambda.
+    \]
 \end{theorem}
+\begin{proof}
+    [Sketch of the proof]
+    The result is trivial for $n = 1$.
+    Reasoning by induction,
+    we assume that the result is true for symmetric matrices in $\real^{n-1 \times n-1}$
+    and prove that it then also holds for~$A \in \real^{n \times n}$.
+    % \begin{itemize}
+        % \item
+
+            \vspace{.3cm}
+            \textbf{Step 1. Existence of a real eigenvalue}.
+            By the fundamental theorem of algebra,
+            there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(A - \lambda I_n) = 0$,
+            to which there corresponds a solution $\vect e_1 \in \complex^n$ to the equation $(A - \lambda_1 I_n) \vect e = 0$.
+            The eigenvalue $\lambda_1$ is necessarily real because
+            \[
+                \overline \lambda \vect e_1^* \vect e_1
+                = (\lambda \vect e_1)^* \vect e_1
+                = (A \vect e_1)^* \vect e_1
+                = \vect e_1^* A^* \vect e_1
+                = \vect e_1^* (A \vect e_1)
+                = \vect e_1^* (\lambda \vect e_1)
+                = \lambda \vect e_1^* \vect e_1.
+            \]
+            Here $\overline \placeholder$ denotes the complex conjugate,
+            and $\placeholder^*$ denotes the conjugate transpose.
+            Since $\lambda_1$ is real, there exists a solution $\vect q_1 \in \real^n$,
+            which we may multiply by an appropriate factor so that
+            it is of norm 1,
+            % $\norm{\vect q_1}^2 = 1$,
+            to the equation $(A - \lambda_1 I_n) \vect e = 0$.
+
+        % \item
+            \vspace{.3cm}
+            \textbf{Step 2. Using the induction hypothesis}.
+            Next,
+            take an orthonormal basis $(\vect e_2, \dotsc, \vect e_n)$ of the orthogonal complement $\Span\{\vect q_1\}^\perp$
+            and construct the orthogonal matrix
+            \[
+                V = \begin{pmatrix} \vect q_1 & \vect e_2 & \dots & \vect e_n \end{pmatrix},
+            \]
+            i.e.\ the matrix with columns $\vect q_1$, $\vect e_2$, etc.
+            A calculation gives
+            \[
+                V^T A V =
+                \begin{pmatrix}
+                    \ip{\vect q_1, A \vect q_1} & \ip{\vect q_1, A \vect e_2} & \dots & \ip{\vect q_1, A \vect e_n} \\
+                    \ip{\vect e_2, A \vect q_1} & \ip{\vect e_2, A \vect e_2} & \dots & \ip{\vect e_2, A \vect e_n} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \ip{\vect e_n, A \vect q_1} & \ip{\vect e_n, A \vect e_2} & \dots & \ip{\vect e_n, A \vect e_n}
+                \end{pmatrix}
+                =
+                \begin{pmatrix}
+                    \lambda_1 & 0 & \dots & 0 \\
+                    0 & \ip{\vect e_2, A \vect e_2} & \dots & \ip{\vect e_2, A \vect e_n} \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    0 & \ip{\vect e_n, A \vect e_2} & \dots & \ip{\vect e_n, A \vect e_n}
+                \end{pmatrix}.
+            \]
+            Let us denote the $n-1 \times n-1$ lower right block of this matrix by $V_{n-1}$.
+            This is a symmetric matrix of size $n-1$ so,
+            using the induction hypothesis,
+            we deduce that $V_{n-1} = Q_{n-1} \Lambda_{n-1} Q_{n-1}^\t$
+            for appropriate matrices $Q_{n-1} \in \real^{n-1 \times n-1}$ and $\Lambda_{n-1} \in \real^{n-1 \times n-1}$
+            which are orthogonal and diagonal, respectively.
+
+        % \item
+            \vspace{.3cm}
+            \textbf{Step 3. Constructing $Q$ and $\Lambda$}.
+            Define now
+            \[
+                Q =
+                V
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & Q_{n-1}
+                \end{pmatrix}.
+            \]
+            It is not difficult to verify that $Q$ is an orthogonal matrix,
+            and we have
+            \[
+                Q^\t A Q =
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & Q_{n-1}^\t
+                \end{pmatrix}
+                V^\t A V
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & Q_{n-1}
+                \end{pmatrix}
+                =
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & Q_{n-1}^\t
+                \end{pmatrix}
+                \begin{pmatrix}
+                    \lambda_1 & \vect 0^\t \\
+                    \vect 0 & V_{n-1}
+                \end{pmatrix}
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & Q_{n-1}
+                \end{pmatrix}.
+            \]
+            Developing the last expression, we obtain
+            \[
+                Q^\t A Q
+                =
+                \begin{pmatrix}
+                    1 & \vect 0^\t \\
+                    \vect 0 & \Lambda_{n-1}
+                \end{pmatrix},
+            \]
+            which concludes the proof.
+    % \end{itemize}
+\end{proof}
