@@ -217,7 +217,7 @@ Notice that the infinity norm $\norm{\placeholder}_{\infty}$ may be defined as t
 \]
 
 In the rest of this chapter,
-the notations $\ip{\placeholder,\placeholder}$ and $\norm{\placeholder}$ without indices always refer to the Euclidean inner product~\eqref{eq:induced_norm} and induced norm,
+the notations $\ip{\placeholder,\placeholder}$ and $\norm{\placeholder}$ without subscript always refer to the Euclidean inner product~\eqref{eq:induced_norm} and induced norm,
 unless specified otherwise.
 
 \section{Matrix norms}%
@@ -226,8 +226,7 @@ unless specified otherwise.
 To any matrix $A \in \real^{m \times n}$, there corresponds a linear operator from $\real^n$ to $\real^m$
 with action given by~$\vect x \mapsto A \vect x$.
 If $\real^m$ and $\real^n$ are endowed with norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ respectively,
-then the linear operator induced by $A$ is between normed vector spaces,
-and the corresponding \emph{operator norm} is given by
+it is natural to define the \emph{operator norm} of $A$ as:
 \begin{equation}
     \label{eq:subordinate_norm}
     \norm{A}_{\alpha,\beta} = \sup \bigl\{ \norm{A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}.
@@ -347,7 +346,7 @@ Indeed, since $A = A^\t$ it holds that
 \begin{theorem}
     [Spectral theorem for real symmetric matrices]
     If $A \in \real^{n \times n}$ is symmetric,
-    then there exists a real orthogonal matrix $Q$ and a real diagonal matrix $\Lambda$ such that
+    then there exists an orthogonal matrix $Q \in \real^{n \times n}$ and a diagonal matrix $\Lambda \in \real^{n \times n}$ such that
     \[
         A Q = Q \Lambda.
     \]

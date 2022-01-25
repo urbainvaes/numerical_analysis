@@ -7,6 +7,7 @@
 \usepackage{amsfonts}
 \usepackage{mathtools}
 \usepackage{framed}
+\usepackage{mdframed}
 \usepackage[style=trad-abbrv,doi=true,url=true,isbn=false,backend=biber]{biblatex}
 \usepackage{setspace}
 \usepackage{algpseudocode}
@@ -40,6 +41,25 @@
     pdfauthor={Urbain Vaes}
     pdftitle={Lecture notes in Numerical Analysis}
     pdfsubject={Applied mathematics}
+}
+
+% Define frames
+\newenvironment{myframe}
+{%
+    \begin{mdframed}[
+        leftmargin=0cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightblue,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=0em,
+        innerbottommargin=.3em,
+    ]
+}
+{
+    \end{mdframed}
 }
 
 % Fonts for lualatex
@@ -156,8 +176,8 @@
    {\colorlet{shadecolor}{examplecolor}\begin{shaded}\begin{protoexample}}
    {\end{protoexample}\end{shaded}}
 \newenvironment{definition}
-   {\colorlet{shadecolor}{definitioncolor}\begin{shaded}\begin{protodefinition}}
-   {\end{protodefinition}\end{shaded}}
+   {\colorlet{shadecolor}{definitioncolor}\begin{myframe}\begin{protodefinition}}
+   {\end{protodefinition}\end{myframe}}
 \newenvironment{notation}
    {\colorlet{shadecolor}{notationcolor}\begin{shaded}\begin{protonotation}}
    {\end{protonotation}\end{shaded}}
@@ -225,3 +245,5 @@
 % \renewcommand{\headrule}{\color{darkgrey}\oldheadrule}
 % \renewcommand{\headrulewidth}{0pt}
 \setlength{\headheight}{13.59999pt}
+
+\setlength{\OuterFrameSep}{0pt}
