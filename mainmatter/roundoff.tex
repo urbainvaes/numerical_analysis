@@ -51,11 +51,6 @@ The rest of this chapter is organized as follows.
         according to the IEEE 754 standard, widely accepted today.
         We discuss also the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 
-    \item
-        In \cref{sec:conditioning},
-        we introduce the concept of \emph{conditioning}.
-        The condition number associated with a problem provides information on the sensitivity of the solution to errors in the data,
-        so it is useful for determining the potential impact of round-off errors.
 \end{itemize}
 In order to completely describe a floating-point system,
 one would in principle need to also discuss the storage of integer numbers
@@ -495,13 +490,14 @@ it rarely needs worrying about.
 
 \begin{exercise}
     [Cardinality of the set of floating point numbers]
+    \label{exercise:cardinality_floating}
     Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly
     \[
         (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
     \]
     \emph{distinct real numbers}.
     (In particular, the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN} are not counted.)
-    \textbf{Hint:} Count first the normalized and then the denormalized numbers.
+    \textbf{Hint:} Count first the numbers with $E > E_{\min}$ and then those with $E = E_{\min}$.
 \end{exercise}
 
 \section{Arithmetic operations between floating point formats}%
@@ -741,8 +737,11 @@ is smaller than the smallest representable number in a floating point format.
 
 \begin{exercise}
     Let $x$ and $y$ be positive real numbers,
-    and let us extend the machine addition operator $\madd$ to the real numbers by defining it as $\madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr)$.
-    Prove the following bound on the relative error between the sum $x+y$ and its machine approximation:
+    and let us extend the domain of the machine addition operator $\madd$ to the real numbers by defining it as 
+    \[
+        \madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr).
+    \]
+    Prove the following bound on the relative error between the sum $x+y$ and its machine approximation $x \madd y$:
     \[
         \frac{\bigl| (x + y) - (x \madd  y ) \bigr|}{|x + y|}
         \leq \frac{\varepsilon_M}{2}  \left(2 + \frac{\varepsilon_M}{2}\right).
@@ -763,24 +762,25 @@ i.e.\ the machine representation of numbers in this format,
 has no bearing on the magnitude and propagation of round-off errors.
 Studying encodings is, therefore, not essential for our purposes in this course,
 but we opted to cover the topic anyway in the hope that it will help the students build intuition on floating point numbers.
-At the end of this section, you will understand why the double-precision, single-precision, and half-precision numbers
-are often associated with the numbers 64, 32 and 16, respectively.
+We focus mainly on the single precision format,
+but the following discussion applies also to the double and half-precision formats,
+provided that the format parameters are changed accordingly.
 The material in this section is for information purposes only.
 
 We already mentioned, in~\cref{sec:set_of_values},
-that the parameters (sign, exponent and significand) of any nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ are unique in the standard representation.
-In this section,
-we discuss how these numbers are stored on the computer in practice.
-As their names suggest, the \texttt{Float32} and \texttt{Float64} formats use 32 and 64 bits of memory, respectively.
+that the parameters (sign, exponent and significand) of any nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ are unique in the standard representation,
+but how are these parameters are stored on the computer in practice?
+As their names suggest, the \julia{Float16}, \julia{Float32} and \julia{Float64} formats use 16, 32 and 64 bits of memory, respectively.
 A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
-For the \texttt{Float32} format,
+
+For the \julia{Float32} format,
 this approach would requires 1 bit for the sign,
 8 bits to cover the 254 possible values of the exponent, and 24 bits for the significand,
 i.e.\ for storing $b_0, \dots, b_{p-1}$.
 This leads to a total number of 33 bits,
 which is one more than is available,
-and this is without the special values \texttt{NaN}, \texttt{Inf} and \texttt{-Inf}.
-So how are numbers in the $\floating_{32}$ and $\floating_{64}$ formats actually stored?
+and this is without the special values \julia{NaN}, \julia{Inf} and \julia{-Inf}.
+So how are numbers in the $\floating_{32}$ format actually stored?
 To answer this question,
 we begin with two observations:
 \begin{itemize}
@@ -870,6 +870,22 @@ One may determine the exponent and significand of a floating point number from t
     \label{table:floating_point_formats_encoding}
 \end{table}
 
+\begin{remark}
+    [Encoding efficiency]
+    With 32 bits, 
+    at most $2^{32}$ different numbers could in principle be represented.
+    In practice, as we saw in \cref{exercise:cardinality_floating},
+    the \julia{Float32} format enables to represent
+    \[
+        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1 
+        = 253 \times 2^{23} + 2^{25} - 1
+        = 2^{32} - 2^{24} - 1
+        \approx 99.6 \% \times 2^{32},
+    \]
+    different real numbers,
+    which is a very good efficiency.
+\end{remark}
+
 \begin{exercise}
     Determine the encoding of the following \julia{Float32} numbers:
     \begin{itemize}
@@ -879,16 +895,6 @@ One may determine the exponent and significand of a floating point number from t
     \end{itemize}
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
-
-\section{Conditioning}%
-\label{sec:conditioning}
-
-
-% Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
-% depends in general on the \emph{numerical stability} of the method.
-% A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
-% and \emph{numerically stable} otherwise.
-% these errors generally need not be a cause worry when they appear in methods that are numerically stables.
 
 \section{Discussion and supplemental reading}%
 \label{sec:discussion_and_bibliograhpy}
