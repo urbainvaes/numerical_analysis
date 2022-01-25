@@ -724,16 +724,20 @@ is smaller than the smallest representable number in a floating point format.
     % The sample variance may also be written as
     \begin{equation}
         \label{eq:sample_variance_2}
-        s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right).
+        s^2 = \frac{1}{N-1} \left(\left(\sum_{n=1}^{N} x_n^2\right) - N \bar x^2 \right),
+        \qquad \bar x = \frac{1}{N} x_n.
     \end{equation}
     Write a computer code to calculate $s^2$ with the best possible accuracy.
     Can you find a formula that enables better accuracy than~\eqref{eq:sample_variance_2}?
     % ~\eqref{eq:sample_variance_2}
     % and compare the accuracy of the result.
-    In order to estimate the true value of $s^2$ for your samples,
-    use the \julia{BigFloat} format,
-    to which the array $x$ can be converted by using the instruction \julia{x = BigFloat.(x)}.
 \end{exercise}
+
+\begin{remark}
+    In order to estimate the true value of $s^2$ for your samples,
+    you can use the \julia{BigFloat} format,
+    to which the array $x$ can be converted by using the instruction \julia{x = BigFloat.(x)}.
+\end{remark}
 
 \begin{exercise}
     Let $x$ and $y$ be positive real numbers,
