@@ -1,4 +1,3 @@
-\appendix
 \chapter{Brief introduction to Julia}%
 \label{cha:a_very_short_introduction_to_julia}
 
@@ -132,14 +131,14 @@ Here, the function \julia{map} enables to transform a collection by applying a f
 
 The \julia{return} keyword can used for returning a value to the function caller.
 Several values, separated by commas, can be returned at once.
-The following function, for example, takes a number $x$ and returns a tuple $(x, x^2, x^3)$.
+For instance, the following function takes a number $x$ and returns a tuple $(x, x^2, x^3)$.
 \begin{minted}{julia}
     function powers(x)
         return x, x^2, x^3
     end
 
     # This is equivalent to the following inline notation
-    short_powers(x) = x, x^2 x^3
+    short_powers(x) = x, x^2, x^3
 
     # This assigns a = 2, b = 4, c = 8
     a, b, c = powers(2)
@@ -199,7 +198,7 @@ but
     println(a)
 \end{minted}
 produces \julia{ERROR: LoadError: UndefVarError: a not defined}.
-The variable \julia{a} defined the \julia{for} loop is said to be in the \emph{local scope} of the loop,
+The variable \julia{a} defined within the \julia{for} loop is said to be in the \emph{local scope} of the loop,
 whereas a variable defined outside of it is in the \emph{global scope}.
 In order to modify a global variable from a local scope,
 the \julia{global} keyword must be used.
@@ -245,11 +244,11 @@ For example, \julia{[M M]} defines is the matrix
     \end{pmatrix}
 \]
 The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$.
-The special entry \texttt{end} can be used to access the last row or column.
+The special entry \julia{end} can be used to access the last row or column.
 For instance, \julia{M[end-1, end]} gives the matrix entry in the second to last row and the last column.
 From the matrix $M$ above,
 the submatrix \julia{[2  3; 5 6]} can be obtained with \julia{M[:, 2:3]}.
-Here the row index \julia{:} means ``select all line'' and the column index~\julia{2:3} means ``select columns 2 and 3''.
+Here the row index \julia{:} means ``select all lines'' and the column index~\julia{2:3} means ``select columns 2 to 3''.
 Likewise, the submatrix \julia{[1 3; 4 6]} may be extracted with \julia{M[:, [1; 3]]}.
 \begin{remark}
     [One-dimensional arrays]
@@ -308,7 +307,7 @@ called \emph{array comprehensien} for creating vectors and matrices:
 \label{sub:broadcasting}
 To conclude this section,
 we briefly discuss \emph{broadcasting},
-which enables to apply functions to array elements or perform operations on arrays of different sizes.
+which enables to apply functions to array elements and to perform operations on arrays of different sizes.
 Julia really shines in this area,
 with syntax that is both explicit and concise.
 Rather than providing a detailed definition of broadcasting,
