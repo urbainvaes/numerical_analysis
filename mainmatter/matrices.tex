@@ -16,14 +16,14 @@ and those of a matrix $A \in \real^{m \times n}$ are denoted by~$(a_{ij})$.
 % \end{definition}
 % A matrix is \emph{symmetric} if it is equal to its transpose.
 
-\section{Vector norms}%
-\label{sub:vector_norms}
+\section{Inner products and norms}%
+\label{sec:inner_product_and_norm}
 
 We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
 For simplicity,
 we consider only the case of a \emph{real} vector space,
 i.e.\ a vector space for which the scalar field is $\real$,
-but the concepts can be extended to the case of a \emph{complex} vector space.
+but the concepts can be extended without conceptual obstructions to the case of a \emph{complex} vector space.
 \begin{definition}
     An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \real$ satisfying the following axioms:
     \begin{itemize}
@@ -117,12 +117,8 @@ The fundamental Cauchy--Schwarz inequality enables to bound inner products using
     we obtain~\eqref{eq:cauchy_shwartz}.
 \end{proof}
 
-\begin{exercise}
-    Using~\cref{proposition:cauchy_shwartz},
-    show that the norm in~\eqref{eq:induced_norm} satisfies the triangle inequality.
-\end{exercise}
-
-We say that two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\mathcal X$ are equivalent if
+Several norms can be defined on the same vector space $\mathcal X$.
+Two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\mathcal X$ are said to be equivalent if
 there exists positive real numbers~$c_{\ell}$ and $c_u$ such that
 \begin{equation}
     \label{eq:norm_equilavence}
@@ -188,9 +184,16 @@ The proof is provided for information purposes.
     This concludes the proof of~\eqref{eq:bound2}.
 \end{proof}
 
-Several norms can be defined on the same vector space.
-In the case of $\real^n$,
-the most common ones are particular cases of the $p$-norm, or H\"older norm.
+\begin{exercise}
+    Using~\cref{proposition:cauchy_shwartz},
+    show that the function $\norm{\placeholder}$ defined by~\eqref{eq:induced_norm} satisfies the triangle inequality.
+\end{exercise}
+
+\section{Vector norms}%
+\label{sub:vector_norms}
+
+In the vector space $\real^n$,
+the most commonly used norms ones are particular cases of the $p$-norm, also called H\"older norm.
 \begin{definition}
     Given $p \in [1, \infty]$,
     the $p$-norm of a vector $\vect x \in \real^n$ is defined by
@@ -203,12 +206,13 @@ the most common ones are particular cases of the $p$-norm, or H\"older norm.
     \]
 \end{definition}
 The values of $p$ most commonly encountered in applications are $1$, $2$ and $\infty$.
-The $2$-norm is also called the \emph{Eulidean norm}.
-The explicit expressions of the 1-norm and 2-norm are
+The $1$-norm is sometimes called the \emph{taxicab} or \emph{Manhattan} norm,
+and the $2$-norm is usually called the \emph{Eulidean norm}.
+The explicit expressions of these norms are
 \[
     \norm{\vect x}_1 = \sum_{i=1}^{n} \abs{x_i},
     \qquad
-    \norm{\vect x}_2 = \sqrt{\sum_{i=1}^{n} \abs{x_i}^2}
+    \norm{\vect x}_2 = \sqrt{\sum_{i=1}^{n} \abs{x_i}^2}.
 \]
 Notice that the infinity norm $\norm{\placeholder}_{\infty}$ may be defined as the limit of the $p$-norm as $p \to \infty$:
 \[
@@ -223,14 +227,15 @@ unless specified otherwise.
 \section{Matrix norms}%
 \label{sec:matrix_norms}
 
-To any matrix $A \in \real^{m \times n}$, there corresponds a linear operator from $\real^n$ to $\real^m$
-with action given by~$\vect x \mapsto A \vect x$.
-If $\real^m$ and $\real^n$ are endowed with norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ respectively,
-it is natural to define the \emph{operator norm} of $A$ as:
+Given two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\real^m$ and $\real^n$, respectively,
+we define the \emph{operator norm} induced by $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ of the matrix $A$ as
 \begin{equation}
     \label{eq:subordinate_norm}
     \norm{A}_{\alpha,\beta} = \sup \bigl\{ \norm{A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}.
 \end{equation}
+The term \emph{operator norm} is motivated by the fact that,
+to any matrix $A \in \real^{m \times n}$, there naturally corresponds the linear operator from $\real^n$ to $\real^m$ with action~$\vect x \mapsto A \vect x$.
+\Cref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
 \begin{proposition}
     Equation~\eqref{eq:subordinate_norm} defines a norm on $\real^{m \times n}$.
 \end{proposition}
@@ -239,13 +244,15 @@ it is natural to define the \emph{operator norm} of $A$ as:
     together with the triangle inequality.
     \begin{itemize}
         \item
-            \textbf{Positivity}. If $A \neq 0$,
-            then there is a column of $A$, say the $j$-th one, that is nonzero.
-            Let~$\vect y$ be the vector with all entries equal to zero except the $j$-th one which is equal to 1,
-            and let~$\vect x = \vect y / \norm{\vect y}_{\beta}$ so that $\norm{\vect x}_{\beta} = 1$.
-            It is clear that $A \vect x \neq \vect 0$,
-            so $\norm{A \vect x}_{\alpha} > 0$ by positivity of the norm $\norm{\placeholder}_{\alpha}$,
-            implying that $\norm{A}_{\alpha,\beta} > 0$.
+            Checking \textbf{positivity} is simple and left as an exercise.
+            % \textbf{positivity}
+            % . If $A \neq 0$,
+            % then there is a column of $A$, say the $j$-th one, that is nonzero.
+            % Let~$\vect y$ be the vector with all entries equal to zero except the $j$-th one which is equal to 1,
+            % and let~$\vect x = \vect y / \norm{\vect y}_{\beta}$ so that $\norm{\vect x}_{\beta} = 1$.
+            % It is clear that $A \vect x \neq \vect 0$,
+            % so $\norm{A \vect x}_{\alpha} > 0$ by positivity of the norm $\norm{\placeholder}_{\alpha}$,
+            % implying that $\norm{A}_{\alpha,\beta} > 0$.
 
         \item
             \textbf{Homogeneity} follows trivially from the definition~\eqref{eq:subordinate_norm}
@@ -263,15 +270,14 @@ it is natural to define the \emph{operator norm} of $A$ as:
                 &\leq \norm{A \vect x}_{\alpha} + \norm{B \vect x}_{\alpha}
                 \leq \norm{A}_{\alpha,\beta} + \norm{B}_{\alpha,\beta}.
             \end{align*}
-            Therefore, taking the supremum as in~\eqref{eq:subordinate_norm},
+            Taking the supremum as in~\eqref{eq:subordinate_norm},
             we obtain $\norm{A+B}_{\alpha,\beta} \leq \norm{A}_{\alpha,\beta} + \norm{B}_{\alpha,\beta}$.
     \end{itemize}
     Since the three properties are satisfied, $\norm{\placeholder}_{\alpha,\beta}$ is indeed a norm.
 \end{proof}
 
-In numerical analysis applications,
-it is frequently the case that the relevant norms for~$\real^m$ and~$\real^n$ are $p$-norms with the same value $p$ for both spaces.
-It is therefore natural to define the matrix $p$-norm as follows.
+The matrix $p$-norm is defined as the operator norm~\eqref{eq:subordinate_norm} in the particular case
+where $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ are both H\"older norms with the same value of $p$.
 \begin{definition}
 Given $p \in [1, \infty]$,
 the $p$-norm of a matrix $A \in \real^{m\times n}$ is given by
@@ -280,7 +286,6 @@ the $p$-norm of a matrix $A \in \real^{m\times n}$ is given by
     \norm{A}_{p} := \sup \bigl\{ \norm{A \vect x}_{p} : \vect x \in \real^n, \norm{\vect x}_{p} \leq 1 \bigr\}.
 \end{equation}
 \end{definition}
-We emphasize that this definition is just a particular case of~\eqref{eq:subordinate_norm}.
 Not all matrix norms are induced by vector norms.
 For example, the Frobenius norm,
 which is widely used in applications,
@@ -293,14 +298,27 @@ It is, however, induced by an inner product on~$\real^{m \times n}$.
         \norm{A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{m} \abs{a_{ij}}^2.
     \end{equation}
 \end{definition}
+
+A matrix norm $\norm{\placeholder}$ is said to be submultiplicative if,
+for any two matrices $\mat A \in \real^{m \times n}$ and $\mat B \in \real^{n \times \ell}$,
+it holds that
+\[
+    \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}.
+\]
+The $p$-norms are submultiplicative, and so is the Frobenius norm.
+
 \begin{exercise}
     Write down the inner product on $\real^{m \times n}$ corresponding to~\eqref{eq:frobenius_norm}.
+\end{exercise}
+\begin{exercise}
+    Show that the matrix $p$-norm is submultiplicative.
 \end{exercise}
 
 \section{Diagonalization}%
 \label{sec:diagonalization}
 
 \begin{definition}
+    \label{definition:diagonalizable}
     A square matrix $A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $P \in \real^{n \times n}$
     and a diagonal matrix $\Lambda \in \real^{n \times n}$ such that
     \begin{equation}
@@ -318,17 +336,19 @@ Therefore, $\lambda$ is an eigenvalue of $A$ if and only if $\det(A - \lambda I_
 In other words, the eigenvalues of $A$ are the roots of $\det(A - \lambda I_n)$,
 called the \emph{characteristic polynomial}.
 
-\begin{exercise}
-    Prove that if $A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
-    then $A^n = P \Lambda^n P^{-1}$.
-\end{exercise}
+\begin{remark}
+There is a definition parallel to \cref{definition:diagonalizable} for matrices in $A \in \complex^{n \times n}$.
+A matrix with real entries may not be diagonalizable in the sense of \cref{definition:diagonalizable} (over $\real$),
+but still be diagonalizable over $\complex$,
+when viewed as an element of $\complex^{n \times n}$.
+\end{remark}
 
 \subsection*{Symmetric matrices and spectral theorem}%
 The transpose of a matrix $A \in \real^{m \times n}$ is denoted by $A^\t \in \real^{n \times m}$
 and defined as the matrix with entries~$a^\t_{ij} = a_{ji}$.
 A matrix equal to its transpose is necessarily square and called \emph{symmetric}.
 Symmetric matrices enjoy many nice properties,
-the main one being that they are diagonalizable with real eigenvalue and a matrix $P$ that is orthogonal,
+the main one being that they are diagonalizable with a matrix $P$ that is orthogonal,
 i.e. such that $P^{-1} = P^\t$.
 This is the content of the \emph{spectral theorem},
 a pillar of linear algebra with important generalizations to infinite-dimensional operators.
@@ -468,3 +488,8 @@ Indeed, since $A = A^\t$ it holds that
             which concludes the proof.
     % \end{itemize}
 \end{proof}
+
+\begin{exercise}
+    Prove that if $A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
+    then $A^n = P \Lambda^n P^{-1}$.
+\end{exercise}
