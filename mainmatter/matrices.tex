@@ -321,16 +321,16 @@ The $p$-norms are submultiplicative, and so is the Frobenius norm.
 \begin{definition}
     \label{definition:diagonalizable}
     A square matrix $\mat A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $\mat P \in \real^{n \times n}$
-    and a diagonal matrix $\mat \Lambda \in \real^{n \times n}$ such that
+    and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
     \begin{equation}
         \label{eq:eigen_decomposition}
         \mat A \mat P = \mat P \mat D.
     \end{equation}
     In this case,
-    the diagonal elements of $\mat \Lambda$ are called the eigenvalues of~$\mat A$,
+    the diagonal elements of $\mat D$ are called the eigenvalues of~$\mat A$,
     and the columns of $\mat P$ are called the eigenvectors of~$\mat A$.
 \end{definition}
-Denoting by $\vect e_i$ the $i$-th column of $\mat P$ and by $\lambda_i$ the $i$-th diagonal element of $\mat \Lambda$,
+Denoting by $\vect e_i$ the $i$-th column of $\mat P$ and by $\lambda_i$ the $i$-th diagonal element of $\mat D$,
 we have by~\eqref{eq:eigen_decomposition} that $\mat A \vect e_i = \lambda_i \vect e_i$ or,
 equivalently, $(\mat A - \lambda_i \mat I_n) \vect e_i = \vect 0$.
 Here $\mat I_n$ is the~$\real^{n \times n}$ identity matrix.
@@ -368,9 +368,9 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
 \begin{theorem}
     [Spectral theorem for real symmetric matrices]
     If $\mat A \in \real^{n \times n}$ is symmetric,
-    then there exists an orthogonal matrix $\mat Q \in \real^{n \times n}$ and a diagonal matrix $\mat \Lambda \in \real^{n \times n}$ such that
+    then there exists an orthogonal matrix $\mat Q \in \real^{n \times n}$ and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
     \[
-        \mat A \mat Q = \mat Q \mat \Lambda.
+        \mat A \mat Q = \mat Q \mat D.
     \]
 \end{theorem}
 \begin{proof}
@@ -435,13 +435,13 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
             Let us denote the $n-1 \times n-1$ lower right block of this matrix by $\mat V_{n-1}$.
             This is a symmetric matrix of size $n-1$ so,
             using the induction hypothesis,
-            we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat \Lambda_{n-1} \mat Q_{n-1}^\t$
-            for appropriate matrices $\mat Q_{n-1} \in \real^{n-1 \times n-1}$ and $\mat \Lambda_{n-1} \in \real^{n-1 \times n-1}$
+            we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^\t$
+            for appropriate matrices $\mat Q_{n-1} \in \real^{n-1 \times n-1}$ and $\mat D_{n-1} \in \real^{n-1 \times n-1}$
             which are orthogonal and diagonal, respectively.
 
         % \item
             \vspace{.3cm}
-            \textbf{Step 3. Constructing $\mat Q$ and $\mat \Lambda$}.
+            \textbf{Step 3. Constructing $\mat Q$ and $\mat D$}.
             Define now
             \[
                 Q =
@@ -484,7 +484,7 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
                 =
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
-                    \vect 0 & \mat \Lambda_{n-1}
+                    \vect 0 & \mat D_{n-1}
                 \end{pmatrix},
             \]
             which concludes the proof.
@@ -493,5 +493,5 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
 
 \begin{exercise}
     Prove that if $\mat A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
-    then $\mat A^n = \mat P \mat \Lambda^n \mat P^{-1}$.
+    then $\mat A^n = \mat P \mat D^n \mat P^{-1}$.
 \end{exercise}
