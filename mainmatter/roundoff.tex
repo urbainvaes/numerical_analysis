@@ -51,6 +51,9 @@ The rest of this chapter is organized as follows.
         according to the IEEE 754 standard, widely accepted today.
         We discuss also the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 
+    \item
+        Finally, in \cref{sec:what_about_integer_formats},
+        we briefly present the standard integer formats and their machine representation.
 \end{itemize}
 In order to completely describe a floating-point system,
 one would in principle need to also discuss the storage of integer numbers
@@ -915,6 +918,33 @@ One may determine the exponent and significand of a floating point number from t
     % \]
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
+
+\section{What about integer formats?}%
+\label{sec:what_about_integer_formats}
+
+The machine representation of integer formats is much simpler than that of floating point numbers.
+In this short section,
+we give a few orders of magnitude concerning integer formats and briefly discuss overflow issues.
+
+Programming languages typically provide integer formats using 16, 32 and 64 bits.
+In Julia, these correspond to the types \julia{Int16}, \julia{Int32} and \julia{Int64},
+the latter being the default.
+The first bit stores the sign,
+and the remaining bits store the binary expansion of the integer.
+This means, for example, that the \julia{Int64} format enables to store integers from $-N$ to $N = 2^{63} - 1$.
+In contrast with floating point formats,
+integer formats do not provide special values like \julia{Inf} and \julia{NaN}.
+The number delivered by the machine when a calculation exceeds the maximum representable value in the format,
+called the \emph{overflow behavior}, generally depends on the programming language.
+
+Since the overflow behavior is not universal across programming languages,
+a detailed discussion is of little interest.
+We only mention that Julia uses a \emph{wraparound} behavior,
+where $N + 1$ silently returns $N$ and, 
+conversely, $-N - 1$ gives $N$;
+the integers loop back. 
+This can lead to unexpected results,
+such as \julia{2^64} returning 0.
 
 \section{Discussion and supplemental reading}%
 \label{sec:discussion_and_bibliograhpy}
