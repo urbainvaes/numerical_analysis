@@ -66,7 +66,11 @@
 \usepackage{fontspec}
 % \setmonofont{Monaco}[Scale=MatchLowercase,BoldFont=DejaVu sans Mono-bold]
 % \setmonofont{DejaVu sans Mono}[Scale=MatchLowercase,BoldFont=DejaVu sans Mono-bold]
-\setmonofont{Latin Modern Mono}[Scale=MatchLowercase,ItalicFont=Latin Modern Mono]
+\setmonofont{Latin Modern Mono}[%
+    Scale=MatchLowercase,
+    ItalicFont=Latin Modern Mono,
+    BoldItalicFont=DejaVu sans Mono-bold,
+    BoldFont=DejaVu sans Mono-bold]
 % \setmainfont{DejaVu Serif}
 \usepackage{newunicodechar}
 % To check that a font supports Greek letters, try 'albatross α'
@@ -234,9 +238,10 @@
 
 % Left-Odd, Right-Even
 \definecolor{darkgrey}{RGB}{120,120,120}
-\fancyhead[LE,RO]{\color{darkgrey}\textit{\nouppercase{\leftmark}}}
+% \fancyhead[LE,RO]{\color{darkgrey}\textit{\nouppercase{\leftmark}}}
+\fancyhead[R]{\color{darkgrey}\textit{\nouppercase{\leftmark}}}
 % \fancyhead[LO,RE]{\color{darkgrey}\textit{\thepage}}
-\fancyhead[LO,RE]{}
+% \fancyhead[LO,RE]{}
 % \fancyfoot[C]{\color{darkgrey}\textit{\thepage}}
 \fancyfoot[C]{\thepage}
 \pagestyle{fancy}

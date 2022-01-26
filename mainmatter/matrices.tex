@@ -11,11 +11,6 @@ and upper case to denote matrices, e.g.\ $\mat A \in \real^{m \times n}$.
 The entries of a vector $\vect x \in \real^n$ are denoted by~$(x_i)$,
 and those of a matrix $\mat A \in \real^{m \times n}$ are denoted by~$(a_{ij})$.
 
-% \begin{definition}
-%     The transpose of $A$, denoted by $A^\t$, is the matrix with entries $a^\t_{ij} = a_{ji}$.
-% \end{definition}
-% A matrix is \emph{symmetric} if it is equal to its transpose.
-
 \section{Inner products and norms}%
 \label{sec:inner_product_and_norm}
 
@@ -444,8 +439,8 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
             \textbf{Step 3. Constructing $\mat Q$ and $\mat D$}.
             Define now
             \[
-                Q =
-                V
+                \mat Q =
+                \mat V
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
                     \vect 0 & \mat Q_{n-1}
