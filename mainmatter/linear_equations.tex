@@ -1,25 +1,40 @@
 \chapter{Solution of linear systems of equation}
 \label{cha:solution_of_linear_systems}
+This chapter is devoted to the numerical solution of linear problems of the following form:
+\begin{equation}
+    \label{eq:linear_system}
+    \text{Find $\vect x \in \real^n$ such that} \qquad
+    \mat A \vect x = \vect b,
+    \qquad \mat A \in \real^{n \times n},
+    \qquad \vect b \in \real^n.
+\end{equation}
+Systems of this type appear in a variety of applications.
+They naturally arise in the context of linear partial differential equations,
+which we use as main motivating example.
+Partial differential equations govern a wide range of physical phenomena including heat propagation, gravity, and electromagnetism,
+to mention just a few.
+Linear systems in this context often have a particular structure:
+the matrix $\mat A$ is generally very sparse,
+which means that most of the entries are equal to 0,
+and it is often symmetric and positive definite,
+provided that these properties are satisfied by the underlying operator.
 
-Systems of linear equations appear in a variety of applications.
-They naturally arise after discretization of linear partial differential equation,
-which govern a wide range of physical phenomena including heat and wave propagation, 
-gravity, fluid flows and electromagnetism.
-In the context of partial differential equations,
-the matrices appearing in linear systems are often very sparse: many of the entries are equal to 0.
-Additionally, they are often symmetric and positive definite,
-provided these properties are satisfied by the underlying partial differential operator.
-
-There are two main approaches for solving linear systems: 
+There are two main approaches for solving linear systems:
 \begin{itemize}
-    \item 
-        Direct methods enable to calculate the exact solution to the system of equations, 
+    \item
+        Direct methods enable to calculate the exact solution to systems of linear equations,
         up to round-off errors.
         Although this is an attractive property,
-        they are usually too computationally costly for large systems.
+        they are usually too computationally costly for large systems:
+        The cost of inverting a general $n \times n$ matrix,
+        measured in number of floating operations,
+        scales as $n^3$!
 
-    \item 
-        Iterative methods
+    \item
+        Iterative methods, on the other hand,
+        enable to progressively calculate increasingly accurate approximations of the solution.
+        Iterations may be stopped once the \emph{the residue} is sufficiently small.
+        These methods are often preferable when the dimension $n$ of the linear system is very large.
 \end{itemize}
 
 % Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
@@ -28,13 +43,153 @@ There are two main approaches for solving linear systems:
 % and \emph{numerically stable} otherwise.
 % these errors generally need not be a cause worry when they appear in methods that are numerically stables.
 
+This section is organized as follows.
 \begin{itemize}
-    \item 
+    \item
         In \cref{sec:conditioning},
         we introduce the concept of \emph{conditioning}.
-        The condition number associated with a problem provides information on the sensitivity of the solution to errors in the data,
-        so it is useful for determining the potential impact of round-off errors.
+        The condition number associated with a problem provides information on the sensitivity of the solution to perturbations of the right-hand side $\vect b$ or matrix $\mat A$.
+        It is useful, for example, in order to determine the potential impact of round-off errors.
 \end{itemize}
 
 \section{Conditioning}%
 \label{sec:conditioning}
+
+The condition number for a given problem measures the sensitivity of the solution to some input data.
+In order to define this concept precisely,
+we consider a general problem of the form~$F(x, d) = 0$,
+with unknown $x$ and data $d$.
+The linear system~\eqref{eq:linear_system} can be recast in this form,
+with the input data equal to $\vect b$ or $\mat A$ or both.
+We denote the solution corresponding to a perturbed input data $d + \Delta d$ by $x + \Delta x$.
+For the general problem,
+we define the absolute and relative condition numbers as follows.
+
+\begin{definition}
+    [Condition number for abstract problem]
+    The absolute and relative condition numbers with respect to perturbations of $d$ are defined as
+    \[
+        K_{\rm abs}(d) = \lim_{\varepsilon \to 0} \left( \sup_{\norm{\Delta d} \leq \varepsilon} \frac{\norm{\Delta x}}{\norm{\Delta d}} \right),
+        \qquad
+        K(d) = \lim_{\varepsilon \to 0} \left( \sup_{\norm{\Delta d} \leq \varepsilon} \frac{\norm{\Delta x} / \norm{x}}{\norm{\Delta d} / \norm{d}} \right).
+    \]
+    The short notation $K$ is reserved for the relative condition number,
+    which is often more useful in applications.
+\end{definition}
+
+In the rest of this section,
+we obtain an upper bound on the relative condition number of the linear system~\eqref{eq:linear_system} with respect to perturbations first of $\vect b$,
+and then of $\mat A$.
+
+\begin{proposition}
+    [Perturbation of the right-hand side]
+    \label{proposition:linear_perturbation_rhs}
+    Let $\norm{\placeholder}$ denote both a vector norm and the induced matrix operator norm.
+    Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $\mat A (\vect x + \Delta \vect x) = \vect b + \Delta \vect b$.
+    Then it holds
+    \begin{equation}
+        \label{eq:linear_perturbation_rhs}
+        \frac{\norm{\Delta \vect x}}{\norm{\vect x}} \leq \norm{\mat A} \norm{\mat A^{-1}} \, \frac{\norm{\Delta \vect b}}{\norm{\vect b}},
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    It holds by definition that $\mat A \Delta \vect x = \Delta \vect b$.
+    Therefore, we have
+    \[
+        \norm{\Delta \vect x}
+        = \norm{\mat A^{-1} \Delta \vect b}
+        \leq \norm{\mat A^{-1}} \norm{\Delta \vect b}
+        = \frac{\norm{\mat A \vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}
+        \leq \frac{\norm{\mat A} \norm{\vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}.
+    \]
+    Rearranging this inequality,
+    we obtain~\eqref{eq:linear_perturbation_rhs}.
+\end{proof}
+\Cref{proposition:linear_perturbation_rhs} shows that the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the right-hand side is given by $\norm{A} \norm{A^{-1}}$.
+Studying the impact of perturbations of the matrix~$\mat A$ is slightly more difficult,
+because this time the variation of the solution~$\Delta \vect x$ does not depend linearly on the perturbation.
+\begin{proposition}
+    \label{proposition:linear_perturbation_matrix}
+    [Perturbation of the matrix]
+    Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b$.
+    If $\mat A$ is invertible and $\norm{\Delta \mat A} < \norm{\mat A^{-1}}^{-1}$ in a submultiplicative matrix norm,
+    then
+    \begin{equation}
+        \label{eq:linear_perturbation_matrix}
+        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+        \leq \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}
+        \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
+        \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right).
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    Left-multiplying both side by $\mat A^{-1}$,
+    we obtain
+    \begin{equation}
+        \label{eq:linear_perturbation_matrix_initial}
+        (\mat I + \mat A^{-1} \Delta \mat A) (\vect x + \Delta \vect x) = \vect x
+    \end{equation}
+    Notice that, for any matrix $\mat B$,
+    \[
+        \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n)
+    \]
+    If $\norm{\mat B} < 1$ in a any submultiplicative matrix norm,
+    then the left-hand side converges to the identity matrix $\mat I$ in the limit as $n \to \infty$,
+    and the series $\sum_i^n \mat B^i$ is convergent in the same limit.
+    Consequently, in this case
+    \begin{equation}
+        \label{eq:linear_von_neumann_inverse}
+        (\mat I - \mat B)^{-1} = \sum_{i=1}^{\infty} \mat B^i.
+    \end{equation}
+    Since $\norm{\mat A^{-1} \Delta \mat A} \leq \norm{\mat A^{-1}} \norm{\Delta \mat A} < 1$ by assumption,
+    we obtain combining~\eqref{eq:linear_perturbation_matrix_initial} and~\eqref{eq:linear_von_neumann_inverse} that
+    \begin{equation}
+        \label{eq:linear_perturbation_matrix_series}
+         \vect x + \Delta \vect x
+         = \left(\sum_{i=0}^{\infty} (\mat A^{-1} \Delta \mat A)^i \right) \vect x
+         = \vect x + \left(\sum_{i=1}^{\infty} (\mat A^{-1} \Delta \mat A)^i \right) \vect x.
+    \end{equation}
+    By the triangle inequality and the submultiplicative property of the norm $\norm{\placeholder}$,
+    it holds that
+    \begin{align*}
+        \norm*{\sum_{i=1}^{\infty} (\mat A^{-1} \Delta \mat A)^i}
+        % &\leq \norm*{\mat A^{-1} \Delta \mat A} + \norm*{\sum_{i=2}^{\infty} (\mat A^{-1} \Delta \mat A)^i} \\
+        % &\leq \norm*{\mat A^{-1} \Delta \mat A} + \norm*{(\mat A^{-1} \Delta \mat A)^2} +  \norm*{\sum_{i=3}^{\infty} (\mat A^{-1} \Delta \mat A)^i} \\
+        % &\leq \dots \leq \sum_{i=1}^{\infty} \norm*{(\mat A^{-1} \Delta \mat A)^i}
+        \leq \sum_{i=1}^{\infty} \norm*{\mat A^{-1} \Delta \mat A}^i
+    \end{align*}
+    By the summation formula for geometric series,
+    it holds that
+    \[
+        \sum_{i=1}^{\infty} \norm*{\mat A^{-1} \Delta \mat A}^i
+        = \frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} - 1 = \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}.
+    \]
+    Employing this bound in~\eqref{eq:linear_perturbation_matrix_series} after taking the norm of both sides,
+    we obtain
+    \[
+        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+        \leq \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}
+        \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
+        \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right),
+    \]
+    which concludes the proof.
+\end{proof}
+Using \cref{proposition:linear_perturbation_matrix},
+we deduce that the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the matrix $\mat A$ is also bounded from above by $\norm{\mat A} \norm{\mat A^{-1}}$,
+because the term between brackets on the right-hand side of~\eqref{eq:linear_perturbation_matrix} converges to 1 as $\norm{\Delta \mat A} \to 0$.
+
+
+\Cref{proposition:linear_perturbation_rhs,proposition:linear_perturbation_matrix} show that
+the condition number, with respect to perturbations of either~$\vect b$ or~$\mat A$,
+depends only on $\mat A$.
+This motivates the following definition.
+\begin{definition}
+    [Condition number of a matrix]
+    The condition number of a matrix $\mat A$ associated to a vector norm $\norm{\placeholder}$ is defined as
+    \[
+        \kappa(\mat A) = \norm{\mat A} \norm{\mat A^{-1}}.
+    \]
+    The condition number for the vector $p$-norm,
+    defined in \cref{definition:pnorm_vector},
+    is denoted by $\kappa_p(\mat A)$.
+\end{definition}
