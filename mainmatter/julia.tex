@@ -154,8 +154,8 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
 
 \begin{task}
     [Tower of Hanoi]
-    We consider a variation on the popular Tower of Hanoi problem
-    where the number $r$ of pegs is allowed to be larger than 3.
+    We consider a variation on the classic Tower of Hanoi problem,
+    in which the number $r$ of pegs is allowed to be larger than 3.
     We denote the pegs by $p_1, \dots, p_r$,
     and assume that the problem includes $n$ disks with radii $1$ to $n$.
     The tower is initially constructed in~$p_1$,
@@ -171,7 +171,7 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
         \item Then move the bottom $n-k$ disks of the tower to $p_r$ without using $p_2$;
         \item Finally, move the top of the tower for $p_2$ to $p_r$.
     \end{itemize}
-    This suggests a recursive procedure for solving the problem, known as the Frame-Steward algorithm.
+    This suggests a recursive procedure for solving the problem, known as the Frame-Stewart algorithm.
     Write a Julia function \julia{T(n, r)} returning the minimal number of moves necessary.
 % \begin{minted}{julia}
 %     function T(n, r)
@@ -359,4 +359,3 @@ or to the more readable expression \julia{1 .+ [1, 2, 3]}.
     string.(1:3, ". ", ["First", "Second", "Third"])
     \end{minted}
 \end{task}
-
