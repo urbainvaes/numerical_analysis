@@ -2,7 +2,7 @@
 \label{cha:a_very_short_introduction_to_julia}
 
 In this chapter,
-we very briefly present  some of the basic features and commands of Julia.
+we very briefly present  some of the basic features and functions of Julia.
 Most of the information contained in this chapter can be found in the online manual,
 to which we provide pointers in each section.
 
@@ -26,8 +26,7 @@ Tab completion is helpful for listing available function names.
 
 \begin{task}
     Read the help pages for \julia{if}, \julia{while} and \julia{for}.
-    If you find the information in the help pages insufficiently detailed,
-    see the online documentation~\href{https://docs.julialang.org/en/v1/manual/control-flow/} {here}.
+    More information on these keywords is available in the~\href{https://docs.julialang.org/en/v1/manual/control-flow/} {online documentation}.
 \end{task}
 
 
@@ -62,18 +61,18 @@ condition || println("false")
 
 \subsection*{Installing and using a package {\footnotesize \href{https://docs.julialang.org/en/v1/stdlib/Pkg/}{[link to relevant manual section]}}}%
 \label{sub:installing_and_using_a_package}
-To install a package for the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia shell),
+To install a package from the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia shell),
 first type ``\texttt{]}'' to enter the package REPL,
 and then type \julia{add} followed the name of the package to install.
-For example, to use the \julia{Plots} package, write
+After it has been added, a package can be used with the \julia{import} keyword.
+A function \julia{fun} defined by a package \julia{pack} can be accessed as \julia{pack.fun}.
+For example, to plot the cosine function from the Julia shell or in a script, write
 \begin{minted}{julia}
     import Plots
+    Plots.plot(cos)
 \end{minted}
-in your the Julia shell or in a script.
-If a function, say \julia{plot}, is defined by the package,
-it can be accessed as \julia{Plots.plot}.
 
-Alternatively, you may import the package with the \julia{using} keyword,
+Alternatively, a package may be imported with the \julia{using} keyword,
 and then functions can be accessed without specifying the package name.
 While convenient, this approach is less descriptive;
 it does not explicitly show what package a function comes from.
@@ -83,20 +82,20 @@ especially in a large codebase.
 \begin{task}
     Install the \texttt{Plots} package,
     read the documentation of the \texttt{Plots.plot} function,
-    and to plot the function $f(x) = \sin(x)$.
+    and plot the function $f(x) = \exp(x)$.
     The tutorial on plotting available at \href{https://docs.juliaplots.org/latest/tutorial/} {this link}
     may be useful for this exercise.
 \end{task}
 
 \subsection*{Printing output}%
-The functions \julia{println} or \julia{print} enable to display output.
+The functions \julia{println} and \julia{print} enable to display output.
 The former adds a new line at the end and the latter does not.
 The symbol \texttt{\$}, followed by a variable name or an expression within brackets,
 can be employed to perform \emph{string interpolation}.
 For instance, the following code prints \julia{a = 2, a^2 = 4}.
 \begin{minted}{julia}
     a = 2
-    println("a = $a, a^2 = $(a*a))
+    println("a = $a, a^2 = $(a*a)")
 \end{minted}
 
 \subsection*{Defining functions {\footnotesize \href{https://docs.julialang.org/en/v1/manual/functions/} {[link to relevant manual section]}}}%
@@ -115,7 +114,7 @@ For example, the following code block defines a function that prints ``Hello, NA
 \end{minted}
 
 If the function definition is short,
-it may be convenient to define it using the following more compact syntax:
+it is convenient to use the following more compact syntax:
 \begin{minted}{julia}
     hello(name) = println("Hello, " * name)
 \end{minted}
@@ -129,7 +128,7 @@ Here, the function \julia{map} enables to transform a collection by applying a f
     cubes = map(x -> x^3, [1, 2, 3, 4, 5])
 \end{minted}
 
-The \julia{return} keyword can used for returning a value to the function caller.
+The \julia{return} keyword can be used for returning a value to the function caller.
 Several values, separated by commas, can be returned at once.
 For instance, the following function takes a number $x$ and returns a tuple $(x, x^2, x^3)$.
 \begin{minted}{julia}
@@ -143,6 +142,15 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
     # This assigns a = 2, b = 4, c = 8
     a, b, c = powers(2)
 \end{minted}
+
+\begin{task}
+    [Euler constant for the harmonic series]
+    Euler showed that
+    \[
+        \lim_{N \to \infty} \left( - \ln(N) + \sum_{n=1}^{N} \frac{1}{n} \right) = \gamma := 0.577...
+    \]
+    Write a function \julia{euler_constant(N)} that returns an approximation of the Euler constant by truncating the sum after $N$ terms.
+\end{task}
 
 \begin{task}
     [Tower of Hanoi]
@@ -163,17 +171,17 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
         \item Then move the bottom $n-k$ disks of the tower to $p_r$ without using $p_2$;
         \item Finally, move the top of the tower for $p_2$ to $p_r$.
     \end{itemize}
-    This suggests a natural recursive procedure for solving the problem, known as the Frame-Steward algorithm.
+    This suggests a recursive procedure for solving the problem, known as the Frame-Steward algorithm.
     Write a Julia function \julia{T(n, r)} returning the minimal number of moves necessary.
-\begin{minted}{julia}
-    function T(n, r)
-        # Particular case
-        if n == 1
-            return 1
-        end
-        # Your code comes here
-    end
-\end{minted}
+% \begin{minted}{julia}
+%     function T(n, r)
+%         # Particular case
+%         if n == 1
+%             return 1
+%         end
+%         # Your code comes here
+%     end
+% \end{minted}
 
 \end{task}
 
@@ -211,8 +219,6 @@ For instance, the following code
     println(a)
 \end{minted}
 modifies the global variable \julia{a} and prints 4.
-A more detailed discussion is beyond the scope of this course,
-and we refer to Julia manual for additional documentation.
 
 \subsection*{Multi-dimensional arrays {\footnotesize \href{https://docs.julialang.org/en/v1/manual/arrays/} {[link to relevant manual section]}}}%
 \label{sub:multi_dimensional_arrays}
@@ -252,12 +258,16 @@ Here the row index \julia{:} means ``select all lines'' and the column index~\ju
 Likewise, the submatrix \julia{[1 3; 4 6]} may be extracted with \julia{M[:, [1; 3]]}.
 \begin{remark}
     [One-dimensional arrays]
-    When creating one-dimensional vectors,
-    it is equivalent to use the semicolon~\julia{;} or the comma~\julia{,} in order to separate entries.
-    That is, \julia{x = [1, 2, 3]} and \julia{x = [1; 2; 3]} both produce the same result:
-    a \julia{Vector} object with elements $(1, 2, 3)$.
-    We emphasize that \julia{x} is \emph{not} a \julia{Matrix} object.
-    In contrast, the expression \julia{x = [1 2 3]} produces a matrix with one row and three columns.
+    The comma~\julia{,} can also be employed for creating one-dimensional arrays,
+    but its behavior differs slightly from that of the vertical concatenation operator~\julia{;}.
+    For example, \julia{x = [1, [2; 3]]} creates a \julia{Vector} object with two elements,
+    the first one being \julia{1} and the second one being \julia{[1; 3]}, which is itself a \julia{Vector}.
+    In contrast, the instruction \julia{x = [1; [1; 2]]} creates the same \julia{Vector} as \julia{[1; 2; 3]} would.
+
+    We also mention that the expression \julia{x = [1 2 3]} produces not a one-dimensional \julia{Vector} but a two-dimensional \julia{Matrix},
+    with one row and three columns.
+    This can be checked using the \julia{size} function,
+    which for \julia{x = [1 2 3]} returns the tuple \julia{(1, 3)}.
 \end{remark}
 
 There are many built-in functions for quickly creating commonly used arrays.
@@ -282,7 +292,7 @@ For example,
         \]
 \end{itemize}
 Let us also mention the following shorthand notation,
-called \emph{array comprehensien} for creating vectors and matrices:
+called \emph{array comprehension} for creating vectors and matrices:
 \begin{itemize}
     \item \julia{[i^2 for i in 1:5]} creates the vector \julia{[1, 4, 9, 16, 25]}.
     \item \julia{[i + 10*j for i in 1:4, j in 1:4]} creates the matrix
@@ -305,7 +315,7 @@ called \emph{array comprehensien} for creating vectors and matrices:
 
 \subsection*{Broadcasting}%
 \label{sub:broadcasting}
-To conclude this section,
+To conclude this chapter,
 we briefly discuss \emph{broadcasting},
 which enables to apply functions to array elements and to perform operations on arrays of different sizes.
 Julia really shines in this area,

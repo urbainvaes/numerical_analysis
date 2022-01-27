@@ -31,7 +31,7 @@ The rest of this chapter is organized as follows.
 \begin{itemize}
     \item
         In \cref{sec:binary_representation_of_real_numbers},
-        we briefly discuss the binary representation of real numbers.
+        we discuss the binary representation of real numbers.
 
     \item
         In \cref{sec:set_of_values},
@@ -53,11 +53,10 @@ The rest of this chapter is organized as follows.
 
     \item
         Finally, in \cref{sec:what_about_integer_formats},
-        we briefly present the standard integer formats and their machine representation.
+        we present the standard integer formats and their encoding.
 \end{itemize}
-In order to completely describe a floating-point system,
-one would in principle need to also discuss the storage of integer numbers
-and the conversion mechanisms between different number formats,
+In order to completely describe floating-point arithmetic,
+one would in principle need to also discuss the conversion mechanisms between different number formats,
 as well as a number of edge cases.
 For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
 which is somewhat arbitrary but may be useful in some situations.
@@ -72,17 +71,16 @@ Given any integer number $\beta > 0$, called the \emph{base},
 a real number $x$ can always be expressed as a finite or infinite series of the form
 \begin{equation}
     \label{eq:base_representation}
-    x = (-1)^s \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad 0 \leq a_k < \beta.
+    x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad a_k \in \{0, \dotsc, \beta\}.
 \end{equation}
-The number $x$ may then be denoted as $(-1)^s (a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{\beta}$,
-where the subscript $\beta$ indicates the base and $s \in \{0, 1\}$ encodes the sign.
+The number $x$ may then be denoted as $\pm (a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{\beta}$,
+where the subscript $\beta$ indicates the base.
 This numeral system is called the \emph{positional notation} and is universally used today,
 both by humans (usually with $\beta=10$) and machines (usually with $\beta=2$).
 If the base~$\beta$ is omitted,
-it is always assumed that $\beta = 10$ unless otherwise specified
+it is always assumed in this course that $\beta = 10$ unless otherwise specified
 -- this is the \emph{decimal} representation.
-% It is likely that the prevalence of base 10 in human writing is a consequence of human morphology,
-% although this fact has not been demonstrated by historians.
+The \emph{digits} $a_{-n}, a_{-n+1}, \dotsc$ are also called \emph{bits} if $\beta = 2$.
 In computer science, several bases other than 10 are regularly employed,
 for example the following:
 \begin{itemize}
@@ -112,7 +110,7 @@ for example the following:
 \subsection{Conversion between binary and decimal formats}%
 Obtaining the decimal representation of a binary number can be achieved from~\eqref{eq:base_representation},
 using the decimal representations of the powers of 2.
-Since all the positive and negative powers of 2 have finite decimal representations,
+Since all the positive and negative powers of 2 have a finite decimal representation,
 any real number with a finite representation in base 2 has a finite representation also in base 10.
 For example, $(0.01)_2 = (0.25)_{10}$ and $(0.111)_2 = (0.875)_{10}$.
 \begin{example}
