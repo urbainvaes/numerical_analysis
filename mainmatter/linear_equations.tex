@@ -37,18 +37,12 @@ There are two main approaches for solving linear systems:
         These methods are often preferable when the dimension $n$ of the linear system is very large.
 \end{itemize}
 
-% Whether or not these inevitable errors are sufficiently small to be neglected in a numerical method
-% depends in general on the \emph{numerical stability} of the method.
-% A numerical method is said to be \emph{numerically unstable} is small errors are magnified,
-% and \emph{numerically stable} otherwise.
-% these errors generally need not be a cause worry when they appear in methods that are numerically stables.
-
 This section is organized as follows.
 \begin{itemize}
     \item
         In \cref{sec:conditioning},
         we introduce the concept of \emph{conditioning}.
-        The condition number associated with a problem provides information on the sensitivity of the solution to perturbations of the right-hand side $\vect b$ or matrix $\mat A$.
+        The condition number of a matrix provides information on the sensitivity of the solution to perturbations of the right-hand side $\vect b$ or matrix $\mat A$.
         It is useful, for example, in order to determine the potential impact of round-off errors.
 \end{itemize}
 
@@ -80,11 +74,11 @@ we define the absolute and relative condition numbers as follows.
 In the rest of this section,
 we obtain an upper bound on the relative condition number of the linear system~\eqref{eq:linear_system} with respect to perturbations first of $\vect b$,
 and then of $\mat A$.
+We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real^n$ and the induced operator norm on matrices.
 
 \begin{proposition}
     [Perturbation of the right-hand side]
     \label{proposition:linear_perturbation_rhs}
-    Let $\norm{\placeholder}$ denote both a vector norm and the induced matrix operator norm.
     Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $\mat A (\vect x + \Delta \vect x) = \vect b + \Delta \vect b$.
     Then it holds
     \begin{equation}
@@ -95,84 +89,108 @@ and then of $\mat A$.
 \begin{proof}
     It holds by definition that $\mat A \Delta \vect x = \Delta \vect b$.
     Therefore, we have
-    \[
+    \begin{equation}
+        \label{eq:linear_perturbation_rhs_to_rearrange}
         \norm{\Delta \vect x}
         = \norm{\mat A^{-1} \Delta \vect b}
         \leq \norm{\mat A^{-1}} \norm{\Delta \vect b}
         = \frac{\norm{\mat A \vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}
         \leq \frac{\norm{\mat A} \norm{\vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}.
-    \]
-    Rearranging this inequality,
+    \end{equation}
+    Here we employed~\eqref{eq:submultiplicative_mat_vec},
+    proved in \cref{cha:vectors_and_matrices},
+    in the first and last inequalities.
+    Rearranging the inequality~\eqref{eq:linear_perturbation_rhs_to_rearrange},
     we obtain~\eqref{eq:linear_perturbation_rhs}.
 \end{proof}
-\Cref{proposition:linear_perturbation_rhs} shows that the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the right-hand side is given by $\norm{A} \norm{A^{-1}}$.
+\Cref{proposition:linear_perturbation_rhs} shows that
+the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the right-hand side is bounded from above by $\norm{\mat A} \norm{\mat A^{-1}}$.
+\Cref{exercise:linear_sharp_inequality} shows that there are values of $\vect x$ and $\Delta \vect b$ for which the inequality~\eqref{eq:linear_perturbation_rhs} is sharp.
+
 Studying the impact of perturbations of the matrix~$\mat A$ is slightly more difficult,
 because this time the variation of the solution~$\Delta \vect x$ does not depend linearly on the perturbation.
 \begin{proposition}
-    \label{proposition:linear_perturbation_matrix}
     [Perturbation of the matrix]
+    \label{proposition:linear_perturbation_matrix}
     Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b$.
-    If $\mat A$ is invertible and $\norm{\Delta \mat A} < \norm{\mat A^{-1}}^{-1}$ in a submultiplicative matrix norm,
+    If $\mat A$ is invertible and $\norm{\Delta \mat A} < \norm{\mat A^{-1}}^{-1}$,
     then
     \begin{equation}
         \label{eq:linear_perturbation_matrix}
         \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
-        \leq \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}
         \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
         \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right).
     \end{equation}
 \end{proposition}
+Before proving this result,
+we show the following ancillary lemma.
+\begin{lemma}
+    \label{lemma:linear_inverse_neumann}
+    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} \leq 1$.
+    Then $\mat I - \mat B$ is invertible and
+    \begin{equation}
+        \label{eq:linear_bound_inverse_perturbation_identity}
+        \norm{(\mat I - \mat B)^{-1}}
+        \leq \frac{1}{1 - \norm{\mat B}},
+    \end{equation}
+    where $\mat I \in \real^{n \times n}$ is the identity matrix.
+\end{lemma}
 \begin{proof}
+    It holds for any matrix $\mat B \in \real^{n \times n}$ that
+    \[
+        \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n)
+    \]
+    Since $\norm{\mat B} < 1$ in a submultiplicative matrix norm,
+    both sides of the equation are convergent in the limit as $n \to \infty$,
+    with the left-hand side converging to identity matrix $\mat I$.
+    Equating the limits,
+    we obtain
+    \[
+        \mat I = (\mat I - \mat B) \sum_{i=0}^{\infty} \mat B^i.
+    \]
+    This implies that $(\mat I - \mat B)$ is invertible with inverse
+    given by the so-called \emph{Neumann} series
+    \begin{equation*}
+        (\mat I - \mat B)^{-1} = \sum_{i=0}^{\infty} \mat B^i.
+    \end{equation*}
+    Applying the triangle inequality repeatedly,
+    and then using the submultiplicative property of the norm,
+    we obtain
+    \[
+        \forall n \in \nat,
+        \qquad
+        \norm*{\sum_{i=0}^{n} \mat B^i}
+        \leq \sum_{i=0}^{n} \norm{\mat B^i}
+        \leq \sum_{i=0}^{n} \norm{\mat B}^i
+        = \frac{1}{1 - \norm{\mat B}}.
+    \]
+    where we used the summation formula for geometric series in the last equality.
+    Letting $n \to \infty$ in this equation and
+    using the continuity of the norm enables to conclude the proof.
+\end{proof}
+
+\begin{proof}
+    [Proof of \cref{proposition:linear_perturbation_matrix}]
     Left-multiplying both side by $\mat A^{-1}$,
     we obtain
     \begin{equation}
         \label{eq:linear_perturbation_matrix_initial}
         (\mat I + \mat A^{-1} \Delta \mat A) (\vect x + \Delta \vect x) = \vect x
-    \end{equation}
-    Notice that, for any matrix $\mat B$,
-    \[
-        \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n)
-    \]
-    If $\norm{\mat B} < 1$ in a any submultiplicative matrix norm,
-    then the left-hand side converges to the identity matrix $\mat I$ in the limit as $n \to \infty$,
-    and the series $\sum_i^n \mat B^i$ is convergent in the same limit.
-    Consequently, in this case
-    \begin{equation}
-        \label{eq:linear_von_neumann_inverse}
-        (\mat I - \mat B)^{-1} = \sum_{i=1}^{\infty} \mat B^i.
+        \quad \Leftrightarrow \quad
+        (\mat I + \mat A^{-1} \Delta \mat A) \Delta \vect x = - \mat A^{-1} \Delta \mat A \vect x.
     \end{equation}
     Since $\norm{\mat A^{-1} \Delta \mat A} \leq \norm{\mat A^{-1}} \norm{\Delta \mat A} < 1$ by assumption,
-    we obtain combining~\eqref{eq:linear_perturbation_matrix_initial} and~\eqref{eq:linear_von_neumann_inverse} that
-    \begin{equation}
-        \label{eq:linear_perturbation_matrix_series}
-         \vect x + \Delta \vect x
-         = \left(\sum_{i=0}^{\infty} (\mat A^{-1} \Delta \mat A)^i \right) \vect x
-         = \vect x + \left(\sum_{i=1}^{\infty} (\mat A^{-1} \Delta \mat A)^i \right) \vect x.
-    \end{equation}
-    By the triangle inequality and the submultiplicative property of the norm $\norm{\placeholder}$,
-    it holds that
-    \begin{align*}
-        \norm*{\sum_{i=1}^{\infty} (\mat A^{-1} \Delta \mat A)^i}
-        % &\leq \norm*{\mat A^{-1} \Delta \mat A} + \norm*{\sum_{i=2}^{\infty} (\mat A^{-1} \Delta \mat A)^i} \\
-        % &\leq \norm*{\mat A^{-1} \Delta \mat A} + \norm*{(\mat A^{-1} \Delta \mat A)^2} +  \norm*{\sum_{i=3}^{\infty} (\mat A^{-1} \Delta \mat A)^i} \\
-        % &\leq \dots \leq \sum_{i=1}^{\infty} \norm*{(\mat A^{-1} \Delta \mat A)^i}
-        \leq \sum_{i=1}^{\infty} \norm*{\mat A^{-1} \Delta \mat A}^i
-    \end{align*}
-    By the summation formula for geometric series,
-    it holds that
+    we deduce~\cref{lemma:linear_inverse_neumann} that the matrix on the left-hand side is invertible
+    with a norm bounded as in~\eqref{eq:linear_bound_inverse_perturbation_identity}.
+    Consequently,
+    using in addition the assumed submultiplicative property of the norm,
+    we deduce that
     \[
-        \sum_{i=1}^{\infty} \norm*{\mat A^{-1} \Delta \mat A}^i
-        = \frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} - 1 = \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}.
+        \norm{\Delta \vect x}
+        = \norm{(\mat I + \mat A^{-1} \Delta \mat A)^{-1} \mat A^{-1} \Delta \mat A \vect x}
+        \leq \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}} \norm{\vect x}.
     \]
-    Employing this bound in~\eqref{eq:linear_perturbation_matrix_series} after taking the norm of both sides,
-    we obtain
-    \[
-        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
-        \leq \frac{\norm{\mat A^{-1} \Delta \mat A}}{1 - \norm{\mat A^{-1} \Delta \mat A}}
-        \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
-        \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right),
-    \]
-    which concludes the proof.
+    which enables to conclude the proof.
 \end{proof}
 Using \cref{proposition:linear_perturbation_matrix},
 we deduce that the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the matrix $\mat A$ is also bounded from above by $\norm{\mat A} \norm{\mat A^{-1}}$,
@@ -193,3 +211,149 @@ This motivates the following definition.
     defined in \cref{definition:pnorm_vector},
     is denoted by $\kappa_p(\mat A)$.
 \end{definition}
+Since the 2-norm of an invertible matrix $\mat A \in \real^{n \times n}$ coincides with the spectral radius $\rho(\mat A^\t \mat A)$,
+the condition number $\kappa_2$ corresponding to the $2$-norm is equal to
+\[
+    \kappa_2(\mat A) = \frac{\lambda_{\max}(\mat A^\t \mat A)}{\lambda_{\min}(\mat A^\t \mat A)},
+\]
+where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both real and positive) eigenvalues of $\mat A$.
+\begin{example}
+    [Perturbation of the matrix]
+    Consider the following linear system
+    with perturbed matrix
+    \[
+        (\mat A + \Delta \mat A)
+        \begin{pmatrix}
+            x_1 \\
+            x_2
+        \end{pmatrix}
+        = \begin{pmatrix}
+            0 \\
+            .01
+        \end{pmatrix},
+        \qquad
+        \mat A
+        = \begin{pmatrix}
+            1 & 0 \\
+            0 & .01
+        \end{pmatrix},
+        \qquad
+        \Delta \mat A =
+        \begin{pmatrix}
+            0 & 0 \\
+            0 & \varepsilon
+        \end{pmatrix},
+    \]
+    where $0 < \varepsilon \ll .01$.
+    Here the eigenvalues of $\mat A$ are given by $\lambda_1 = 1$ and $\lambda_2 = 0.01$.
+    The solution when $\varepsilon = 0$ is given by $(0, 1)^\t$,
+    and the solution to the perturbed equation is
+    \[
+        \begin{pmatrix}
+        x_1 + \Delta x_1 \\
+        x_2 + \Delta x_2
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            0 \\
+            \frac{1}{1 + 100 \varepsilon}
+        \end{pmatrix}.
+    \]
+    Consequently, we deduce that
+    \[
+        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+        = \abs*{\frac{100 \varepsilon}{1 + 100 \varepsilon}}
+        \approx 100 \varepsilon
+        = 100 \frac{\norm{\Delta \mat A}}{\norm{\mat A}}.
+    \]
+    In this case,
+    the relative impact of perturbations of the matrix is close to $\kappa_2(\mat A) = 100$.
+\end{example}
+
+\begin{exercise}
+    \label{exercise:linear_sharp_inequality}
+    In the simple case where $\mat A$ is symmetric,
+    find values of $\vect x$, $\vect b$ and $\Delta \vect b$ for which the inequality~\eqref{eq:linear_perturbation_rhs} is in fact an equality?
+\end{exercise}
+
+\section{Direct solution method}%
+\label{sec:direct_solution_method}
+In this section,
+we present the \emph{direct method} for solving linear systems.
+For the linear system~\eqref{eq:linear_system} with general invertible matrix~$\mat A \in \real^{n \times n}$,
+the direct method for solving can be decomposed in three steps:
+\begin{itemize}
+    \item
+        First calculate the so-called $\mat L \mat U$ decomposition of $\mat A$,
+        i.e.\ find an lower triangular matrix $\mat U$ and a lower triangular matrix $\mat L$ such that
+        \(
+            \mat A = \mat L \mat U.
+        \)
+
+    \item
+        Then solve
+        \(
+            \mat L \vect y = \vect b.
+        \)
+         using a method called \emph{backward substitution}.
+
+    \item
+        Finally, solve
+        \(
+            \mat U \vect x = \vect y.
+        \)
+         using a method called \emph{forward substitution}.
+\end{itemize}
+
+\section*{LU decomposition}%
+\label{sec:lu_decomposition}
+
+We begin by introducing the concept of Gaussian transformation.
+\begin{definition}
+    A Gaussian transformation is a matrix of the form $\mat M_k = \mat I + \mat C_k$,
+    where $\mat C_k$ is a rank one matrix with all columns equal to 0 except for the $k$-th one,
+    which is required of the form
+    \[
+        \begin{pmatrix}
+            0 & 0 & \dots & 0 & c_{k+1} & c_{k+2} & \dots & c_n
+        \end{pmatrix}^\t.
+    \]
+\end{definition}
+
+The action of a Gaussian transformation when left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
+to replace the rows from index $k + 1$ to index $n$ by a linear combination involving the $k$-th row.
+To see this, let us denote by $(\vect r_i)_{1 \leq i \leq n}$ the lines of $\mat A$.
+Then, we have
+\[
+    \mat M_k \mat A
+    = (\mat I + \mat R_k) \mat A
+    =
+    \begin{pmatrix}
+        1   \\
+      & 1  \\
+         & &  \ddots \\
+        & & & 1 & & & \\
+        & & & c_{k+1} & 1  \\
+        & & & \vdots & & \ddots \\
+        & & & c_n & & & 1 \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        \vect r_1 \\
+        \vect r_2 \\
+        \vdots \\
+        \vect r_k \\
+        \vect r_{k+1} \\
+        \vdots \\
+        \vect r_{n}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        \vect r_1 \\
+        \vect r_2 \\
+        \vdots \\
+        \vect r_k \\
+        \vect r_{k+1} + c_{k+1} \vect r_k \\
+        \vdots \\
+        \vect r_{n} + c_{n} \vect r_n
+    \end{pmatrix}
+\]

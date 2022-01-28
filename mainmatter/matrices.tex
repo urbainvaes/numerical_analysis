@@ -232,7 +232,8 @@ we define the \emph{operator norm} induced by $\norm{\placeholder}_{\alpha}$ and
 The term \emph{operator norm} is motivated by the fact that,
 to any matrix $\mat A \in \real^{m \times n}$, there naturally corresponds the linear operator from $\real^n$ to $\real^m$ with action~$\vect x \mapsto \mat A \vect x$.
 \Cref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
-An immediate corollary of the definition~\cref{eq:subordinate_norm} is that,
+Matrix norms of the type~\eqref{eq:subordinate_norm} are also called \emph{subordinate} matrix norms.
+An immediate corollary of the definition~\eqref{eq:subordinate_norm} is that,
 for all $\vect x \in \real^n$,
 \begin{equation}
     \label{eq:submultiplicative_mat_vec}%
@@ -311,7 +312,9 @@ it holds that
 \[
     \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}.
 \]
-The $p$-norms are submultiplicative, and so is the Frobenius norm.
+All matrix subordinate matrix norms,
+for example the $p$-norms, are submultiplicative,
+and so is the Frobenius norm.
 
 \begin{exercise}
     Write down the inner product on $\real^{m \times n}$ corresponding to~\eqref{eq:frobenius_norm}.
@@ -508,14 +511,15 @@ coincides with the spectral radius $\mat A^\t \mat A$.
 Indeed, by the spectral theorem it holds that $\mat A^\t \mat A = \mat Q \mat D \mat Q^\t$ with an orthogonal matrix $\mat Q$.
 Therefore, denoting by $(\lambda_i^2)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$,
 we have
-\[
+\begin{equation}
+    \label{eq:matrices_link_norm_spectral_radius}
     \norm{\mat A \vect x}
     = \sqrt{\vect x^\t \mat A^\t \mat A \vect x}
     = \sqrt{\vect x^\t \mat Q \mat D \mat Q^\t \vect x}
     = \sqrt{\sum_{i=1}^{n} \lambda_i^2 y_i^2}
     \leq \sqrt{\rho(\mat A^\t \mat A)} \sqrt{\sum_{i=1}^{n} y_i^2}
     =  \sqrt{\rho(\mat A^\t \mat A)} \norm{\vect y},
-\]
+\end{equation}
 where $\vect y := \mat Q^\t \vect x$ has the same norm as $\vect x$ since $\mat Q$ is orthogonal.
 It follows from this inequality that $\norm{\mat A} \leq \rho(\mat A^\t \mat A)$,
 and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^\t \mat A) \norm{\vect x}$
