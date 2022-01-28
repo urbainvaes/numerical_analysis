@@ -305,8 +305,8 @@ the direct method for solving can be decomposed in three steps:
          using a method called \emph{forward substitution}.
 \end{itemize}
 
-\section*{LU decomposition}%
-\label{sec:lu_decomposition}
+\subsection{LU decomposition}%
+\label{sub:lu_decomposition}
 
 We begin by introducing the concept of Gaussian transformation.
 \begin{definition}
@@ -357,3 +357,48 @@ Then, we have
         \vect r_{n} + c_{n} \vect r_n
     \end{pmatrix}
 \]
+We show in \cref{exercise:inverse_gaussian_transformation} that
+the inverse of a Gaussian transformation matrix is given by
+\begin{equation}
+    \label{eq:inverse_gaussian_transformation}
+    (\mat I + \mat R_k)^{-1} = \mat I - \mat R_k.
+\end{equation}
+The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
+by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, \dots,
+choosing these matrices so that that the matrix $\mat A_k$ obtained after $k$ iterations
+has only zeros under the diagonal in columns 1 to $k$.
+The resulting matrix $\mat A_n$ after $n$ iterations is then upper triangular,
+and by construction
+\[
+    \mat M_n \dotsc \mat M_1 \mat A = \mat A_n,
+\]
+so using~\eqref{eq:inverse_gaussian_transformation} we deduce
+\[
+    \mat A = (\mat M_n^{-1} \dots \mat M_1^{-1}) \mat A_n.
+\]
+Since the first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular},
+we have successfully factorized $\mat A$ as $\mat L \mat U$.
+
+Of course, the success of this strategy hinges on the existence of an appropriate Gaussian transformation at each iteration.
+
+We assume for simplicity that the diagonal elements of $A$ are nonzero.
+The $\mat L \mat U$ decomposition procedure can be summarized as follows:
+\begin{algorithmic}
+\State $\mat A_0 \gets \mat A, \mat M \gets \mat I$
+\For{$i \in \{1, \dotsc, n\}$}
+    \State Construct $\mat M_i$ such that $\mat M_i \mat A_{i-1}$ has only zeros under the diagonal of the $i$-th column.
+    \State $\mat A_i \gets \mat M_i \mat A_{i-1}, \mat M \gets  \mat M_i \mat M$
+\EndFor
+\State $\mat U \gets A_n, \mat L \gets M^\t$.
+\end{algorithmic}
+
+\begin{exercise}
+    [Inverse of Gaussian transformation]
+    \label{exercise:inverse_gaussian_transformation}
+    Show the formula~\eqref{eq:inverse_gaussian_transformation}.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:linear_product_of_lower_triangular}
+    Show that the product of lower triangular matrices is lower triangular.
+\end{exercise}
