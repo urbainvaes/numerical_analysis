@@ -57,32 +57,32 @@ A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \
 \begin{itemize}
     \item
         \textbf{Positivity}:
-        \[
-            \forall \vect x \in \mathcal X \backslash \{\vect 0\}, \qquad
+        \(
+            \forall \vect x \in \mathcal X \backslash \{\vect 0\}, \quad
             \norm{\vect x} > 0.
-        \]
+        \)
 
     \item
         \textbf{Homogeneity}:
-        \[
-            \forall (c, \vect x) \in \real \times \mathcal X, \qquad
+        \(
+            \forall (c, \vect x) \in \real \times \mathcal X, \quad
             \norm{c \vect x} = \abs{c} \, \norm{\vect x} .
-        \]
+        \)
 
     \item
         \textbf{Triangular inequality}:
-        \[
-            \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+        \(
+            \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \quad
             \norm{\vect x + \vect y} \leq \norm{\vect x} + \norm{\vect y}.
-        \]
+        \)
 \end{itemize}
 \end{definition}
 Any inner product on $\mathcal X$ induces a norm via the formula
 \begin{equation}
-    \label{eq:induced_norm}
+    \label{eq:induced_norm}%
     \norm{\vect x} = \sqrt{\ip{\vect x, \vect x}}.
 \end{equation}
-The fundamental Cauchy--Schwarz inequality enables to bound inner products using norms.
+The Cauchy--Schwarz inequality enables to bound inner products using norms.
 \begin{proposition}
     [Cauchy--Schwarz inequality]
     \label{proposition:cauchy_shwartz}

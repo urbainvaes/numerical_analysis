@@ -347,7 +347,7 @@ which is devoted specifically to the encoding of floating point numbers.
 \end{remark}
 
 In \texttt{Julia}, non-integer numbers are interpreted as \julia{Float64} by default,
-which you may verify by using the \julia{typeof} function.
+which can be verified by using the \julia{typeof} function.
 For example, the instruction ``\julia{a = 0.1}'' is equivalent to~``\julia{a = Float64(0.1)}''.
 In order to define a number of type \julia{Float32},
 the suffix $\julia{f0}$ must be appended to the decimal expansion.
@@ -947,7 +947,7 @@ the numbers loop back.
 This can lead to unexpected results,
 such as \julia{2^64} evaluating to 0.
 
-\section{Discussion and supplemental reading}%
+\section{Discussion and bibliography}%
 \label{sec:discussion_and_bibliograhpy}
 This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
 A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
