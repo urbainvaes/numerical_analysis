@@ -320,8 +320,8 @@ We begin by introducing the concept of Gaussian transformation.
     \]
 \end{definition}
 
-The action of a Gaussian transformation when left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
-to replace the rows from index $k + 1$ to index $n$ by a linear combination involving the $k$-th row.
+The action of a Gaussian transformation left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
+to replace the rows from index $k + 1$ to index $n$ by a linear combination involving themselves and the $k$-th row.
 To see this, let us denote by $(\vect r_i)_{1 \leq i \leq n}$ the lines of $\mat A$.
 Then, we have
 \[
@@ -364,22 +364,28 @@ the inverse of a Gaussian transformation matrix is given by
     (\mat I + \mat R_k)^{-1} = \mat I - \mat R_k.
 \end{equation}
 The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
-by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, \dots,
-choosing these matrices so that that the matrix $\mat A_k$ obtained after $k$ iterations
-has only zeros under the diagonal in columns 1 to $k$.
+by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
+appropriately chosen in such a way that all the under-diagonal entries in columns 1 to $k$ of
+the matrix $\mat A_k$,
+obtained after $k$ iterations,
+are equal to zero.
 The resulting matrix $\mat A_n$ after $n$ iterations is then upper triangular,
 and by construction
 \[
-    \mat M_n \dotsc \mat M_1 \mat A = \mat A_n,
+    \mat M_n \dotsc \mat M_1 \mat A = \mat A_n.
 \]
-so using~\eqref{eq:inverse_gaussian_transformation} we deduce
+Using~\eqref{eq:inverse_gaussian_transformation},
+we deduce that
 \[
     \mat A = (\mat M_n^{-1} \dots \mat M_1^{-1}) \mat A_n.
 \]
 Since the first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular},
-we have successfully factorized $\mat A$ as $\mat L \mat U$.
-
+this completes the $\mat L \mat U$ factorization of the matrix $\mat A$.
 Of course, the success of this strategy hinges on the existence of an appropriate Gaussian transformation at each iteration.
+It is not difficult to show that,
+provided that the diagonal entries of $A$ are all nonzero,
+the transformation matrices exist and are uniquely defined.
+We assume this for now.
 
 We assume for simplicity that the diagonal elements of $A$ are nonzero.
 The $\mat L \mat U$ decomposition procedure can be summarized as follows:
@@ -402,3 +408,5 @@ The $\mat L \mat U$ decomposition procedure can be summarized as follows:
     \label{exercise:linear_product_of_lower_triangular}
     Show that the product of lower triangular matrices is lower triangular.
 \end{exercise}
+
+\textcolor{red}{WORK IN PROGRESS}
