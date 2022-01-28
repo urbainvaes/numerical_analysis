@@ -20,7 +20,7 @@ if you are familiar with any of these.
 \subsection*{Obtaining documentation}%
 \label{sub:getting_documentation}
 
-To find documentation on a function from the Julia shell,
+To find documentation on a function from the Julia console,
 type ``\texttt{?}'' and then the name of the function.
 Tab completion is helpful for listing available function names.
 
@@ -61,12 +61,12 @@ condition || println("false")
 
 \subsection*{Installing and using a package {\footnotesize \href{https://docs.julialang.org/en/v1/stdlib/Pkg/}{[link to relevant manual section]}}}%
 \label{sub:installing_and_using_a_package}
-To install a package from the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia shell),
+To install a package from the Julia REPL (Read Evaluate Print Loop, also more simply called the Julia console),
 first type ``\texttt{]}'' to enter the package REPL,
 and then type \julia{add} followed the name of the package to install.
 After it has been added, a package can be used with the \julia{import} keyword.
 A function \julia{fun} defined in a package \julia{pack} can be accessed as \julia{pack.fun}.
-For example, to plot the cosine function from the Julia shell or in a script, write
+For example, to plot the cosine function from the Julia console or in a script, write
 \begin{minted}{julia}
     import Plots
     Plots.plot(cos)

@@ -563,14 +563,13 @@ where ${\rm fl}_{64}$ is the rounding operator to the double-precision format.
 \begin{example}
     Using the \julia{typeof} function,
     we check that the floating point literal \texttt{1.0} is indeed interpreted as a double-precision number:
-\begin{minted}{julia}
+\begin{minted}{julia-repl}
 julia> a = 1.0; typeof(a)
 Float64
 \end{minted}
-
 When two numbers in different floating point formats are passed to a binary operation,
 the result is in the more precise format.
-\begin{minted}{julia}
+\begin{minted}{julia-repl}
 julia> typeof(Float16(1) + Float32(1))
 Float32
 
