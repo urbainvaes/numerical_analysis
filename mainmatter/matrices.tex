@@ -232,6 +232,16 @@ we define the \emph{operator norm} induced by $\norm{\placeholder}_{\alpha}$ and
 The term \emph{operator norm} is motivated by the fact that,
 to any matrix $\mat A \in \real^{m \times n}$, there naturally corresponds the linear operator from $\real^n$ to $\real^m$ with action~$\vect x \mapsto \mat A \vect x$.
 \Cref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
+An immediate corollary of the definition~\cref{eq:subordinate_norm} is that,
+for all $\vect x \in \real^n$,
+\begin{equation}
+    \label{eq:submultiplicative_mat_vec}%
+    \norm{\mat A \vect x}_{\alpha}
+    = \norm{\mat A \widehat{\vect x}}_{\alpha} \norm{\vect x}_{\beta}
+    \leq \sup \bigl\{ \norm{\mat A \vect y}_{\alpha}: \norm{\vect y}_{\beta} \leq 1 \bigr\} \norm{\vect x}_{\beta}
+    = \norm{\mat A}_{\alpha,\beta} \norm{\vect x}_{\beta},
+    \qquad \widehat {\vect x} = \frac{\vect x}{\norm{\vect x}_{\beta}}.
+\end{equation}
 \begin{proposition}
     Equation~\eqref{eq:subordinate_norm} defines a norm on $\real^{m \times n}$.
 \end{proposition}
@@ -490,3 +500,23 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
     Prove that if $\mat A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
     then $\mat A^n = \mat P \mat D^n \mat P^{-1}$.
 \end{exercise}
+
+The largest eigenvalue of a matrix, in absolute value,
+is called the \emph{spectral radius} and denoted by~$\rho$.
+The 2-norm of a general matrix $\mat A \in \real^{n \times n}$
+coincides with the spectral radius $\mat A^\t \mat A$.
+Indeed, by the spectral theorem it holds that $\mat A^\t \mat A = \mat Q \mat D \mat Q^\t$ with an orthogonal matrix $\mat Q$.
+Therefore, denoting by $(\lambda_i^2)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$,
+we have
+\[
+    \norm{\mat A \vect x}
+    = \sqrt{\vect x^\t \mat A^\t \mat A \vect x}
+    = \sqrt{\vect x^\t \mat Q \mat D \mat Q^\t \vect x}
+    = \sqrt{\sum_{i=1}^{n} \lambda_i^2 y_i^2}
+    \leq \sqrt{\rho(\mat A^\t \mat A)} \sqrt{\sum_{i=1}^{n} y_i^2}
+    =  \sqrt{\rho(\mat A^\t \mat A)} \norm{\vect y},
+\]
+where $\vect y := \mat Q^\t \vect x$ has the same norm as $\vect x$ since $\mat Q$ is orthogonal.
+It follows from this inequality that $\norm{\mat A} \leq \rho(\mat A^\t \mat A)$,
+and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^\t \mat A) \norm{\vect x}$
+if $\vect x$ is the eigenvector of $\mat A^\t \mat A$ associated with the largest eigenvalue $\rho(\mat A^\t \mat A)$.
