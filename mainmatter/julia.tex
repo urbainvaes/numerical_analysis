@@ -149,7 +149,12 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
     \[
         \lim_{N \to \infty} \left( - \ln(N) + \sum_{n=1}^{N} \frac{1}{n} \right) = \gamma := 0.577...
     \]
-    Write a function \julia{euler_constant(N)} that returns an approximation of the Euler constant by truncating the sum after $N$ terms.
+    Write a function that returns an approximation of the Euler constant by evaluating the expression between brackets at a finite value of $N$.
+    \begin{minted}{julia}
+    function euler_constant(N)
+        # Your code comes here
+    end
+    \end{minted}
 \end{task}
 
 \begin{task}
