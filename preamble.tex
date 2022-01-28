@@ -1,6 +1,6 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{xcolor}
-\usepackage{sectsty}
+\usepackage[sf,bf]{titlesec}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -125,9 +125,30 @@
 \newunicodechar{Ψ}{\textfallback{Ψ}}
 \newunicodechar{Ω}{\textfallback{Ω}}
 
-% Style of sections
-\allsectionsfont{\sffamily}
-\sectionfont{\sffamily\color{darkblue}}
+% Style of sections (sectsty)
+% \usepackage{sectsty}
+% \allsectionsfont{\sffamily}
+% \sectionfont{\sffamily\color{darkblue}}
+
+% Style of sections (titlesec)
+\makeatletter
+\newcommand*\@secondofsix[6]{#2}
+\newcommand{\addtotitleformat}{%
+  \@ifstar{\addtotitleformat@star}{\addtotitleformat@nostar}}
+\newcommand\addtotitleformat@nostar[2]{%
+  \PackageError{titlesec}{non starred form of \string\addtotitleformat\space not supported}{}}
+\newcommand\addtotitleformat@star[2]{%
+  \expandafter\expandafter\expandafter\expandafter
+  \expandafter\expandafter\expandafter\def
+  \expandafter\expandafter\expandafter\expandafter
+  \expandafter\expandafter\expandafter\@currentsection@font
+  \expandafter\expandafter\expandafter\expandafter
+  \expandafter\expandafter\expandafter{%
+    \expandafter\expandafter\expandafter\@secondofsix
+       \csname ttlf@\expandafter\@gobble\string#1\endcsname}%
+  \titleformat*{#1}{\@currentsection@font#2}}
+\makeatother
+\addtotitleformat*{\section}{\color{darkblue}}
 
 % Numbering of equations
 \numberwithin{equation}{chapter}
