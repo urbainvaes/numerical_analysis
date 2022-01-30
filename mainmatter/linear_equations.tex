@@ -279,13 +279,13 @@ where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both re
 \section{Direct solution method}%
 \label{sec:direct_solution_method}
 In this section,
-we present the \emph{direct method} for solving linear systems.
-For the linear system~\eqref{eq:linear_system} with general invertible matrix~$\mat A \in \real^{n \times n}$,
-the direct method for solving can be decomposed in three steps:
+we present the \emph{direct method} for solving linear systems of the form~\eqref{eq:linear_system}
+with a general invertible matrix~$\mat A \in \real^{n \times n}$.
+The direct method can be decomposed into three steps:
 \begin{itemize}
     \item
         First calculate the so-called $\mat L \mat U$ decomposition of $\mat A$,
-        i.e.\ find an lower triangular matrix $\mat U$ and a lower triangular matrix $\mat L$ such that
+        i.e.\ find an upper triangular matrix~$\mat U$ and a lower triangular matrix~$\mat L$ such that
         \(
             \mat A = \mat L \mat U.
         \)
@@ -303,110 +303,201 @@ the direct method for solving can be decomposed in three steps:
             \mat U \vect x = \vect y.
         \)
          using a method called \emph{forward substitution}.
+         By construction, the solution $\vect x$ thus obtained is a solution to~\eqref{eq:linear_system}.
 \end{itemize}
 
 \subsection{LU decomposition}%
 \label{sub:lu_decomposition}
 
-We begin by introducing the concept of Gaussian transformation.
+We begin by introducing the concept of \emph{Gaussian transformation}.
 \begin{definition}
-    A Gaussian transformation is a matrix of the form $\mat M_k = \mat I + \mat C_k$,
-    where $\mat C_k$ is a rank one matrix with all columns equal to 0 except for the $k$-th one,
-    which is required of the form
+    A Gaussian transformation is a matrix of the form $\mat M_k = \mat I - \vect c^{(k)} \vect e_k$,
+    where~$\vect e_k$ is the column vector with entry at index $k$ equal to 1 and all the other entries equal to zero,
+    and $\vect c^{(k)}$ is a column vector of the following form:
     \[
+        \vect c^{(k)} =
         \begin{pmatrix}
-            0 & 0 & \dots & 0 & c_{k+1} & c_{k+2} & \dots & c_n
+            0 & 0 & \dots & 0 & c^{(k)}_{k+1} & c^{(k)}_{k+2} & \dots & c^{(k)}_n
         \end{pmatrix}^\t.
     \]
 \end{definition}
 
 The action of a Gaussian transformation left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
 to replace the rows from index $k + 1$ to index $n$ by a linear combination involving themselves and the $k$-th row.
-To see this, let us denote by $(\vect r_i)_{1 \leq i \leq n}$ the lines of $\mat A$.
+To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the lines of a matrix $\mat T \in \real^{n \times n}$.
 Then, we have
 \[
-    \mat M_k \mat A
-    = (\mat I + \mat R_k) \mat A
+    \mat M_k \mat T
+    = \bigl(\mat I - \vect c^{(k)} \vect e_k\bigr) \mat T
     =
     \begin{pmatrix}
         1   \\
       & 1  \\
          & &  \ddots \\
         & & & 1 & & & \\
-        & & & c_{k+1} & 1  \\
+        & & & - c^{(k)}_{k+1} & 1  \\
         & & & \vdots & & \ddots \\
-        & & & c_n & & & 1 \\
+        & & & - c^{(k)}_n & & & 1 \\
     \end{pmatrix}
     \begin{pmatrix}
-        \vect r_1 \\
-        \vect r_2 \\
+        \vect r^{(1)} \\
+        \vect r^{(2)} \\
         \vdots \\
-        \vect r_k \\
-        \vect r_{k+1} \\
+        \vect r^{(k)} \\
+        \vect r^{(k+1)} \\
         \vdots \\
-        \vect r_{n}
+        \vect r^{(n)}
     \end{pmatrix}
     =
     \begin{pmatrix}
-        \vect r_1 \\
-        \vect r_2 \\
+        \vect r^{(1)} \\
+        \vect r^{(2)} \\
         \vdots \\
-        \vect r_k \\
-        \vect r_{k+1} + c_{k+1} \vect r_k \\
+        \vect r^{(k)} \\
+        \vect r^{(k+1)} - c^{(k)}_{k+1} \vect r^{(k)} \\
         \vdots \\
-        \vect r_{n} + c_{n} \vect r_n
+        \vect r^{(n)} - c^{(k)}_{n} \vect r^{(k)}
     \end{pmatrix}
 \]
 We show in \cref{exercise:inverse_gaussian_transformation} that
 the inverse of a Gaussian transformation matrix is given by
 \begin{equation}
     \label{eq:inverse_gaussian_transformation}
-    (\mat I + \mat R_k)^{-1} = \mat I - \mat R_k.
+    (\mat I - \vect c^{(k)} \vect e_k)^{-1} = \mat I + \vect c^{(k)} \vect e_k.
 \end{equation}
 The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
 by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
-appropriately chosen in such a way that all the under-diagonal entries in columns 1 to $k$ of
-the matrix $\mat A_k$,
+appropriately chosen in such a way that the matrix~$\mat A^{(k)}$,
 obtained after $k$ iterations,
-are equal to zero.
-The resulting matrix $\mat A_n$ after $n$ iterations is then upper triangular,
-and by construction
+is upper triangular up to column $k$.
+That is to say, the Gaussian transformations are constructed so that
+all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A_k$ are equal to zero.
+The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular,
+and satisfies
 \[
-    \mat M_n \dotsc \mat M_1 \mat A = \mat A_n.
+    \mat M_{n-1} \dotsc \mat M_1 \mat A = \mat A^{(n-1)}.
 \]
-Using~\eqref{eq:inverse_gaussian_transformation},
-we deduce that
+We deduce that
 \[
-    \mat A = (\mat M_n^{-1} \dots \mat M_1^{-1}) \mat A_n.
+    \mat A = (\mat M_1^{-1} \dots \mat M_{n-1}^{-1}) \mat A^{(n-1)}.
 \]
 Since the first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular},
 this completes the $\mat L \mat U$ factorization of the matrix $\mat A$.
-Of course, the success of this strategy hinges on the existence of an appropriate Gaussian transformation at each iteration.
-It is not difficult to show that,
-provided that the diagonal entries of $A$ are all nonzero,
-the transformation matrices exist and are uniquely defined.
-We assume this for now.
+The product in the definition of the matrix $\mat L$ admits a simple expression.
+\begin{lemma}
+    \label{lemma:linear_inverse_product_gaussian_transformations}
+    It holds that
+    \begin{equation*}
+        % \label{eq:product_inverse}
+        \mat M_1^{-1} \dotsb \mat M_{n-1}^{-1}
+        = (\mat I + \vect c^{(1)} \vect e_1^\t) \dotsb (\mat I + \vect c^{(n-1)} \vect e_{n-1}^\t)
+        = \mat I + \sum_{i=1}^{n-1}  \vect c^{(i)} \vect e_i^\t.
+    \end{equation*}
+\end{lemma}
+\begin{proof}
+    Notice that, for $i < j$,
+    \[
+        \vect c^{(i)} \vect e_i^\t \vect c^{(j)} \vect e_j^\t
+        = \vect c^{(i)} (\vect e_i^\t \vect c^{(j)}) \vect e_j^\t
+        = \vect c^{(i)} 0 \vect e_j^\t = 0.
+    \]
+    The statement then follows easily by expanding the product.
+\end{proof}
+A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1.
+In practice, therefore, these entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored in the same matrix.
 
-We assume for simplicity that the diagonal elements of $A$ are nonzero.
-The $\mat L \mat U$ decomposition procedure can be summarized as follows:
+Of course, the success of the strategy outlined above for the calculation of the $\mat L \mat U$ factorization hinges on
+the existence of an appropriate Gaussian transformation at each iteration.
+It is not difficult to show that,
+if the $(k+1)$-th diagonal entry of the matrix $\mat A^{(k)}$ is nonzero for all~$k \in \{1, \dotsc, n-2\}$,
+then the Gaussian transformation matrices exist and are uniquely defined.
+\begin{lemma}
+    \label{lemma:linear_expression_gaussian_transformations}
+    Assume that $\mat A^{(k)}$ is an upper triangular up to columns $k$ included,
+    with $k \leq n-2$.
+    If $a^{(k)}_{k+1,k+1} > 0$,
+    then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that $\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
+    It is given by $\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$ where
+    \[
+        \vect c^{(k+1)} =
+        \begin{pmatrix}
+            0 & 0 & \dots & 0 & \frac{a^{(k)}_{k+2,k}}{a^{(k)}_{k+1,k+1}} & \frac{a^{(k)}_{k+3,k}}{a^{(k)}_{k+1,k+1}} & \dots & \frac{a^{(k)}_{n,k}}{a^{(k)}_{k+1,k+1}}
+        \end{pmatrix}^\t.
+    \]
+\end{lemma}
+The diagonal elements $a^{(k)}_{k+1,k+1}$, where $k \in \{0, \dots, n-2 \}$ are called the pivots.
+We assume for now that these are all nonzero,
+and comment in \cref{sub:pivoting} on the case where a pivot is zero.
+In this case,
+the $\mat L \mat U$ factorization procedure is summarized as follows.
+
+% \begin{algorithm}
+% \caption{$\mat L \mat U$ factorization algorithm}%
+% \label{algo:factorization_algorithm}%
 \begin{algorithmic}
-\State $\mat A_0 \gets \mat A, \mat M \gets \mat I$
-\For{$i \in \{1, \dotsc, n\}$}
-    \State Construct $\mat M_i$ such that $\mat M_i \mat A_{i-1}$ has only zeros under the diagonal of the $i$-th column.
-    \State $\mat A_i \gets \mat M_i \mat A_{i-1}, \mat M \gets  \mat M_i \mat M$
+\State $\mat A^{(0)} \gets \mat A, \mat L \gets \mat I$
+\For{$i \in \{0, \dotsc, n-2\}$}
+    \State Construct $\mat M_{i+1}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
+    \State $\mat A^{(i+1)} \gets \mat M_{i+1} \mat A^{(i)}, \mat L \gets \mat \mat \mat L \mat M_i^{-1}$
 \EndFor
-\State $\mat U \gets A_n, \mat L \gets M^\t$.
+\State $\mat U \gets \mat A^{(n-1)}$.
 \end{algorithmic}
+% \end{algorithm}
+
+Of course,
+in practice the matrix multiplications in this algorithm are not implemented as actual matrix multiplications.
+A more realistic, but still very simplified, version of the algorithm in Julia is given below.
+\begin{minted}{julia}
+    # A is an invertible matrix of size n x n
+    L = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
+    U = copy(A)
+    for i in 1:n-1
+        for r in i+1:n
+            ratio = U[r, i] / U[i, i]
+            L[r, i] = ratio
+            U[r, i:end] -= U[i, i:end] * ratio
+        end
+    end
+\end{minted}
+
+\subsection{Backward and forward substitution}%
+\label{sub:backward_and_forward_substitution}
+Once the $\mat L \mat U$ factorization has been completed,
+the solution to the linear system can be obtained by first using backward, and then forward substitution,
+which are just bespoke methods for solving linear systems with lower and upper triangular matrices, respectively.
+Let us consider the case of a lower-triangular system:
+\[
+    \mat L \vect y = \vect b
+\]
+Notice that the unknown $y_1$ may be obtained from the first line of the system.
+Then, since $y_1$ is known, the value of $y_2$ can be obtained from the second line, etc.
+
+\subsection{Gaussian elimination with pivoting}%
+\label{sub:pivoting}
+
+The $\mat L \mat U$ factorization algorithm that 
+we presented in \cref{sub:lu_decomposition} relies on the assumption that the pivot elements $A^{(k)}_{k+1,k+1}$ are nonzero.
+In this section, 
+we show how this assumption can be lifted,
+provided that we use a small modification, called \emph{pivoting},
+to the algorithm.
+
+
+
 
 \begin{exercise}
     [Inverse of Gaussian transformation]
     \label{exercise:inverse_gaussian_transformation}
-    Show the formula~\eqref{eq:inverse_gaussian_transformation}.
+    Prove the formula~\eqref{eq:inverse_gaussian_transformation}.
 \end{exercise}
 
 \begin{exercise}
     \label{exercise:linear_product_of_lower_triangular}
-    Show that the product of lower triangular matrices is lower triangular.
+    Prove that the product of lower triangular matrices is lower triangular.
+\end{exercise}
+
+\begin{exercise}
+    Implement the backward substitution algorithm.
 \end{exercise}
 
 \textcolor{red}{WORK IN PROGRESS}

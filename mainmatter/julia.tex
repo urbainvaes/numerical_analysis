@@ -97,6 +97,8 @@ For instance, the following code prints \julia{a = 2, a^2 = 4}.
     a = 2
     println("a = $a, a^2 = $(a*a)")
 \end{minted}
+To print a matrix in an easily readable format,
+the \julia{display} function is very useful.
 
 \subsection*{Defining functions {\footnotesize \href{https://docs.julialang.org/en/v1/manual/functions/} {[link to relevant manual section]}}}%
 \label{sub:defining_functions}
@@ -352,8 +354,9 @@ or to the more readable expression \julia{1 .+ [1, 2, 3]}.
 \begin{task}
     Explain in words what the following instructions do.
     \begin{minted}{julia}
-    reshape(1:9, 3, 3) .+ [1 2 3]
-    reshape(1:9, 3, 3) .+ [1; 2; 3]
+    reshape(1:9, 3, 3) .* [1 2 3]
+    reshape(1:9, 3, 3) .* [1; 2; 3]
+    reshape(1:9, 3, 3) * [1; 2; 3]
     \end{minted}
 \end{task}
 
