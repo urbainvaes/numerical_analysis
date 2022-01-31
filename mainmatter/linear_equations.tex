@@ -371,7 +371,7 @@ appropriately chosen in such a way that the matrix~$\mat A^{(k)}$,
 obtained after $k$ iterations,
 is upper triangular up to column $k$.
 That is to say, the Gaussian transformations are constructed so that
-all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A_k$ are equal to zero.
+all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A^{(k)}$ are equal to zero.
 The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular,
 and satisfies
 \[
@@ -383,7 +383,7 @@ We deduce that
 \]
 Since the first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular},
 this completes the $\mat L \mat U$ factorization of the matrix $\mat A$.
-The product in the definition of the matrix $\mat L$ admits a simple expression.
+The product in the definition of the matrix $\mat L$ admits a simple explicit expression.
 \begin{lemma}
     \label{lemma:linear_inverse_product_gaussian_transformations}
     It holds that
@@ -405,10 +405,16 @@ The product in the definition of the matrix $\mat L$ admits a simple expression.
 \end{proof}
 A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
 the matrix $\mat L$ is \emph{unit lower triangular}.
-In practice, therefore, these entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored in the same matrix.
+In practical implementations, therefore,
+these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
 The full expression of the matrix $\mat L$ given the Gaussian transformations is
 \[
-    \mat L =
+    \mat L
+    = \mat I +
+    \begin{pmatrix}
+        \vect c^{(1)} & \hdots & \vect c^{(n)} & \vect 0_n
+    \end{pmatrix}
+    =
     \begin{pmatrix}
         1 & \\
         c^{(1)}_2 & 1 \\
@@ -434,14 +440,14 @@ then the Gaussian transformation matrices exist and are uniquely defined.
     \[
         \vect c^{(k+1)} =
         \begin{pmatrix}
-            0 & 0 & \dots & 0 & \frac{a^{(k)}_{k+2,k}}{a^{(k)}_{k+1,k+1}} & \frac{a^{(k)}_{k+3,k}}{a^{(k)}_{k+1,k+1}} & \dots & \frac{a^{(k)}_{n,k}}{a^{(k)}_{k+1,k+1}}
+            0 & 0 & \dots & 0 & \frac{a^{(k)}_{k+2,k+1}}{a^{(k)}_{k+1,k+1}} & \frac{a^{(k)}_{k+3,k+1}}{a^{(k)}_{k+1,k+1}} & \dots & \frac{a^{(k)}_{n,k+1}}{a^{(k)}_{k+1,k+1}}
         \end{pmatrix}^\t.
     \]
 \end{lemma}
 The diagonal elements $a^{(k)}_{k+1,k+1}$, where $k \in \{0, \dots, n-2 \}$, are called the pivots.
 We assume for now that these are all nonzero,
 and comment in \cref{sub:pivoting} on the case where a pivot is zero.
-In this case,
+In the setting of nonzero pivots,
 the $\mat L \mat U$ factorization procedure is summarized as follows.
 
 % \begin{algorithm}
@@ -449,9 +455,9 @@ the $\mat L \mat U$ factorization procedure is summarized as follows.
 % \label{algo:factorization_algorithm}%
 \begin{algorithmic}
 \State $\mat A^{(0)} \gets \mat A, \mat L \gets \mat I$
-\For{$i \in \{0, \dotsc, n-2\}$}
-    \State Construct $\mat M_{i+1}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
-    \State $\mat A^{(i+1)} \gets \mat M_{i+1} \mat A^{(i)}, \mat L \gets \mat \mat \mat L \mat M_i^{-1}$
+\For{$i \in \{1, \dotsc, n-1\}$}
+    \State Construct $\mat M_{i}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
+    \State $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}, \mat L \gets \mat \mat \mat L \mat M_i^{-1}$
 \EndFor
 \State $\mat U \gets \mat A^{(n-1)}$.
 \end{algorithmic}
@@ -461,20 +467,32 @@ Of course,
 in practice it is not necessary to explicitly create the Gaussian transformation matrices,
 or to perform full matrix multiplications.
 A more realistic, but still very simplified, version of the algorithm in Julia is given below.
-\begin{minted}{julia}
-    # A is an invertible matrix of size n x n
-    L = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
-    U = copy(A)
-    for i in 1:n-1
-        for r in i+1:n
-            U[i, i] == 0 && error("Pivotal entry is zero!")
-            ratio = U[r, i] / U[i, i]
-            L[r, i] = ratio
-            U[r, i:end] -= U[i, i:end] * ratio
-        end
-    end
-    # L is lower triangular and U is upper triangular
+\begin{minted}[xleftmargin=\parindent, linenos, mathescape]{julia}
+ # A is an invertible matrix of size n x n
+ L = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
+ U = copy(A)
+ for i in 1:n-1
+     for r in i+1:n
+         U[i, i] == 0 && error("Pivotal entry is zero!")
+         ratio = U[r, i] / U[i, i]
+         L[r, i] = ratio
+         U[r, i:end] -= U[i, i:end] * ratio
+     end
+ end
+ # L is lower triangular and U is upper triangular
 \end{minted}
+
+\subsubsection*{Computational cost}%
+\label{ssub:computational_cost}
+The cost of the algorithm is dominated by the Gaussian transformations,
+in line 9 in the above code.
+All the operations amount to a computational cost scaling as $\mathcal O(n^2)$.
+We denote by ``$\mathrm{flops}$'' the number of \emph{floating point operations}.
+The Gaussian transformations require
+\[
+    \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
+    = \frac{2}{3} n^3 + \mathcal O(n^2) \quad \mathrm{flops}.
+\]
 
 \subsection{Backward and forward substitution}%
 \label{sub:backward_and_forward_substitution}
@@ -498,35 +516,39 @@ A simple implementation of this algorithm is as follows:
     end
 \end{minted}
 
-\subsection{Gaussian elimination with pivoting}%
+\subsection{LU factorization with pivoting}%
 \label{sub:pivoting}
 
 The $\mat L \mat U$ factorization algorithm that
 we presented in \cref{sub:lu_decomposition} relies on the assumption that the pivotal entries $A^{(k)}_{k+1,k+1}$ are nonzero.
 In practice,
 this assumption may not be satisfied,
-but in this case a small modification to the algorithm,
+and in this case a modified algorithm,
 called Gaussian elimination \emph{with pivoting},
-can be employed.
-In fact, pivoting is useful even if the pivots $A^{(k)}_{k+1,k+1}$ are nonzero,
+is required.
+In fact, pivoting is useful even if the pivots are nonzero,
 as it enables to reduce the condition number of the algorithm,
 i.e.\ the sensitivity of the output matrices~$\mat L$ and~$\mat U$ to perturbations of the input.
 There are two types of pivoting:
-partial pivoting, where only the rows are rearranged at each iteration,
+partial pivoting, where only the rows are rearranged through a permutation at each iteration,
 and complete pivoting, where both the rows and the columns are rearranged at each iteration.
 
 Showing rigorously why pivoting is useful requires a detailed analysis and is beyond the scope of this course.
 In this section, we only discuss the mechanism of partial pivoting.
-The idea of partial pivoting is to rearrange the lines at each iteration in such a manner that
+Its influence on the condition number of the factors $\mat L$ and $\mat U$ is studied empirically in \cref{exercise:linear_lu_with_partial_pivoting}.
+The idea of partial pivoting is to rearrange the lines at each iteration of the factorization in such a manner that
 the pivotal entry is as large as possible in absolute value.
 One step of the procedure reads
 \begin{equation}
     \label{eq:step_partial_pivoting}
     \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)},
 \end{equation}
-where $\mat M_{k+1}$ is a Gaussian transformation matrix
-and $\mat P_{k+1}$ is a row permutation matrix acting on rows $k+1$ to $n$.
-The pivotal entry in~\eqref{eq:step_partial_pivoting} is defined as the entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$.
+where $\mat M_{k+1}$ is the Gaussian transformation matrix ensuring that
+$\mat A^{(k+1)}$ is upper triangular up to column $k+1$,
+and $\mat P_{k+1}$ is a row permutation matrix whose action on $\mat A^{(k)}$ leads to an interchange between row $k+1$ and another row with index $\ell \geq k+1$.
+(Note that if $\ell = k+1$,
+then $\mat P_{k+1}$ is the identity operator.)
+The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$ is maximum.
 % It appears in the denominator in the expression of the entries of the matrix $\mat M_{k+1}$.
 \begin{definition}
     \label{definition:row_permutation_matrix}%
@@ -547,29 +569,43 @@ When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \t
 row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
 for all $i \in \{1, \dots, n\}$.
 A permutation matrix has a single entry equal to~1 per row and per column,
-and its inverse coincide with its transpose: $\mat P^{-1} = \mat P^\t$.
+and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
+In fact, we can restrict the row permutation matrix in~\eqref{eq:step_partial_pivoting} to one that involves only row $k+1$ and another row with index $i \geq k+1$.
+The action of such a permutation matrix is to interchange rows $k+1$ and $i$,
+and if $i = k+1$ then the permutation reduces to the identity operator.
 
-The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of Gaussian elimination with partial pivoting is upper triangular and satisfies
+The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of $\mat L \mat U$ decomposition with partial pivoting is upper triangular and satisfies
 \[
     \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
     \quad \Leftrightarrow \quad
      \mat A = (\mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1})^{-1} \mat A^{(n-1)}.
 \]
-The first factor in the decomposition of $\mat A$ is not necessarily lower triangular.
+The first factor in this decomposition of $\mat A$ is not necessarily lower triangular.
 However, using the notation $\mat M = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P = \mat P_{n-1} \dotsb \mat P_{1}$,
-we have $\mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U$,
-and the next lemma shows that the first factor on the right-hand side is lower triangular.
+we have
+\[
+    \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
+\]
+The next lemma shows that,
+as the notation suggests,
+the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
+Before stating and proving the lemma,
+we note that $\mat P$ is row permutation matrix and
+that the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$,
+the right-hand side of which can be calculated very efficiently.
 \begin{lemma}
-    The matrix $\mat P \mat M^{-1}$ is lower triangular.
+    \label{lemma:linear_matrix_l_pivoting}
+    The matrix $\mat L = \mat P \mat M^{-1}$ is unit lower triangular
+    with all entries bounded from above by 1.
     It may be expressed as
     \[
-        \mat P \mat M^{-1}
+        \mat L
         = \mat I
-        + (\mat P_{n-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
-        + (\mat P_{n-1} \dotsb \mat P_{3} \vect c_{2}) \vect e_{2}^\t
+        + (\mat P_{n-1} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
+        + (\mat P_{n-1} \dotsb \mat P_{3} \vect c^{(2)}) \vect e_{2}^\t
         + \dotsb
-        + (\mat P_{n-1} \vect c_{n-2}) \vect e_{n-2}^\t
-        + \vect c_{n-1} \vect e_{n-1}^\t.
+        + (\mat P_{n-1} \vect c^{(n-2)}) \vect e_{n-2}^\t
+        + \vect c^{(n-1)} \vect e_{n-1}^\t.
     \]
 \end{lemma}
 \begin{proof}
@@ -579,37 +615,48 @@ and the next lemma shows that the first factor on the right-hand side is lower t
         \label{eq:linear_lower_triangular_l}
         \mat P^{(k)} \bigl( \mat M^{(k)} \bigr)^{-1}
         = \mat I
-        + (\mat P_{k} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
-        + (\mat P_{k} \dotsb \mat P_{3} \vect c_{2}) \vect e_{2}^\t
+        + (\mat P_{k} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
+        + (\mat P_{k} \dotsb \mat P_{3} \vect c^{(2)}) \vect e_{2}^\t
         + \dotsb
-        + (\mat P_{k} \vect c_{k-1}) \vect e_{n-2}^\t
-        + \vect c_{k} \vect e_{k}^\t.
+        + (\mat P_{k} \vect c^{(k-1)}) \vect e_{n-2}^\t
+        + \vect c^{(k)} \vect e_{k}^\t.
     \end{equation}
     for all $k \in \{1, \dotsc, n-1 \}$.
     The statement is clear for $k = 1$,
-    and we assume by induction that this is true up to~$n-1$.
+    and we assume by induction that it is true up to~$n-1$.
     Then notice that
     \begin{align*}
         \mat P^{(k)} \bigl( \mat M^{(k)} \bigr)^{-1}
         &= \mat P_{k} \left( \mat P^{(k-1)} \bigl( \mat M^{(k-1)} \bigr)^{-1} \right) \mat P_k^{-1} \mat M_k^{-1} \\
         &= \mat P_{k} \Bigl( \mat I
-        + (\mat P_{k-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + (\mat P_{k-1} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
         + \dotsb
-        + (\mat P_{k-1} \vect c_{k-2}) \vect e_{n-2}^\t
-        + \vect c_{k-1} \vect e_{k-1}^\t \Bigr) \mat P_k^{-1} \mat M_k^{-1} \\
+        + (\mat P_{k-1} \vect c^{(k-2)}) \vect e_{n-2}^\t
+        + \vect c^{(k-1)} \vect e_{k-1}^\t \Bigr) \mat P_k^{-1} \mat M_k^{-1} \\
         &= \Bigl( \mat I
-        + (\mat P_k \mat P_{k-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + (\mat P_k \mat P_{k-1} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
         + \dotsb
-        + (\mat P_k \mat P_{k-1} \vect c_{k-2}) \vect e_{k-2}^\t
-        + (\mat P_k \vect c_{k-1}) \vect e_{k-1}^\t \Bigr) \mat M_k^{-1}.
+        + (\mat P_k \mat P_{k-1} \vect c^{(k-2)}) \vect e_{k-2}^\t
+        + (\mat P_k \vect c^{(k-1)}) \vect e_{k-1}^\t \Bigr) \mat M_k^{-1}.
     \end{align*}
     In the last equality,
     we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, n-1\}$,
-    because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k$.
+    because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k-1$.
     Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$ and expanding the product,
     we obtain~\eqref{eq:linear_lower_triangular_l}.
 \end{proof}
-
+The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the following iterative procedure for performing the factorization.
+\begin{algorithmic}
+\State $\mat A^{(0)} \gets \mat A$, $\mat P \gets \mat I$
+\For{$i \in \{1, \dotsc, n-1\}$}
+    \State Find the row index $k \geq i$ such that $A^{(i-1)}_{k,i}$ is maximum in absolute value.
+    \State Interchange the rows $i$ and $k$ of $\mat A^{(i-1)}$, of $\mat I$, and of $\vect c^{(1)}, \dotsc, \vect c^{(i-1)}$.
+    \State Construct $\mat M_{i}$ with corresponding column vector $\vect c^{(i)}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
+    \State $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}$
+\EndFor
+\State $\mat U \gets \mat A^{(n-1)}$.
+\State $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} \end{pmatrix}$.
+\end{algorithmic}
 \begin{exercise}
     [Inverse of Gaussian transformation]
     \label{exercise:inverse_gaussian_transformation}
@@ -623,6 +670,19 @@ and the next lemma shows that the first factor on the right-hand side is lower t
 
 \begin{exercise}
     Implement the backward substitution algorithm for solving $\mat U x = y$.
+    What is the computational cost of the algorithm?
 \end{exercise}
 
-\textcolor{red}{WORK IN PROGRESS}
+\begin{exercise}
+    \label{exercise:linear_lu_with_partial_pivoting}
+    Implement the $\mat L \mat U$ factorization algorithm with partial pivoting.
+    Compare the condition number of the matrices $\mat L$ and $\mat U$ to the case without pivoting.
+    For testing, use a matrix with pseudo-random entries generated as follows
+    \begin{minted}{julia}
+    import Random
+    # Set the seed so that the code is deterministic
+    Random.seed!(0)
+    n = 1000 # You can change this parameter
+    A = randn(n, n)
+    \end{minted}
+\end{exercise}
