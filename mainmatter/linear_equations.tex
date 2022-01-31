@@ -561,46 +561,54 @@ we have $\mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U
 and the next lemma shows that the first factor on the right-hand side is lower triangular.
 \begin{lemma}
     The matrix $\mat P \mat M^{-1}$ is lower triangular.
+    It may be expressed as
+    \[
+        \mat P \mat M^{-1}
+        = \mat I
+        + (\mat P_{n-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + (\mat P_{n-1} \dotsb \mat P_{3} \vect c_{2}) \vect e_{2}^\t
+        + \dotsb
+        + (\mat P_{n-1} \vect c_{n-2}) \vect e_{n-2}^\t
+        + \vect c_{n-1} \vect e_{n-1}^\t.
+    \]
 \end{lemma}
 \begin{proof}
-    Expanding the product, we have
+    Let $\mat M^{(k)} = \mat M_{k} \mat P_{k} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P^{(k)} = \mat P_{k} \dotsb \mat P_{1}$.
+    It is sufficient to show that
+    \begin{equation}
+        \label{eq:linear_lower_triangular_l}
+        \mat P^{(k)} \bigl( \mat M^{(k)} \bigr)^{-1}
+        = \mat I
+        + (\mat P_{k} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + (\mat P_{k} \dotsb \mat P_{3} \vect c_{2}) \vect e_{2}^\t
+        + \dotsb
+        + (\mat P_{k} \vect c_{k-1}) \vect e_{n-2}^\t
+        + \vect c_{k} \vect e_{k}^\t.
+    \end{equation}
+    for all $k \in \{1, \dotsc, n-1 \}$.
+    The statement is clear for $k = 1$,
+    and we assume by induction that this is true up to~$n-1$.
+    Then notice that
     \begin{align*}
-        \mat P \mat M^{-1}
-        &= \bigl(\mat P_{n-1} \dotsb \mat P_{1}\bigr) \bigl(\mat P_{1}^{-1} \mat M_1^{-1} \dotsb \mat P_{n-1}^{-1} \mat M_{n-1}^{-1}\bigr).
+        \mat P^{(k)} \bigl( \mat M^{(k)} \bigr)^{-1}
+        &= \mat P_{k} \left( \mat P^{(k-1)} \bigl( \mat M^{(k-1)} \bigr)^{-1} \right) \mat P_k^{-1} \mat M_k^{-1} \\
+        &= \mat P_{k} \Bigl( \mat I
+        + (\mat P_{k-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + \dotsb
+        + (\mat P_{k-1} \vect c_{k-2}) \vect e_{n-2}^\t
+        + \vect c_{k-1} \vect e_{k-1}^\t \Bigr) \mat P_k^{-1} \mat M_k^{-1} \\
+        &= \Bigl( \mat I
+        + (\mat P_k \mat P_{k-1} \dotsb \mat P_{2} \vect c_{1}) \vect e_{1}^\t
+        + \dotsb
+        + (\mat P_k \mat P_{k-1} \vect c_{k-2}) \vect e_{k-2}^\t
+        + (\mat P_k \vect c_{k-1}) \vect e_{k-1}^\t \Bigr) \mat M_k^{-1}.
     \end{align*}
-    It is sufficient to show that, for all $k \in \{1, \dotsc, n-1\}$,
-    the matrix
-    \begin{align*}
-        \bigl(\mat P_{k} \dotsb \mat P_{1}\bigr) \bigl(\mat P_{1}^{-1} \mat M_1^{-1} \dotsb \mat P_{k}^{-1} \mat M_{k}^{-1}\bigr)
-    \end{align*}
-    can be written as a product of Gaussian transformations $\widetilde {\mat M}_1 \dotsb \widetilde {\mat M}_k$
-    with associated column vectors $\widetilde {\vect c_1}, \dotsc, \widetilde {\vect c_{k}}$.
-    This is clear for $k = 1$ since $\mat P_{1} (\mat P_1^{-1} \mat M_1^{-1}) = \mat M_1^{-1}$,
-    and we assume by induction that this is true up to $k-1$.
-    Then
-    \begin{align*}
-        \bigl(\mat P_{k} \dotsb \mat P_{1}\bigr) \bigl(\mat P_{1}^{-1} \mat M_1^{-1} \dotsb \mat P_{k}^{-1} \mat M_{k}^{-1}\bigr)
-        &= \mat P_k \bigl(\widetilde {\mat M}_1 \dotsb \widetilde {\mat M}_k\bigr) \mat P_k^{-1} \mat M_k^{-1} \\
-        &= \mat P_k \biggl(\mat I + \sum_{i=1}^{k-1} \widetilde {\vect c_i} \vect e_i^\t \biggr) \mat P_k^{-1} \mat M_k^{-1} \\
-        &= \left(\mat I +  \left( \sum_{i=1}^{k-1} (\mat P_k\widetilde {\vect c_i}) (\mat P_k \vect e_i)^\t \right) \right) \mat M_k^{-1}
-    \end{align*}
-    Note that
-    \[
-        \mat P_2 \mat M_1^{-1} \mat P_2^{-1}
-        = \mat P_2 (\mat I + \vect c^{(2)} \vect e_2^\t) \mat P_2^{-1}
-        = \mat I + (\mat P_2 \vect c^{(2)}) \vect e_2^\t
-    \]
-    Then
-    \[
-        \mat P_2 \mat M_1^{-1} \mat P_2^{-1}
-        = \mat I + (\mat P_2 \vect c^{(2)}) \vect e_2^\t
-    \]
-    is lower triangular.
-    This is clear for $k = 1$ since $\mat P_{1} (\mat P_1^{-1} \mat M_1^{-1}) = \mat M_1^{-1}$,
-    and we assume by induction that this is true up to $k-1$.
+    In the last equality,
+    we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, n-1\}$,
+    because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k$.
+    Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$ and expanding the product,
+    we obtain~\eqref{eq:linear_lower_triangular_l}.
 \end{proof}
-
-
 
 \begin{exercise}
     [Inverse of Gaussian transformation]
