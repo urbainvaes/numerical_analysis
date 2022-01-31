@@ -534,22 +534,65 @@ partial pivoting, where only the rows are rearranged through a permutation at ea
 and complete pivoting, where both the rows and the columns are rearranged at each iteration.
 
 Showing rigorously why pivoting is useful requires a detailed analysis and is beyond the scope of this course.
-In this section, we only discuss the mechanism of partial pivoting.
+In this section, we only discuss the partial pivoting method.
 Its influence on the condition number of the factors $\mat L$ and $\mat U$ is studied empirically in \cref{exercise:linear_lu_with_partial_pivoting}.
 The idea of partial pivoting is to rearrange the lines at each iteration of the factorization in such a manner that
 the pivotal entry is as large as possible in absolute value.
 One step of the procedure reads
 \begin{equation}
     \label{eq:step_partial_pivoting}
-    \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)},
+    \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)}.
 \end{equation}
-where $\mat M_{k+1}$ is the Gaussian transformation matrix ensuring that
-$\mat A^{(k+1)}$ is upper triangular up to column $k+1$,
-and $\mat P_{k+1}$ is a row permutation matrix whose action on $\mat A^{(k)}$ leads to an interchange between row $k+1$ and another row with index $\ell \geq k+1$.
-(Note that if $\ell = k+1$,
-then $\mat P_{k+1}$ is the identity operator.)
+Here $\mat P_{k+1}$ is a row permutation matrix which,
+when acting on $\mat A^{(k)}$,
+interchanges row~$k+1$ and row $\ell$,
+for some index $\ell \geq k+1$.
 The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$ is maximum.
-% It appears in the denominator in the expression of the entries of the matrix $\mat M_{k+1}$.
+The matrix $\mat M_{k+1}$ is then the unique Gaussian transformation matrix ensuring that
+$\mat A^{(k+1)}$ is upper triangular up to column~$k+1$.
+
+% \begin{definition}
+%     \label{definition:row_permutation_matrix}%
+%     Let $\sigma : \{1, \dotsc, n\} \to \{1, \dotsc, n\}$ be a permutation,\
+%     i.e.\ a bijection on the set~$\{1, \dotsc, n\}$.
+%     The row permutation matrix associated with $\sigma$ is the matrix with entries
+%     \[
+%         p_{ij} =
+%         \begin{cases}
+%             1 & \text{if $i = \sigma(j)$,} \\
+%             0 & \text{otherwise.}
+%         \end{cases}
+%     \]
+%     If $\sigma(i) = i$ for a subset of lines $S \subset \{1, \dotsc, n\}$,
+%     then we say that $\mat P$ acts only on rows with indices in $\{1, \dotsc, n\} \backslash S$.
+% \end{definition}
+% When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \times n}$,
+% row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
+% for all $i \in \{1, \dots, n\}$.
+% A permutation matrix has a single entry equal to~1 per row and per column,
+% and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
+% In fact, we can restrict the row permutation matrix in~\eqref{eq:step_partial_pivoting} to one that involves only row $k+1$ and another row with index $i \geq k+1$.
+% The action of such a permutation matrix is to interchange rows $k+1$ and $i$,
+% and if $i = k+1$ then the permutation reduces to the identity operator.
+
+The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of $\mat L \mat U$ decomposition with partial pivoting is upper triangular and satisfies
+\[
+    \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
+    \quad \Leftrightarrow \quad
+     \mat A = (\mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1})^{-1} \mat A^{(n-1)}.
+\]
+The first factor in this decomposition of $\mat A$ is not necessarily lower triangular.
+However, using the notation $\mat M = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P = \mat P_{n-1} \dotsb \mat P_{1}$,
+we have
+\begin{equation}
+    \label{eq:plu_decomposition}
+    \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
+\end{equation}
+\Cref{lemma:linear_matrix_l_pivoting} below shows that,
+as the notation suggests,
+the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
+Before stating and proving the lemma,
+we note that $\mat P$ is row permutation matrix.
 \begin{definition}
     \label{definition:row_permutation_matrix}%
     Let $\sigma : \{1, \dotsc, n\} \to \{1, \dotsc, n\}$ be a permutation,\
@@ -562,36 +605,13 @@ The row index $\ell$ is selected in such a way that the absolute value of the pi
             0 & \text{otherwise.}
         \end{cases}
     \]
-    If $\sigma(i) = i$ for a subset of lines $S \subset \{1, \dotsc, n\}$,
-    then we say that $\mat P$ acts only on rows with indices in $\{1, \dotsc, n\} \backslash S$.
 \end{definition}
 When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \times n}$,
 row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
 for all $i \in \{1, \dots, n\}$.
 A permutation matrix has a single entry equal to~1 per row and per column,
 and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
-In fact, we can restrict the row permutation matrix in~\eqref{eq:step_partial_pivoting} to one that involves only row $k+1$ and another row with index $i \geq k+1$.
-The action of such a permutation matrix is to interchange rows $k+1$ and $i$,
-and if $i = k+1$ then the permutation reduces to the identity operator.
-
-The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of $\mat L \mat U$ decomposition with partial pivoting is upper triangular and satisfies
-\[
-    \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
-    \quad \Leftrightarrow \quad
-     \mat A = (\mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1})^{-1} \mat A^{(n-1)}.
-\]
-The first factor in this decomposition of $\mat A$ is not necessarily lower triangular.
-However, using the notation $\mat M = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P = \mat P_{n-1} \dotsb \mat P_{1}$,
-we have
-\[
-    \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
-\]
-The next lemma shows that,
-as the notation suggests,
-the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
-Before stating and proving the lemma,
-we note that $\mat P$ is row permutation matrix and
-that the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$,
+Consequently, in view of~\eqref{eq:plu_decomposition}, the solution to the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$,
 the right-hand side of which can be calculated very efficiently.
 \begin{lemma}
     \label{lemma:linear_matrix_l_pivoting}
