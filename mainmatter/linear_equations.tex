@@ -494,6 +494,10 @@ The Gaussian transformations require
     = \frac{2}{3} n^3 + \mathcal O(n^2) \quad \mathrm{flops}.
 \]
 
+\subsubsection*{Uniqueness of the decomposition}%
+\subsubsection*{Existence of the decomposition}%
+
+
 \subsection{Backward and forward substitution}%
 \label{sub:backward_and_forward_substitution}
 Once the $\mat L \mat U$ factorization has been completed,
@@ -524,7 +528,7 @@ we presented in \cref{sub:lu_decomposition} relies on the assumption that the pi
 In practice,
 this assumption may not be satisfied,
 and in this case a modified algorithm,
-called Gaussian elimination \emph{with pivoting},
+called $\mat L \mat U$ factorization \emph{with pivoting},
 is required.
 In fact, pivoting is useful even if the pivots are nonzero,
 as it enables to reduce the condition number of the algorithm,
@@ -534,65 +538,11 @@ partial pivoting, where only the rows are rearranged through a permutation at ea
 and complete pivoting, where both the rows and the columns are rearranged at each iteration.
 
 Showing rigorously why pivoting is useful requires a detailed analysis and is beyond the scope of this course.
-In this section, we only discuss the partial pivoting method.
+In this section, we only present the partial pivoting method.
 Its influence on the condition number of the factors $\mat L$ and $\mat U$ is studied empirically in \cref{exercise:linear_lu_with_partial_pivoting}.
-The idea of partial pivoting is to rearrange the lines at each iteration of the factorization in such a manner that
-the pivotal entry is as large as possible in absolute value.
-One step of the procedure reads
-\begin{equation}
-    \label{eq:step_partial_pivoting}
-    \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)}.
-\end{equation}
-Here $\mat P_{k+1}$ is a row permutation matrix which,
-when acting on $\mat A^{(k)}$,
-interchanges row~$k+1$ and row $\ell$,
-for some index $\ell \geq k+1$.
-The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$ is maximum.
-The matrix $\mat M_{k+1}$ is then the unique Gaussian transformation matrix ensuring that
-$\mat A^{(k+1)}$ is upper triangular up to column~$k+1$.
+It is useful at this point to introduce the concept of a row permutation matrix.
 
-% \begin{definition}
-%     \label{definition:row_permutation_matrix}%
-%     Let $\sigma : \{1, \dotsc, n\} \to \{1, \dotsc, n\}$ be a permutation,\
-%     i.e.\ a bijection on the set~$\{1, \dotsc, n\}$.
-%     The row permutation matrix associated with $\sigma$ is the matrix with entries
-%     \[
-%         p_{ij} =
-%         \begin{cases}
-%             1 & \text{if $i = \sigma(j)$,} \\
-%             0 & \text{otherwise.}
-%         \end{cases}
-%     \]
-%     If $\sigma(i) = i$ for a subset of lines $S \subset \{1, \dotsc, n\}$,
-%     then we say that $\mat P$ acts only on rows with indices in $\{1, \dotsc, n\} \backslash S$.
-% \end{definition}
-% When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \times n}$,
-% row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
-% for all $i \in \{1, \dots, n\}$.
-% A permutation matrix has a single entry equal to~1 per row and per column,
-% and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
-% In fact, we can restrict the row permutation matrix in~\eqref{eq:step_partial_pivoting} to one that involves only row $k+1$ and another row with index $i \geq k+1$.
-% The action of such a permutation matrix is to interchange rows $k+1$ and $i$,
-% and if $i = k+1$ then the permutation reduces to the identity operator.
-
-The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of $\mat L \mat U$ decomposition with partial pivoting is upper triangular and satisfies
-\[
-    \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
-    \quad \Leftrightarrow \quad
-     \mat A = (\mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1})^{-1} \mat A^{(n-1)}.
-\]
-The first factor in this decomposition of $\mat A$ is not necessarily lower triangular.
-However, using the notation $\mat M = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P = \mat P_{n-1} \dotsb \mat P_{1}$,
-we have
-\begin{equation}
-    \label{eq:plu_decomposition}
-    \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
-\end{equation}
-\Cref{lemma:linear_matrix_l_pivoting} below shows that,
-as the notation suggests,
-the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
-Before stating and proving the lemma,
-we note that $\mat P$ is row permutation matrix.
+\subsubsection*{Row permutation matrix}%
 \begin{definition}
     \label{definition:row_permutation_matrix}%
     Let $\sigma : \{1, \dotsc, n\} \to \{1, \dotsc, n\}$ be a permutation,\
@@ -611,13 +561,49 @@ row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting ma
 for all $i \in \{1, \dots, n\}$.
 A permutation matrix has a single entry equal to~1 per row and per column,
 and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
-Consequently, in view of~\eqref{eq:plu_decomposition}, the solution to the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$,
-the right-hand side of which can be calculated very efficiently.
+
+\subsubsection*{Partial pivoting}%
+The idea of partial pivoting is to rearrange the lines at each iteration of the $\mat L \mat U$ factorization in such a manner that
+the pivotal entry is as large as possible in absolute value.
+One step of the procedure reads
+\begin{equation}
+    \label{eq:step_partial_pivoting}
+    \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)}.
+\end{equation}
+Here $\mat P_{k+1}$ is a particular type of a row permutation matrix which,
+when acting on $\mat A^{(k)}$,
+interchanges row~$k+1$ and row $\ell$,
+for some index $\ell \geq k+1$.
+The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$ is maximum.
+The matrix $\mat M_{k+1}$ is then the unique Gaussian transformation matrix ensuring that~%
+$\mat A^{(k+1)}$ is upper triangular up to column~$k+1$.
+The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of the form~\eqref{eq:step_partial_pivoting} is upper triangular and satisfies
+\[
+    \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
+    \quad \Leftrightarrow \quad
+     \mat A = (\mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1})^{-1} \mat A^{(n-1)}.
+\]
+The first factor in the decomposition of $\mat A$ is not necessarily lower triangular.
+However, using the notation $\mat M = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P = \mat P_{n-1} \dotsb \mat P_{1}$,
+we have
+\begin{equation}
+    \label{eq:plu_decomposition}
+    \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
+\end{equation}
+\Cref{lemma:linear_matrix_l_pivoting} below shows that,
+as the notation suggests,
+the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
+Before stating and proving the lemma,
+we note that $\mat P$ is row permutation matrix,
+and so the solution to the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$
+by forward and backward substitution.
+Since $\mat P$ is a very sparse matrix,
+the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
 \begin{lemma}
     \label{lemma:linear_matrix_l_pivoting}
     The matrix $\mat L = \mat P \mat M^{-1}$ is unit lower triangular
     with all entries bounded from above by 1.
-    It may be expressed as
+    It admits the expression
     \[
         \mat L
         = \mat I
@@ -629,7 +615,7 @@ the right-hand side of which can be calculated very efficiently.
     \]
 \end{lemma}
 \begin{proof}
-    Let $\mat M^{(k)} = \mat M_{k} \mat P_{k} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P^{(k)} = \mat P_{k} \dotsb \mat P_{1}$.
+    Let $\mat M^{(k)} = \mat M_{k} \mat P_{k} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P^{(k)} = \mat P_{k} \dotsb \mat P_{1}$,
     It is sufficient to show that
     \begin{equation}
         \label{eq:linear_lower_triangular_l}
@@ -639,11 +625,11 @@ the right-hand side of which can be calculated very efficiently.
         + (\mat P_{k} \dotsb \mat P_{3} \vect c^{(2)}) \vect e_{2}^\t
         + \dotsb
         + (\mat P_{k} \vect c^{(k-1)}) \vect e_{n-2}^\t
-        + \vect c^{(k)} \vect e_{k}^\t.
+        + \vect c^{(k)} \vect e_{k}^\t
     \end{equation}
     for all $k \in \{1, \dotsc, n-1 \}$.
     The statement is clear for $k = 1$,
-    and we assume by induction that it is true up to~$n-1$.
+    and we assume by induction that it is true up to~$k-1$.
     Then notice that
     \begin{align*}
         \mat P^{(k)} \bigl( \mat M^{(k)} \bigr)^{-1}
@@ -662,21 +648,65 @@ the right-hand side of which can be calculated very efficiently.
     In the last equality,
     we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, n-1\}$,
     because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k-1$.
-    Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$ and expanding the product,
+    Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$,
+    expanding the product and noting that $\vect e_j^\t \vect c^{(k)} = 0$ if $j \leq k$,
     we obtain~\eqref{eq:linear_lower_triangular_l}.
 \end{proof}
-The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the following iterative procedure for performing the factorization.
+The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the iterative procedure~\cref{algo:LU_decomposition_with_partial_pivoting} for performing the factorization.
+\begin{algorithm}
+\caption{$\mat L \mat U$ decomposition with partial pivoting}%
+\label{algo:LU_decomposition_with_partial_pivoting}%
 \begin{algorithmic}
-\State $\mat A^{(0)} \gets \mat A$, $\mat P \gets \mat I$
+\State Assign $\mat A^{(0)} \gets \mat A$ and $\mat P \gets \mat I$
 \For{$i \in \{1, \dotsc, n-1\}$}
     \State Find the row index $k \geq i$ such that $A^{(i-1)}_{k,i}$ is maximum in absolute value.
-    \State Interchange the rows $i$ and $k$ of $\mat A^{(i-1)}$, of $\mat I$, and of $\vect c^{(1)}, \dotsc, \vect c^{(i-1)}$.
+    \State Interchange the rows $i$ and $k$ of matrices $\mat A^{(i-1)}$ and $\mat P$, and of vectors $\vect c^{(1)}, \dotsc, \vect c^{(i-1)}$.
     \State Construct $\mat M_{i}$ with corresponding column vector $\vect c^{(i)}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
-    \State $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}$
+    \State Assign $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}$
 \EndFor
-\State $\mat U \gets \mat A^{(n-1)}$.
-\State $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} \end{pmatrix}$.
+\State Assign $\mat U \gets \mat A^{(n-1)}$.
+\State Assign $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} \end{pmatrix}$.
 \end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+    It is possible to show that,
+    if the matrix $\mat A$ is column diagonally dominant in the sense that
+    \[
+        \forall j \in \{1, \dotsc, n\}, \qquad
+        \lvert a_{jj} \rvert \geq \sum_{i=1, i\neq j}^{n} \lvert a_{ij} \rvert,
+    \]
+    then pivoting does not have an effect:
+    at each iteration,
+    the best pivot is already on the diagonal.
+\end{remark}
+
+\subsection{Direct method for symmetric positive definite matrices}%
+\label{sub:direct_method_for_symmetric_positive_definite_matrices}
+The $\mat L \mat U$ factorization with partial pivoting applies to any matrix $\mat A \in \real^{n \times n}$ that is invertible.
+If~$\mat A$ is symmetric positive definite,
+however, it is possible to compute a factorization into lower and upper triangular matrices at half the computational cost,
+using the so-called \emph{Cholesky decomposition}.
+\begin{lemma}
+    [Cholesky decomposition]
+    If~$\mat A$ is symmetric positive definite,
+    then there exists a lower-triangular matrix $\mat C \in \real^{n \times n}$ such that
+    \begin{equation}
+        \label{eq:linear_cholesky_decomposition}
+        \mat A = \mat C \mat C^\t.
+    \end{equation}
+    Equation~\eqref{eq:linear_cholesky_decomposition} is called the Cholesky factorization of $\mat A$.
+\end{lemma}
+\begin{proof}
+    By the spectral theorem (see \cref{theorem:spectral_theorem} in \cref{cha:vectors_and_matrices}),
+    there exists a diagonal matrix $\mat D$ and an orthogonal matrix $\mat Q$ such that
+    \[
+        \mat A = \mat Q \mat D \mat Q^\t.
+    \]
+    The diagonal entries of $\mat D$ are positive since $\mat A$ is positive definite.
+    Therefore we can defined $\sqrt{\mat D}$ as
+\end{proof}
+
 \begin{exercise}
     [Inverse of Gaussian transformation]
     \label{exercise:inverse_gaussian_transformation}
