@@ -1,5 +1,7 @@
 \chapter{Solution of linear systems of equation}
 \label{cha:solution_of_linear_systems}
+\minitoc
+
 This chapter is devoted to the numerical solution of linear problems of the following form:
 \begin{equation}
     \label{eq:linear_system}
@@ -408,7 +410,8 @@ the matrix $\mat L$ is \emph{unit lower triangular}.
 In practical implementations, therefore,
 these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
 The full expression of the matrix $\mat L$ given the Gaussian transformations is
-\[
+\begin{equation}
+    \label{eq:linear_matrix_L}
     \mat L
     = \mat I +
     \begin{pmatrix}
@@ -423,7 +426,7 @@ The full expression of the matrix $\mat L$ given the Gaussian transformations is
         \vdots & \vdots & \vdots & & \ddots \\
         c^{(1)}_n & c^{(2)}_n & c^{(3)}_n & \hdots & c^{(n-1)}_n & 1 \\
     \end{pmatrix}
-\]
+\end{equation}
 
 Of course, the success of the strategy outlined above for the calculation of the $\mat L \mat U$ factorization hinges on
 the existence of an appropriate Gaussian transformation at each iteration.
@@ -495,8 +498,108 @@ The Gaussian transformations require
 \]
 
 \subsubsection*{Uniqueness of the decomposition}%
-\subsubsection*{Existence of the decomposition}%
+It is not difficult to show that,
+if there exists a factorization of an invertible matrix $\mat A \in \real^{n \times n}$
+into a unit triangular matrix $\mat L$ and an upper triangular matrix $\mat U$,
+then the factors are necessarily unique,
+and they can be obtained by using the procedure described in the previous section.
+\begin{proposition}
+    \label{proposition:linear_uniqueness_lu}
+    The $\mat L \mat U$ decomposition of a nonsingular matrix $\mat A$,
+    if it exists,
+    is unique.
+\end{proposition}
+\begin{proof}
+    We denote by $\vect c^{(1)}, \dots \vect c^{(n-1)},$ the columns of the matrix $\mat L - \mat I$.
+    Then the matrices given by $\mat M_k = \mat I - \vect c^{(k)} \vect e_{k}^\t$,
+    for $k \in \{1, \dotsc, n-1 \}$,
+    are Gaussian transformations and it holds that
+    \[
+        \mat L = \mat M_1^{-1} \dotsb  \mat M_{n-1}^{-1}
+    \]
+    in view of \cref{lemma:linear_inverse_product_gaussian_transformations}.
+    Since $\mat A = \mat L \mat U$ by assumption,
+    the result of the product
+    \[
+        \mat M_{n-1} \dotsb \mat M_1 \mat A = \mat U
+    \]
+    is upper triangular.
+    Let us use the notation $\mat A^{(k)} = \mat M_{k} \dotsb \mat M_1 \mat A$.
+    Of all the Gaussian transformations,
+    only $\mat M_1$ acts on the second line of the matrix it multiplies.
+    Therefore, the entry $(2, 1)$ of~$\mat U$ coincides with the entry $(2, 1)$ of $\mat A^{(1)}$,
+    which implies that $a^{(1)}_{2,1} = 0$.
+    % and since $u_{2,1} = 0$ we deduce that $a_{21} - c^{(1)}_2 a_{11} = 0$.
+    Then notice that $a^{(k)}_{3,1} = a^{(1)}_{3, 1}$ for all $k \geq 1$,
+    because the entry $(3, 1)$ of the matrix $\mat M_2 \mat A^{(1)}$ is given by $a^{(1)}_{3,1} - c^{(2)}_3 a^{(1)}_{2,1} = a^{(1)}_{3,1}$,
+    and the other transformation matrices $\mat M_3, \dotsc, \mat M_{n-1}$ leave the third line invariant.
+    Consequently, it holds that $a^{(1)}_{3,1} = u_{3,1} = 0$.
+    Continuing in this manner,
+    we deduce that $\mat A^{(1)}$ is upper triangular in the first column and that,
+    since $\mat A$ is invertible by assumption,
+    the first pivot~$a_{11}$ is nonzero.
 
+    The reasoning can then be repeated with other columns,
+    in order to deduce that $\mat A^{(k)}$ is upper triangular up to column $k$ and that all the pivots $a^{(k-1)}_{kk}$ are nonzero.
+    Since this uniquely defines the Gaussian transformations by \cref{lemma:linear_expression_gaussian_transformations},
+    we conclude that $\mat L$ is unique, and therefore also $\mat U = \mat L^{-1} \mat A$.
+\end{proof}
+
+\subsubsection*{Existence of the decomposition}%
+We now present a necessary and sufficient condition for the existence of the $\mat L \mat U$ decomposition of a matrix.
+To this end, we define the principal submatrix of order $i$ of a matrix $\mat A \in \real^{n \times n}$
+as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
+
+\begin{proposition}
+    \label{proposition:linear_existence_lu}
+    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$ exists if and only if
+    the principal submatrices of $\mat A$ of all orders are nonsingular.
+\end{proposition}
+\begin{proof}
+    We prove only the ``if'' direction; see~\cite[Theorem 3.4]{MR2265914} for the ``only if'' implication.
+
+    The statement is clear if $n = 1$.
+    Reasoning by induction,
+    we assume that the result is proved up to $n - 1$.
+    Since the matrix $\mat A_{n-1}$ is nonsingular by assumption,
+    it holds that $\mat A_{n-1} = \mat L_{n-1} \mat U_{n-1}$,
+    for a unit lower triangular matrix $\mat L_{n-1}$ and an upper triangular matrix $\mat U_{n-1}$.
+    Let us decompose~$\mat A$ as follows:
+    \[
+        \mat A =
+        \begin{pmatrix}
+            \mat A_{n-1} & \vect c \\
+            \vect d^\t & a_{nn}
+        \end{pmatrix}.
+    \]
+    Let $\vect \ell$ and $\vect u$ denote the solutions to $\mat L_{n-1} \vect u = \vect c$ and $\mat U_{n-1}^\t \vect \ell = \vect d$.
+    These solutions exists, because the matrices $\mat L_{n-1}$ and $\mat U_{n-1}$ are nonsingular.
+    Letting $u_{nn} = (\vect \ell^\t \vect u)^{-1} a_{nn}$,
+    we check that $\mat A$ factorizes as
+    \[
+        \begin{pmatrix}
+            \mat A_{n-1} & \vect c \\
+            \vect d^\t & a_{nn}
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            \mat L_{n-1} & \vect 0_{n-1} \\
+            \vect \ell^\t & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+            \mat U_{n-1} & \vect u \\
+            \vect 0_{n-1}^\t & u_{nn}
+        \end{pmatrix},
+    \]
+    which completes the proof.
+\end{proof}
+
+\begin{remark}
+    In fact,
+    the reasoning in the proof of~\cref{proposition:linear_existence_lu} can also be employed to show uniqueness of the $\mat L \mat U$ decomposition.
+    The advantage of our approach in the proof of \cref{proposition:linear_uniqueness_lu} is that it also implies,
+    as a byproduct, the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
+\end{remark}
 
 \subsection{Backward and forward substitution}%
 \label{sub:backward_and_forward_substitution}
