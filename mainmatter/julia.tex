@@ -21,7 +21,7 @@ if you are familiar with any of these.
 \label{sub:getting_documentation}
 
 To find documentation on a function from the Julia console,
-type ``\texttt{?}'' and then the name of the function.
+type ``\texttt{?}'' to access ``help mode'', and then the name of the function.
 Tab completion is helpful for listing available function names.
 
 \begin{task}
@@ -87,6 +87,14 @@ especially in a large codebase.
     may be useful for this exercise.
 \end{task}
 
+\begin{remark}
+    We have seen that \julia{?} and \julia{]} enable to access ``help mode'' and ``package mode'', respectively.
+    Another mode which is occasionally useful is ``shell mode'',
+    which is accessed with the character \julia{;} and allows to type \texttt{bash} commands,
+    such as \texttt{mkdir} to change directory.
+    See \href{https://docs.julialang.org/en/v1/stdlib/REPL/}{this part} of the manual for additional documentation on Julia modes.
+\end{remark}
+
 \subsection*{Printing output}%
 The functions \julia{println} and \julia{print} enable to display output.
 The former adds a new line at the end and the latter does not.
@@ -144,6 +152,56 @@ For instance, the following function takes a number $x$ and returns a tuple $(x,
     # This assigns a = 2, b = 4, c = 8
     a, b, c = powers(2)
 \end{minted}
+
+Like many other languages,
+including Python and Scheme,
+Julia follows a convention for argument-passing called ``pass-by-sharing'':
+values passed as arguments to a function are not copied,
+and the arguments act as new bindings within the function body.
+It is possible, therefore, to modify a value passed as argument,
+provided this value is of mutable type.
+Functions that overwrite some of their arguments usually end with an exclamation mark \julia{!}.
+For example, the following code prints first \texttt{[4, 3, 2, 1]},
+because the function \julia{sort} does not modify its argument,
+and then it prints \texttt{[1, 2, 3, 4]},
+because the function \julia{sort!} does.
+\begin{minted}{julia}
+    x = [4, 3, 2, 1]
+    y = sort(x)  # y is sorted
+    println(x); sort!(x); println(x)
+\end{minted}
+Similarly,
+when displaying several curves in a figure,
+we first start with the function \julia{plot},
+and then we use \julia{plot!} to modify the existing figure.
+\begin{minted}{julia}
+    import Plots
+    Plots.plot(cos)
+    Plots.plot!(sin)
+\end{minted}
+
+As a final example to illustrate argument-passing,
+consider the following code.
+Here two arguments are passed to the function \julia{test}:
+an array, which is a mutable value,
+and an integer, which is immutable.
+The instruction \julia{arg1[1] = 0} modifies the array to which both \julia{a} and \julia{arg1} are bindings.
+The instruction \julia{arg2 = 2},
+on the other hand, just causes the variable \julia{arg2} to point to a new immutable value (\julia{3}),
+but it does not change the destination of the binding \julia{b}, which remains the immutable value \julia{2}.
+Therefore, the code prints \texttt{[0, 2, 3]} and \texttt{3}.
+
+\begin{minted}{julia}
+    function test(arg1, arg2)
+        arg1[1] = 0
+        arg2 = 2
+    end
+    a = [1, 2, 3]
+    b = 3
+    test(a, b)
+    println(a, b)
+\end{minted}
+
 
 \begin{task}
     [Euler constant for the harmonic series]
@@ -316,6 +374,20 @@ called \emph{array comprehension} for creating vectors and matrices:
         \julia{[i for i in 1:10 if ispow2(i)]} creates the vector \julia{[1, 2, 4, 8]}.
         The same result can be achieved with the \julia{filter} function: \julia{filter(ispow2, 1:10)}.
 \end{itemize}
+
+In contrast with Matlab,
+array assignment in Julia does not perform a copy.
+For example the following code prints \texttt{[1, 2, 3, 4]},
+because the instruction \julia{b = a} defines a new binding to the array~\julia{a}.
+\begin{minted}{julia}
+    a = [2; 2; 3]
+    b = a
+    b[1] = 1
+    append!(b, 4)
+    println(a)
+\end{minted}
+A similar behavior applies when passing an array as argument to a function.
+The \julia{copy} function can be used to perform a copy.
 
 \begin{task}
     Create a 10 by 10 diagonal matrix with the $i$-th entry on the diagonal equal to $i$.
