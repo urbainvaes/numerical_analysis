@@ -542,7 +542,7 @@ and they can be obtained by using the procedure described in the previous sectio
     The reasoning can then be repeated with other columns,
     in order to deduce that $\mat A^{(k)}$ is upper triangular up to column $k$ and that all the pivots $a^{(k-1)}_{kk}$ are nonzero.
     Since this uniquely defines the Gaussian transformations by \cref{lemma:linear_expression_gaussian_transformations},
-    we conclude that $\mat L$ is unique, and therefore also $\mat U = \mat L^{-1} \mat A$.
+    we conclude that $\mat L$ is unique, and therefore $\mat U = \mat L^{-1} \mat A$ is also unique.
 \end{proof}
 
 \subsubsection*{Existence of the decomposition}%
@@ -600,6 +600,12 @@ as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
     The advantage of our approach in the proof of \cref{proposition:linear_uniqueness_lu} is that it also implies,
     as a byproduct, the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
 \end{remark}
+
+\cref{proposition:linear_existence_lu} raises the following question:
+are there classes of matrices whose principal matrices are all nonsingular?
+The answer is positive, and we mention,
+as an important example, the class of positive definite matrices.
+Proving this is the aim of \cref{exercise:linear_positive_definite_matrix_nonsingular_principal_components}.
 
 \subsection{Backward and forward substitution}%
 \label{sub:backward_and_forward_substitution}
@@ -768,7 +774,7 @@ The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the
     \State Assign $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}$
 \EndFor
 \State Assign $\mat U \gets \mat A^{(n-1)}$.
-\State Assign $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} \end{pmatrix}$.
+\State Assign $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} & \vect 0_n \end{pmatrix}$.
 \end{algorithmic}
 \end{algorithm}
 
@@ -819,6 +825,13 @@ using the so-called \emph{Cholesky decomposition}.
 \begin{exercise}
     \label{exercise:linear_product_of_lower_triangular}
     Prove that the product of two lower triangular matrices is lower triangular.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:linear_positive_definite_matrix_nonsingular_principal_components}
+    Assume that $\mat A \in \real^{n \times n}$ is positive definite,
+    i.e.\ that $\vect x^\t \mat A \vect x > 0$ for all $\vect x \in \real^n \backslash \{ \vect 0_n \}$.
+    Show that all the principal submatrices of $\mat A$ are nonsingular.
 \end{exercise}
 
 \begin{exercise}
