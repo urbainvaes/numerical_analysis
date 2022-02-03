@@ -771,7 +771,7 @@ is smaller than the smallest representable number in a floating point format.
     Let $x$ and $y$ be positive real numbers in the interval $[2^{-10}, 2^{10}]$
     (so that we do not need to worry about denormalized numbers,
     assuming we are working in single or double precision),
-    and let us extend the domain of the machine addition operator $\madd$ to the real numbers by defining it as
+    and let us define the machine addition operator $\madd$ for arguments in real numbers as
     \[
         \madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr).
     \]
