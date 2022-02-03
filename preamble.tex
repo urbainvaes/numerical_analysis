@@ -160,7 +160,8 @@
 \newtheorem{protoproposition}[prototheorem]{Proposition}
 \newtheorem{protolemma}[prototheorem]{Lemma}
 \newtheorem{protocorollary}[prototheorem]{Corollary}
-\newtheorem{protoexercise}{{\normalfont \faCogs}~Exercise}[chapter]
+\newtheorem{protoexercise}{{\normalfont \faGears}~Exercise}[chapter]
+\newtheorem{protocompexercise}[protoexercise]{{\normalfont \faLaptop}~Exercise}
 \newtheorem{task}{{\normalfont \faLaptop}~Task}
 \theoremstyle{definition}
 \newtheorem{protodefinition}{Definition}[chapter]
@@ -213,6 +214,9 @@
 \newenvironment{exercise}
    {\colorlet{shadecolor}{white}\begin{protoexercise}}
    {\end{protoexercise}}
+\newenvironment{compexercise}
+   {\colorlet{shadecolor}{white}\begin{protocompexercise}}
+   {\end{protocompexercise}}
 
 % Links
 \crefname{protolemma}{Lemma}{Lemmas}

@@ -27,7 +27,7 @@ There are two main approaches for solving linear systems:
         Direct methods enable to calculate the exact solution to systems of linear equations,
         up to round-off errors.
         Although this is an attractive property,
-        they are usually too computationally costly for large systems:
+        direct methods are usually too computationally costly for large systems:
         The cost of inverting a general $n \times n$ matrix,
         measured in number of floating operations,
         scales as $n^3$!
@@ -39,30 +39,36 @@ There are two main approaches for solving linear systems:
         These methods are often preferable when the dimension $n$ of the linear system is very large.
 \end{itemize}
 
-This section is organized as follows.
+This chapter is organized as follows.
 \begin{itemize}
     \item
         In \cref{sec:conditioning},
         we introduce the concept of \emph{conditioning}.
         The condition number of a matrix provides information on the sensitivity of the solution to perturbations of the right-hand side $\vect b$ or matrix $\mat A$.
         It is useful, for example, in order to determine the potential impact of round-off errors.
+
+    \item
+        In \cref{sec:direct_solution_method},
+        we present the direct method for solving systems of linear equations.
+        We study in particular the $\mat L \mat U$ decomposition for an invertible matrix,
+        as well as its variant for symmetric positive definite matrices,
+        which is called the Cholesky decomposition.
 \end{itemize}
 
 \section{Conditioning}%
 \label{sec:conditioning}
 
-The condition number for a given problem measures the sensitivity of the solution to some input data.
+The condition number for a given problem measures the sensitivity of the solution to the input data.
 In order to define this concept precisely,
 we consider a general problem of the form~$F(x, d) = 0$,
 with unknown $x$ and data $d$.
 The linear system~\eqref{eq:linear_system} can be recast in this form,
 with the input data equal to $\vect b$ or $\mat A$ or both.
-We denote the solution corresponding to a perturbed input data $d + \Delta d$ by $x + \Delta x$.
-For the general problem,
-we define the absolute and relative condition numbers as follows.
+We denote the solution corresponding to perturbed input data $d + \Delta d$ by $x + \Delta x$.
+The absolute and relative condition numbers are defined as follows.
 
 \begin{definition}
-    [Condition number for abstract problem]
+    [Condition number for the problem $F(x, d) = 0$]
     The absolute and relative condition numbers with respect to perturbations of $d$ are defined as
     \[
         K_{\rm abs}(d) = \lim_{\varepsilon \to 0} \left( \sup_{\norm{\Delta d} \leq \varepsilon} \frac{\norm{\Delta x}}{\norm{\Delta d}} \right),
@@ -74,7 +80,7 @@ we define the absolute and relative condition numbers as follows.
 \end{definition}
 
 In the rest of this section,
-we obtain an upper bound on the relative condition number of the linear system~\eqref{eq:linear_system} with respect to perturbations first of $\vect b$,
+we obtain an upper bound on the relative condition number for the linear system~\eqref{eq:linear_system} with respect to perturbations first of $\vect b$,
 and then of $\mat A$.
 We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real^n$ and the induced operator norm on matrices.
 
@@ -82,14 +88,14 @@ We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real
     [Perturbation of the right-hand side]
     \label{proposition:linear_perturbation_rhs}
     Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $\mat A (\vect x + \Delta \vect x) = \vect b + \Delta \vect b$.
-    Then it holds
+    Then it holds that
     \begin{equation}
         \label{eq:linear_perturbation_rhs}
         \frac{\norm{\Delta \vect x}}{\norm{\vect x}} \leq \norm{\mat A} \norm{\mat A^{-1}} \, \frac{\norm{\Delta \vect b}}{\norm{\vect b}},
     \end{equation}
 \end{proposition}
 \begin{proof}
-    It holds by definition that $\mat A \Delta \vect x = \Delta \vect b$.
+    It holds by definition of $\Delta \vect x$ that $\mat A \Delta \vect x = \Delta \vect b$.
     Therefore, we have
     \begin{equation}
         \label{eq:linear_perturbation_rhs_to_rearrange}
@@ -105,12 +111,12 @@ We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real
     Rearranging the inequality~\eqref{eq:linear_perturbation_rhs_to_rearrange},
     we obtain~\eqref{eq:linear_perturbation_rhs}.
 \end{proof}
-\Cref{proposition:linear_perturbation_rhs} shows that
+\Cref{proposition:linear_perturbation_rhs} implies that
 the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the right-hand side is bounded from above by $\norm{\mat A} \norm{\mat A^{-1}}$.
 \Cref{exercise:linear_sharp_inequality} shows that there are values of $\vect x$ and $\Delta \vect b$ for which the inequality~\eqref{eq:linear_perturbation_rhs} is sharp.
 
 Studying the impact of perturbations of the matrix~$\mat A$ is slightly more difficult,
-because this time the variation of the solution~$\Delta \vect x$ does not depend linearly on the perturbation.
+because this time the variation~$\Delta \vect x$ of the solution does not depend linearly on the perturbation.
 \begin{proposition}
     [Perturbation of the matrix]
     \label{proposition:linear_perturbation_matrix}
@@ -125,7 +131,7 @@ because this time the variation of the solution~$\Delta \vect x$ does not depend
     \end{equation}
 \end{proposition}
 Before proving this result,
-we show the following ancillary lemma.
+we show an ancillary lemma.
 \begin{lemma}
     \label{lemma:linear_inverse_neumann}
     Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} \leq 1$.
@@ -140,7 +146,7 @@ we show the following ancillary lemma.
 \begin{proof}
     It holds for any matrix $\mat B \in \real^{n \times n}$ that
     \[
-        \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n)
+        \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n).
     \]
     Since $\norm{\mat B} < 1$ in a submultiplicative matrix norm,
     both sides of the equation are convergent in the limit as $n \to \infty$,
@@ -151,7 +157,7 @@ we show the following ancillary lemma.
         \mat I = (\mat I - \mat B) \sum_{i=0}^{\infty} \mat B^i.
     \]
     This implies that $(\mat I - \mat B)$ is invertible with inverse
-    given by the so-called \emph{Neumann} series
+    given by a so-called \emph{Neumann} series
     \begin{equation*}
         (\mat I - \mat B)^{-1} = \sum_{i=0}^{\infty} \mat B^i.
     \end{equation*}
@@ -182,11 +188,11 @@ we show the following ancillary lemma.
         (\mat I + \mat A^{-1} \Delta \mat A) \Delta \vect x = - \mat A^{-1} \Delta \mat A \vect x.
     \end{equation}
     Since $\norm{\mat A^{-1} \Delta \mat A} \leq \norm{\mat A^{-1}} \norm{\Delta \mat A} < 1$ by assumption,
-    we deduce~\cref{lemma:linear_inverse_neumann} that the matrix on the left-hand side is invertible
+    we deduce from~\cref{lemma:linear_inverse_neumann} that the matrix on the left-hand side is invertible
     with a norm bounded as in~\eqref{eq:linear_bound_inverse_perturbation_identity}.
     Consequently,
     using in addition the assumed submultiplicative property of the norm,
-    we deduce that
+    we obtain that
     \[
         \norm{\Delta \vect x}
         = \norm{(\mat I + \mat A^{-1} \Delta \mat A)^{-1} \mat A^{-1} \Delta \mat A \vect x}
@@ -209,7 +215,7 @@ This motivates the following definition.
     \[
         \kappa(\mat A) = \norm{\mat A} \norm{\mat A^{-1}}.
     \]
-    The condition number for the vector $p$-norm,
+    The condition number for the $p$-norm,
     defined in \cref{definition:pnorm_vector},
     is denoted by $\kappa_p(\mat A)$.
 \end{definition}
@@ -261,7 +267,7 @@ where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both re
             \frac{1}{1 + 100 \varepsilon}
         \end{pmatrix}.
     \]
-    Consequently, we deduce that
+    Consequently, we deduce that, in the 2-norm,
     \[
         \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
         = \abs*{\frac{100 \varepsilon}{1 + 100 \varepsilon}}
@@ -807,10 +813,10 @@ using the so-called \emph{Cholesky decomposition}.
     Equation~\eqref{eq:linear_cholesky_decomposition} is called the Cholesky factorization of $\mat A$.
 \end{lemma}
 \begin{proof}
-    Since $\mat A$ is positive definite, 
+    Since $\mat A$ is positive definite,
     its $\mat L \mat U$ decomposition exists and is unique by~\cref{proposition:linear_uniqueness_lu,proposition:linear_existence_lu}.
     Let $\mat D$ denote the diagonal matrix with the same diagonal as that of $\mat U$.
-    Then 
+    Then
     \[
         \mat A = \mat L \mat D \mat (\mat D^{-1} \mat U).
     \]
@@ -821,7 +827,7 @@ using the so-called \emph{Cholesky decomposition}.
         \mat A = \mat A^\t = (\mat D^{-1} \mat U)^\t (\mat L \mat D)^\t.
     \]
     Since the first and second factors on the right-hand side are respectively unit lower triangular and upper triangular,
-    we deduce, by uniqueness of the $\mat L \mat U$ decomposition, 
+    we deduce, by uniqueness of the $\mat L \mat U$ decomposition,
     that $\mat L = (\mat D^{-1} \mat U)^\t$ and $\mat U = (\mat L \mat D)^\t$.
     But then
     \[

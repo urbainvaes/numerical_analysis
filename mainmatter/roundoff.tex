@@ -185,8 +185,8 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 
 \begin{exercise}
     \label{exercise:non_unique_representation}
-    Show that if a number $x \in \real$ admits a finite representation~\eqref{eq:base_representation} in base $\beta$,
-    then it also admits an infinite representation.
+    Show that if a number $x \in \real$ admits a finite representation~\eqref{eq:base_representation} in base~$\beta$,
+    then it also admits an infinite representation in the same base.
     \textbf{Hint:} You may have learned before that $(0.\overline 9)_{10} = 1$.
 \end{exercise}
 
@@ -204,16 +204,16 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     Find the binary representation of $(0.1)_{10}$.
 \end{exercise}
 
-\begin{exercise}
+\begin{compexercise}
     Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
     Your function should take as argument an array of integers containing the digits after the decimal point;
     that is, an array of the form \verb?[a_1, ..., a_n]?.
-\end{exercise}
+\end{compexercise}
 
-\begin{exercise}
+\begin{compexercise}
     As mentioned above, \cref{algo:conversion_to_binary} works only for decimal numbers of the specific form~$x = (0.a_1\dots a_n)_{10}$.
     Find and implement a similar algorithm for integer numbers of the form $x = (a_{-n} \dots a_{0})_{10}$.
-\end{exercise}
+\end{compexercise}
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
@@ -695,7 +695,7 @@ is smaller than the smallest representable number in a floating point format.
     \end{center}
 \end{exercise}
 
-\begin{exercise}
+\begin{compexercise}
     [Avoiding overflow]
     Write a code to calculate the weighted average
     \[
@@ -705,9 +705,9 @@ is smaller than the smallest representable number in a floating point format.
         \qquad w_j = \exp(j),
         \qquad J = 1000.
     \]
-\end{exercise}
+\end{compexercise}
 
-\begin{exercise}
+\begin{compexercise}
     [Calculating the sample variance]
     Assume that $(x_n)_{1 \leq n \leq N}$, with $N = 10^6$, are independent random variables distributed according to
     the uniform distribution $\mathcal U(L, L+1)$.
@@ -734,7 +734,7 @@ is smaller than the smallest representable number in a floating point format.
     Can you find a formula that enables better accuracy than~\eqref{eq:sample_variance_2}?
     % ~\eqref{eq:sample_variance_2}
     % and compare the accuracy of the result.
-\end{exercise}
+\end{compexercise}
 
 \begin{remark}
     In order to estimate the true value of $s^2$ for your samples,
@@ -742,7 +742,7 @@ is smaller than the smallest representable number in a floating point format.
     to which the array $x$ can be converted by using the instruction \julia{x = BigFloat.(x)}.
 \end{remark}
 
-\begin{exercise}
+\begin{compexercise}
     Euler proved that
     \[
         \frac{\pi^2}{6} = \lim_{N \to \infty} \sum_{n=1}^{N} \frac{1}{n^2}.
@@ -750,7 +750,7 @@ is smaller than the smallest representable number in a floating point format.
     Using the default \julia{Float64} format,
     estimate the error obtained when the series on the right-hand side is truncated after $10^{10}$ terms.
     Can you rearrange the sum for best accuracy?
-\end{exercise}
+\end{compexercise}
 
 \begin{exercise}
     Let $x$ and $y$ be positive real numbers,
