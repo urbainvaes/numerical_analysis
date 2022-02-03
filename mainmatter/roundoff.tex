@@ -212,7 +212,22 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
 
 \begin{compexercise}
     As mentioned above, \cref{algo:conversion_to_binary} works only for decimal numbers of the specific form~$x = (0.a_1\dots a_n)_{10}$.
-    Find and implement a similar algorithm for integer numbers of the form $x = (a_{n} \dots a_{0})_{10}$.
+    Find and implement a similar algorithm for integer numbers.
+    More precisely, write a function that takes an integer $n$ as argument and
+    returns an array containing the bits of the binary expansion $(b_m \dots b_0)_2$ of $n$,
+    from the least significant $b_0$ to the most significant $b_m$.
+    That is to say, your code should return \julia{[b_0, b_1, ...]}.
+    \begin{minted}{julia}
+    function to_binary(n)
+        # Your code comes here
+    end
+
+    # Check that it works
+    number = 123456789
+    bits = to_binary(number)
+    pows2 = 2 .^ range(start=0, length=length(bits))
+    @assert sum(bits'pows2) == number
+    \end{minted}
 \end{compexercise}
 
 \section{Set of values representable in floating point formats}%
@@ -709,12 +724,12 @@ is smaller than the smallest representable number in a floating point format.
 
 \begin{compexercise}
     [Calculating the sample variance]
-    Assume that $(x_n)_{1 \leq n \leq N}$, with $N = 10^9$, are independent random variables distributed according to
+    Assume that $(x_n)_{1 \leq n \leq N}$, with $N = 10^6$, are independent random variables distributed according to
     the uniform distribution $\mathcal U(L, L+1)$.
     That is, each~$x_n$ takes a random value uniformly distributed between $L$ and $L+1$ where $L = 10^9$.
     In Julia, these samples can be generated with the following lines of code:
     \begin{minted}{julia}
-        N, L = 10^9, 10^9
+        N, L = 10^6, 10^9
         x = L .+ rand(N)
     \end{minted}
     It is well know that the variance of $x_n \in \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
@@ -753,7 +768,9 @@ is smaller than the smallest representable number in a floating point format.
 \end{compexercise}
 
 \begin{exercise}
-    Let $x$ and $y$ be positive real numbers,
+    Let $x$ and $y$ be positive real numbers in the interval $[2^{-10}, 2^{10}]$
+    (so that we do not need to worry about denormalized numbers,
+    assuming we are working in single or double precision),
     and let us extend the domain of the machine addition operator $\madd$ to the real numbers by defining it as
     \[
         \madd: \real \times \real \to \real; (x, y) \mapsto {\rm fl} \bigl({\rm fl}(x) + {\rm fl}(y)\bigr).
@@ -763,6 +780,11 @@ is smaller than the smallest representable number in a floating point format.
         \frac{\bigl| (x + y) - (x \madd  y ) \bigr|}{|x + y|}
         \leq \frac{\varepsilon_M}{2}  \left(2 + \frac{\varepsilon_M}{2}\right).
     \]
+    \textbf{Hint:} decompose the numerator as
+    \[
+        (x + y) - (x \madd  y ) = \bigl(x - {\rm fl}(x)\bigr) + \bigl(y - {\rm fl}(y)\bigr) + \bigl( {\rm fl}(x) + {\rm fl}(y) - (x \widehat + y)\bigr),
+    \]
+    and then use \cref{prop:relative_error_and_machine_epsilon}.
 \end{exercise}
 
 \begin{exercise}
