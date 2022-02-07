@@ -167,8 +167,8 @@ The proof is provided for information purposes.
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
     by compactness of the interval~$[-1, 1]$.
     Repeating this procedure for $\lambda_2, \lambda_3, \dots$,
-    by taking a new subsequence every time,
-    we obtain a subsequence such that $\lambda^{(i)}_j \to \lambda_j^*$ for all $j \in \{1, \dotsc, n\}$.
+    taking a new subsequence every time,
+    we obtain a subsequence $(\vect x^{(i)})_{i \in \nat}$ such that $\lambda^{(i)}_j \to \lambda_j^*$ for all $j \in \{1, \dotsc, n\}$.
     Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the $\norm{\placeholder}_{\beta}$ norm.
     Since $\vect x^{(i)} \to 0$ by assumption and the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
     this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
@@ -188,7 +188,7 @@ The proof is provided for information purposes.
 \label{sub:vector_norms}
 
 In the vector space $\real^n$,
-the most commonly used norms ones are particular cases of the $p$-norm, also called H\"older norm.
+the most commonly used norms are particular cases of the $p$-norm, also called H\"older norm.
 \begin{definition}
     \label{definition:pnorm_vector}
     Given $p \in [1, \infty]$,
@@ -299,10 +299,10 @@ which is widely used in applications,
 is not induced by a vector norm.
 It is, however, induced by an inner product on~$\real^{m \times n}$.
 \begin{definition}
-    The Frobenius norm of $\mat A \in \real^{m\times n}$ is defined by
+    The Frobenius norm of $\mat A \in \real^{m\times n}$ is given by
     \begin{equation}
         \label{eq:frobenius_norm}
-        \norm{\mat A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{m} \abs{a_{ij}}^2.
+        \norm{\mat A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{n} \abs{a_{ij}}^2.
     \end{equation}
 \end{definition}
 
@@ -312,7 +312,7 @@ it holds that
 \[
     \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}.
 \]
-All matrix subordinate matrix norms,
+All subordinate matrix norms,
 for example the $p$-norms, are submultiplicative,
 and so is the Frobenius norm.
 
@@ -344,13 +344,13 @@ equivalently, $(\mat A - \lambda_i \mat I_n) \vect e_i = \vect 0$.
 Here $\mat I_n$ is the~$\real^{n \times n}$ identity matrix.
 Therefore, $\lambda$ is an eigenvalue of $\mat A$ if and only if $\det(\mat A - \lambda \mat I_n) = 0$.
 In other words, the eigenvalues of $\mat A$ are the roots of $\det(\mat A - \lambda \mat I_n)$,
-called the \emph{characteristic polynomial}.
+which is called the \emph{characteristic polynomial}.
 
 \begin{remark}
 There is a definition parallel to \cref{definition:diagonalizable} for matrices in $\mat A \in \complex^{n \times n}$.
 A matrix with real entries may not be diagonalizable in the sense of \cref{definition:diagonalizable} (over $\real$),
 but still be diagonalizable over $\complex$,
-when viewed as an element of $\complex^{n \times n}$.
+i.e.\ when viewed as an element of $\complex^{n \times n}$.
 \end{remark}
 
 \subsection*{Symmetric matrices and spectral theorem}%
@@ -374,8 +374,8 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
     = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^\t \vect e_1, \vect e_2} = 0.
 \]
 \begin{theorem}
-    \label{theorem:spectral_theorem}
     [Spectral theorem for real symmetric matrices]
+    \label{theorem:spectral_theorem}
     If $\mat A \in \real^{n \times n}$ is symmetric,
     then there exists an orthogonal matrix $\mat Q \in \real^{n \times n}$ and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
     \[
@@ -394,17 +394,17 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
             \vspace{.3cm}
             \textbf{Step 1. Existence of a real eigenvalue}.
             By the fundamental theorem of algebra,
-            there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(A - \lambda I_n) = 0$,
-            to which there corresponds a solution $\vect e_1 \in \complex^n$ to the equation $(A - \lambda_1 I_n) \vect e = 0$.
+            there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(\mat A - \lambda \mat I_n) = 0$,
+            to which there corresponds a solution $\vect e_1 \in \complex^n$ to the equation $(\mat A - \lambda_1 \mat I_n) \vect e = 0$.
             The eigenvalue $\lambda_1$ is necessarily real because
             \[
-                \overline \lambda \vect e_1^* \vect e_1
-                = (\lambda \vect e_1)^* \vect e_1
+                \overline \lambda_1 \vect e_1^* \vect e_1
+                = (\lambda_1 \vect e_1)^* \vect e_1
                 = (\mat A \vect e_1)^* \vect e_1
                 = \vect e_1^* \mat A^* \vect e_1
                 = \vect e_1^* (\mat A \vect e_1)
-                = \vect e_1^* (\lambda \vect e_1)
-                = \lambda \vect e_1^* \vect e_1.
+                = \vect e_1^* (\lambda_1 \vect e_1)
+                = \lambda_1 \vect e_1^* \vect e_1.
             \]
             Here $\overline \placeholder$ denotes the complex conjugate,
             and $\placeholder^*$ denotes the conjugate transpose.
@@ -508,7 +508,7 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
 The largest eigenvalue of a matrix, in absolute value,
 is called the \emph{spectral radius} and denoted by~$\rho$.
 The 2-norm of a general matrix $\mat A \in \real^{n \times n}$
-coincides with the spectral radius $\mat A^\t \mat A$.
+coincides with the spectral radius of $\mat A^\t \mat A$.
 Indeed, by the spectral theorem it holds that $\mat A^\t \mat A = \mat Q \mat D \mat Q^\t$ with an orthogonal matrix $\mat Q$.
 Therefore, denoting by $(\lambda_i^2)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$,
 we have
