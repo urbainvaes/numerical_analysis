@@ -6,7 +6,6 @@ CSS := .jupyter/custom/custom.css
 all : $(HTML_OUTPUTS) $(IPYNB_OUTPUTS)
 
 %.ipynb : %.jl $(CSS)
-	# jupytext --to 'notebook' $^
 	~/.local/bin/jupytext --to 'notebook' --set-kernel 'julia-1.5' $<
 	JUPYTER_CONFIG_DIR=.jupyter jupyter nbconvert --execute --to 'notebook' --inplace $@
 
