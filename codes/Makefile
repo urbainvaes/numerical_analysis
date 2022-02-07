@@ -1,4 +1,4 @@
-JULIA_SCRIPTS := $(wildcard *.jl)
+JULIA_SCRIPTS := $(wildcard notebook*.jl)
 IPYNB_OUTPUTS := $(JULIA_SCRIPTS:.jl=.ipynb)
 HTML_OUTPUTS := $(JULIA_SCRIPTS:.jl=.html)
 CSS := .jupyter/custom/custom.css
