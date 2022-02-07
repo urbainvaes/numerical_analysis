@@ -54,9 +54,8 @@ println("Method 1: $s1\nMethod 2: $s2")
 # We use 'BigFloat' to calculate a very precise result
 x = BigFloat.(x)
 exact_average = (sum(x)/N)
-exact_value_1 = 1/(N-1) * (sum(x.^2) - N*(sum(x)/N)^2)
-exact_value_2 = 1/(N-1) * (sum(x.^2) - N*(sum(x)/N)^2)
-println("Exact value: $exact_value_1")
+exact_value = 1/(N-1) * (sum(x.^2) - N*exact_average^2)
+println("Exact value: $exact_value")
 # -
 
 # # Exercise 1.15
