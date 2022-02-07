@@ -421,7 +421,7 @@ the notation \julia{a + b} is just syntactic sugar for \julia{+(a, b)}.
 Since broadcasting is so often useful in numerical mathematics,
 Julia provides a shorthand notation for it: the instruction \julia{broadcast(welcome, ["Alice", "Bob"])}
 can be written compactly as \julia{welcome.(["Alice", "Bob"])}.
-Likewise, the line \julia{broadcast(+, 1, [1, 2, 3])} can be shortened to \julia{+.(1, [1, 2, 3])},
+Likewise, the line \julia{broadcast(+, 1, [1, 2, 3])} can be shortened to \julia{(+).(1, [1, 2, 3])},
 or to the more readable expression \julia{1 .+ [1, 2, 3]}.
 
 \begin{task}
