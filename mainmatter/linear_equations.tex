@@ -685,7 +685,7 @@ One step of the procedure reads
     \label{eq:step_partial_pivoting}
     \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)}.
 \end{equation}
-Here $\mat P_{k+1}$ is a particular type of a row permutation matrix which,
+Here $\mat P_{k+1}$ is simple row permutation matrix which,
 when acting on $\mat A^{(k)}$,
 interchanges row~$k+1$ and row $\ell$,
 for some index $\ell \geq k+1$.
@@ -709,7 +709,7 @@ we have
 as the notation suggests,
 the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
 Before stating and proving the lemma,
-we note that $\mat P$ is row permutation matrix,
+we note that $\mat P$ is a row permutation matrix,
 and so the solution to the linear system $\mat A \vect x = \mat b$ can be obtained by solving $\mat L \mat U \vect x = \mat P^\t \vect b$
 by forward and backward substitution.
 Since $\mat P$ is a very sparse matrix,
@@ -717,7 +717,7 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
 \begin{lemma}
     \label{lemma:linear_matrix_l_pivoting}
     The matrix $\mat L = \mat P \mat M^{-1}$ is unit lower triangular
-    with all entries bounded from above by 1.
+    with all entries bounded in absolute value from above by 1.
     It admits the expression
     \[
         \mat L
@@ -730,7 +730,7 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
     \]
 \end{lemma}
 \begin{proof}
-    Let $\mat M^{(k)} = \mat M_{k} \mat P_{k} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P^{(k)} = \mat P_{k} \dotsb \mat P_{1}$,
+    Let $\mat M^{(k)} = \mat M_{k} \mat P_{k} \dotsb \mat M_{1} \mat P_{1}$ and $\mat P^{(k)} = \mat P_{k} \dotsb \mat P_{1}$.
     It is sufficient to show that
     \begin{equation}
         \label{eq:linear_lower_triangular_l}
@@ -739,7 +739,7 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
         + (\mat P_{k} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
         + (\mat P_{k} \dotsb \mat P_{3} \vect c^{(2)}) \vect e_{2}^\t
         + \dotsb
-        + (\mat P_{k} \vect c^{(k-1)}) \vect e_{n-2}^\t
+        + (\mat P_{k} \vect c^{(k-1)}) \vect e_{k-1}^\t
         + \vect c^{(k)} \vect e_{k}^\t
     \end{equation}
     for all $k \in \{1, \dotsc, n-1 \}$.
@@ -752,7 +752,7 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
         &= \mat P_{k} \Bigl( \mat I
         + (\mat P_{k-1} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
         + \dotsb
-        + (\mat P_{k-1} \vect c^{(k-2)}) \vect e_{n-2}^\t
+        + (\mat P_{k-1} \vect c^{(k-2)}) \vect e_{k-2}^\t
         + \vect c^{(k-1)} \vect e_{k-1}^\t \Bigr) \mat P_k^{-1} \mat M_k^{-1} \\
         &= \Bigl( \mat I
         + (\mat P_k \mat P_{k-1} \dotsb \mat P_{2} \vect c^{(1)}) \vect e_{1}^\t
@@ -761,20 +761,22 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
         + (\mat P_k \vect c^{(k-1)}) \vect e_{k-1}^\t \Bigr) \mat M_k^{-1}.
     \end{align*}
     In the last equality,
-    we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, n-1\}$,
+    we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, k-1\}$,
     because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k-1$.
     Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$,
     expanding the product and noting that $\vect e_j^\t \vect c^{(k)} = 0$ if $j \leq k$,
     we obtain~\eqref{eq:linear_lower_triangular_l}.
+    The statement that the entries are bounded in absolute value from above by 1 follows from the choice of the pivot at each iteration.
 \end{proof}
-The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the iterative procedure~\cref{algo:LU_decomposition_with_partial_pivoting} for performing the factorization.
+The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the iterative procedure given in~\cref{algo:LU_decomposition_with_partial_pivoting} for performing the $\mat L \mat U$ factorization with partial pivoting.
+A Julia implementation of this algorithm is presented in~\cref{julia:lu_factorization_with_pivoting}.
 \begin{algorithm}
 \caption{$\mat L \mat U$ decomposition with partial pivoting}%
 \label{algo:LU_decomposition_with_partial_pivoting}%
 \begin{algorithmic}
 \State Assign $\mat A^{(0)} \gets \mat A$ and $\mat P \gets \mat I$
 \For{$i \in \{1, \dotsc, n-1\}$}
-    \State Find the row index $k \geq i$ such that $A^{(i-1)}_{k,i}$ is maximum in absolute value.
+    \State Find the row index $k \geq i$ such that $\mat A^{(i-1)}_{k,i}$ is maximum in absolute value.
     \State Interchange the rows $i$ and $k$ of matrices $\mat A^{(i-1)}$ and $\mat P$, and of vectors $\vect c^{(1)}, \dotsc, \vect c^{(i-1)}$.
     \State Construct $\mat M_{i}$ with corresponding column vector $\vect c^{(i)}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
     \State Assign $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}$
@@ -783,6 +785,43 @@ The expression of $\mat L$ in \cref{lemma:linear_matrix_l_pivoting} suggests the
 \State Assign $\mat L \gets \mat I + \begin{pmatrix} \vect c^{(1)} & \hdots & \vect c^{(n-1)} & \vect 0_n \end{pmatrix}$.
 \end{algorithmic}
 \end{algorithm}
+
+\begin{code}
+\begin{minted}[fontsize=\footnotesize]{julia}
+    # Auxiliary function
+    function swap_rows!(i, j, matrices...)
+        for M in matrices
+            M_row_i = M[i, :]
+            M[i, :] = M[j, :]
+            M[j, :] = M_row_i
+        end
+    end
+
+    n = size(A)[1]
+    L, U = zeros(n, 0), copy(A)
+    P = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
+    for i in 1:n-1
+        # Pivoting
+        index_row_pivot = i - 1 + argmax(abs.(U[i:end, i]))
+        swap_rows!(i, index_row_pivot, U, L, P)
+
+        # Usual Gaussian transformation
+        c = [zeros(i-1); 1.0; zeros(n-i)]
+        for r in i+1:n
+            ratio = U[r, i] / U[i, i]
+            c[r] = ratio
+            U[r, i:end] -= U[i, i:end] * ratio
+        end
+        L = [L c]
+    end
+    L = [L [zeros(n-1); 1.0]]
+    # It holds that P*A = L*U
+\end{minted}
+\caption{%
+    $\mat L \mat U$ factorization with partial pivoting.
+}%
+\label{julia:lu_factorization_with_pivoting}
+\end{code}
 
 \begin{remark}
     It is possible to show that,
@@ -811,6 +850,7 @@ using the so-called \emph{Cholesky decomposition}.
         \mat A = \mat C \mat C^\t.
     \end{equation}
     Equation~\eqref{eq:linear_cholesky_decomposition} is called the Cholesky factorization of $\mat A$.
+    The matrix $\mat C$ is unique if we require that all its diagonal entries are positive.
 \end{lemma}
 \begin{proof}
     Since $\mat A$ is positive definite,
@@ -826,16 +866,27 @@ using the so-called \emph{Cholesky decomposition}.
     \[
         \mat A = \mat A^\t = (\mat D^{-1} \mat U)^\t (\mat L \mat D)^\t.
     \]
-    Since the first and second factors on the right-hand side are respectively unit lower triangular and upper triangular,
-    we deduce, by uniqueness of the $\mat L \mat U$ decomposition,
+    The first and second factors on the right-hand side are respectively unit lower triangular and upper triangular,
+    and so we deduce, by uniqueness of the $\mat L \mat U$ decomposition,
     that $\mat L = (\mat D^{-1} \mat U)^\t$ and $\mat U = (\mat L \mat D)^\t$.
     But then
     \[
         \mat A = \mat L \mat U = \mat L \mat D \mat L^\t = (\mat L \sqrt{\mat D}) (\sqrt{\mat D} \mat L)^\t.
     \]
     Here $\sqrt{\mat D}$ denotes the diagonal matrix whose diagonal entries are obtained by taking the square root of those of $\mat D$,
-    which are necessarily positive, because $\mat A$ is positive definite.
+    which are necessarily positive because $\mat A$ is positive definite.
+    This implies the existence of a Cholesky factorization with $\mat C = \mat L \sqrt{\mat D}$.
 \end{proof}
+
+\subsubsection*{Calculation of the Choleski factor}%
+
+The matrix $\mat C$ can be calculated from~\eqref{eq:linear_cholesky_decomposition}.
+For example, developing the matrix product gives that $a_{1,1} = c_{1, 1}^2$ and so $c_{1, 1} = \sqrt{a_{1,1}}$.
+It is then possible to calculate $c_{2,1}$ from the equation~$a_{2, 1} = c_{2, 1} c_{1, 1}$, and so on.
+Implementing the Cholesky factorization is the goal of \cref{exercise:linear_cholesky}.
+
+\subsection{Banded matrices}%
+
 
 \begin{exercise}
     [Inverse of Gaussian transformation]
@@ -855,15 +906,14 @@ using the so-called \emph{Cholesky decomposition}.
     Show that all the principal submatrices of $\mat A$ are nonsingular.
 \end{exercise}
 
-\begin{exercise}
+\begin{compexercise}
     Implement the backward substitution algorithm for solving $\mat U x = y$.
     What is the computational cost of the algorithm?
-\end{exercise}
+\end{compexercise}
 
-\begin{exercise}
+\begin{compexercise}
     \label{exercise:linear_lu_with_partial_pivoting}
-    Implement the $\mat L \mat U$ factorization algorithm with partial pivoting.
-    Compare the condition number of the matrices $\mat L$ and $\mat U$ to the case without pivoting.
+    Compare the condition number of the matrices $\mat L$ and $\mat U$ with and without partial pivoting.
     For testing, use a matrix with pseudo-random entries generated as follows
     \begin{minted}{julia}
     import Random
@@ -872,4 +922,11 @@ using the so-called \emph{Cholesky decomposition}.
     n = 1000 # You can change this parameter
     A = randn(n, n)
     \end{minted}
-\end{exercise}
+\end{compexercise}
+
+\begin{compexercise}
+    \label{exercise:linear_cholesky}
+    Implement a code for calculating the Cholesky factorization of a matrix by comparing the entries of the product $\mat C \mat C^\t$ with those of the matrix $\mat A$.
+    What is the associated computational cost,
+    and how does it compare with that of the $\mat L \mat U$ factorization?
+\end{compexercise}

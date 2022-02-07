@@ -1,9 +1,9 @@
 # # Exercise 1.5
 
 # +
-# Convert number of the form 0.a₁a₂... to binary and truncate the result after
-# a number 'nbits' of bits. The function the bits b₁, b₂, b₃... of the binary
-# representation, from the most to the least significative
+# Convert a number of the form 0.a₁a₂... to binary and truncate the result
+# after a number 'nbits' of bits. The function returns the bits b₁, b₂, b₃...
+# of the binary representation, from the most to the least significant.
 
 function to_binary(x, nbits)
     result = zeros(Bool, nbits)
@@ -20,7 +20,7 @@ println(bits)
 # -
 
 # +
-# Check
+# Let us check that our function works
 approx = BigFloat(0)
 for (i, b) in enumerate(bits)
     approx += BigFloat(2.0)^(-i) * b
@@ -57,4 +57,17 @@ exact_average = (sum(x)/N)
 exact_value_1 = 1/(N-1) * (sum(x.^2) - N*(sum(x)/N)^2)
 exact_value_2 = 1/(N-1) * (sum(x.^2) - N*(sum(x)/N)^2)
 println("Exact value: $exact_value_1")
+# -
+
+# # Exercise 1.15
+# For best accuracy, we can reverse the order of the summation
+
+# +
+fun_naive(N) = sum(1/Float64(n)^2 for n in 1:N)
+fun_better(N) = sum(1/Float64(N+1-n)^2 for n in 1:N)
+
+println(abs(fun_naive(10^9) - π^2/6))
+println(abs(fun_naive(10^10) - π^2/6))
+println(abs(fun_better(10^9) - π^2/6))
+println(abs(fun_better(10^10) - π^2/6))
 # -
