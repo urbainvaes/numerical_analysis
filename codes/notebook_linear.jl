@@ -61,7 +61,7 @@ function lu(A)
     return L, U
 end
 
-ns = 2 .^ collect(5:10)
+ns = 2 .^ collect(5:9)
 times = zeros(length(ns))
 for (i, n) in enumerate(ns)
     A = randn(n, n)
@@ -74,6 +74,7 @@ end
 # -
 
 # # LU decomposition with pivoting
+
 # +
 function lu_pivot(A)
     n = size(A)[1]
@@ -105,7 +106,7 @@ function lu_pivot(A)
     return P, L, U
 end
 
-ns = 2 .^ collect(5:10)
+ns = 2 .^ collect(5:9)
 times = zeros(length(ns))
 for (i, n) in enumerate(ns)
     A = randn(n, n)
