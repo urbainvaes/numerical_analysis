@@ -36,5 +36,4 @@ println("Relative error on x: $relative_error_x")
 cond_A = cond(A)
 # -
 
-# The relative error on the solution is much larger than the relative error on the data.
-# The ratio between the two is of the same order of magnitude as the condition number of the matrix $A$.
+# The relative error on the solution is much larger than the relative error on the data. The ratio between the two is of the same order of magnitude as the condition number of the matrix $A$.
