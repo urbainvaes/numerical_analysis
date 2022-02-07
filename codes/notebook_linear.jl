@@ -2,7 +2,7 @@
 # +
 import LinearAlgebra
 import Random
-Random.seed(0)
+Random.seed!(0)
 
 # Shorthand notation
 norm = LinearAlgebra.norm
