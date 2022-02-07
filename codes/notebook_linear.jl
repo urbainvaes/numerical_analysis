@@ -1,4 +1,5 @@
 # # Example of an ill-conditioned system
+
 # +
 import LinearAlgebra
 import Random
@@ -42,8 +43,8 @@ cond_A = cond(A)
 
 # The relative error on the solution is much larger than the relative error on the data. The ratio between the two is of the same order of magnitude as the condition number of the matrix $A$.
 
-
 # # LU decomposition
+
 # +
 function lu(A)
     n = size(A)[1]
