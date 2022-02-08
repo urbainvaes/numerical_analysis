@@ -225,7 +225,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     # Check that it works
     number = 123456789
     bits = to_binary(number)
-    pows2 = 2 .^ range(start=0, length=length(bits))
+    pows2 = 2 .^ range(0, length=length(bits))
     @assert sum(bits'pows2) == number
     \end{minted}
 \end{compexercise}
@@ -551,8 +551,7 @@ should behave as follows:
 \end{itemize}
 
 When a binary arithmetic operation ($+$, $-$, $\times$, $/$) is performed on floating point numbers in format $\floating$,
-the result delivered by the computer is equal the exact result of the operation,
-rounded according to the rules given above.
+the result delivered by the computer is obtained by rounding the exact result of the operation according to the rules given above.
 In other words,
 the arithmetic operation is performed as if the computer first calculated an intermediate exact result,
 and then rounded this intermediate result in order to provide a final result in $\floating$.
