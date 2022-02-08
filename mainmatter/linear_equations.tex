@@ -887,6 +887,97 @@ Implementing the Cholesky factorization is the goal of \cref{exercise:linear_cho
 
 \subsection{Banded matrices}%
 
+In applications related to partial differential equations,
+the matrix $\mat A \in \real^{n \times n}$ very often has a bandwidth which is small in comparison with $n$.
+\begin{definition}
+    The bandwidth of a matrix $\mat A \in \real^{n \times n}$ is the smallest number $k \in \nat$ such that
+    $a_{ij} = 0$ for all $(i, j) \in \{1, \dotsc, n\}^2$ with $\abs{i - j} > k$.
+\end{definition}
+It is not difficult to show that,
+if $\mat A$ is a matrix with bandwidth $k$,
+then so are $\mat L$ and $\mat U$ in the absence of pivoting.
+This can be proved by equaling the entries of the product $\mat L \mat U$ with those of the matrix $\mat A$.
+We emphasize, however, that the sparsity structure within the band of $\mat A$ may be destroyed in $\mat L$ and $\mat U$;
+this phenomenon is called \emph{fill-in}.
+
+\subsubsection{Reducing the bandwidth: the Cuthill--McKee algorithm}%
+\label{ssub:reducing_the_bandwidth_the_cuthill_mckee_algorithm}
+
+The computational cost of calculating the $\mat L \mat U$ or Cholesky decomposition of a matrix with bandwidth $k$ scales as $\mathcal O(n k^2)$,
+which is much better than the general scaling as $\mathcal O(n^3)$ if $k \ll n$.
+In applications, the bandwidth $k$ is often related to the matrix size $n$.
+For example, if~$\mat A$ arises from the discretization of the Laplacian operator, then $k = \mathcal O(\sqrt{n})$
+provided that a good ordering of the vertices is employed.
+
+Since a narrow band is associated with a lower computational cost of the $\mat L \mat U$ decomposition,
+it is natural to wonder whether the bandwidth of a matrix $\mat A$ can be reduced via permutations.
+More precisely, is it possible to identify a row permutation matrix $\mat P$ such that
+\(
+    \mat P \mat A \mat P^\t
+\)
+has minimal bandwidth?
+Given such a matrix,
+the solution to the linear system~\eqref{eq:linear_system} can be obtained by first solving $(\mat P \mat A \mat P^\t) \vect y = \mat P b$,
+and then letting $\vect x = \mat P \vect y$.
+
+The Cuthill--McKee algorithm is a heuristic method for finding a good,
+but sometimes not optimal,
+permutation matrix~$\mat P$ in the particular case where $\mat A$ is a \emph{symmetric} matrix.
+It is available in most programming languages and based on the following reformulation of the problem:
+renumber the nodes of an undirected graph in such a manner that the bandwidth of the corresponding adjacency matrix is minimum?
+
+\begin{minipage}{.4\textwidth}
+    \begin{tikzpicture}
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B [as=2] -- C [as=3] -- D [as=4] -- D [as=4] -- E [as=5] -- F [as=6] -- G [as=7] -- H [as=8] -- A };
+    \end{tikzpicture}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+    \scriptsize
+    \[
+        \begin{pmatrix}
+            1 & 1 &   &   &   &   &   & 1 \\
+            1 & 1 & 1 &   &   &   &   &   \\
+              & 1 & 1 & 1 &   &   &   &   \\
+              &   & 1 & 1 & 1 &   &   &   \\
+              &   &   & 1 & 1 & 1 &   &   \\
+              &   &   &   & 1 & 1 & 1 &   \\
+              &   &   &   &   & 1 & 1 & 1 \\
+            1 &   &   &   &   &   & 1 & 1 \\
+        \end{pmatrix}
+    \]
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+    \begin{tikzpicture}[scale=0.7]
+        \footnotesize
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B  -- C  -- D  -- E  -- F  -- G  -- H  -- A };
+    \end{tikzpicture}
+    \begin{tikzpicture}[scale=0.7]
+        \footnotesize
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B [as=2, fill=red!60]  -- C  -- D  -- E  -- F  -- G  -- H [as=3, fill=red!60] -- A };
+    \end{tikzpicture}
+    \begin{tikzpicture}[scale=0.7]
+        \footnotesize
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4, fill=red!60]  -- D  -- E  -- F   -- G [as=5, fill=red!60] -- H [as=3] -- A };
+    \end{tikzpicture}
+    \begin{tikzpicture}[scale=0.7]
+        \footnotesize
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6, fill=red!60] -- E  -- F [as=7, fill=red!60]  -- G [as=5] -- H [as=3] -- A };
+    \end{tikzpicture}
+    \begin{tikzpicture}[scale=0.7]
+        \footnotesize
+        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+            graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8, fill=red!60]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
+    \end{tikzpicture}
+\end{minipage}
+
+\textcolor{red}{Work in progress}
+
 
 \begin{exercise}
     [Inverse of Gaussian transformation]
@@ -902,7 +993,10 @@ Implementing the Cholesky factorization is the goal of \cref{exercise:linear_cho
 \begin{exercise}
     \label{exercise:linear_positive_definite_matrix_nonsingular_principal_components}
     Assume that $\mat A \in \real^{n \times n}$ is positive definite,
-    i.e.\ that $\vect x^\t \mat A \vect x > 0$ for all $\vect x \in \real^n \backslash \{ \vect 0_n \}$.
+    i.e.\ that
+    \[
+        \forall \vect x \in \real^n \backslash \{ \vect 0_n \}, \qquad \vect x^\t \mat A \vect x > 0.
+    \]
     Show that all the principal submatrices of $\mat A$ are nonsingular.
 \end{exercise}
 
