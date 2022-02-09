@@ -796,10 +796,37 @@ is smaller than the smallest representable number in a floating point format.
     Explain why \julia{Float32(sqrt(2))^2 - 2} is not zero in Julia.
 \end{exercise}
 \begin{solution}
-    The binary representation of $\sqrt{2}$ is
+    The exact binary representation of $\sqrt{2}$ is
+    \begin{align*}
+        \sqrt{2}
+        &= (\underbrace{1.01101010000010011110011}_{\text{24 bits}}001100\dots)_2.
+    \end{align*}
+    The first task is to determine the member of $\floating_{32}$ that is nearest $\sqrt{2}$.
+    We have
+    \begin{align*}
+        x^- &= \max \bigl\{x: x \in \floating_{32} \text{ and } x \leq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110011}_{\text{24 bits}})_2 \\
+        x^+ &= \min \bigl\{x: x \in \floating_{32} \text{ and } x \geq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110100}_{\text{24 bits}})_2,
+    \end{align*}
+    and we calculate
+    \begin{align*}
+        x - x^- &= 2^{-24} (0.01100\dots)_2, \\
+        x^+ - x &= 2^{-21} \bigl(1 - (0.11001100\dots)_2 \bigr)
+        \geq 2^{-21} \bigl(1 - (0.11001101)_2 \bigr) =
+        2^{-21} \left(0.00110011\right)_2.
+    \end{align*}
+    We deduce that $x - x^- \leq x^+ - x$,
+    and so ${\rm fl}(x) = x^-$.
+    To conclude the exercise,
+    we need to show that ${\rm fl}\bigl((x^-)^2\bigr)$ is not equal to 2.
+    The exact binary expansion of $(x^-)^2$ is
     \[
-        \sqrt{10} = ()_2
+        (x^-)^2 = (\underbrace{1.11111111111111111111111}_{\text{24 bits}}011011)_2.
     \]
+    The member of $\floating_{32}$ nearest this number is
+    \[
+        (1.11111111111111111111111)_2 = 2 - 2^{-23},
+    \]
+    which is precisely the result returned by Julia.
 \end{solution}
 
 
