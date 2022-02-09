@@ -1135,8 +1135,41 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     \end{minted}
 \end{compexercise}
 
-\section{Iterative methods}%
+\section{Iterative methods for linear systems}%
 \label{sec:iterative_methods}
+Iterative methods enjoy more flexibility than direct methods,
+because they can be stopped at any point if the residue is deemed sufficiently small.
+This generally enables to obtain a good solution at a computational cost that is significantly lower than that of direct methods.
+In this section, 
+we present and study two classes of iterative methods:
+basic iterative methods based on a splitting of the matrix $\mat A$,
+and the Krylov subspace methods.
+
+\subsection{Basic iterative methods}%
+\label{sub:basic_iterative_methods}
+Many of the basic iterative methods may be viewed as particular cases of a general \emph{splitting method}.
+Given a splitting of the matrix of the linear system as $\mat A = \mat M - \mat N$,
+for a nonsingular matrix $\mat M \in \real^{n \times n}$ and a matrix $\mat N \in  \real^{n \times n}$,
+one step of this general method reads
+\begin{equation}
+    \label{eq:linear_system_iterative_method}
+    \mat M \vect x^{(n+1)} = \mat N \vect x^{(n)} + \vect b.
+\end{equation}
+There is the compromise between the cost of a single step and the speed convergence.
+In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
+the method converges to the exact solution in one step,
+but performing this step amounts to solving the initial problem. 
+In practice, in order for the method to be useful,
+the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
+
+\subsubsection{Richardson's method}%
+\label{ssub:richardson_s_method}
+
+Arguably the simplest splitting of the matrix $\mat A$ is given by $\mat A = \frac{1}{\omega} \mat I - \bigl(\frac{1}{\omega} \mat I - \mat A\bigr)$,
+which leads to \emph{Richardson's method}:
+\begin{equation}
+    \vect x^{(n+1)} = \vect x^{(n)} +  \omega (\vect b - \mat A \vect x^{(n)}).
+\end{equation}
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
