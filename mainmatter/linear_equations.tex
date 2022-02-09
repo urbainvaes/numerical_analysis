@@ -1100,18 +1100,21 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     What is the computational cost of the algorithm?
 \end{compexercise}
 
-% \begin{compexercise}
-%     \label{exercise:linear_lu_with_partial_pivoting}
-%     Compare the condition number of the matrices $\mat L$ and $\mat U$ with and without partial pivoting.
-%     For testing, use a matrix with pseudo-random entries generated as follows
-%     \begin{minted}{julia}
-%     import Random
-%     # Set the seed so that the code is deterministic
-%     Random.seed!(0)
-%     n = 1000 # You can change this parameter
-%     A = randn(n, n)
-%     \end{minted}
-% \end{compexercise}
+\begin{compexercise}
+    \label{exercise:linear_lu_with_partial_pivoting}
+    Compare the condition number of the matrices $\mat L$ and $\mat U$ with and without partial pivoting.
+    For testing, use a matrix with pseudo-random entries generated as follows
+    \begin{minted}{julia}
+    import Random
+    # Set the seed so that the code is deterministic
+    Random.seed!(0)
+    n = 1000 # You can change this parameter
+    A = randn(n, n)
+    \end{minted}
+\end{compexercise}
+\begin{solution}
+    See the Jupyter notebook for this chapter.
+\end{solution}
 
 \begin{compexercise}
     \label{exercise:linear_cholesky}
