@@ -134,7 +134,7 @@ Before proving this result,
 we show an ancillary lemma.
 \begin{lemma}
     \label{lemma:linear_inverse_neumann}
-    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} \leq 1$.
+    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} < 1$.
     Then $\mat I - \mat B$ is invertible and
     \begin{equation}
         \label{eq:linear_bound_inverse_perturbation_identity}
@@ -295,13 +295,13 @@ The direct method can be decomposed into three steps:
         First calculate the so-called $\mat L \mat U$ decomposition of $\mat A$,
         i.e.\ find an upper triangular matrix~$\mat U$ and a lower triangular matrix~$\mat L$ such that
         \(
-            \mat A = \mat L \mat U.
+            \mat A = \mat L \mat U
         \)
 
     \item
         Then solve
         \(
-            \mat L \vect y = \vect b.
+            \mat L \vect y = \vect b
         \)
          using a method called \emph{forward substitution}.
 
@@ -411,7 +411,7 @@ The product in the definition of the matrix $\mat L$ admits a simple explicit ex
     \]
     The statement then follows easily by expanding the product.
 \end{proof}
-A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
+A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is that all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
 the matrix $\mat L$ is \emph{unit lower triangular}.
 In practical implementations, therefore,
 these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
@@ -488,15 +488,16 @@ A more realistic, but still very simplified, version of the algorithm in Julia i
          U[r, i:end] -= U[i, i:end] * ratio
      end
  end
- # L is lower triangular and U is upper triangular
+ # L is unit lower triangular and U is upper triangular
 \end{minted}
 
 \subsubsection*{Computational cost}%
 \label{ssub:computational_cost}
-The cost of the algorithm is dominated by the Gaussian transformations,
+The computational cost of the algorithm,
+measured as the number of floating point operations (flops) required,
+is dominated by the Gaussian transformations,
 in line 9 in the above code.
-All the operations amount to a computational cost scaling as $\mathcal O(n^2)$.
-We denote by ``$\mathrm{flops}$'' the number of \emph{floating point operations}.
+All the other operations amount to a computational cost scaling as $\mathcal O(n^2)$.
 The Gaussian transformations require
 \[
     \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
@@ -604,7 +605,7 @@ as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
     In fact,
     the reasoning in the proof of~\cref{proposition:linear_existence_lu} can also be employed to show uniqueness of the $\mat L \mat U$ decomposition.
     The advantage of our approach in the proof of \cref{proposition:linear_uniqueness_lu} is that it also implies,
-    as a byproduct, the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
+    as a byproduct, that the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
 \end{remark}
 
 \cref{proposition:linear_existence_lu} raises the following question:
@@ -908,6 +909,7 @@ which is much better than the general scaling as $\mathcal O(n^3)$ if $k \ll n$.
 In applications, the bandwidth $k$ is often related to the matrix size $n$.
 For example, if~$\mat A$ arises from the discretization of the Laplacian operator, then $k = \mathcal O(\sqrt{n})$
 provided that a good ordering of the vertices is employed.
+In this case, the computational cost scales as $\mathcal O(n^2)$.
 
 Since a narrow band is associated with a lower computational cost of the $\mat L \mat U$ decomposition,
 it is natural to wonder whether the bandwidth of a matrix $\mat A$ can be reduced via permutations.
@@ -922,59 +924,138 @@ and then letting $\vect x = \mat P \vect y$.
 
 The Cuthill--McKee algorithm is a heuristic method for finding a good,
 but sometimes not optimal,
-permutation matrix~$\mat P$ in the particular case where $\mat A$ is a \emph{symmetric} matrix.
-It is available in most programming languages and based on the following reformulation of the problem:
-renumber the nodes of an undirected graph in such a manner that the bandwidth of the corresponding adjacency matrix is minimum?
+permutation matrix~$\mat P$ in the particular case of a \emph{symmetric} matrix.
+It is available in most programming languages and based on the fact that,
+to a symmetric matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$.
+For any row permutation matrix $\mat P_{\sigma}$ with corresponding permutation~$\sigma\colon \{1, \dotsc, n\} \rightarrow \{1, \dotsc, n\}$ (see \cref{definition:row_permutation_matrix}),
+the matrices $\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ and $\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ also have the same sparsity structure.
+Therefore, minimizing the bandwidth of $\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ is equivalent to minimizing the bandwidth of~$\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$.
+The key insight for understanding the Cuthill--McKee method is that $\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ is the adjacency matrix of the graph obtained by renumbering the nodes
+according to the permutation $\sigma$,
+i.e.\ by changing the number of the nodes from $i$ to $\sigma(i)$.
+Consider, for example,
+the following graph and renumbering:
 
-\begin{minipage}{.4\textwidth}
+\hspace{-.5cm}
+\begin{minipage}{.24\textwidth}
     \begin{tikzpicture}
+        \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2] -- C [as=3] -- D [as=4] -- D [as=4] -- E [as=5] -- F [as=6] -- G [as=7] -- H [as=8] -- A };
     \end{tikzpicture}
 \end{minipage}
-\begin{minipage}{.4\textwidth}
-    \scriptsize
+\hspace{-.5cm}
+\begin{minipage}{.48\textwidth}
+    \scriptsize%
     \[
         \begin{pmatrix}
-            1 & 1 &   &   &   &   &   & 1 \\
+            1 & 1 &   &   &   &   &   & {\color{red} 1} \\
             1 & 1 & 1 &   &   &   &   &   \\
               & 1 & 1 & 1 &   &   &   &   \\
               &   & 1 & 1 & 1 &   &   &   \\
               &   &   & 1 & 1 & 1 &   &   \\
               &   &   &   & 1 & 1 & 1 &   \\
               &   &   &   &   & 1 & 1 & 1 \\
-            1 &   &   &   &   &   & 1 & 1 \\
+            {\color{red} 1} &   &   &   &   &   & 1 & 1 \\
+        \end{pmatrix}
+        \rightarrow
+        \begin{pmatrix}
+            1 & 1 & 1 &   &   &   &   &   \\
+            1 & 1 &   & 1 &   &   &   &   \\
+            1 &   & 1 &   & 1 &   &   &   \\
+              & 1 &   & 1 &   & 1 &   &   \\
+              &   & 1 &   & 1 &   & 1 &   \\
+              &   &   & 1 &   & 1 &   & 1 \\
+              &   &   &   & 1 &   & 1 & 1 \\
+              &   &   &   &   & 1 & 1 & 1 \\
         \end{pmatrix}
     \]
 \end{minipage}
+\hspace{1.5cm}
+\begin{minipage}{.24\textwidth}
+\begin{tikzpicture}
+    \footnotesize
+    \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+        graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
+\end{tikzpicture}
+\end{minipage}
 
-\begin{minipage}{\textwidth}
-    \begin{tikzpicture}[scale=0.7]
+\vspace{.2cm}
+\noindent Here we also wrote the adjacency matrices associated to the graphs.
+We assume that the nodes are all self-connected,
+although this is not depicted,
+and so the diagonal entries of the adjacency matrices are equal to 1.
+This renumbering corresponds to the permutation
+\begin{align*}
+    \begin{pmatrix}
+        i:         & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+        \sigma(i): & 1 & 2 & 4 & 6 & 8 & 7 & 5 & 3
+    \end{pmatrix}.
+\end{align*}
+In this example,
+renumbering the nodes of the graph enables a significant reduction of the bandwidth, 
+from 7 to 2.
+The Cuthill--McKee algorithm,
+which was employed to calculate the permutation,
+is an iterative method that produces an ordered $n$-tuple $R$ containing the nodes in the new order;
+it returns $\bigl(\sigma^{-1}(1), \dots, \sigma^{-1}(n)\bigr)$.
+The first step of the algorithm is to find the node $i$ with the lowest \emph{degree},
+i.e.\ with the smallest number of connections to other nodes,
+and initialize $R = (i)$. 
+Then the following steps are repeated until $R$ is of size $n$:
+\begin{itemize}
+    \item 
+        Define $A_i$ as the set of the nodes adjacent to a node in $R$ but not themselves in $R$;
+
+    \item 
+        Sort the nodes in $A_i$ according to the following rules:
+        a node $i$ comes before $j$ if $i$ is connected to a node in $R$ that comes before all the nodes of $R$ to which $j$ is connected.
+        As a tiebreak, 
+        give priority to nodes with higher degree.
+
+    \item
+        Append the nodes in $A_i$ to $R$,
+        in the order determined in the previous item.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=0.6]
         \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B  -- C  -- D  -- E  -- F  -- G  -- H  -- A };
     \end{tikzpicture}
+    \hspace{.5cm}
     \begin{tikzpicture}[scale=0.7]
         \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2, fill=red!60]  -- C  -- D  -- E  -- F  -- G  -- H [as=3, fill=red!60] -- A };
     \end{tikzpicture}
+    \hspace{.5cm}
     \begin{tikzpicture}[scale=0.7]
         \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4, fill=red!60]  -- D  -- E  -- F   -- G [as=5, fill=red!60] -- H [as=3] -- A };
     \end{tikzpicture}
+    \hspace{.5cm}
     \begin{tikzpicture}[scale=0.7]
         \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6, fill=red!60] -- E  -- F [as=7, fill=red!60]  -- G [as=5] -- H [as=3] -- A };
     \end{tikzpicture}
+    \hspace{.5cm}
     \begin{tikzpicture}[scale=0.7]
         \footnotesize
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8, fill=red!60]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
     \end{tikzpicture}
-\end{minipage}
+    \label{figure:linear_cuthill_mckee}%
+    \caption{%
+        Illustration of the Cuthill--McKee algorithm.
+        The first vertex was chosen randomly since all the nodes have the same degree.
+    }
+\end{figure}
+The steps of the algorithm for the example above are depicted in~\cref{figure:linear_cuthill_mckee}.
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
@@ -1043,4 +1124,6 @@ renumber the nodes of an undirected graph in such a manner that the bandwidth of
     Write a code for calculating the Cholesky factorization of a matrix by comparing the entries of the product $\mat C \mat C^\t$ with those of the matrix $\mat A$.
     What is the associated computational cost,
     and how does it compare with that of the $\mat L \mat U$ factorization?
+
+    \noindent \textbf{Extra credit:}
 \end{compexercise}

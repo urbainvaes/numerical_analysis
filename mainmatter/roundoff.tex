@@ -792,6 +792,17 @@ is smaller than the smallest representable number in a floating point format.
     given the rounding rule defined by the IEEE standard? Explain.
 \end{exercise}
 
+\begin{exercise}
+    Explain why \julia{Float32(sqrt(2))^2 - 2} is not zero in Julia.
+\end{exercise}
+\begin{solution}
+    The binary representation of $\sqrt{2}$ is
+    \[
+        \sqrt{10} = ()_2
+    \]
+\end{solution}
+
+
 \section{Encoding of floating point numbers}%
 \label{sec:encoding_of_floating_point_numbers}
 
