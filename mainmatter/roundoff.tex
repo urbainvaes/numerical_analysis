@@ -225,7 +225,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     # Check that it works
     number = 123456789
     bits = to_binary(number)
-    pows2 = 2 .^ range(0, length=length(bits))
+    pows2 = 2 .^ range(0, length(bits) + 1)
     @assert sum(bits'pows2) == number
     \end{minted}
 \end{compexercise}
