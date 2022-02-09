@@ -53,6 +53,10 @@ This chapter is organized as follows.
         We study in particular the $\mat L \mat U$ decomposition for an invertible matrix,
         as well as its variant for symmetric positive definite matrices,
         which is called the Cholesky decomposition.
+
+    \item 
+        In \cref{sec:iterative_methods},
+        we present iterative methods for solving linear systems.
 \end{itemize}
 
 \section{Conditioning}%
@@ -330,7 +334,7 @@ We begin by introducing the concept of \emph{Gaussian transformation}.
     \]
 \end{definition}
 
-The action of a Gaussian transformation left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
+The action of a Gaussian transformation $\mat M_k$ left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
 to replace the rows from index $k + 1$ to index $n$ by a linear combination involving themselves and the $k$-th row.
 To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the lines of a matrix $\mat T \in \real^{n \times n}$.
 Then, we have
@@ -380,7 +384,7 @@ obtained after $k$ iterations,
 is upper triangular up to column $k$.
 That is to say, the Gaussian transformations are constructed so that
 all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A^{(k)}$ are equal to zero.
-The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular,
+The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular
 and satisfies
 \[
     \mat M_{n-1} \dotsc \mat M_1 \mat A = \mat A^{(n-1)}.
@@ -414,7 +418,7 @@ The product in the definition of the matrix $\mat L$ admits a simple explicit ex
 A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is that all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
 the matrix $\mat L$ is \emph{unit lower triangular}.
 In practical implementations, therefore,
-these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
+these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored \emph{within} the same matrix.
 The full expression of the matrix $\mat L$ given the Gaussian transformations is
 \begin{equation}
     \label{eq:linear_matrix_L}
@@ -912,7 +916,8 @@ provided that a good ordering of the vertices is employed.
 In this case, the computational cost scales as $\mathcal O(n^2)$.
 
 Since a narrow band is associated with a lower computational cost of the $\mat L \mat U$ decomposition,
-it is natural to wonder whether the bandwidth of a matrix $\mat A$ can be reduced via permutations.
+it is natural to wonder whether the bandwidth of a matrix $\mat A$ can be reduced.
+A possible strategy to this end is to use permutations.
 More precisely, is it possible to identify a row permutation matrix $\mat P$ such that
 \(
     \mat P \mat A \mat P^\t
@@ -925,14 +930,15 @@ and then letting $\vect x = \mat P \vect y$.
 The Cuthill--McKee algorithm is a heuristic method for finding a good,
 but sometimes not optimal,
 permutation matrix~$\mat P$ in the particular case of a \emph{symmetric} matrix.
-It is available in most programming languages and based on the fact that,
-to a symmetric matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$.
+It is based on the fact that,
+to a symmetric matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$,
+i.e.\ zeros in the same places.
 For any row permutation matrix $\mat P_{\sigma}$ with corresponding permutation~$\sigma\colon \{1, \dotsc, n\} \rightarrow \{1, \dotsc, n\}$ (see \cref{definition:row_permutation_matrix}),
-the matrices $\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ and $\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ also have the same sparsity structure.
-Therefore, minimizing the bandwidth of $\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ is equivalent to minimizing the bandwidth of~$\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$.
+the matrices~$\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ and~$\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ also have the same sparsity structure.
+Therefore, minimizing the bandwidth of~$\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ is equivalent to minimizing the bandwidth of~$\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$.
 The key insight for understanding the Cuthill--McKee method is that $\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ is the adjacency matrix of the graph obtained by renumbering the nodes
 according to the permutation $\sigma$,
-i.e.\ by changing the number of the nodes from $i$ to $\sigma(i)$.
+i.e.\ by changing the number of the nodes from~$i$ to~$\sigma(i)$.
 Consider, for example,
 the following graph and renumbering:
 
@@ -1001,24 +1007,24 @@ is an iterative method that produces an ordered $n$-tuple $R$ containing the nod
 it returns $\bigl(\sigma^{-1}(1), \dots, \sigma^{-1}(n)\bigr)$.
 The first step of the algorithm is to find the node $i$ with the lowest \emph{degree},
 i.e.\ with the smallest number of connections to other nodes,
-and initialize $R = (i)$. 
-Then the following steps are repeated until $R$ is of size $n$:
+and to initialize $R = (i)$. 
+Then the following steps are repeated until $R$ contains all the nodes:
 \begin{itemize}
     \item 
-        Define $A_i$ as the set of the nodes adjacent to a node in $R$ but not themselves in $R$;
+        Define $A_i$ as the set containing all the nodes which are adjacent to a node in $R$ but not themselves in $R$;
 
     \item 
         Sort the nodes in $A_i$ according to the following rules:
-        a node $i$ comes before $j$ if $i$ is connected to a node in $R$ that comes before all the nodes of $R$ to which $j$ is connected.
+        a node~$i \in A_i$ comes before~$j \in A_i$ if~$i$ is connected to a node in $R$ that comes before all the nodes in $R$ to which $j$ is connected.
         As a tiebreak, 
-        give priority to nodes with higher degree.
+        precedence is given to the node with highest degree.
 
     \item
         Append the nodes in $A_i$ to $R$,
         in the order determined in the previous item.
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[scale=0.6]
         \footnotesize
@@ -1049,36 +1055,24 @@ Then the following steps are repeated until $R$ is of size $n$:
         \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
             graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8, fill=red!60]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
     \end{tikzpicture}
-    \label{figure:linear_cuthill_mckee}%
     \caption{%
         Illustration of the Cuthill--McKee algorithm.
-        The first vertex was chosen randomly since all the nodes have the same degree.
-    }
+        The first node was chosen randomly since all the nodes have the same degree.
+    }%
+    \label{figure:linear_cuthill_mckee}
 \end{figure}
 The steps of the algorithm for the example above are depicted in~\cref{figure:linear_cuthill_mckee}.
-
-\begin{center}
-\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
-\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
-\fill (1.5mm,7mm) circle (1.5mm);
-\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
-\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
-\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
-        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
-\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
-        (-3mm,0mm)--++(-100:3mm)coordinate (d);
-\draw[ultra thick] (d) -- ++(-45:1.25cm);
-\end{tikzpicture}
+Another example, 
+taken from the original paper by Cuthill and McKeen~\cite{cuthill1969reducing},
+is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.49\linewidth]{figures/linear_cuthill-mckee_original.png}
     \includegraphics[width=0.49\linewidth]{figures/linear_cuthill-mckee_improved.png}
     \caption{Example from the original Cuthill--McKee paper~\cite{cuthill1969reducing}.}%
+    \label{figure:linear_example_from_cuthill_mckee}
 \end{figure}
-
-\textcolor{red}{Work in progress}
-\end{center}
 
 \begin{exercise}
     [Inverse of Gaussian transformation]
@@ -1106,24 +1100,52 @@ The steps of the algorithm for the example above are depicted in~\cref{figure:li
     What is the computational cost of the algorithm?
 \end{compexercise}
 
-\begin{compexercise}
-    \label{exercise:linear_lu_with_partial_pivoting}
-    Compare the condition number of the matrices $\mat L$ and $\mat U$ with and without partial pivoting.
-    For testing, use a matrix with pseudo-random entries generated as follows
-    \begin{minted}{julia}
-    import Random
-    # Set the seed so that the code is deterministic
-    Random.seed!(0)
-    n = 1000 # You can change this parameter
-    A = randn(n, n)
-    \end{minted}
-\end{compexercise}
+% \begin{compexercise}
+%     \label{exercise:linear_lu_with_partial_pivoting}
+%     Compare the condition number of the matrices $\mat L$ and $\mat U$ with and without partial pivoting.
+%     For testing, use a matrix with pseudo-random entries generated as follows
+%     \begin{minted}{julia}
+%     import Random
+%     # Set the seed so that the code is deterministic
+%     Random.seed!(0)
+%     n = 1000 # You can change this parameter
+%     A = randn(n, n)
+%     \end{minted}
+% \end{compexercise}
 
 \begin{compexercise}
     \label{exercise:linear_cholesky}
-    Write a code for calculating the Cholesky factorization of a matrix by comparing the entries of the product $\mat C \mat C^\t$ with those of the matrix $\mat A$.
+    Write a code for calculating the Cholesky factorization of a symmetric positive definite matrix $\mat A$ by comparing the entries of the product $\mat C \mat C^\t$ with those of the matrix $\mat A$.
     What is the associated computational cost,
     and how does it compare with that of the $\mat L \mat U$ factorization?
 
-    \noindent \textbf{Extra credit:}
+    \noindent \textbf{Extra credit:} ... if your code is able to exploit the potential banded structure of the matrix passed as argument for better efficiency.
+    Specifically, your code will be tested with a matrix is of the type \julia{BandedMatrix} defined in the \texttt{BandedMatrices.jl} package,
+    which you will need to install.
+    The following code can be useful for testing purposes.
+    \begin{minted}{julia}
+    import BandedMatrices
+    n, u, l = 100, 4, 4
+    A = BandedMatrices.brandn(n, u, l)
+    A = A*A'
+    # so that A is symmetric and positive definite (with probability 1).
+    \end{minted}
 \end{compexercise}
+
+\section{Iterative methods}%
+\label{sec:iterative_methods}
+
+\begin{center}
+\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
+\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
+\fill (1.5mm,7mm) circle (1.5mm);
+\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
+\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
+\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
+        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
+\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
+        (-3mm,0mm)--++(-100:3mm)coordinate (d);
+\draw[ultra thick] (d) -- ++(-45:1.25cm);
+\end{tikzpicture}
+\textcolor{red}{Work in progress}
+\end{center}
