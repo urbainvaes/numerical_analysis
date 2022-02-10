@@ -525,3 +525,103 @@ where $\vect y := \mat Q^\t \vect x$ has the same norm as $\vect x$ since $\mat 
 It follows from this inequality that $\norm{\mat A} \leq \sqrt{\rho(\mat A^\t \mat A)}$,
 and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^\t \mat A) \norm{\vect x}$
 if $\vect x$ is the eigenvector of $\mat A^\t \mat A$ associated with the largest eigenvalue $\rho(\mat A^\t \mat A)$.
+
+
+\section{Similarity transformation and Jordan normal form}%
+\label{sec:similarity_transformation_and_jordan_normal_form}
+In this section, we work with matrices in $\complex^{n \times n}$.
+A \emph{similarity transformation} is a mapping of the type~$\complex^{n \times n} \ni \mat A \mapsto \mat P^{-1} \mat A \mat P \in \complex^{n \times n}$,
+where $\mat P \in \complex^{n \times n}$ is a nonsingular matrix.
+If two matrices are related by a similarity transformation,
+they are called \emph{similar}.
+
+\begin{definition}
+    [Jordan block]
+    A Jordan block with dimension $n$ is a matrix of the form
+    \[
+        \mat J_{n}(\lambda) =
+        \begin{pmatrix}
+            \lambda & 1  \\
+          & \lambda & 1 \\
+          &         & \ddots  & \ddots  \\
+          &         &         & \lambda & 1  \\
+          &         &         &         & \lambda
+        \end{pmatrix}
+    \]
+    The parameter $\lambda \in \complex$ is called the eigenvalue of the Jordan block.
+\end{definition}
+A Jordan block is diagonalizable if and only if it is of dimension 1.
+The power of a Jordan block admits an explicit expression.
+\begin{lemma}
+    \label{lemma:matrices_power_jordan_block}
+    It holds that
+    \begin{equation}
+        \label{eq:matrices_power_jordan_block}
+        \mat J_n(\lambda)^k =
+        \begin{pmatrix}
+            \lambda^k & \binom{k}{1}\lambda^{k-1} & \binom{k}{2}\lambda^{k-2} & \cdots & \cdots & \binom{k}{n-1}\lambda^{k-n+1} \\
+                      & \lambda^k & \binom{k}{1}\lambda^{k-1} & \cdots & \cdots & \binom{k}{n-2}\lambda^{k-n+2} \\
+                      &  & \ddots & \ddots &  & \vdots\\
+                      &  & & \ddots & \ddots & \vdots\\
+                      &  & &  & \lambda^k & \binom{k}{1}\lambda^{k-1}\\
+                      &  &  &  &  & \lambda^k
+        \end{pmatrix}.
+    \end{equation}
+    In addition, for any $\mu > \abs{\lambda}$,
+    there exists $C > 0$ such that
+    \[
+        \forall k \in \nat, \qquad
+        \norm{J_{n}(\lambda)^k} \leq C \mu^k.
+    \]
+\end{lemma}
+\begin{proof}
+    The explicit expression of the Jordan block can be obtained by decomposing $\mat J_{n}(\lambda) = \lambda \mat I + \mat N$
+    and using the binomial formula.
+\end{proof}
+
+A matrix is said to be of \emph{Jordan normal form} if it is block-diagonal with Jordan blocks on the diagonal.
+In other words, a matrix~$\mat B \in \complex^{n \times n}$ is of Jordan normal form if
+\[
+    \mat B =
+        \begin{pmatrix}
+            J_{n_1}(\lambda_1)  \\
+                              & J_{n_2}(\lambda_2)    \\
+                              &                 & \ddots  \\
+                              &                 &         & J_{n_{k-1}}(\lambda_{k-1})   &   \\
+                              &                 &         &                              & J_{n_k}(\lambda_k)
+    \end{pmatrix}
+\]
+with $n_1 + \dotsb + n_k = n$.
+Note that $\lambda_1, \dotsc, \lambda_k$ are eigenvalues of $\mat A$.
+We state without proof the following important result.
+
+\begin{proposition}
+    [Jordan normal form]
+    \label{proposition:matrices_jordan_normal_form}
+    Any matrix $\mat A \in \complex^{n \times n}$ is \emph{similar} to a matrix in Jordan normal form.
+\end{proposition}
+In particular, any matrix $\mat A \in \mat C^{n \times n}$ has at least one eigenvalue.
+(This follows more directly from the fact that the characteristic polynomial has at least one root,
+by the fundamental theorem of algebra.)
+The following result establishes a necessary and sufficient condition for the convergence of $\norm{A^k}$ to 0.
+\begin{proposition}
+    Let $\rho(\mat A)$ denote the spectral radius of $\mat A \in \complex^{n \times n}$ and $\norm{\placeholder}$ be a matrix norm.
+    Then $\norm{\mat A^k} \to 0$ in the limit as $k \to \infty$ if and only if $\rho(\mat A) < 1$.
+\end{proposition}
+\begin{proof}
+    Since all matrix norms are equivalent,
+    we can assume without loss of generality that~$\norm{\placeholder}$ is the 2-norm.
+    If $\rho(\mat A) \geq 1$,
+    then denoting by $\vect v$ the eigenvector of $\mat A$ associated with the eigenvalue~$\pm \rho(\mat A)$,
+    we have $\norm{\mat A^k \vect v} = \rho(\mat A)^k \norm{\vect v} \geq \norm{\vect v}$.
+    Therefore, the sequence $(\mat A^k)_{k \in \nat}$ does not converge to the zero matrix in a $p$-norm.
+    This shows the ``only if'' part.
+
+    For the ``if'' part,
+    we employ~\cref{proposition:matrices_jordan_normal_form},
+    which states that there exists a nonsingular matrix $\mat P$ such that $\mat A = \mat P \mat B \mat P^{-1}$,
+    for a matrix $\mat B \in \complex^{n \times n}$ which is in normal Jordan form.
+    It holds that $\mat A^k = \mat P \mat B^k \mat P^{-1}$,
+    and so it is sufficient to show that $\norm{\mat B^k} \to 0$.
+    The latter convergence follows from the expression of the power of a Jordan block given in~\cref{lemma:matrices_power_jordan_block}.
+\end{proof}

@@ -1162,6 +1162,27 @@ but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 
+
+\begin{proposition}
+    [Convergence]
+    Assume that $\rho(\mat M^{-1} \mat N) < 1$.
+    Then the method converges.
+\end{proposition}
+\begin{proof}
+    Let us denote by $\vect x$ the solution to the linear system.
+    Since $\vect b = \mat M \vect x - \mat N \vect x$, 
+    we have
+    \[
+        \mat M (\vect x^{(n+1)} - \vect x) = \mat N (\vect x^{(n)} - \vect x).
+    \]
+    Denoting the error by $\vect e^{(n)} = \vect x^{(n)} - \vect x$,
+    and using the assumption that $\mat M$ is nonsingular,
+    we obtain
+    \[
+        \vect e^{(n+1)} = (\mat M^{-1} \mat N) \vect e^{(n)}.
+    \]
+\end{proof}
+
 \subsubsection{Richardson's method}%
 \label{ssub:richardson_s_method}
 
@@ -1170,6 +1191,10 @@ which leads to \emph{Richardson's method}:
 \begin{equation}
     \vect x^{(n+1)} = \vect x^{(n)} +  \omega (\vect b - \mat A \vect x^{(n)}).
 \end{equation}
+
+\begin{remark}
+    [Link with optimization]
+\end{remark}
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
