@@ -788,20 +788,24 @@ is smaller than the smallest representable number in a floating point format.
 \end{exercise}
 
 \begin{exercise}
-    Is \julia{Float32(0.1) * 10 == 1} equal to \julia{true} or \julia{false}
+    Is \julia{Float32(0.1) * Float32(10) == 1} equal to \julia{true} or \julia{false}
     given the rounding rule defined by the IEEE standard? Explain.
+
+    \noindent \textbf{Remark:} It should not be inferred from this exercise that \julia{Float32(1/i) * i} is always exact in floating point arithmetic.
+    For example \julia{Float32(1/41) * 41} does not evaluate to \julia{1},
+    and neither do \julia{Float16(1/11) * 11} and \julia{1/49 * 49}.
 \end{exercise}
 
 \begin{exercise}
     Explain why \julia{Float32(sqrt(2))^2 - 2} is not zero in Julia.
 \end{exercise}
 \begin{solution}
-    The exact binary representation of $\sqrt{2}$ is
+    The exact binary representation of $x := \sqrt{2}$ is
     \begin{align*}
-        \sqrt{2}
+        x
         &= (\underbrace{1.01101010000010011110011}_{\text{24 bits}}001100\dots)_2.
     \end{align*}
-    The first task is to determine the member of $\floating_{32}$ that is nearest $\sqrt{2}$.
+    The first task is to determine the member of $\floating_{32}$ that is nearest $x$.
     We have
     \begin{align*}
         x^- &= \max \bigl\{x: x \in \floating_{32} \text{ and } x \leq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110011}_{\text{24 bits}})_2 \\
