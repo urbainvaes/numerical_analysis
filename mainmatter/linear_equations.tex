@@ -340,7 +340,7 @@ To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the lines of a
 Then, we have
 \[
     \mat M_k \mat T
-    = \bigl(\mat I - \vect c^{(k)} \vect e_k\bigr) \mat T
+    = \bigl(\mat I - \vect c^{(k)} \vect e_k^\t\bigr) \mat T
     =
     \begin{pmatrix}
         1   \\
@@ -375,7 +375,7 @@ We show in \cref{exercise:inverse_gaussian_transformation} that
 the inverse of a Gaussian transformation matrix is given by
 \begin{equation}
     \label{eq:inverse_gaussian_transformation}
-    (\mat I - \vect c^{(k)} \vect e_k)^{-1} = \mat I + \vect c^{(k)} \vect e_k.
+    (\mat I - \vect c^{(k)} \vect e_k^\t)^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t.
 \end{equation}
 The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
 by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
