@@ -54,7 +54,7 @@ This chapter is organized as follows.
         as well as its variant for symmetric positive definite matrices,
         which is called the Cholesky decomposition.
 
-    \item 
+    \item
         In \cref{sec:iterative_methods},
         we present iterative methods for solving linear systems.
 \end{itemize}
@@ -183,7 +183,7 @@ we show an ancillary lemma.
 
 \begin{proof}
     [Proof of \cref{proposition:linear_perturbation_matrix}]
-    Left-multiplying both side by $\mat A^{-1}$,
+    Left-multiplying both side with $\mat A^{-1}$,
     we obtain
     \begin{equation}
         \label{eq:linear_perturbation_matrix_initial}
@@ -378,7 +378,7 @@ the inverse of a Gaussian transformation matrix is given by
     (\mat I - \vect c^{(k)} \vect e_k^\t)^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t.
 \end{equation}
 The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
-by Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
+with Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
 appropriately chosen in such a way that the matrix~$\mat A^{(k)}$,
 obtained after $k$ iterations,
 is upper triangular up to column $k$.
@@ -387,7 +387,7 @@ all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A
 The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular
 and satisfies
 \[
-    \mat M_{n-1} \dotsc \mat M_1 \mat A = \mat A^{(n-1)}.
+    \mat A^{(n-1)} = \mat M_{n-1} \dotsc \mat M_1 \mat A.
 \]
 We deduce that
 \[
@@ -418,7 +418,7 @@ The product in the definition of the matrix $\mat L$ admits a simple explicit ex
 A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is that all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
 the matrix $\mat L$ is \emph{unit lower triangular}.
 In practical implementations, therefore,
-these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored \emph{within} the same matrix.
+these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
 The full expression of the matrix $\mat L$ given the Gaussian transformations is
 \begin{equation}
     \label{eq:linear_matrix_L}
@@ -902,7 +902,7 @@ It is not difficult to show that,
 if $\mat A$ is a matrix with bandwidth $k$,
 then so are $\mat L$ and $\mat U$ in the absence of pivoting.
 This can be proved by equaling the entries of the product $\mat L \mat U$ with those of the matrix $\mat A$.
-We emphasize, however, that the sparsity structure within the band of $\mat A$ may be destroyed in $\mat L$ and $\mat U$;
+We emphasize, however, that the sparsity structure \emph{within} the band of $\mat A$ may be destroyed in $\mat L$ and $\mat U$;
 this phenomenon is called \emph{fill-in}.
 
 \subsubsection{Reducing the bandwidth: the Cuthill--McKee algorithm}%
@@ -999,7 +999,7 @@ This renumbering corresponds to the permutation
     \end{pmatrix}.
 \end{align*}
 In this example,
-renumbering the nodes of the graph enables a significant reduction of the bandwidth, 
+renumbering the nodes of the graph enables a significant reduction of the bandwidth,
 from 7 to 2.
 The Cuthill--McKee algorithm,
 which was employed to calculate the permutation,
@@ -1007,16 +1007,16 @@ is an iterative method that produces an ordered $n$-tuple $R$ containing the nod
 it returns $\bigl(\sigma^{-1}(1), \dots, \sigma^{-1}(n)\bigr)$.
 The first step of the algorithm is to find the node $i$ with the lowest \emph{degree},
 i.e.\ with the smallest number of connections to other nodes,
-and to initialize $R = (i)$. 
+and to initialize $R = (i)$.
 Then the following steps are repeated until $R$ contains all the nodes:
 \begin{itemize}
-    \item 
+    \item
         Define $A_i$ as the set containing all the nodes which are adjacent to a node in $R$ but not themselves in $R$;
 
-    \item 
+    \item
         Sort the nodes in $A_i$ according to the following rules:
         a node~$i \in A_i$ comes before~$j \in A_i$ if~$i$ is connected to a node in $R$ that comes before all the nodes in $R$ to which $j$ is connected.
-        As a tiebreak, 
+        As a tiebreak,
         precedence is given to the node with highest degree.
 
     \item
@@ -1062,7 +1062,7 @@ Then the following steps are repeated until $R$ contains all the nodes:
     \label{figure:linear_cuthill_mckee}
 \end{figure}
 The steps of the algorithm for the example above are depicted in~\cref{figure:linear_cuthill_mckee}.
-Another example, 
+Another example,
 taken from the original paper by Cuthill and McKeen~\cite{cuthill1969reducing},
 is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
 
@@ -1140,7 +1140,7 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
 Iterative methods enjoy more flexibility than direct methods,
 because they can be stopped at any point if the residue is deemed sufficiently small.
 This generally enables to obtain a good solution at a computational cost that is significantly lower than that of direct methods.
-In this section, 
+In this section,
 we present and study two classes of iterative methods:
 basic iterative methods based on a splitting of the matrix $\mat A$,
 and the Krylov subspace methods.
@@ -1158,7 +1158,7 @@ one step of this general method reads
 There is the compromise between the cost of a single step and the speed convergence.
 In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
 the method converges to the exact solution in one step,
-but performing this step amounts to solving the initial problem. 
+but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 
@@ -1170,7 +1170,7 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
 \end{proposition}
 \begin{proof}
     Let us denote by $\vect x$ the solution to the linear system.
-    Since $\vect b = \mat M \vect x - \mat N \vect x$, 
+    Since $\vect b = \mat M \vect x - \mat N \vect x$,
     we have
     \[
         \mat M (\vect x^{(n+1)} - \vect x) = \mat N (\vect x^{(n)} - \vect x).
