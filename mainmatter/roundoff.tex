@@ -58,8 +58,8 @@ The rest of this chapter is organized as follows.
 In order to completely describe floating-point arithmetic,
 one would in principle need to also discuss the conversion mechanisms between different number formats,
 as well as a number of edge cases.
-For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
-which is somewhat arbitrary but may be useful in some situations.
+% For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
+% which is somewhat arbitrary but may be useful in some situations.
 Needless to say,
 a comprehensive discussion of the subject is beyond the scope of this course;
 our aim in this chapter is only to introduce the key concepts.
@@ -298,67 +298,11 @@ Note that $\floating_{16} \subset \floating_{32} \subset \floating_{64}$.
     we focus on this case for simplicity in most of this chapter.
 \end{remark}
 
-\subsection{Making the floating point representation unique}%
-\label{sub:defining_a_unique_representation}
-
-Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
-the exponent $E$ and significand  are generally not uniquely defined.
-For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or, equivalently, as $(-1)^0 2^{2} (0.100\dots00)_2$.
-To remove this ambiguity,
-one may define the \emph{standard representation} of a number by requiring that
-\begin{itemize}
-    \item either $E > E_{\min}$ and $b_0 = 1$;
-    \item or $E = E_{\min}$, in which case the leading bit may be 0.
-\end{itemize}
-The following result proves that these rules define the exponent and significand uniquely.
-\begin{proposition}
-    \label{prop:uniqueness_standard_representation}
-    Assume that
-    \begin{equation}
-        \label{eq:equality_floating_point}
-        (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
-    \end{equation}
-    where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
-    Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
-\end{proposition}
-\begin{proof}
-    We show that $E = \widetilde E$,
-    after which the equality of significands follows trivially,
-    Let us assume for contradiction that $E > \widetilde E$
-    and denote the left and right-hand sides of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
-    Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
-    On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
-    Since $E \geq \widetilde E + 1$ by assumption,
-    we deduce that $|\widetilde x| < 2^E \leq |x|$,
-    which contradicts the equality $x = \widetilde x$.
-\end{proof}
-
-In view of \cref{prop:uniqueness_standard_representation},
-we can talk without ambiguity about \emph{the} exponent or \emph{the} significand of a number in $\floating (p, E_{\min}, E_{\max})$,
-the standard representation being implicitly assumed.
-A floating point number whose standard representation has a leading bit equal to 1 is called \emph{normalized},
-whereas one with a leading bit equal to zero is called \emph{subnormal} or \emph{denormalized}.
-We give more information on this subject in~\cref{sec:encoding_of_floating_point_numbers},
-which is devoted specifically to the encoding of floating point numbers.
-
-% In a computer, however, each number in a floating point format is always represented in the same manner,
-% which is useful in order to perform comparisons:
-% since the representation is unique,
-% two numbers are equal if only if their sign, exponent and significand are equal.
-
 \begin{remark}
-    [Nonuniqueness of the floating point represention of 0.0]
-    The sign $s$ is clearly unique for any number in a floating point format,
-    except for $0.0$,
-    which could in principle be represented as
-    \[
-        (-1)^0 2^{E_{\min}} (0.00\dots00)_2
-        \qquad \text{or} \qquad
-        (-1)^1 2^{E_{\min}} (0.00\dots00)_2.
-    \]
-    In practice, both representations of 0.0 are available on most machines,
-    and these behave slightly differently.
-    For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
+    \label{remark:roundoff_non_uniqueness}
+    Given a real number $x \in \floating (p, E_{\min}, E_{\max})$,
+    the exponent $E$ and significand  are generally not uniquely defined.
+    For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or, equivalently, as $(-1)^0 2^{2} (0.100\dots00)_2$.
 \end{remark}
 
 In \texttt{Julia}, non-integer numbers are interpreted as \julia{Float64} by default,
@@ -367,7 +311,20 @@ For example, the instruction ``\julia{a = 0.1}'' is equivalent to~``\julia{a = F
 In order to define a number of type \julia{Float32},
 the suffix $\julia{f0}$ must be appended to the decimal expansion.
 For instance, the instruction ``$\julia{a = 4.0f0}$'' defines a floating point number~\julia{a} of type \julia{Float32};
-it is equivalent to ``\julia{a = Float32(4.0)}''.
+it is equivalent to writing ``\julia{a = Float32(4.0)}''.
+
+\subsection{Denormalized floating point numbers}%
+\label{sub:defining_a_unique_representation}
+We can decompose the set $\floating(p, E_{\min}, E_{\max})$ in two disjoint parts:
+\begin{align*}
+    \label{eq:decomposition_normalized_denormalized}%
+    \floating (p, E_{\min}, E_{\max})
+    &= \Bigl\{ (-1)^s 2^E (\textcolor{red}{1}. b_1 b_2 \dots b_{p-1})_2 \colon \\
+    & \qquad s \in \{0, 1\}, b_i \in \{0, 1\} \, \text{and} \, E_{\min} \leq E \leq E_{\max} \Bigr\} \\
+    &\qquad \cup \Bigl\{  (-1)^s 2^{\textcolor{red}{E_{\min}}} (\textcolor{red}{0}. b_1 b_2 \dots b_{p-1})_2 \colon
+     s \in \{0, 1\}, b_i \in \{0, 1\} \Bigr\}.
+\end{align*}
+The numbers in the second set are called \emph{subnormal} or \emph{denormalized}.
 
 \subsection{Relative error and machine epsilon}%
 \label{sub:relative_error_and_epsilon_machine}
@@ -386,9 +343,9 @@ The following result establishes a link between the machine $\varepsilon_M$ and
 the relative error between a real number and the closest member of a floating point format.
 \begin{proposition}
     \label{prop:relative_error_and_machine_epsilon}
-    Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{normalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
+    Let $x_{\min}$ and $x_{\max}$ denote the smallest and largest \emph{non-denormalized} positive numbers in a format $F = \floating(p, E_{\min}, E_{\max})$.
     If $x \in [-x_{\max}, -x_{\min}] \cup [x_{\min}, x_{\max}]$,
-    then there exists $\widehat x \in \floating(p, E_{\min}, E_{\max})$ such that
+    then
     \begin{equation}
         \label{eq:bound_epsilon_machine}
         \min_{\widehat x \in F} \frac{|x - \widehat x|}{|x|} \leq \frac{1}{2} 2^{-(p-1)}
@@ -432,16 +389,16 @@ the relative error between a real number and the closest member of a floating po
     which concludes the proof.
 \end{proof}
 
-The machine epsilon can be viewed as the maximum relative difference between a normalized floating point number $x$ and its successor,
-defined as the smallest number in the floating point format that is strictly larger than $x$.
+The machine epsilon,
+which was defined as $\varepsilon_M = 2^{-(p-1)}$,
+coincides with the maximum relative spacing between a non-denormalized floating point number $x$ and its successor in the floating point format,
+defined as the smallest number in the format that is strictly larger than~$x$.
 
 \Cref{fig:float64_density} depicts the density of double-precision floating point numbers,
 i.e.\ the number of~$\floating_{64}$ members per unit on the real line.
 The figure shows that the density decreases as the absolute value of $x$ increases.
-We also notice that the density is piecewise constant with discontinuities at powers of 2;
-each discontinuity corresponds to a change of exponent in the standard representation.
-\Cref{fig:float64_spacing} illustrates the relative spacing between successive floating point numbers,
-in units of machine precision.
+We also notice that the density is piecewise constant with discontinuities at powers of 2.
+\Cref{fig:float64_spacing} illustrates the relative spacing between successive floating point numbers.
 Although the absolute spacing increases with the absolute value of $x$,
 the relative spacing oscillates between~$\frac{1}{2} \varepsilon_{M}$ and~$\varepsilon_M$.
 
@@ -471,7 +428,7 @@ The picture of the relative spacing between successive floating point numbers lo
 This is illustrated in \cref{fig:float64_spacing_denormalized},
 which shows that the relative spacing increases beyond the machine epsilon in the denormalized range.
 Fortunately, in the usual $\floating_{32}$ and $\floating_{64}$ formats,
-the transition between normalized and denormalized numbers occurs at such a small value that
+the transition between non-denormalized and denormalized numbers occurs at such a small value that
 it rarely needs worrying about.
 
 \begin{figure}[ht]
@@ -480,7 +437,7 @@ it rarely needs worrying about.
     \caption{%
         Relative spacing between successive double-precision floating point numbers,
         over a range which includes denormalized number.
-        The vertical red line indicates the transition from denormalized to normalized numbers.
+        The vertical red line indicates the transition from denormalized to non-denormalized numbers.
     }%
     \label{fig:float64_spacing_denormalized}
 \end{figure}
@@ -525,7 +482,7 @@ we attempt in this section to understand precisely how arithmetic operations bet
 The key mechanism governing arithmetic operations on a computer is that of \emph{rounding},
 the action of approximating a real number regarded as infinitely precise by a number in a floating point format $\floating (p, E_{\min}, E_{\max})$.
 The IEEE 754 standard stipulates that the default mechanism for rounding a real number $x$,
-called \emph{round to nearest, ties to even},
+called \emph{round to nearest},
 should behave as follows:
 \begin{itemize}
     \item
@@ -559,7 +516,7 @@ and then rounded this intermediate result in order to provide a final result in 
 Mathematically,
 arithmetic operations between floating point numbers in a given format $\floating$ may be formalized by introducing
 the rounding operator ${\rm fl}: \real \to \floating$ and
-by defining , for any binary operation $\circ \in \{+, -, \times, /\}$,
+by defining, for any binary operation $\circ \in \{+, -, \times, /\}$,
 the corresponding machine operation
 \[
     \widehat \circ\colon \floating \times \floating \rightarrow \floating; (x, y) \mapsto {\rm fl}(x \circ y).
@@ -599,7 +556,7 @@ Float64
 If a mathematical expression contains several binary arithmetic operations to be performed in succession,
 the result of each intermediate calculation is stored in a floating point format dictated by the formats of its argument,
 and this floating point number is employed in the next binary operation.
-A consequence of this mechanism of arithmetic operations is that the machine operands $\madd$ and $\mtimes$ are generally \emph{not associative}.
+A consequence of this mechanism is that the machine operands $\madd$ and $\mtimes$ are generally \emph{not associative}.
 For example, in general
 \[
     (x \madd y) \madd  z \neq x \madd (y \madd z)
@@ -793,7 +750,7 @@ is smaller than the smallest representable number in a floating point format.
 
     \noindent \textbf{Remark:} It should not be inferred from this exercise that \julia{Float32(1/i) * i} is always exact in floating point arithmetic.
     For example \julia{Float32(1/41) * 41} does not evaluate to \julia{1},
-    and neither do \julia{Float16(1/11) * 11} and \julia{1/49 * 49}.
+    and neither do \julia{Float16(1/11) * 11} and \julia{Float64(1/49) * 49}.
 \end{exercise}
 
 \begin{exercise}
@@ -847,9 +804,43 @@ We focus mainly on the single precision format,
 but the following discussion applies \emph{mutatis mutandis} to the double and half-precision formats.
 The material in this section is for information purposes only.
 
-We already mentioned, in~\cref{sec:set_of_values},
-that the parameters (sign, exponent and significand) of any nonzero number in a floating point format $\floating(p, E_{\min}, E_{\max})$ are unique in the standard representation,
-but how are these parameters are stored on the computer in practice?
+We already mentioned  in~\cref{remark:roundoff_non_uniqueness} that
+a number in a floating point format may have several representations.
+On a computer, however, a floating point number is always stored in the same manner
+(except for the number 0, see \cref{remak:non_uniqueness_0}).
+The values of the exponent and significand which are selected,
+in the case where there are several possible choices,
+are determined from the following rules:
+\begin{itemize}
+    \item Either $E > E_{\min}$ and $b_0 = 1$;
+    \item Or $E = E_{\min}$, in which case the leading bit may be 0.
+\end{itemize}
+The following result proves that these rules define the exponent and significand uniquely.
+\begin{proposition}
+    \label{prop:uniqueness_standard_representation}
+    Assume that
+    \begin{equation}
+        \label{eq:equality_floating_point}
+        (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
+    \end{equation}
+    where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
+    Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
+\end{proposition}
+\begin{proof}
+    We show that $E = \widetilde E$,
+    after which the equality of significands follows trivially.
+    Let us assume for contradiction that $E > \widetilde E$
+    and denote the left and right-hand sides of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
+    Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
+    On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
+    Since $E \geq \widetilde E + 1$ by assumption,
+    we deduce that $|\widetilde x| < 2^E \leq |x|$,
+    which contradicts the equality $x = \widetilde x$.
+\end{proof}
+
+Now that we explained how 
+a unique set of parameters (sign, exponent, significand) can be assigned to any floating point number,
+we describe how these parameters are stored on the computer in practice?
 As their names suggest, the \julia{Float16}, \julia{Float32} and \julia{Float64} formats use 16, 32 and 64 bits of memory, respectively.
 A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
 
@@ -908,7 +899,7 @@ One may determine the exponent and significand of a floating point number from t
         In particular, if $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
         then it holds that $x = 0$.
     \item
-        \textbf{Normalized numbers}:
+        \textbf{Non-denormalized numbers}:
         If $0 < e < 255$,
         then the implicit leading bit $b_0$ of the significand is $1$
         and the fraction is given by $b_1 b_2 \dots b_{p-2} b_{p-1}$.
@@ -964,6 +955,22 @@ One may determine the exponent and significand of a floating point number from t
     \]
     different real numbers,
     which is a very good efficiency.
+\end{remark}
+
+\begin{remark}
+    [Nonuniqueness of the floating point represention of 0.0]
+    \label{remak:non_uniqueness_0}
+    The sign $s$ is clearly unique for any number in a floating point format,
+    except for $0.0$,
+    which could in principle be represented as
+    \[
+        (-1)^0 2^{E_{\min}} (0.00\dots00)_2
+        \qquad \text{or} \qquad
+        (-1)^1 2^{E_{\min}} (0.00\dots00)_2.
+    \]
+    In practice, both representations of 0.0 are available on most machines,
+    and these behave slightly differently.
+    For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
 \end{remark}
 
 \begin{exercise}
