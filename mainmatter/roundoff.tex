@@ -791,7 +791,7 @@ is smaller than the smallest representable number in a floating point format.
 \end{solution}
 
 
-\section{Encoding of floating point numbers}%
+\section{Encoding of floating point numbers~\moreinfo}%
 \label{sec:encoding_of_floating_point_numbers}
 
 Once a number format is specified through parameters $(p, E_{\min}, E_{\max})$,
@@ -808,7 +808,7 @@ We already mentioned  in~\cref{remark:roundoff_non_uniqueness} that
 a number in a floating point format may have several representations.
 On a computer, however, a floating point number is always stored in the same manner
 (except for the number 0, see \cref{remak:non_uniqueness_0}).
-The values of the exponent and significand which are selected,
+The values of the exponent and significand which are selected by the computer,
 in the case where there are several possible choices,
 are determined from the following rules:
 \begin{itemize}
@@ -988,7 +988,7 @@ One may determine the exponent and significand of a floating point number from t
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
 
-\section{Integer formats}%
+\section{Integer formats~\moreinfo}%
 \label{sec:what_about_integer_formats}
 
 The machine representation of integer formats is much simpler than that of floating point numbers.
@@ -996,7 +996,7 @@ In this short section,
 we give a few orders of magnitude for common integer formats and briefly discuss overflow issues.
 Programming languages typically provide integer formats based on 16, 32 and 64 bits.
 In Julia, these correspond to the types \julia{Int16}, \julia{Int32} and \julia{Int64},
-the latter being the default for number integer literals.
+the latter being the default for integer literals.
 
 The most common encoding for integer numbers,
 which is used in Julia, is known as \emph{two's complement}:

@@ -297,10 +297,11 @@ The direct method can be decomposed into three steps:
 \begin{itemize}
     \item
         First calculate the so-called $\mat L \mat U$ decomposition of $\mat A$,
-        i.e.\ find an upper triangular matrix~$\mat U$ and a lower triangular matrix~$\mat L$ such that
+        i.e.\ find an upper triangular matrix~$\mat U$ and a \emph{unit} lower triangular matrix~$\mat L$ such that
         \(
-            \mat A = \mat L \mat U
+            \mat A = \mat L \mat U.
         \)
+        A unit lower triangular matrix is a lower triangular matrix with only ones on the diagonal.
 
     \item
         Then solve
@@ -315,12 +316,95 @@ The direct method can be decomposed into three steps:
             \mat U \vect x = \vect y.
         \)
          using a method called \emph{backward substitution}.
-         By construction, the solution $\vect x$ thus obtained is a solution to~\eqref{eq:linear_system}.
 \end{itemize}
+By construction, the solution $\vect x$ thus obtained is a solution to~\eqref{eq:linear_system}.
+Indeed, we have that
+\[
+    \mat A \vect x = \mat L \mat U \vect x = \mat L \vect y = \vect b.
+\]
 
 \subsection{LU decomposition}%
 \label{sub:lu_decomposition}
 
+In this section,
+we first discuss the existence and uniqueness of the $\mat L \mat U$ factorization.
+We then describe a numerical algorithm for calculating the factors $\mat L$ and $\mat U$,
+based on \emph{Gaussian elimination}.
+
+\subsubsection*{Existence and uniqueness of the decomposition}%
+We present a necessary and sufficient condition for the existence of a unique $\mat L \mat U$ decomposition of a matrix.
+To this end, we define the principal submatrix of order $i$ of a matrix $\mat A \in \real^{n \times n}$
+as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
+
+\begin{proposition}
+    \label{proposition:linear_existence_lu}
+    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$ exists and is unique if and only if
+    the principal submatrices of $\mat A$ of all orders are nonsingular.
+\end{proposition}
+\begin{proof}
+    We prove only the ``if'' direction; see~\cite[Theorem 3.4]{MR2265914} for the ``only if'' implication.
+
+    The statement is clear if $n = 1$.
+    Reasoning by induction,
+    we assume that the result is proved up to $n - 1$.
+    Since the matrix $\mat A_{n-1}$ and all its principal submatrices are nonsingular by assumption,
+    it holds that $\mat A_{n-1} = \mat L_{n-1} \mat U_{n-1}$
+    for a unit lower triangular matrix $\mat L_{n-1}$ and an upper triangular matrix $\mat U_{n-1}$.
+    These two matrices are nonsingular,
+    for if either of them were singular then the product $\mat A_{n-1} = \mat L_{n-1} \mat U_{n-1}$ would be singular as well.
+    Let us decompose~$\mat A$ as follows:
+    \[
+        \mat A =
+        \begin{pmatrix}
+            \mat A_{n-1} & \vect c \\
+            \vect d^\t & a_{nn}
+        \end{pmatrix}.
+    \]
+    Let $\vect \ell$ and $\vect u$ denote the solutions to $\mat L_{n-1} \vect u = \vect c$ and $\mat U_{n-1}^\t \vect \ell = \vect d$.
+    These solutions exist and are unique,
+    because the matrices $\mat L_{n-1}$ and $\mat U_{n-1}$ are nonsingular.
+    Letting $u_{nn} = a_{nn} - (\vect \ell^\t \vect u)^{-1}$,
+    we check that $\mat A$ factorizes as
+    \[
+        \begin{pmatrix}
+            \mat A_{n-1} & \vect c \\
+            \vect d^\t & a_{nn}
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            \mat L_{n-1} & \vect 0_{n-1} \\
+            \vect \ell^\t & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+            \mat U_{n-1} & \vect u \\
+            \vect 0_{n-1}^\t & u_{nn}
+        \end{pmatrix}.
+    \]
+    This completes the proof of the existence of the decomposition.
+    The uniqueness of the factors follows from the uniqueness of $\vect \ell$, $\vect u$ and $u_{nn}$.
+\end{proof}
+
+% \begin{remark}
+%     In fact,
+%     the reasoning in the proof of~\cref{proposition:linear_existence_lu} can also be employed to show uniqueness of the $\mat L \mat U$ decomposition.
+%     The advantage of our approach in the proof of \cref{proposition:linear_uniqueness_lu} is that this approach also implies,
+%     as a byproduct, that the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
+% \end{remark}
+
+\cref{proposition:linear_existence_lu} raises the following question:
+are there classes of matrices whose principal matrices are all nonsingular?
+The answer is positive, and we mention,
+as an important example, the class of positive definite matrices.
+Proving this is the aim of \cref{exercise:linear_positive_definite_matrix_nonsingular_principal_components}.
+
+\subsection*{Gaussian elimination algorithm for computing $\mat L$ and $\mat U$}%
+\label{sub:gaussian_elimination_algorithm_for_computing_mat_l_and_mat_u_}
+
+So far we have presented a condition under which the $\mat L \mat U$ decomposition of a matrix exists and is unique,
+but not a practical method for calculating the matrices $\mat L$ and $\mat U$.
+We describe in this section an algorithm,
+known as \emph{Gaussian elimination},
+for calculating the $\mat L \mat U$ decomposition of a matrix.
 We begin by introducing the concept of \emph{Gaussian transformation}.
 \begin{definition}
     A Gaussian transformation is a matrix of the form $\mat M_k = \mat I - \vect c^{(k)} \vect e_k$,
@@ -336,7 +420,7 @@ We begin by introducing the concept of \emph{Gaussian transformation}.
 
 The action of a Gaussian transformation $\mat M_k$ left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
 to replace the rows from index $k + 1$ to index $n$ by a linear combination involving themselves and the $k$-th row.
-To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the lines of a matrix $\mat T \in \real^{n \times n}$.
+To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the rows of a matrix $\mat T \in \real^{n \times n}$.
 Then, we have
 \[
     \mat M_k \mat T
@@ -377,24 +461,24 @@ the inverse of a Gaussian transformation matrix is given by
     \label{eq:inverse_gaussian_transformation}
     (\mat I - \vect c^{(k)} \vect e_k^\t)^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t.
 \end{equation}
-The idea of the $\mat L \mat U$ decomposition algorithm is to successively left-multiply $\mat A$
+The idea of the Gaussian elimination algorithm is to successively left-multiply $\mat A$
 with Gaussian transformation matrices $\mat M_1$, then $\mat M_2$, etc.\
 appropriately chosen in such a way that the matrix~$\mat A^{(k)}$,
 obtained after $k$ iterations,
 is upper triangular up to column $k$.
 That is to say, the Gaussian transformations are constructed so that
-all the entries in columns~1 to~$k$ and under the diagonal of the matrix $\mat A^{(k)}$ are equal to zero.
+all the entries in columns~1 to~$k$ under the diagonal of the matrix $\mat A^{(k)}$ are equal to zero.
 The resulting matrix $\mat A^{(n-1)}$ after $n-1$ iterations is then upper triangular
 and satisfies
 \[
     \mat A^{(n-1)} = \mat M_{n-1} \dotsc \mat M_1 \mat A.
 \]
-We deduce that
+Rearranging this equation,
+we deduce that
 \[
     \mat A = (\mat M_1^{-1} \dots \mat M_{n-1}^{-1}) \mat A^{(n-1)}.
 \]
-Since the first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular},
-this completes the $\mat L \mat U$ factorization of the matrix $\mat A$.
+The first factor is lower triangular by~\eqref{eq:inverse_gaussian_transformation} and \cref{exercise:linear_product_of_lower_triangular}.
 The product in the definition of the matrix $\mat L$ admits a simple explicit expression.
 \begin{lemma}
     \label{lemma:linear_inverse_product_gaussian_transformations}
@@ -415,10 +499,8 @@ The product in the definition of the matrix $\mat L$ admits a simple explicit ex
     \]
     The statement then follows easily by expanding the product.
 \end{proof}
-A byproduct of~\cref{lemma:linear_inverse_product_gaussian_transformations} is that all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
+A corollary of~\cref{lemma:linear_inverse_product_gaussian_transformations} is that all the diagonal entries of the lower triangular matrix $\mat L$ are equal to 1;
 the matrix $\mat L$ is \emph{unit lower triangular}.
-In practical implementations, therefore,
-these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
 The full expression of the matrix $\mat L$ given the Gaussian transformations is
 \begin{equation}
     \label{eq:linear_matrix_L}
@@ -437,7 +519,10 @@ The full expression of the matrix $\mat L$ given the Gaussian transformations is
         c^{(1)}_n & c^{(2)}_n & c^{(3)}_n & \hdots & c^{(n-1)}_n & 1 \\
     \end{pmatrix}
 \end{equation}
-
+Therefore, the Gaussian elimination algorithms, if all the steps are well-defined,
+correctly gives the $\mat L \mat U$ factorization of the matrix $\mat A$.
+% In practical implementations, therefore,
+% these diagonal entries can be omitted and the matrices $\mat L$ and $\mat U$ can be stored within the same matrix.
 Of course, the success of the strategy outlined above for the calculation of the $\mat L \mat U$ factorization hinges on
 the existence of an appropriate Gaussian transformation at each iteration.
 It is not difficult to show that,
@@ -445,7 +530,7 @@ if the $(k+1)$-th diagonal entry of the matrix $\mat A^{(k)}$ is nonzero for all
 then the Gaussian transformation matrices exist and are uniquely defined.
 \begin{lemma}
     \label{lemma:linear_expression_gaussian_transformations}
-    Assume that $\mat A^{(k)}$ is an upper triangular up to columns $k$ included,
+    Assume that $\mat A^{(k)}$ is an upper triangular up to column $k$ included,
     with $k \leq n-2$.
     If $a^{(k)}_{k+1,k+1} > 0$,
     then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that $\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
@@ -457,68 +542,55 @@ then the Gaussian transformation matrices exist and are uniquely defined.
         \end{pmatrix}^\t.
     \]
 \end{lemma}
+\begin{proof}
+    We perform the multiplication explicitly.
+    Denoting denote by $(\vect r^{(i)}){1 \leq i \leq n}$ the rows of $\mat A^{(k)}$,
+    we have
+    \[
+        \mat M_{k + 1} \mat A^{(k)}
+        =
+        \begin{pmatrix}
+                1   \\
+          & 1  \\
+          & &  \ddots \\
+          & & & 1 & & & \\
+          & & & - c^{(k+1)}_{k+2} & 1  \\
+          & & & \vdots & & \ddots \\
+          & & & - c^{(k+1)}_n & & & 1 \\
+        \end{pmatrix}
+        \begin{pmatrix}
+            \vect r^{(1)} \\
+            \vect r^{(2)} \\
+            \vdots \\
+            \vect r^{(k+1)} \\
+            \vect r^{(k+2)} \\
+            \vdots \\
+            \vect r^{(n)}
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            \vect r^{(1)} \\
+            \vect r^{(2)} \\
+            \vdots \\
+            \vect r^{(k+1)} \\
+            \vect r^{(k+2)} - c^{(k+1)}_{k+2} \vect r^{(k+1)} \\
+            \vdots \\
+            \vect r^{(n)} - c^{(k+1)}_{n} \vect r^{(k+1)}
+        \end{pmatrix}.
+    \]
+    We need to show that the matrix on the right-hand side is upper triangular up to column $k+1$ included.
+    This is clear by definition of $\vect c^{(k+1)}$.
+\end{proof}
+
 The diagonal elements $a^{(k)}_{k+1,k+1}$, where $k \in \{0, \dots, n-2 \}$, are called the pivots.
-We assume for now that these are all nonzero,
-and comment in \cref{sub:pivoting} on the case where a pivot is zero.
-In the setting of nonzero pivots,
-the $\mat L \mat U$ factorization procedure is summarized as follows.
-
-% \begin{algorithm}
-% \caption{$\mat L \mat U$ factorization algorithm}%
-% \label{algo:factorization_algorithm}%
-\begin{algorithmic}
-\State $\mat A^{(0)} \gets \mat A, \mat L \gets \mat I$
-\For{$i \in \{1, \dotsc, n-1\}$}
-    \State Construct $\mat M_{i}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
-    \State $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}, \mat L \gets \mat \mat \mat L \mat M_i^{-1}$
-\EndFor
-\State $\mat U \gets \mat A^{(n-1)}$.
-\end{algorithmic}
-% \end{algorithm}
-
-Of course,
-in practice it is not necessary to explicitly create the Gaussian transformation matrices,
-or to perform full matrix multiplications.
-A more realistic, but still very simplified, version of the algorithm in Julia is given below.
-\begin{minted}[xleftmargin=\parindent, linenos, mathescape]{julia}
- # A is an invertible matrix of size n x n
- L = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
- U = copy(A)
- for i in 1:n-1
-     for r in i+1:n
-         U[i, i] == 0 && error("Pivotal entry is zero!")
-         ratio = U[r, i] / U[i, i]
-         L[r, i] = ratio
-         U[r, i:end] -= U[i, i:end] * ratio
-     end
- end
- # L is unit lower triangular and U is upper triangular
-\end{minted}
-
-\subsubsection*{Computational cost}%
-\label{ssub:computational_cost}
-The computational cost of the algorithm,
-measured as the number of floating point operations (flops) required,
-is dominated by the Gaussian transformations,
-in line 9 in the above code.
-All the other operations amount to a computational cost scaling as $\mathcal O(n^2)$.
-The Gaussian transformations require
-\[
-    \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
-    = \frac{2}{3} n^3 + \mathcal O(n^2) \quad \mathrm{flops}.
-\]
-
-\subsubsection*{Uniqueness of the decomposition}%
-It is not difficult to show that,
-if there exists a factorization of an invertible matrix $\mat A \in \real^{n \times n}$
-into a unit triangular matrix $\mat L$ and an upper triangular matrix $\mat U$,
-then the factors are necessarily unique,
-and they can be obtained by using the procedure described in the previous section.
+We now prove that,
+if an invertible matrix $\mat A$ admits an $\mat L \mat U$ factorization,
+then the pivots are necessarily nonzero and the Gaussian elimination algorithm is successful.
 \begin{proposition}
+    [Gaussian elimination works~\moreinfo]
     \label{proposition:linear_uniqueness_lu}
-    The $\mat L \mat U$ decomposition of a nonsingular matrix $\mat A$,
-    if it exists,
-    is unique.
+    If $\mat A$ is invertible and admits an $\mat L \mat U$  factorization,
+    then the Gaussian elimination algorithm is well-defined and successfully terminates.
 \end{proposition}
 \begin{proof}
     We denote by $\vect c^{(1)}, \dots \vect c^{(n-1)},$ the columns of the matrix $\mat L - \mat I$.
@@ -549,74 +621,67 @@ and they can be obtained by using the procedure described in the previous sectio
     we deduce that $\mat A^{(1)}$ is upper triangular in the first column and that,
     since $\mat A$ is invertible by assumption,
     the first pivot~$a_{11}$ is nonzero.
+    Since this pivot is nonzero,
+    the matrix $\mat M_1$ is uniquely defined by~\cref{lemma:linear_expression_gaussian_transformations}.
 
     The reasoning can then be repeated with other columns,
     in order to deduce that $\mat A^{(k)}$ is upper triangular up to column $k$ and that all the pivots $a^{(k-1)}_{kk}$ are nonzero.
-    Since this uniquely defines the Gaussian transformations by \cref{lemma:linear_expression_gaussian_transformations},
-    we conclude that $\mat L$ is unique, and therefore $\mat U = \mat L^{-1} \mat A$ is also unique.
+    % Since this uniquely defines the Gaussian transformations by \cref{lemma:linear_expression_gaussian_transformations},
+    % we conclude that $\mat L$ is unique, and therefore $\mat U = \mat L^{-1} \mat A$ is also unique.
 \end{proof}
 
-\subsubsection*{Existence of the decomposition}%
-We now present a necessary and sufficient condition for the existence of the $\mat L \mat U$ decomposition of a matrix.
-To this end, we define the principal submatrix of order $i$ of a matrix $\mat A \in \real^{n \times n}$
-as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
 
-\begin{proposition}
-    \label{proposition:linear_existence_lu}
-    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$ exists if and only if
-    the principal submatrices of $\mat A$ of all orders are nonsingular.
-\end{proposition}
-\begin{proof}
-    We prove only the ``if'' direction; see~\cite[Theorem 3.4]{MR2265914} for the ``only if'' implication.
+\subsection*{Computer implementation}%
+\label{sub:computer_implementation}
 
-    The statement is clear if $n = 1$.
-    Reasoning by induction,
-    we assume that the result is proved up to $n - 1$.
-    Since the matrix $\mat A_{n-1}$ is nonsingular by assumption,
-    it holds that $\mat A_{n-1} = \mat L_{n-1} \mat U_{n-1}$,
-    for a unit lower triangular matrix $\mat L_{n-1}$ and an upper triangular matrix $\mat U_{n-1}$.
-    Let us decompose~$\mat A$ as follows:
-    \[
-        \mat A =
-        \begin{pmatrix}
-            \mat A_{n-1} & \vect c \\
-            \vect d^\t & a_{nn}
-        \end{pmatrix}.
-    \]
-    Let $\vect \ell$ and $\vect u$ denote the solutions to $\mat L_{n-1} \vect u = \vect c$ and $\mat U_{n-1}^\t \vect \ell = \vect d$.
-    These solutions exists, because the matrices $\mat L_{n-1}$ and $\mat U_{n-1}$ are nonsingular.
-    Letting $u_{nn} = (\vect \ell^\t \vect u)^{-1} a_{nn}$,
-    we check that $\mat A$ factorizes as
-    \[
-        \begin{pmatrix}
-            \mat A_{n-1} & \vect c \\
-            \vect d^\t & a_{nn}
-        \end{pmatrix}
-        =
-        \begin{pmatrix}
-            \mat L_{n-1} & \vect 0_{n-1} \\
-            \vect \ell^\t & 1
-        \end{pmatrix}
-        \begin{pmatrix}
-            \mat U_{n-1} & \vect u \\
-            \vect 0_{n-1}^\t & u_{nn}
-        \end{pmatrix},
-    \]
-    which completes the proof.
-\end{proof}
+The Gaussian elimination procedure is summarized as follows.
 
-\begin{remark}
-    In fact,
-    the reasoning in the proof of~\cref{proposition:linear_existence_lu} can also be employed to show uniqueness of the $\mat L \mat U$ decomposition.
-    The advantage of our approach in the proof of \cref{proposition:linear_uniqueness_lu} is that it also implies,
-    as a byproduct, that the iterative procedure for calculating the $\mat L \mat U$ decomposition is well-defined.
-\end{remark}
+% \begin{algorithm}
+% \caption{$\mat L \mat U$ factorization algorithm}%
+% \label{algo:factorization_algorithm}%
+\begin{algorithmic}
+\State $\mat A^{(0)} \gets \mat A, \mat L \gets \mat I$
+\For{$i \in \{1, \dotsc, n-1\}$}
+    \State Construct $\mat M_{i}$ as in~\cref{lemma:linear_expression_gaussian_transformations}.
+    \State $\mat A^{(i)} \gets \mat M_{i} \mat A^{(i-1)}, \mat L \gets \mat \mat \mat L \mat M_i^{-1}$
+\EndFor
+\State $\mat U \gets \mat A^{(n-1)}$.
+\end{algorithmic}
+% \end{algorithm}
 
-\cref{proposition:linear_existence_lu} raises the following question:
-are there classes of matrices whose principal matrices are all nonsingular?
-The answer is positive, and we mention,
-as an important example, the class of positive definite matrices.
-Proving this is the aim of \cref{exercise:linear_positive_definite_matrix_nonsingular_principal_components}.
+Of course,
+in practice it is not necessary to explicitly create the Gaussian transformation matrices,
+or to perform full matrix multiplications.
+A more realistic, but still very simplified, version of the algorithm in Julia is given below.
+The code exploits the relation~\eqref{eq:linear_matrix_L} between $\mat L$ and the parameters of the Gaussian transformations.
+\begin{minted}[xleftmargin=\parindent, linenos, mathescape]{julia}
+ # A is an invertible matrix of size n x n
+ L = [i == j ? 1.0 : 0.0 for i in 1:n, j in 1:n]
+ U = copy(A)
+ for i in 1:n-1
+     for r in i+1:n
+         U[i, i] == 0 && error("Pivotal entry is zero!")
+         ratio = U[r, i] / U[i, i]
+         L[r, i] = ratio
+         U[r, i:end] -= U[i, i:end] * ratio
+     end
+ end
+ # L is unit lower triangular and U is upper triangular
+\end{minted}
+
+\subsubsection*{Computational cost}%
+\label{ssub:computational_cost}
+The computational cost of the algorithm,
+measured as the number of floating point operations (flops) required,
+is dominated by the Gaussian transformations,
+in line 9 in the above code.
+All the other operations amount to a computational cost scaling as $\mathcal O(n^2)$,
+which is negligible compared to the cost of the $\mat L \mat U$ factorization when $n$ is large.
+This factorization requires
+\[
+    \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
+    = \frac{2}{3} n^3 + \mathcal O(n^2) \quad \mathrm{flops}.
+\]
 
 \subsection{Backward and forward substitution}%
 \label{sub:backward_and_forward_substitution}
@@ -640,19 +705,18 @@ A simple implementation of this algorithm is as follows:
     end
 \end{minted}
 
-\subsection{LU factorization with pivoting}%
+\subsection{Gaussian elimination with pivoting~\moreinfo}%
 \label{sub:pivoting}
-
-The $\mat L \mat U$ factorization algorithm that
-we presented in \cref{sub:lu_decomposition} relies on the assumption that the pivotal entries $A^{(k)}_{k+1,k+1}$ are nonzero.
+The Gaussian elimination algorithm that
+we presented in \cref{sub:lu_decomposition} relies on the existence of an $\mat L \mat U$ factorization.
 In practice,
 this assumption may not be satisfied,
 and in this case a modified algorithm,
-called $\mat L \mat U$ factorization \emph{with pivoting},
+called Gaussian elimination \emph{with pivoting},
 is required.
-In fact, pivoting is useful even if the pivots are nonzero,
-as it enables to reduce the condition number of the algorithm,
-i.e.\ the sensitivity of the output matrices~$\mat L$ and~$\mat U$ to perturbations of the input.
+
+In fact, pivoting is useful even if the usual $\mat L \mat U$ decomposition of $\mat A$ exists,
+as it enables to reduce the condition number of the matrices matrices~$\mat L$ and~$\mat U$.
 There are two types of pivoting:
 partial pivoting, where only the rows are rearranged through a permutation at each iteration,
 and complete pivoting, where both the rows and the columns are rearranged at each iteration.
@@ -683,7 +747,19 @@ A permutation matrix has a single entry equal to~1 per row and per column,
 and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
 
 \subsubsection*{Partial pivoting}%
-The idea of partial pivoting is to rearrange the lines at each iteration of the $\mat L \mat U$ factorization in such a manner that
+Gaussian elimination with partial pivoting applies for any invertible matrix $\mat A$,
+and it outputs 3 matrices: a row permutation $\mat P$, a unit triangular matrix $\mat L$,
+and an upper triangular matrix $\mat U$.
+These are related by the relation
+\[
+    \mat P \mat A = \mat L \mat U.
+\]
+This is sometimes called a $\mat P \mat L \mat U$ decomposition of the matrix $\mat A$.
+It is not unique in general but, unlike the usual $\mat L \mat U$ decomposition,
+it always exists provided that $\mat A$ is invertible.
+We take this for granted in this course.
+
+The idea of partial pivoting is to rearrange the rows at each iteration of the Gaussian elimination in such a manner that
 the pivotal entry is as large as possible in absolute value.
 One step of the procedure reads
 \begin{equation}
@@ -694,9 +770,11 @@ Here $\mat P_{k+1}$ is simple row permutation matrix which,
 when acting on $\mat A^{(k)}$,
 interchanges row~$k+1$ and row $\ell$,
 for some index $\ell \geq k+1$.
-The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$ is maximum.
+The row index $\ell$ is selected in such a way that the absolute value of the pivotal entry,
+in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$, is maximum.
 The matrix $\mat M_{k+1}$ is then the unique Gaussian transformation matrix ensuring that~%
-$\mat A^{(k+1)}$ is upper triangular up to column~$k+1$.
+$\mat A^{(k+1)}$ is upper triangular up to column~$k+1$,
+obtained as in~\cref{lemma:linear_expression_gaussian_transformations}.
 The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of the form~\eqref{eq:step_partial_pivoting} is upper triangular and satisfies
 \[
     \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
@@ -711,7 +789,7 @@ we have
     \mat P \mat A = \mat P \mat M^{-1} \mat U = (\mat P \mat M^{-1}) \mat U =: \mat L \mat U.
 \end{equation}
 \Cref{lemma:linear_matrix_l_pivoting} below shows that,
-as the notation suggests,
+as the notation $\mat L$ suggests,
 the matrix $\mat L = (\mat P \mat M^{-1})$ on the right-hand side is indeed lower triangular.
 Before stating and proving the lemma,
 we note that $\mat P$ is a row permutation matrix,
@@ -767,7 +845,7 @@ the right-hand side~$\mat P^\t \vect b$ can be calculated very efficiently.
     \end{align*}
     In the last equality,
     we used that $\vect e_{i}^\t \mat P_k^{-1} = (\mat P_k \vect e_i)^\t = \vect e_i^\t$ for all $i \in \{1, \dotsc, k-1\}$,
-    because the row permutation $\mat P_k$ does not affect lines~$1$ to~$k-1$.
+    because the row permutation $\mat P_k$ does not affect rows~$1$ to~$k-1$.
     Using the expression $\mat M_k^{-1} = \mat I + \vect c^{(k)} \vect e_k^\t$,
     expanding the product and noting that $\vect e_j^\t \vect c^{(k)} = 0$ if $j \leq k$,
     we obtain~\eqref{eq:linear_lower_triangular_l}.
@@ -890,7 +968,7 @@ For example, developing the matrix product gives that $a_{1,1} = c_{1, 1}^2$ and
 It is then possible to calculate $c_{2,1}$ from the equation~$a_{2, 1} = c_{2, 1} c_{1, 1}$, and so on.
 Implementing the Cholesky factorization is the goal of \cref{exercise:linear_cholesky}.
 
-\subsection{Banded matrices}%
+\subsection{Direct methods for banded matrices}%
 
 In applications related to partial differential equations,
 the matrix $\mat A \in \real^{n \times n}$ very often has a bandwidth which is small in comparison with $n$.
@@ -925,11 +1003,11 @@ More precisely, is it possible to identify a row permutation matrix $\mat P$ suc
 has minimal bandwidth?
 Given such a matrix,
 the solution to the linear system~\eqref{eq:linear_system} can be obtained by first solving $(\mat P \mat A \mat P^\t) \vect y = \mat P b$,
-and then letting $\vect x = \mat P \vect y$.
+and then letting $\vect x = \mat P^\t \vect y$.
 
 The Cuthill--McKee algorithm is a heuristic method for finding a good,
 but sometimes not optimal,
-permutation matrix~$\mat P$ in the particular case of a \emph{symmetric} matrix.
+permutation matrix~$\mat P$ in the particular case where $\mat A$ is a \emph{symmetric} matrix.
 It is based on the fact that,
 to a symmetric matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$,
 i.e.\ zeros in the same places.
@@ -996,19 +1074,55 @@ This renumbering corresponds to the permutation
     \begin{pmatrix}
         i:         & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
         \sigma(i): & 1 & 2 & 4 & 6 & 8 & 7 & 5 & 3
-    \end{pmatrix}.
+    \end{pmatrix},
 \end{align*}
+and we may verify that the adjacency matrix of the renumbered graph can be obtained from the associated row permutation matrix:
+\[
+    \mat P \mat A_* \mat P^\t
+    =
+    \begin{pmatrix}
+        1 & \\
+          & 1 \\
+          & & & & & & & 1 \\
+          & & 1 \\
+          & & & & & & 1 \\
+          & & & 1 \\
+          & & & & & 1 \\
+          & & & & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        1 & 1 &   &   &   &   &   & {\color{red} 1} \\
+        1 & 1 & 1 &   &   &   &   &   \\
+          & 1 & 1 & 1 &   &   &   &   \\
+          &   & 1 & 1 & 1 &   &   &   \\
+          &   &   & 1 & 1 & 1 &   &   \\
+          &   &   &   & 1 & 1 & 1 &   \\
+          &   &   &   &   & 1 & 1 & 1 \\
+        {\color{red} 1} &   &   &   &   &   & 1 & 1 \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        1 & \\
+          & 1 \\
+          & & & 1 \\
+          & & & & & 1 \\
+          & & & & & & & 1 \\
+          & & & & & & 1 \\
+          & & & & 1 \\
+          & & 1 \\
+    \end{pmatrix}
+\]
+
 In this example,
 renumbering the nodes of the graph enables a significant reduction of the bandwidth,
 from 7 to 2.
 The Cuthill--McKee algorithm,
 which was employed to calculate the permutation,
 is an iterative method that produces an ordered $n$-tuple $R$ containing the nodes in the new order;
-it returns $\bigl(\sigma^{-1}(1), \dots, \sigma^{-1}(n)\bigr)$.
+in other words, it returns $\bigl(\sigma^{-1}(1), \dots, \sigma^{-1}(n)\bigr)$.
 The first step of the algorithm is to find the node $i$ with the lowest \emph{degree},
 i.e.\ with the smallest number of connections to other nodes,
 and to initialize $R = (i)$.
-Then the following steps are repeated until $R$ contains all the nodes:
+Then the following steps are repeated until $R$ contains all the nodes of the graph:
 \begin{itemize}
     \item
         Define $A_i$ as the set containing all the nodes which are adjacent to a node in $R$ but not themselves in $R$;
@@ -1057,7 +1171,10 @@ Then the following steps are repeated until $R$ contains all the nodes:
     \end{tikzpicture}
     \caption{%
         Illustration of the Cuthill--McKee algorithm.
+        The new numbering of the nodes is illustrated.
         The first node was chosen randomly since all the nodes have the same degree.
+        In this example, the ordered tuple $R$ evolves as follows:
+        $(1) \rightarrow (1, 2, 8) \rightarrow (1, 2, 8, 3, 7) \rightarrow (1, 2, 8, 3, 7, 4, 6) \rightarrow (1, 2, 8, 3, 7, 4, 6, 5)$.
     }%
     \label{figure:linear_cuthill_mckee}
 \end{figure}
@@ -1143,11 +1260,11 @@ This generally enables to obtain a good solution at a computational cost that is
 In this section,
 we present and study two classes of iterative methods:
 basic iterative methods based on a splitting of the matrix $\mat A$,
-and the Krylov subspace methods.
+and the so-called Krylov subspace methods.
 
 \subsection{Basic iterative methods}%
 \label{sub:basic_iterative_methods}
-Many of the basic iterative methods may be viewed as particular cases of a general \emph{splitting method}.
+The basic iterative methods are particular cases of a general \emph{splitting method}.
 Given a splitting of the matrix of the linear system as $\mat A = \mat M - \mat N$,
 for a nonsingular matrix $\mat M \in \real^{n \times n}$ and a matrix $\mat N \in  \real^{n \times n}$,
 one step of this general method reads
@@ -1155,7 +1272,7 @@ one step of this general method reads
     \label{eq:linear_system_iterative_method}
     \mat M \vect x^{(n+1)} = \mat N \vect x^{(n)} + \vect b.
 \end{equation}
-There is the compromise between the cost of a single step and the speed convergence.
+There is the compromise between the cost of a single step and the speed of convergence.
 In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
 the method converges to the exact solution in one step,
 but performing this step amounts to solving the initial problem.
