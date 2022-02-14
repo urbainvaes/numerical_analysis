@@ -1129,7 +1129,7 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     \begin{minted}{julia}
     import BandedMatrices
     n, u, l = 100, 4, 4
-    A = BandedMatrices.brandn(n, u, l)
+    A = BandedMatrices.brand(n, u, l)
     A = A*A'
     # so that A is symmetric and positive definite (with probability 1).
     \end{minted}

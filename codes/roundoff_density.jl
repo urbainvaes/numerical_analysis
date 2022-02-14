@@ -44,7 +44,7 @@ distance_64 = successors_64 - x_64
 Plots.plot(x_64, (distance_64./x_64) / eps_64, xaxis=:log, label=L"\frac{\Delta(x)}{x}",
            bottom_margin=2Plots.mm, size=(900,450))
 Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i in exp_min:exp_max])
-Plots.plot!([2^(-1021)], seriestype=:vline, label = false)
+Plots.plot!([2^(-1022)], seriestype=:vline, label = false)
 yticks = [1, 2, 3, 4]
 Plots.yticks!(yticks, [latexstring(string(i) * "\\, \\varepsilon_M") for i in yticks])
 Plots.xlabel!(L"x")
