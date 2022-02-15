@@ -983,7 +983,7 @@ This can be proved by equaling the entries of the product $\mat L \mat U$ with t
 We emphasize, however, that the sparsity structure \emph{within} the band of $\mat A$ may be destroyed in $\mat L$ and $\mat U$;
 this phenomenon is called \emph{fill-in}.
 
-\subsubsection{Reducing the bandwidth: the Cuthill--McKee algorithm}%
+\subsubsection{Reducing the bandwidth: the Cuthill--McKee algorithm~\moreinfo}%
 \label{ssub:reducing_the_bandwidth_the_cuthill_mckee_algorithm}
 
 The computational cost of calculating the $\mat L \mat U$ or Cholesky decomposition of a matrix with bandwidth $k$ scales as $\mathcal O(n k^2)$,
@@ -1284,8 +1284,11 @@ together with an initial guess $\vect x^{(0)}$ of the solution,
 one step of this general method reads
 \begin{equation}
     \label{eq:linear_system_iterative_method}
-    \mat M \vect x^{(n+1)} = \mat N \vect x^{(n)} + \vect b.
+    \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b.
 \end{equation}
+Note that, no matter the choice of splitting,
+the exact solution $\vect x$ to the linear system is a fixed point of this iteration,
+in the sense that if $\vect x^{(0)} = \vect x$, then $\vect x^{(k)} = \vect x$ for all $k \geq 0$.
 There is a compromise between the cost of a single step and the speed of convergence.
 In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
 the method converges to the exact solution in one step,
@@ -1293,17 +1296,16 @@ but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 
-
 \begin{proposition}
     [Convergence]
     \label{proposition:linear_convergence}
     Assume that $\rho(\mat M^{-1} \mat N) < 1$.
     Then the method converges for any initial guess $\vect x^{(0)}$.
-    In addition, for any $\varepsilon > 0$ there exists $N > 0$ such that
+    In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
     \[
-        \forall n \geq N,
+        \forall k \geq K,
         \qquad
-        \norm{\vect e^{(n)}} \leq \bigl(\rho(A) + \varepsilon\bigr)^n \norm{\vect e^{(0)}}.
+        \norm{\vect e^{(k)}} \leq \bigl(\rho(A) + \varepsilon\bigr)^k \norm{\vect e^{(0)}}.
     \]
 \end{proposition}
 \begin{proof}
@@ -1311,33 +1313,33 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
     Since $\vect b = \mat M \vect x - \mat N \vect x$,
     we have
     \[
-        \mat M (\vect x^{(n+1)} - \vect x) = \mat N (\vect x^{(n)} - \vect x).
+        \mat M (\vect x^{(k+1)} - \vect x) = \mat N (\vect x^{(k)} - \vect x).
     \]
-    Denoting the error by $\vect e^{(n)} = \vect x^{(n)} - \vect x$,
+    Denoting the error by $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
     and using the assumption that $\mat M$ is nonsingular,
     we obtain
     \[
-        \vect e^{(n+1)} = (\mat M^{-1} \mat N) \vect e^{(n)}.
+        \vect e^{(k+1)} = (\mat M^{-1} \mat N) \vect e^{(k)}.
     \]
     Applying this equality repeatedly, we deduce
     \[
-        \vect e^{(n+1)} = (\mat M^{-1} \mat N)^2 \vect e^{(n-1)} = \dots = (\mat M^{-1} \mat N)^{n+1} \vect e^{(0)}.
+        \vect e^{(k+1)} = (\mat M^{-1} \mat N)^2 \vect e^{(k-1)} = \dots = (\mat M^{-1} \mat N)^{k+1} \vect e^{(0)}.
     \]
     We conclude that
     \[
-        \forall n \geq 0, \qquad
-        \norm{\vect e^{(n)}}
-        \leq \norm[bigl]{(\mat M^{-1} \mat N)^{n}} \norm{\vect e^{(0)}}.
+        \forall k \geq 0, \qquad
+        \norm{\vect e^{(k)}}
+        \leq \norm[bigl]{(\mat M^{-1} \mat N)^{k}} \norm{\vect e^{(0)}}.
     \]
     By Gelfand's formula, see~\cref{proposition:matrices_gelfands},
     it holds that
     \[
-        \lim_{n \to \infty} \norm[bigl]{(\mat M^{-1} \mat N)^{n}}^{\frac{1}{n}} = \rho(\mat M^{-1} \mat N).
+        \lim_{k \to \infty} \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} = \rho(\mat M^{-1} \mat N).
     \]
-    In particular, for all $\varepsilon > 0$ there is $N \in \nat$ such that
+    In particular, for all $\varepsilon > 0$ there is $K \in \nat$ such that
     \[
-        \forall n \geq N, \qquad
-        \norm[bigl]{(\mat M^{-1} \mat N)^{n}}^{\frac{1}{n}} \leq \rho(\mat M^{-1} \mat N) + \varepsilon.
+        \forall k \geq K, \qquad
+        \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} \leq \rho(\mat M^{-1} \mat N) + \varepsilon.
     \]
     Rearranging this inequality gives the statement.
 \end{proof}
@@ -1350,7 +1352,7 @@ Arguably the simplest splitting of the matrix $\mat A$ is given by $\mat A = \fr
 which leads to \emph{Richardson's method}:
 \begin{equation}
     \label{eq:linear_richardson}
-    \vect x^{(n+1)} = \vect x^{(n)} +  \omega (\vect b - \mat A \vect x^{(n)}).
+    \vect x^{(k+1)} = \vect x^{(k)} +  \omega (\vect b - \mat A \vect x^{(k)}).
 \end{equation}
 In this case the spectral radius which enters in the asymptotic rate of convergence is given by
 \[
@@ -1371,7 +1373,7 @@ Therefore, the spectral radius is given by
 If the matrix $\mat A$ is symmetric and positive definite,
 it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
 In order make convergence as fast as possible,
-we want this spectral radius to be as small as possible,
+we want the spectral radius of $\mat M^{-1} \mat N$ to be as small as possible,
 in view of~\cref{proposition:linear_convergence}.
 Denoting by $\lambda_{\min}$ and $\lambda_{\max}$ the minimum and maximum eigenvalues of $\mat A$,
 it is not difficult to show that
@@ -1391,7 +1393,8 @@ From this we deduce the optimal value of $\omega$ and the associated spectral ra
     = \frac{\lambda_{\max}}{\lambda_{\min} + \lambda_{\max}}
     =  \frac{\kappa_2(\mat A)}{1 + \kappa_2(\mat A)}.
 \]
-We observe that the smaller the conditioning the better the asymptotic rate of convergence.
+We observe that the smaller the condition number of the matrix $\mat A$,
+the better the asymptotic rate of convergence.
 
 \begin{remark}
     [Link with optimization]
@@ -1400,14 +1403,71 @@ We observe that the smaller the conditioning the better the asymptotic rate of c
     for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
     \begin{equation}
         \label{eq:linear_richardson_gradient}
-        \vect x^{(n+1)} = \vect x^{(n)} - \omega \nabla f(\vect x^{(n)}).
+        \vect x^{(k+1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}).
     \end{equation}
     The gradient of this function is $\nabla f(\vect x) = \mat A \vect x - \vect b$,
     and its Hessian matrix is $\mat A$.
-    Since the Hessian is positive definite, the function is convex 
-    and its minimum occurs when $\nabla f$ is zero, 
+    Since the Hessian matrix is positive definite, the function is convex
+    and its minimum occurs when $\nabla f$ is zero,
     i.e.\ when $\mat A x = \vect b$.
 \end{remark}
+
+\subsubsection{Jacobi's method}%
+\label{ssub:jacobi_s_method}
+In Jacobi's method, the matrix $\mat M$ in the splitting is the diagonal matrix $\mat D$ with the same entries as those of $\mat A$ on the diagonal.
+One step of the method reads
+\begin{equation}
+    \label{eq:linear_jacobi}
+    \mat D \vect x^{(k+1)} = (\mat D - \mat A) \vect x^{(k)} + \vect b
+\end{equation}
+Since the matrix $\mat D$ on the left-hand side is diagonal,
+this linear system is very easy to solve.
+The equation~\eqref{eq:linear_jacobi} can be rewritten equivalently as
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} x^{(\textcolor{red}{k+1})}_1 + \sum_{i=2}^{n} a_{1i} x^{(k)}_i  = b_1 \\
+        & a_{21} x^{(k)}_1 + a_{22} x^{(\textcolor{red}{k+1})}_2 + \sum_{i=3}^{n} a_{2i} x^{(k)}_i  = b_2 \\
+        & \vdots \\
+        & \sum_{i=1}^{j-1} x^{(k)}_i + a_{jj} x^{(\textcolor{red}{k+1})}_j + \sum_{i=j+1}^{n} a_{ji} x^{(k)}_i  = b_j \\
+       \end{aligned}
+   \right .
+\end{equation*}
+The updates for each of the entries of $\vect x^{(k+1)}$ are independent,
+and so the Jacobi method lends itself well to parallel implementation.
+
+
+\subsubsection{Gauss--Seidel's method}%
+\label{ssub:gauss_seidel_s_method}
+
+In Jacobi's method, the matrix $\mat M$ in the splitting is the lower triangular part of $\mat A$,
+including the diagonal.
+One step of the method reads
+\begin{equation}
+    \label{eq:linear_gauss_seidel}
+    \mat L \vect x^{(k+1)} = (\mat L - \mat A) \vect x^{(k)} + \vect b
+\end{equation}
+The matrix $\mat L$ on the left-hand side is diagonal,
+so the system can be solved by forward substitution.
+The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} x^{(\textcolor{red}{k+1})}_1 + \sum_{i=2}^{n} a_{1i} x^{(k)}_i  = b_1 \\
+        & a_{21} x^{(\textcolor{red}{k+1})}_1 + a_{22} x^{(\textcolor{red}{k+1})}_2 + \sum_{i=3}^{n} a_{2i} x^{(k)}_i  = b_2 \\
+        & \vdots \\
+        & \sum_{i=1}^{j} x^{(\textcolor{red}{k+1})}_i + \sum_{i=j+1}^{n} a_{ji} x^{(k)}_i  = b_j \\
+       \end{aligned}
+   \right .
+\end{equation*}
+Given $\vect x^{(k)}$,
+the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
+Then the value of second entry can be obtained from the second equation, etc.
+Unlike the Jacobi method,
+the Gauss--Seidel method cannot be implemented in parallel.
+
+% \begin{minted}{julia}
+% \end{minted}
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
