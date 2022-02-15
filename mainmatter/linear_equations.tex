@@ -1296,9 +1296,10 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
 
 \begin{proposition}
     [Convergence]
+    \label{proposition:linear_convergence}
     Assume that $\rho(\mat M^{-1} \mat N) < 1$.
     Then the method converges for any initial guess $\vect x^{(0)}$.
-    Furthermore, for any $\varepsilon > 0$ there exists $N > 0$ such that
+    In addition, for any $\varepsilon > 0$ there exists $N > 0$ such that
     \[
         \forall n \geq N,
         \qquad
@@ -1341,6 +1342,7 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
     Rearranging this inequality gives the statement.
 \end{proof}
 
+We now list three instances of splitting methods.
 \subsubsection{Richardson's method}%
 \label{ssub:richardson_s_method}
 
@@ -1349,6 +1351,46 @@ which leads to \emph{Richardson's method}:
 \begin{equation}
     \vect x^{(n+1)} = \vect x^{(n)} +  \omega (\vect b - \mat A \vect x^{(n)}).
 \end{equation}
+In this case the spectral radius which enters in the asymptotic rate of convergence is given by
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \rho\left(\omega \left(\frac{1}{\omega} \mat I - \mat A\right) \right)
+    = \rho\bigl( \mat I - \omega \mat A \bigr)
+\]
+The eigenvalues of the matrix $\mat I - \omega \mat A$ are given by $1 - \omega \lambda_i$,
+where $(\lambda_i)_{1 \leq i \leq L}$ are the eigenvalues of~$\mat A$.
+Therefore, the spectral radius is given by
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}.
+\]
+
+\paragraph{Case of symmetric positive definite $\mat A$.}%
+\label{par:case_of_symmetric_positive_definite_mat_a_}
+If the matrix $\mat A$ is symmetric and positive definite,
+it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
+In order make convergence as fast as possible,
+we want this spectral radius to be as small as possible,
+in view of~\cref{proposition:linear_convergence}.
+Denoting by $\lambda_{\min}$ and $\lambda_{\max}$ the minimum and maximum eigenvalues of $\mat A$,
+it is not difficult to show that
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}
+    = \max \bigl\{ \abs{1 - \omega \lambda_{\min}}, \abs{1 - \omega \lambda_{\max}}\bigr\}.
+\]
+The maximum is minimized when its two arguments are equal,
+i.e.\ when $1 - \omega \lambda_{\min} = \omega \lambda_{\max} -1$.
+From this we deduce the optimal value of $\omega$ and the associated spectral radius:
+\[
+    \omega_{\rm opt} = \frac{1}{\lambda_{\min} + \lambda_{\max}},
+    \qquad
+    \rho_{\rm opt}
+    = 1 - \frac{\lambda_{\min}}{\lambda_{\min} + \lambda_{\max}}
+    = \frac{\lambda_{\max}}{\lambda_{\min} + \lambda_{\max}} 
+    =  \frac{\kappa_2(\mat A)}{1 + \kappa_2(\mat A)}.
+\]
+We observe that the smaller the conditioning the better the asymptotic rate of convergence.
 
 \begin{remark}
     [Link with optimization]
