@@ -567,22 +567,30 @@ The power of a Jordan block admits an explicit expression.
                       &  &  &  &  & \lambda^k
         \end{pmatrix}.
     \end{equation}
-    In addition, for any $\mu > \abs{\lambda}$,
-    there exists $C > 0$ such that
-    \[
-        \forall k \in \nat, \qquad
-        \norm{J_{n}(\lambda)^k} \leq C \mu^k.
-    \]
+    % In addition, for any $\mu > \abs{\lambda}$,
+    % there exists $C > 0$ such that
+    % \[
+    %     \forall k \in \nat, \qquad
+    %     \norm{J_{n}(\lambda)^k} \leq C \mu^k.
+    % \]
 \end{lemma}
 \begin{proof}
-    The explicit expression of the Jordan block can be obtained by decomposing $\mat J_{n}(\lambda) = \lambda \mat I + \mat N$
-    and using the binomial formula.
+    The explicit expression of the Jordan block can be obtained by decomposing the block as $\mat J_{n}(\lambda) = \lambda \mat I + \mat N$
+    and using the binomial formula:
+    \[
+        (\lambda \mat I + \mat N)^k =
+        \sum_{i=1}^{k} {k \choose i} (\lambda \mat I)^{k-i} \mat N^{i}.
+    \]
+    To conclude the proof,
+    we use the fact that $\mat N^{i}$ is a matrix with zeros everywhere except in the $i$-th super-diagonal,
+    which contains only ones.
+    Moreover $\mat N^i = \mat 0_{n \times n}$ if $i \geq n$.
 \end{proof}
 
 A matrix is said to be of \emph{Jordan normal form} if it is block-diagonal with Jordan blocks on the diagonal.
-In other words, a matrix~$\mat B \in \complex^{n \times n}$ is of Jordan normal form if
+In other words, a matrix~$\mat J \in \complex^{n \times n}$ is of Jordan normal form if
 \[
-    \mat B =
+    \mat J =
         \begin{pmatrix}
             J_{n_1}(\lambda_1)  \\
                               & J_{n_2}(\lambda_2)    \\
@@ -592,36 +600,55 @@ In other words, a matrix~$\mat B \in \complex^{n \times n}$ is of Jordan normal 
     \end{pmatrix}
 \]
 with $n_1 + \dotsb + n_k = n$.
-Note that $\lambda_1, \dotsc, \lambda_k$ are eigenvalues of $\mat A$.
+Note that $\lambda_1, \dotsc, \lambda_k$ are the eigenvalues of $\mat A$.
 We state without proof the following important result.
 
 \begin{proposition}
     [Jordan normal form]
     \label{proposition:matrices_jordan_normal_form}
     Any matrix $\mat A \in \complex^{n \times n}$ is \emph{similar} to a matrix in Jordan normal form.
+    In other words, there exists an invertible matrix $\mat P \in \complex^{n \times n}$
+    and a matrix in normal Jordan form $\mat J \in \complex^{n \times n}$ such that
+    \[
+        \mat A = \mat P \mat J \mat P^{-1}
+    \]
 \end{proposition}
-In particular, any matrix $\mat A \in \mat C^{n \times n}$ has at least one eigenvalue.
-(This follows more directly from the fact that the characteristic polynomial has at least one root,
-by the fundamental theorem of algebra.)
-The following result establishes a necessary and sufficient condition for the convergence of $\norm{A^k}$ to 0.
+% In particular, any matrix $\mat A \in \mat C^{n \times n}$ has at least one eigenvalue.
+% (This follows more directly from the fact that the characteristic polynomial has at least one root,
+% by the fundamental theorem of algebra.)
+The following result establishes a necessary and sufficient condition,
+in terms of the spectral radius of $\mat A$ for the convergence of $\norm{\mat A^k}$ to 0,
+for any matrix norm $\norm{\placeholder}$.
 \begin{proposition}
     Let $\rho(\mat A)$ denote the spectral radius of $\mat A \in \complex^{n \times n}$ and $\norm{\placeholder}$ be a matrix norm.
     Then $\norm{\mat A^k} \to 0$ in the limit as $k \to \infty$ if and only if $\rho(\mat A) < 1$.
+    In addition, $\norm{\mat A^k} \to \infty$ in the limit as $k \to \infty$ if and only if $\rho(\mat A) > 1$.
 \end{proposition}
 \begin{proof}
     Since all matrix norms are equivalent,
     we can assume without loss of generality that~$\norm{\placeholder}$ is the 2-norm.
+    We prove only the equivalence $\norm{\mat A^k} \to 0 \Leftrightarrow \rho(\mat A) < 1$.
+    The other statement can be proved similarly.
+
     If $\rho(\mat A) \geq 1$,
     then denoting by $\vect v$ the eigenvector of $\mat A$ associated with the eigenvalue~$\pm \rho(\mat A)$,
     we have $\norm{\mat A^k \vect v} = \rho(\mat A)^k \norm{\vect v} \geq \norm{\vect v}$.
-    Therefore, the sequence $(\mat A^k)_{k \in \nat}$ does not converge to the zero matrix in a $p$-norm.
-    This shows the ``only if'' part.
+    Therefore, the sequence $(\mat A^k)_{k \in \nat}$ does not converge to the zero matrix in a $p$-norm,
+    or any other matrix norm since they are all equivalent.
+    This shows the implication $\norm{\mat A^k} \to 0 \Rightarrow \rho(\mat A) < 1$.
 
-    For the ``if'' part,
+    To show the converse implication,
     we employ~\cref{proposition:matrices_jordan_normal_form},
-    which states that there exists a nonsingular matrix $\mat P$ such that $\mat A = \mat P \mat B \mat P^{-1}$,
-    for a matrix $\mat B \in \complex^{n \times n}$ which is in normal Jordan form.
-    It holds that $\mat A^k = \mat P \mat B^k \mat P^{-1}$,
-    and so it is sufficient to show that $\norm{\mat B^k} \to 0$.
+    which states that there exists a nonsingular matrix $\mat P$ such that $\mat A = \mat P \mat J \mat P^{-1}$,
+    for a matrix $\mat J \in \complex^{n \times n}$ which is in normal Jordan form.
+    It holds that $\mat A^k = \mat P \mat J^k \mat P^{-1}$,
+    and so it is sufficient to show that $\norm{\mat J^k} \to 0$.
     The latter convergence follows from the expression of the power of a Jordan block given in~\cref{lemma:matrices_power_jordan_block}.
 \end{proof}
+
+With this result,
+we can prove the Gelfand formula,
+which is used in \cref{cha:solution_of_linear_systems}.
+\begin{proposition}
+    [Gelfand formula]
+\end{proposition}

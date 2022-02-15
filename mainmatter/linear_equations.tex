@@ -530,9 +530,9 @@ if the $(k+1)$-th diagonal entry of the matrix $\mat A^{(k)}$ is nonzero for all
 then the Gaussian transformation matrices exist and are uniquely defined.
 \begin{lemma}
     \label{lemma:linear_expression_gaussian_transformations}
-    Assume that $\mat A^{(k)}$ is an upper triangular up to column $k$ included,
+    Assume that $\mat A^{(k)}$ is upper triangular up to column $k$ included,
     with $k \leq n-2$.
-    If $a^{(k)}_{k+1,k+1} > 0$,
+    If~$a^{(k)}_{k+1,k+1} > 0$,
     then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that $\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
     It is given by $\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$ where
     \[
@@ -579,7 +579,7 @@ then the Gaussian transformation matrices exist and are uniquely defined.
         \end{pmatrix}.
     \]
     We need to show that the matrix on the right-hand side is upper triangular up to column $k+1$ included.
-    This is clear by definition of $\vect c^{(k+1)}$.
+    This is clear by definition of $\vect c^{(k+1)}$ and from the fact that $\mat A^{(k)}$ is upper triangular up to column $k$ by assumption.
 \end{proof}
 
 The diagonal elements $a^{(k)}_{k+1,k+1}$, where $k \in \{0, \dots, n-2 \}$, are called the pivots.
@@ -1245,11 +1245,24 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     The following code can be useful for testing purposes.
     \begin{minted}{julia}
     import BandedMatrices
-    n, u, l = 100, 4, 4
+    import LinearAlgebra
+
+    function cholesky(A)
+        m, n = size(A)
+        m != n && error("Matrix must be square")
+        # Convert to banded matrix
+        B = BandedMatrices.BandedMatrix(A)
+        B.u != B.l && error("Matrix must be symmetric")
+        # --> Your code comes here <--
+    end
+    n, u, l = 20000, 2, 2
     A = BandedMatrices.brand(n, u, l)
     A = A*A'
     # so that A is symmetric and positive definite (with probability 1).
+    C = @time cholesky(A)
+    LinearAlgebra.norm(C*C' - A, Inf)
     \end{minted}
+    For information, my code takes about 1 second with the parameters given here.
 \end{compexercise}
 
 \section{Iterative methods for linear systems}%

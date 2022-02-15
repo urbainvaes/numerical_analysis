@@ -118,3 +118,23 @@ for (i, n) in enumerate(ns)
 end
 
 # -
+
+# # Reducing the bandwidth via permutations
+
+# +
+import SparseArrays
+A = LinearAlgebra.diagm(0 => 10*ones(8), 1 => ones(7), -1 => ones(7), 7 => ones(1), -7 => ones(1))
+A = SparseArrays.SparseMatrixCSC(A)
+display(A)
+
+# Construct permutation matrix obtained by Cuthill-McKee
+σ = [1, 2, 4, 6, 8, 7, 5, 3]
+Pσ = SparseArrays.spzeros(8, 8)
+for j in 1:8
+    Pσ[σ[j], j] = 1
+end
+
+# Matrix after permutation
+new_A = Pσ*A*Pσ'
+display(new_A)
+# -
