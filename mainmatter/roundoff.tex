@@ -71,7 +71,7 @@ Given any integer number $\beta > 0$, called the \emph{base},
 a real number $x$ can always be expressed as a finite or infinite series of the form
 \begin{equation}
     \label{eq:base_representation}
-    x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad a_k \in \{0, \dotsc, \beta\}.
+    x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \qquad a_k \in \{0, \dotsc, \beta - 1\}.
 \end{equation}
 The number $x$ may then be denoted as $\pm (a_{-n} a_{-n+1}\dots a_{-1} a_{0}.a_{1} a_{2} \dots)_{\beta}$,
 where the subscript $\beta$ indicates the base.
@@ -154,7 +154,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     \Else
         \State $b_i \gets 0$
     \EndIf
-    \State $x \gets x - b_i 2^{-i}$
+    \State $x \gets x - b_i$
     \State $i \gets i+1$
 \EndWhile
 \end{algorithmic}
@@ -225,7 +225,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     # Check that it works
     number = 123456789
     bits = to_binary(number)
-    pows2 = 2 .^ range(0, length(bits) + 1)
+    pows2 = 2 .^ range(0, length(bits) - 1)
     @assert sum(bits'pows2) == number
     \end{minted}
 \end{compexercise}

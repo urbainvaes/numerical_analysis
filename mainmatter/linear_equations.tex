@@ -987,7 +987,7 @@ this phenomenon is called \emph{fill-in}.
 \label{ssub:reducing_the_bandwidth_the_cuthill_mckee_algorithm}
 
 The computational cost of calculating the $\mat L \mat U$ or Cholesky decomposition of a matrix with bandwidth $k$ scales as $\mathcal O(n k^2)$,
-which is much better than the general scaling as $\mathcal O(n^3)$ if $k \ll n$.
+which is much better than the general scaling $\mathcal O(n^3)$ if $k \ll n$.
 In applications, the bandwidth $k$ is often related to the matrix size $n$.
 For example, if~$\mat A$ arises from the discretization of the Laplacian operator, then $k = \mathcal O(\sqrt{n})$
 provided that a good ordering of the vertices is employed.
