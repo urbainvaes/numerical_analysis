@@ -759,14 +759,14 @@ It is not unique in general but, unlike the usual $\mat L \mat U$ decomposition,
 it always exists provided that $\mat A$ is invertible.
 We take this for granted in this course.
 
-The idea of partial pivoting is to rearrange the rows at each iteration of the Gaussian elimination in such a manner that
+The idea of partial pivoting is to rearrange the rows at each iteration of the Gaussian elimination procedure in such a manner that
 the pivotal entry is as large as possible in absolute value.
 One step of the procedure reads
 \begin{equation}
     \label{eq:step_partial_pivoting}
     \mat A^{(k+1)} = \mat M_{k+1} \mat P_{k+1} \mat A^{(k)}.
 \end{equation}
-Here $\mat P_{k+1}$ is simple row permutation matrix which,
+Here $\mat P_{k+1}$ is a simple row permutation matrix which,
 when acting on $\mat A^{(k)}$,
 interchanges row~$k+1$ and row $\ell$,
 for some index $\ell \geq k+1$.
@@ -1262,7 +1262,7 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     C = @time cholesky(A)
     LinearAlgebra.norm(C*C' - A, Inf)
     \end{minted}
-    For information, my code takes about 1 second with the parameters given here.
+    For information, my code takes about 1 second to run with the parameters given here.
 \end{compexercise}
 
 \section{Iterative methods for linear systems}%
@@ -1387,7 +1387,7 @@ From this we deduce the optimal value of $\omega$ and the associated spectral ra
     \qquad
     \rho_{\rm opt}
     = 1 - \frac{\lambda_{\min}}{\lambda_{\min} + \lambda_{\max}}
-    = \frac{\lambda_{\max}}{\lambda_{\min} + \lambda_{\max}} 
+    = \frac{\lambda_{\max}}{\lambda_{\min} + \lambda_{\max}}
     =  \frac{\kappa_2(\mat A)}{1 + \kappa_2(\mat A)}.
 \]
 We observe that the smaller the conditioning the better the asymptotic rate of convergence.
