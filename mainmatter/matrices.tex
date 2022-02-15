@@ -620,6 +620,7 @@ The following result establishes a necessary and sufficient condition,
 in terms of the spectral radius of $\mat A$ for the convergence of $\norm{\mat A^k}$ to 0,
 for any matrix norm $\norm{\placeholder}$.
 \begin{proposition}
+    \label{proposition:matrices_convergence_power_of_matrix}
     Let $\rho(\mat A)$ denote the spectral radius of $\mat A \in \complex^{n \times n}$ and $\norm{\placeholder}$ be a matrix norm.
     Then $\norm{\mat A^k} \to 0$ in the limit as $k \to \infty$ if and only if $\rho(\mat A) < 1$.
     In addition, $\norm{\mat A^k} \to \infty$ in the limit as $k \to \infty$ if and only if $\rho(\mat A) > 1$.
@@ -648,7 +649,38 @@ for any matrix norm $\norm{\placeholder}$.
 
 With this result,
 we can prove the Gelfand formula,
-which is used in \cref{cha:solution_of_linear_systems}.
+which relates the spectral radius to the asymptotic growth of $\norm{\mat A^k}$,
+and is used in \cref{cha:solution_of_linear_systems}.
 \begin{proposition}
-    [Gelfand formula]
+    [Gelfand's formula]
+    \label{proposition:matrices_gelfands}
+    Let $\mat A \in \complex^{n \times n}$.
+    It holds for any norm that
+    \[
+        \lim_{k \to \infty} \norm{\mat A^k}^{\frac{1}{k}} = \rho(\mat A)
+    \]
 \end{proposition}
+\begin{proof}
+    Let $0 < \varepsilon < \rho(\mat A)$
+    and define $\mat A^+ = \frac{\mat A}{\rho(\mat A) + \varepsilon}$ and $\mat A^- = \frac{\mat A}{\rho(\mat A) - \varepsilon}$.
+    It holds by definition that~$\rho(\mat A^+) < 1$ and $\rho(\mat A^-) > 1$.
+    Using~\cref{proposition:matrices_convergence_power_of_matrix}, we deduce that
+    \[
+        \lim_{k \to \infty} \norm{(\mat A^+)^k} = 0, \qquad \lim_{k \to \infty} \norm{(\mat A^-)^k} = \infty.
+    \]
+    In particular,
+    there exists $K(\varepsilon) \in \nat$ such that
+    \[
+        \forall k \geq K(\varepsilon), \qquad
+        \norm{(\mat A^+)^k} = \frac{\norm{\mat A^k}}{(\rho(A) + \varepsilon)^k} \leq 1,
+        \qquad \norm{(\mat A^-)^k} = \frac{\norm{\mat A^k}}{(\rho(A) - \varepsilon)^k}  \geq 1.
+    \]
+    Taking the $k$-th root and rearranging these equations,
+    we obtain
+    \[
+        \forall k \geq K(\varepsilon), \qquad
+        \rho(A) - \varepsilon \leq \norm{\mat A^k}^{\frac{1}{k}} \leq \rho(A) + \varepsilon.
+    \]
+    Since $\varepsilon$ was arbitrary,
+    this implies the statement.
+\end{proof}
