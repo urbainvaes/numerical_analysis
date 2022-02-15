@@ -1349,6 +1349,7 @@ We now list three instances of splitting methods.
 Arguably the simplest splitting of the matrix $\mat A$ is given by $\mat A = \frac{1}{\omega} \mat I - \bigl(\frac{1}{\omega} \mat I - \mat A\bigr)$,
 which leads to \emph{Richardson's method}:
 \begin{equation}
+    \label{eq:linear_richardson}
     \vect x^{(n+1)} = \vect x^{(n)} +  \omega (\vect b - \mat A \vect x^{(n)}).
 \end{equation}
 In this case the spectral radius which enters in the asymptotic rate of convergence is given by
@@ -1394,6 +1395,18 @@ We observe that the smaller the conditioning the better the asymptotic rate of c
 
 \begin{remark}
     [Link with optimization]
+    In the case where $\mat A$ is symmetric and positive definite,
+    the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm
+    for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
+    \begin{equation}
+        \label{eq:linear_richardson_gradient}
+        \vect x^{(n+1)} = \vect x^{(n)} - \omega \nabla f(\vect x^{(n)}).
+    \end{equation}
+    The gradient of this function is $\nabla f(\vect x) = \mat A \vect x - \vect b$,
+    and its Hessian matrix is $\mat A$.
+    Since the Hessian is positive definite, the function is convex 
+    and its minimum occurs when $\nabla f$ is zero, 
+    i.e.\ when $\mat A x = \vect b$.
 \end{remark}
 
 \begin{center}
