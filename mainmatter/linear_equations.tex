@@ -223,6 +223,13 @@ This motivates the following definition.
     defined in \cref{definition:pnorm_vector},
     is denoted by $\kappa_p(\mat A)$.
 \end{definition}
+Note that the condition number $\kappa(\mat A)$ associated with an induced norm is at least one.
+Indeed, since the identity matrix has induced norm 1,
+it holds that
+\[
+    1 = \norm{\mat I} = \norm{\mat A \mat A^{-1}}\leq \norm{\mat A} \norm{\mat A^{-1}}.
+\]
+
 Since the 2-norm of an invertible matrix $\mat A \in \real^{n \times n}$ coincides with the spectral radius $\rho(\mat A^\t \mat A)$,
 the condition number $\kappa_2$ corresponding to the $2$-norm is equal to
 \[
@@ -1296,6 +1303,9 @@ but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 
+\subsubsection{Convergence of the splitting method}%
+\label{ssub:convergence_of_the_basic_splitting_method}
+
 \begin{proposition}
     [Convergence]
     \label{proposition:linear_convergence}
@@ -1343,6 +1353,79 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
     \]
     Rearranging this inequality gives the statement.
 \end{proof}
+
+\subsubsection{Monitoring the convergence}
+\label{ssub:monitoring_the_convergence}
+In practice,
+we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
+but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
+as calculating the latter would require to know the exact solution of the problem.
+Nevertheless,
+the two are related by the equation
+\[
+    \vect r^{(k)} = \mat A \vect e^{(k)}
+    \Leftrightarrow \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
+\]
+Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
+Likewise, the relative error satisfies
+\[
+     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x}}
+     = \frac{\norm{\mat A^{-1} \vect r^{(k)}}}{\norm{\mat A^{-1} \vect b}}
+\]
+and since $\norm{\vect b} = \norm{\mat A \mat A^{-1} \vect b} \leq \norm{\mat A} \norm{\mat A^{-1} \vect b}$,
+we deduce
+\[
+     \frac{\norm{\vect e^{(k)}}}{\vect x}
+     \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
+\]
+The fraction on the right-hand side is the \emph{relative residue}.
+If the system is well conditioned,
+that is if $\kappa(A)$ is close to one,
+then controlling the residue enables a good control of the error.
+
+\subsubsection{Stopping criterion}%
+\label{ssub:stopping_criterion}
+
+In practice,
+several criteria can be employed to determine when to stop iterating.
+Given a small number $\varepsilon$ (unrelated to the epsilon machine in \cref{cha:rounding_errors}),
+the following alternatives are available:
+\begin{itemize}
+    \item
+        Stop when $\vect r^{(k)} \leq \varepsilon$.
+        The downside of this approach is that
+        it is not \emph{scaling invariant}:
+        when used for solving the following rescaled system
+        \[
+            k \mat A \vect x = k \vect b, \qquad k \neq 1,
+        \]
+        a splitting method with rescaled initial guess $k \vect x^{(0)}$
+        will require a number of iterations that depends on $k$:
+        fewer if $k \ll 1$ and more if $k \gg 1$.
+        In practice, controlling the relative residue and the relative error is often preferable.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect r^{(0)}} \leq \varepsilon$.
+        This criterion is scaling invariant,
+        but the number of iterations is dependent on the quality of the initial guess $\vect x^{(0)}$.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect b}$.
+        This criterion is generally the best,
+        because it is both scaling invariant and independent of the initial guess.
+\end{itemize}
+
+\subsubsection{Criteria for convergence}%
+\label{ssub:criteria_for_convergence}
+
+It is tempting to reason formally that
+\[
+    \mat M^{-1} \mat N
+    = \mat M^{-1}(\mat M - \mat A)
+    = (\mat I - \mat M^{-1} \mat A)
+\]
+
+
 
 We now list three instances of splitting methods.
 \subsubsection{Richardson's method}%
@@ -1421,7 +1504,7 @@ One step of the method reads
     \mat D \vect x^{(k+1)} = (\mat D - \mat A) \vect x^{(k)} + \vect b
 \end{equation}
 Since the matrix $\mat D$ on the left-hand side is diagonal,
-this linear system is very easy to solve.
+this linear system with unknown $\vect x^{(k+1)}$ is very easy to solve.
 The equation~\eqref{eq:linear_jacobi} can be rewritten equivalently as
 \begin{equation*}
     \left\{
@@ -1464,7 +1547,7 @@ Given $\vect x^{(k)}$,
 the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
 Then the value of second entry can be obtained from the second equation, etc.
 Unlike the Jacobi method,
-the Gauss--Seidel method cannot be implemented in parallel.
+the Gauss--Seidel method is inherently sequential and cannot be implemented in parallel.
 
 % \begin{minted}{julia}
 % \end{minted}
