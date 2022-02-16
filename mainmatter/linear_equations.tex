@@ -1198,6 +1198,7 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     \label{figure:linear_example_from_cuthill_mckee}
 \end{figure}
 
+\subsection{Exercices}%
 \begin{exercise}
     [Inverse of Gaussian transformation]
     \label{exercise:inverse_gaussian_transformation}
@@ -1271,6 +1272,13 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
     \end{minted}
     For information, my code takes about 1 second to run with the parameters given here.
 \end{compexercise}
+
+\begin{exercise}
+    [Matrix square root]
+    \label{exercise:matrix_square_root}
+    Let $\mat A$ be a symmetric positive definite matrix.
+    Show that $\mat A$ has a square root, i.e.\ that there exists a symmetric matrix $\mat B$ such that $\mat B \mat B = \mat A$.
+\end{exercise}
 
 \section{Iterative methods for linear systems}%
 \label{sec:iterative_methods}
@@ -1412,7 +1420,7 @@ the following alternatives are available:
     \item
         Stop when $\norm{\vect r^{(k)}} / \norm{\vect b}$.
         This criterion is generally the best,
-        because it is both scaling invariant and independent of the initial guess.
+        because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
 \end{itemize}
 
 \subsubsection{Criteria for convergence}%
@@ -1545,9 +1553,110 @@ The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
 \end{equation*}
 Given $\vect x^{(k)}$,
 the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
-Then the value of second entry can be obtained from the second equation, etc.
+Then the value of the second entry can be obtained from the second equation, etc.
 Unlike the Jacobi method,
 the Gauss--Seidel method is inherently sequential and cannot be implemented in parallel.
+
+\subsection{Exercises}%
+
+\begin{exercise}
+    Let $\mat A \in \real^{n \times n}$ be a symmetric positive definite matrix.
+    Show that the functional
+    \[
+        \norm{\placeholder}_{\mat A}: \vect x \mapsto \sqrt{\vect x^\t \mat A \vect x}
+    \]
+    defines a norm on $\real^n$.
+\end{exercise}
+
+
+\begin{exercise}
+    Let $\norm{\placeholder}$ denote the Euclidean vector norm on $\real^n$.
+    We define in~\cref{cha:vectors_and_matrices} the induced matrix norm as
+    \[
+        \norm{\mat A} = \sup \bigl\{ \norm{\mat A \vect x}: \norm{\vect x} \leq 1 \bigr\}.
+    \]
+    Show from this definition that, if $\mat A$ is symmetric and positive definite,
+    then
+    \[
+        \norm{\mat A} = \norm{\mat A}_* := \sup \bigl\{ \abs{\vect x^\t \mat A \vect x}: \norm{\vect x} \leq 1 \bigr\}.
+    \]
+    % What is the induced matrix norm on $\real^{n \times n}$?
+\end{exercise}
+\begin{solution}
+    By the Cauchy--Schwarz inequality and the definition of $\norm{\mat A}$,
+    it holds that
+    \[
+        \forall \vect x \in \real^n \text{ with } \norm{\vect x} \leq 1, \qquad
+         \abs{\vect x^\t \mat A \vect x}
+         \leq \norm{\vect x} \norm{\mat A \vect x}
+         \leq \norm{\vect x} \norm{\mat A} \norm{\vect x} \leq \norm{\mat A}.
+    \]
+    This shows that $\norm{\mat A}_* \leq \norm{\mat A}$.
+    Conversely,
+    letting $\mat B$ denote a matrix square root of $\mat A$ (see \cref{exercise:matrix_square_root}),
+    we have
+    \begin{align*}
+        \forall \vect x \in \real^n \text{ with } \norm{\vect x} \leq 1, \qquad
+        \norm{\mat A \vect x}
+        &= \sqrt{\vect x^\t \mat A^\t \mat A \vect x}
+        = \sqrt{(\mat B\vect x)^\t \mat B \mat B (\mat B\vect x)}
+        = \sqrt{(\mat B\vect x)^\t \mat A (\mat B\vect x)} \\
+        &= \norm{\mat B \vect x} \sqrt{\vect y^\t \mat A \vect y},
+        \qquad \vect y = \frac{\mat B \vect x}{\norm{\mat B \vect x}}.
+    \end{align*}
+    It holds that $\norm{\mat B \vect x} = \sqrt{\vect x^\t \mat A \vect x} \leq \sqrt{\norm{\mat A}_*}$.
+    In addition $\norm{\vect y} = 1$,
+    so the expression inside the square root is bounded from above by $\norm{\mat A}_*$,
+    which enables to conclude the proof.
+\end{solution}
+
+\begin{exercise}
+    Show that the residual satisfies the equation
+    \[
+        \vect r^{(k+1)} = \mat N \mat M^{-1} \vect r^{(k)} = (\mat I - \mat A \mat M^{-1}) \vect r^{(k)}.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Show that, if $\mat A$ and $\mat B$ are two square matrices,
+    then $\rho(\mat A \mat B) = \rho(\mat B \mat A)$.
+\end{exercise}
+
+\begin{compexercise}
+    Implement the Jacobi and Gauss--Seidel methods for finding a solution to the following linear system on $\real^n$.
+    \[
+        \frac{1}{h^2}
+        \begin{pmatrix}
+            2 & -1 \\
+            -1 & 2  & -1 \\
+               & -1 & 2      & -1 \\
+               &    & \ddots & \ddots & \ddots & \\
+               &    &        & -1    & 2      & -1 \\
+               &    &        &     & -1      & 2 \\
+        \end{pmatrix}
+        \begin{pmatrix}
+            x_1 \\
+            x_2 \\
+            x_3 \\
+            \vdots \\
+            x_{n-1} \\
+            x_n \\
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            1 \\
+            1 \\
+            1 \\
+            \vdots \\
+            1 \\
+            1
+        \end{pmatrix},
+        \qquad
+        h = \frac{1}{n}.
+    \]
+    Plot the norm of the residue as function of the iteration index in both cases.
+\end{compexercise}
+
 
 % \begin{minted}{julia}
 % \end{minted}
