@@ -579,7 +579,7 @@ The power of a Jordan block admits an explicit expression.
     and using the binomial formula:
     \[
         (\lambda \mat I + \mat N)^k =
-        \sum_{i=1}^{k} {k \choose i} (\lambda \mat I)^{k-i} \mat N^{i}.
+        \sum_{i=1}^{k} \binom{k}{i} (\lambda \mat I)^{k-i} \mat N^{i}.
     \]
     To conclude the proof,
     we use the fact that $\mat N^{i}$ is a matrix with zeros everywhere except in the $i$-th super-diagonal,
@@ -648,7 +648,7 @@ for any matrix norm $\norm{\placeholder}$.
 \end{proof}
 
 With this result,
-we can prove the Gelfand formula,
+we can prove Gelfand's formula,
 which relates the spectral radius to the asymptotic growth of $\norm{\mat A^k}$,
 and is used in \cref{cha:solution_of_linear_systems}.
 \begin{proposition}

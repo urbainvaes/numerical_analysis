@@ -1304,12 +1304,15 @@ one step of this general method reads
 Note that, no matter the choice of splitting,
 the exact solution $\vect x$ to the linear system is a fixed point of this iteration,
 in the sense that if $\vect x^{(0)} = \vect x$, then $\vect x^{(k)} = \vect x$ for all $k \geq 0$.
+\Cref{eq:linear_system_iterative_method} is a linear system with matrix~$\mat M$,
+unknown $\vect x^{(k+1)}$, and right-hand side $\mat N \vect x^{(k)} + \vect b$.
 There is a compromise between the cost of a single step and the speed of convergence.
 In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
 the method converges to the exact solution in one step,
 but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
+Concretely, this means that~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
 
 \subsubsection{Convergence of the splitting method}%
 \label{ssub:convergence_of_the_basic_splitting_method}
@@ -1361,79 +1364,6 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
     \]
     Rearranging this inequality gives the statement.
 \end{proof}
-
-\subsubsection{Monitoring the convergence}
-\label{ssub:monitoring_the_convergence}
-In practice,
-we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
-but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
-as calculating the latter would require to know the exact solution of the problem.
-Nevertheless,
-the two are related by the equation
-\[
-    \vect r^{(k)} = \mat A \vect e^{(k)}
-    \Leftrightarrow \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
-\]
-Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
-Likewise, the relative error satisfies
-\[
-     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x}}
-     = \frac{\norm{\mat A^{-1} \vect r^{(k)}}}{\norm{\mat A^{-1} \vect b}}
-\]
-and since $\norm{\vect b} = \norm{\mat A \mat A^{-1} \vect b} \leq \norm{\mat A} \norm{\mat A^{-1} \vect b}$,
-we deduce
-\[
-     \frac{\norm{\vect e^{(k)}}}{\vect x}
-     \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
-\]
-The fraction on the right-hand side is the \emph{relative residue}.
-If the system is well conditioned,
-that is if $\kappa(A)$ is close to one,
-then controlling the residue enables a good control of the error.
-
-\subsubsection{Stopping criterion}%
-\label{ssub:stopping_criterion}
-
-In practice,
-several criteria can be employed to determine when to stop iterating.
-Given a small number $\varepsilon$ (unrelated to the epsilon machine in \cref{cha:rounding_errors}),
-the following alternatives are available:
-\begin{itemize}
-    \item
-        Stop when $\vect r^{(k)} \leq \varepsilon$.
-        The downside of this approach is that
-        it is not \emph{scaling invariant}:
-        when used for solving the following rescaled system
-        \[
-            k \mat A \vect x = k \vect b, \qquad k \neq 1,
-        \]
-        a splitting method with rescaled initial guess $k \vect x^{(0)}$
-        will require a number of iterations that depends on $k$:
-        fewer if $k \ll 1$ and more if $k \gg 1$.
-        In practice, controlling the relative residue and the relative error is often preferable.
-
-    \item
-        Stop when $\norm{\vect r^{(k)}} / \norm{\vect r^{(0)}} \leq \varepsilon$.
-        This criterion is scaling invariant,
-        but the number of iterations is dependent on the quality of the initial guess $\vect x^{(0)}$.
-
-    \item
-        Stop when $\norm{\vect r^{(k)}} / \norm{\vect b}$.
-        This criterion is generally the best,
-        because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
-\end{itemize}
-
-\subsubsection{Criteria for convergence}%
-\label{ssub:criteria_for_convergence}
-
-It is tempting to reason formally that
-\[
-    \mat M^{-1} \mat N
-    = \mat M^{-1}(\mat M - \mat A)
-    = (\mat I - \mat M^{-1} \mat A)
-\]
-
-
 
 We now list three instances of splitting methods.
 \subsubsection{Richardson's method}%
@@ -1517,37 +1447,43 @@ The equation~\eqref{eq:linear_jacobi} can be rewritten equivalently as
 \begin{equation*}
     \left\{
        \begin{aligned}
-        & a_{11} x^{(\textcolor{red}{k+1})}_1 + \sum_{i=2}^{n} a_{1i} x^{(k)}_i  = b_1 \\
-        & a_{21} x^{(k)}_1 + a_{22} x^{(\textcolor{red}{k+1})}_2 + \sum_{i=3}^{n} a_{2i} x^{(k)}_i  = b_2 \\
+        & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
+        & a_{21} x^{(k)}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
         & \vdots \\
-        & \sum_{i=1}^{j-1} x^{(k)}_i + a_{jj} x^{(\textcolor{red}{k+1})}_j + \sum_{i=j+1}^{n} a_{ji} x^{(k)}_i  = b_j \\
+        & a_{n1} x^{(k)}_1 + a_{n2} x^{(k)}_2 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
        \end{aligned}
    \right .
 \end{equation*}
 The updates for each of the entries of $\vect x^{(k+1)}$ are independent,
 and so the Jacobi method lends itself well to parallel implementation.
+The computational cost of one iteration,
+measured in number of floating point operations required,
+scales as $\mathcal O(n^2)$ if~$\mat A$ is a full matrix,
+or $\mathcal O(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per row on average.
 
 
 \subsubsection{Gauss--Seidel's method}%
 \label{ssub:gauss_seidel_s_method}
 
-In Jacobi's method, the matrix $\mat M$ in the splitting is the lower triangular part of $\mat A$,
+In Gauss Seidel's method, the matrix $\mat M$ in the splitting is the lower triangular part of $\mat A$,
 including the diagonal.
-One step of the method reads
+We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of $\mat A$,
+without the diagonal.
+One step of the method then reads
 \begin{equation}
     \label{eq:linear_gauss_seidel}
-    \mat L \vect x^{(k+1)} = (\mat L - \mat A) \vect x^{(k)} + \vect b
+    (\mat L + \mat D) \vect x^{(k+1)} = - \mat U \vect x^{(k)} + \vect b
 \end{equation}
-The matrix $\mat L$ on the left-hand side is diagonal,
-so the system can be solved by forward substitution.
+The system can be solved by forward substitution.
 The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
 \begin{equation*}
     \left\{
        \begin{aligned}
-        & a_{11} x^{(\textcolor{red}{k+1})}_1 + \sum_{i=2}^{n} a_{1i} x^{(k)}_i  = b_1 \\
-        & a_{21} x^{(\textcolor{red}{k+1})}_1 + a_{22} x^{(\textcolor{red}{k+1})}_2 + \sum_{i=3}^{n} a_{2i} x^{(k)}_i  = b_2 \\
+        & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + a_{13} x^{(k)}_3 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
+        & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + a_{23} x^{(k)}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
+        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
         & \vdots \\
-        & \sum_{i=1}^{j} x^{(\textcolor{red}{k+1})}_i + \sum_{i=j+1}^{n} a_{ji} x^{(k)}_i  = b_j \\
+        & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + a_{n3} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
        \end{aligned}
    \right .
 \end{equation*}
@@ -1557,7 +1493,116 @@ Then the value of the second entry can be obtained from the second equation, etc
 Unlike the Jacobi method,
 the Gauss--Seidel method is inherently sequential and cannot be implemented in parallel.
 
+\subsubsection{Relaxation method}%
+
+The relaxation method generalizes the Gauss--Seidel method.
+It corresponds to the splitting
+\begin{equation}
+    \mat A = \left( \frac{\mat D}{\omega} + \mat L \right) - \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right).
+\end{equation}
+When $\omega = 1$,
+this is simply the Gauss--Seidel splitting.
+The hope is that,
+by letting $\omega$ be a parameter that can differ from 1,
+faster convergence can be achieved.
+This intuition will be verified later.
+The equation~\eqref{eq:linear_system_iterative_method} for this splitting can be rewritten equivalently as
+% \begin{equation*}
+%     \left\{
+%        \begin{aligned}
+%         & a_{11} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_1 + (1 - \omega^{-1}) x^{(k)}_1 \Bigr) + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
+%         & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_2 + (1 - \omega^{-1}) x^{(k)}_2 \Bigr)  + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
+%         & \vdots \\
+%         & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_n + (1 - \omega^{-1}) x^{(k)}_n \Bigr) = b_n.
+%        \end{aligned}
+%    \right .
+% \end{equation*}
+% Rearranging these equations, we have
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} \bigl(x^{(\textcolor{darkblue}{k+1})}_1 - x^{(k)}_1 \bigr) =  \omega \left(a_{11} x^{(k)}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n - b_1 \right) \\
+        & a_{22} \bigl(x^{(\textcolor{darkblue}{k+1})}_2 - x^{(k)}_2 \bigr) =  \omega \left(a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(k)}_2 + \dotsb + a_{2n} x^{(k)}_n - b_2 \right) \\
+        & \vdots \\
+        & a_{nn} \bigl(x^{(\textcolor{darkblue}{k+1})}_n - x^{(k)}_n \bigr) =  \omega \left(a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} x^{(k)}_n - b_n \right).
+       \end{aligned}
+   \right .
+\end{equation*}
+The coefficient on the right-hand side is larger than in Gauss--Seidel's update if $\omega > 1$,
+and smaller if $\omega < 1$.
+These regimes are called \emph{over-relaxation} and \emph{under-relaxation}, respectively.
+
+\subsubsection{Monitoring the convergence}
+\label{ssub:monitoring_the_convergence}
+In practice,
+we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
+but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
+as calculating the latter would require to know the exact solution of the problem.
+Nevertheless,
+the two are related by the equation
+\[
+    \vect r^{(k)} = \mat A \vect e^{(k)}
+    \Leftrightarrow \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
+\]
+Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
+Likewise, the relative error satisfies
+\[
+     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x}}
+     = \frac{\norm{\mat A^{-1} \vect r^{(k)}}}{\norm{\mat A^{-1} \vect b}}
+\]
+and since $\norm{\vect b} = \norm{\mat A \mat A^{-1} \vect b} \leq \norm{\mat A} \norm{\mat A^{-1} \vect b}$,
+we deduce
+\[
+     \frac{\norm{\vect e^{(k)}}}{\vect x}
+     \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
+\]
+The fraction on the right-hand side is the \emph{relative residue}.
+If the system is well conditioned,
+that is if $\kappa(A)$ is close to one,
+then controlling the residue enables a good control of the error.
+
+\subsubsection{Stopping criterion}%
+\label{ssub:stopping_criterion}
+
+In practice,
+several criteria can be employed to determine when to stop iterating.
+Given a small number $\varepsilon$ (unrelated to the epsilon machine in \cref{cha:rounding_errors}),
+the following alternatives are available:
+\begin{itemize}
+    \item
+        Stop when $\vect r^{(k)} \leq \varepsilon$.
+        The downside of this approach is that
+        it is not \emph{scaling invariant}:
+        when used for solving the following rescaled system
+        \[
+            k \mat A \vect x = k \vect b, \qquad k \neq 1,
+        \]
+        a splitting method with rescaled initial guess $k \vect x^{(0)}$
+        will require a number of iterations that depends on $k$:
+        fewer if $k \ll 1$ and more if $k \gg 1$.
+        In practice, controlling the relative residue and the relative error is often preferable.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect r^{(0)}} \leq \varepsilon$.
+        This criterion is scaling invariant,
+        but the number of iterations is dependent on the quality of the initial guess $\vect x^{(0)}$.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect b}$.
+        This criterion is generally the best,
+        because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
+\end{itemize}
+
 \subsection{Exercises}%
+
+\begin{exercise}
+    Let $\mat T$ be a nonsingular matrix.
+    Show that
+    \[
+        \norm{\mat A}_{\mat T} := \norm{\mat T^{-1} \mat A \mat T}_2
+    \]
+    defines a matrix norm induced by a vector norm.
+\end{exercise}
 
 \begin{exercise}
     Let $\mat A \in \real^{n \times n}$ be a symmetric positive definite matrix.
@@ -1568,6 +1613,35 @@ the Gauss--Seidel method is inherently sequential and cannot be implemented in p
     defines a norm on $\real^n$.
 \end{exercise}
 
+\begin{exercise}
+    Show that the residual satisfies the equation
+    \[
+        \vect r^{(k+1)} = \mat N \mat M^{-1} \vect r^{(k)} = (\mat I - \mat A \mat M^{-1}) \vect r^{(k)}.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Show that, if $\mat A$ and $\mat B$ are two square matrices,
+    then $\rho(\mat A \mat B) = \rho(\mat B \mat A)$.
+\end{exercise}
+
+\begin{exercise}
+    Is $\rho(\placeholder)$ a norm? Prove or disprove.
+\end{exercise}
+
+\begin{exercise}
+    Prove that, if $\mat A$ is a diagonal matrix, then
+    \[
+        \norm{\mat A}_1 = \norm{\mat A}_2 = \norm{\mat A}_{\infty} = \rho(\mat A).
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Show that, for any matrix norm $\norm{\placeholder}$ induced by a vector norm,
+    \[
+        \rho(\mat A) \leq \norm{\mat A}.
+    \]
+\end{exercise}
 
 \begin{exercise}
     Let $\norm{\placeholder}$ denote the Euclidean vector norm on $\real^n$.
@@ -1610,18 +1684,6 @@ the Gauss--Seidel method is inherently sequential and cannot be implemented in p
     which enables to conclude the proof.
 \end{solution}
 
-\begin{exercise}
-    Show that the residual satisfies the equation
-    \[
-        \vect r^{(k+1)} = \mat N \mat M^{-1} \vect r^{(k)} = (\mat I - \mat A \mat M^{-1}) \vect r^{(k)}.
-    \]
-\end{exercise}
-
-\begin{exercise}
-    Show that, if $\mat A$ and $\mat B$ are two square matrices,
-    then $\rho(\mat A \mat B) = \rho(\mat B \mat A)$.
-\end{exercise}
-
 \begin{compexercise}
     Implement the Jacobi and Gauss--Seidel methods for finding a solution to the following linear system on $\real^n$.
     \[
@@ -1654,7 +1716,7 @@ the Gauss--Seidel method is inherently sequential and cannot be implemented in p
         \qquad
         h = \frac{1}{n}.
     \]
-    Plot the norm of the residue as function of the iteration index in both cases.
+    Plot the norm of the residue as a function of the iteration index in both cases.
 \end{compexercise}
 
 
