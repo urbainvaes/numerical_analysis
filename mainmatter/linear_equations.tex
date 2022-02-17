@@ -1535,7 +1535,7 @@ These regimes are called \emph{over-relaxation} and \emph{under-relaxation}, res
 \subsubsection{Monitoring the convergence}
 \label{ssub:monitoring_the_convergence}
 In practice,
-we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
+we have access to the residue $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
 but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
 as calculating the latter would require to know the exact solution of the problem.
 Nevertheless,
@@ -1614,7 +1614,7 @@ the following alternatives are available:
 \end{exercise}
 
 \begin{exercise}
-    Show that the residual satisfies the equation
+    Show that the residue satisfies the equation
     \[
         \vect r^{(k+1)} = \mat N \mat M^{-1} \vect r^{(k)} = (\mat I - \mat A \mat M^{-1}) \vect r^{(k)}.
     \]
