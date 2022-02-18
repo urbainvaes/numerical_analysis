@@ -6,29 +6,28 @@
 In this chapter,
 we collect basic results on vectors and matrices that are useful for this course.
 Throughout these lecture notes,
-we use lower case and bold font to denote vectors, e.g.\ $\vect x \in \real^n$,
-and upper case to denote matrices, e.g.\ $\mat A \in \real^{m \times n}$.
-The entries of a vector $\vect x \in \real^n$ are denoted by~$(x_i)$,
-and those of a matrix $\mat A \in \real^{m \times n}$ are denoted by~$(a_{ij})$ or~$(a_{i,j})$.
+we use lower case and bold font to denote vectors, e.g.\ $\vect x \in \complex^n$,
+and upper case to denote matrices, e.g.\ $\mat A \in \complex^{m \times n}$.
+The entries of a vector $\vect x \in \complex^n$ are denoted by~$(x_i)$,
+and those of a matrix $\mat A \in \complex^{m \times n}$ are denoted by~$(a_{ij})$ or~$(a_{i,j})$.
 
 \section{Inner products and norms}%
 \label{sec:inner_product_and_norm}
 
 We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
-For simplicity,
-we consider only the case of a \emph{real} vector space,
-i.e.\ a vector space for which the scalar field is $\real$,
-but the concepts can be extended without conceptual obstructions to the case of a \emph{complex} vector space.
+For generality,
+we consider the case of a \emph{complex} vector space,
+i.e.\ a vector space for which the scalar field is $\complex$,
 \begin{definition}
-    An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \real$ satisfying the following axioms:
+    An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex$ satisfying the following axioms:
     \begin{itemize}
         \item
-            \textbf{Symmetry}:
+            \textbf{Conjugate symmetry}:
+            Here $\overline \placeholder$ denotes the complex conjugate.
             \[
                 \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
-                \ip{\vect x, \vect y} = \ip{\vect y, \vect x}.
+                \ip{\vect x, \vect y} = \overline{\ip{\vect y, \vect x}}.
             \]
-
         \item
             \textbf{Linearity}:
             For all $(\alpha, \beta) \in \real^2$ and all $(\vect x, \vect y, \vect z) \in \mathcal X^3$,
@@ -46,9 +45,9 @@ but the concepts can be extended without conceptual obstructions to the case of 
             \]
     \end{itemize}
 \end{definition}
-For example, the familiar Euclidean inner product on $\real^n$ is given by
+For example, the familiar Euclidean inner product on $\complex^n$ is given by
 \[
-    \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i y_i.
+    \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i \overline y_i.
 \]
 A vector space with an inner product is called an \emph{inner product space}.
 
@@ -65,7 +64,7 @@ A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \
     \item
         \textbf{Homogeneity}:
         \(
-            \forall (c, \vect x) \in \real \times \mathcal X, \quad
+            \forall (c, \vect x) \in \complex \times \mathcal X, \quad
             \norm{c \vect x} = \abs{c} \, \norm{\vect x} .
         \)
 
@@ -83,6 +82,7 @@ Any inner product on $\mathcal X$ induces a norm via the formula
     \norm{\vect x} = \sqrt{\ip{\vect x, \vect x}}.
 \end{equation}
 The Cauchy--Schwarz inequality enables to bound inner products using norms.
+It is also useful for showing that the functional defined in~\eqref{eq:induced_norm} satisfies the triangle inequality.
 \begin{proposition}
     [Cauchy--Schwarz inequality]
     \label{proposition:cauchy_shwartz}
@@ -114,7 +114,7 @@ The Cauchy--Schwarz inequality enables to bound inner products using norms.
 
 Several norms can be defined on the same vector space $\mathcal X$.
 Two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\mathcal X$ are said to be equivalent if
-there exists positive real numbers~$c_{\ell}$ and $c_u$ such that
+there exist positive real numbers~$c_{\ell}$ and $c_u$ such that
 \begin{equation}
     \label{eq:norm_equilavence}
     \forall \vect x \in \mathcal X,
@@ -143,7 +143,7 @@ The proof is provided for information purposes.
         \norm{\vect x}_{\alpha} \leq \abs{\lambda_1} \norm{\vect e_1}_{\alpha} + \dotsb + \abs{\lambda_n} \norm{\vect e_n}_{\alpha} \leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \, \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}_{\alpha}\Bigr\}.
     \end{equation}
     On the other hand, as we prove below,
-    there exists a constant $\ell$ such that
+    there exists a positive constant $\ell$ such that
     \begin{equation}
         \label{eq:bound2}
         \forall \vect x \in \mathcal X, \qquad
@@ -168,7 +168,7 @@ The proof is provided for information purposes.
     by compactness of the interval~$[-1, 1]$.
     Repeating this procedure for $\lambda_2, \lambda_3, \dots$,
     taking a new subsequence every time,
-    we obtain a subsequence $(\vect x^{(i)})_{i \in \nat}$ such that $\lambda^{(i)}_j \to \lambda_j^*$ for all $j \in \{1, \dotsc, n\}$.
+    we obtain a subsequence $(\vect x^{(i)})_{i \in \nat}$ such that $\lambda^{(i)}_j \to \lambda_j^*$ in the limit as~$i \to \infty$, for all $j \in \{1, \dotsc, n\}$.
     Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the $\norm{\placeholder}_{\beta}$ norm.
     Since $\vect x^{(i)} \to 0$ by assumption and the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
     this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
@@ -187,12 +187,12 @@ The proof is provided for information purposes.
 \section{Vector norms}%
 \label{sub:vector_norms}
 
-In the vector space $\real^n$,
+In the vector space $\complex^n$,
 the most commonly used norms are particular cases of the $p$-norm, also called H\"older norm.
 \begin{definition}
     \label{definition:pnorm_vector}
     Given $p \in [1, \infty]$,
-    the $p$-norm of a vector $\vect x \in \real^n$ is defined by
+    the $p$-norm of a vector $\vect x \in \complex^n$ is defined by
     \[
         \norm{\vect x}_p :=
         \begin{cases}
@@ -223,18 +223,18 @@ unless specified otherwise.
 \section{Matrix norms}%
 \label{sec:matrix_norms}
 
-Given two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\real^m$ and $\real^n$, respectively,
+Given two norms $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ on $\complex^m$ and $\complex^n$, respectively,
 we define the \emph{operator norm} induced by $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ of the matrix $\mat A$ as
 \begin{equation}
     \label{eq:subordinate_norm}
-    \norm{\mat A}_{\alpha,\beta} = \sup \bigl\{ \norm{\mat A \vect x}_{\alpha} : \vect x \in \real^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}.
+    \norm{\mat A}_{\alpha,\beta} = \sup \bigl\{ \norm{\mat A \vect x}_{\alpha} : \vect x \in \complex^n, \norm{\vect x}_{\beta} \leq 1 \bigr\}.
 \end{equation}
 The term \emph{operator norm} is motivated by the fact that,
-to any matrix $\mat A \in \real^{m \times n}$, there naturally corresponds the linear operator from $\real^n$ to $\real^m$ with action~$\vect x \mapsto \mat A \vect x$.
+to any matrix $\mat A \in \complex^{m \times n}$, there naturally corresponds the linear operator from $\complex^n$ to $\complex^m$ with action~$\vect x \mapsto \mat A \vect x$.
 \Cref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
 Matrix norms of the type~\eqref{eq:subordinate_norm} are also called \emph{subordinate} matrix norms.
 An immediate corollary of the definition~\eqref{eq:subordinate_norm} is that,
-for all $\vect x \in \real^n$,
+for all $\vect x \in \complex^n$,
 \begin{equation}
     \label{eq:submultiplicative_mat_vec}%
     \norm{\mat A \vect x}_{\alpha}
@@ -244,7 +244,7 @@ for all $\vect x \in \real^n$,
     \qquad \widehat {\vect x} = \frac{\vect x}{\norm{\vect x}_{\beta}}.
 \end{equation}
 \begin{proposition}
-    Equation~\eqref{eq:subordinate_norm} defines a norm on $\real^{m \times n}$.
+    Equation~\eqref{eq:subordinate_norm} defines a norm on $\complex^{m \times n}$.
 \end{proposition}
 \begin{proof}
     We need to verify that~\eqref{eq:subordinate_norm} satisfies the properties of positivity and homogeneity,
@@ -267,11 +267,11 @@ for all $\vect x \in \real^n$,
 
         \item
             \textbf{Triangle inequality.}
-            Let $\mat A$ and $\mat B$ be two elements of $\real^{m \times n}$.
+            Let $\mat A$ and $\mat B$ be two elements of $\complex^{m \times n}$.
             Employing the triangle inequality for the norm $\norm{\placeholder}_{\alpha}$,
             we have
             \begin{align*}
-                \forall \vect x \in \real^{n} ~ \text{with} ~ \norm{\vect x}_{\beta}\leq 1, \qquad
+                \forall \vect x \in \complex^{n} ~ \text{with} ~ \norm{\vect x}_{\beta}\leq 1, \qquad
                 \norm{(\mat A + \mat B) \vect x}_{\alpha}
                 &= \norm{\mat A \vect x + \mat B \vect x}_{\alpha} \\
                 &\leq \norm{\mat A \vect x}_{\alpha} + \norm{\mat B \vect x}_{\alpha}
@@ -287,27 +287,27 @@ The matrix $p$-norm is defined as the operator norm~\eqref{eq:subordinate_norm} 
 where $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ are both H\"older norms with the same value of $p$.
 \begin{definition}
 Given $p \in [1, \infty]$,
-the $p$-norm of a matrix $\mat A \in \real^{m\times n}$ is given by
+the $p$-norm of a matrix $\mat A \in \complex^{m\times n}$ is given by
 \begin{equation}
     \label{eq:matrix_p_norm}
-    \norm{\mat A}_{p} := \sup \bigl\{ \norm{\mat A \vect x}_{p} : \vect x \in \real^n, \norm{\vect x}_{p} \leq 1 \bigr\}.
+    \norm{\mat A}_{p} := \sup \bigl\{ \norm{\mat A \vect x}_{p} : \vect x \in \complex^n, \norm{\vect x}_{p} \leq 1 \bigr\}.
 \end{equation}
 \end{definition}
 Not all matrix norms are induced by vector norms.
 For example, the Frobenius norm,
 which is widely used in applications,
 is not induced by a vector norm.
-It is, however, induced by an inner product on~$\real^{m \times n}$.
+It is, however, induced by an inner product on~$\complex^{m \times n}$.
 \begin{definition}
-    The Frobenius norm of $\mat A \in \real^{m\times n}$ is given by
+    The Frobenius norm of $\mat A \in \complex^{m\times n}$ is given by
     \begin{equation}
         \label{eq:frobenius_norm}
-        \norm{\mat A}_{\rm F} = \sum_{i=1}^{m} \sum_{j=1}^{n} \abs{a_{ij}}^2.
+        \norm{\mat A}_{\rm F} = \left( \sum_{i=1}^{m} \sum_{j=1}^{n} \abs{a_{ij}}^2 \right)^{\frac{1}{2}}.
     \end{equation}
 \end{definition}
 
 A matrix norm $\norm{\placeholder}$ is said to be submultiplicative if,
-for any two matrices $\mat A \in \real^{m \times n}$ and $\mat B \in \real^{n \times \ell}$,
+for any two matrices $\mat A \in \complex^{m \times n}$ and $\mat B \in \complex^{n \times \ell}$,
 it holds that
 \[
     \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}.
@@ -317,7 +317,7 @@ for example the $p$-norms, are submultiplicative,
 and so is the Frobenius norm.
 
 \begin{exercise}
-    Write down the inner product on $\real^{m \times n}$ corresponding to~\eqref{eq:frobenius_norm}.
+    Write down the inner product on $\complex^{m \times n}$ corresponding to~\eqref{eq:frobenius_norm}.
 \end{exercise}
 \begin{exercise}
     Show that the matrix $p$-norm is submultiplicative.
@@ -328,8 +328,8 @@ and so is the Frobenius norm.
 
 \begin{definition}
     \label{definition:diagonalizable}
-    A square matrix $\mat A \in \real^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $\mat P \in \real^{n \times n}$
-    and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
+    A square matrix $\mat A \in \complex^{n \times n}$ is said to be diagonalizable if there exists an invertible matrix $\mat P \in \complex^{n \times n}$
+    and a diagonal matrix $\mat D \in \complex^{n \times n}$ such that
     \begin{equation}
         \label{eq:eigen_decomposition}
         \mat A \mat P = \mat P \mat D.
@@ -341,43 +341,39 @@ and so is the Frobenius norm.
 Denoting by $\vect e_i$ the $i$-th column of $\mat P$ and by $\lambda_i$ the $i$-th diagonal element of $\mat D$,
 we have by~\eqref{eq:eigen_decomposition} that $\mat A \vect e_i = \lambda_i \vect e_i$ or,
 equivalently, $(\mat A - \lambda_i \mat I_n) \vect e_i = \vect 0$.
-Here $\mat I_n$ is the~$\real^{n \times n}$ identity matrix.
+Here $\mat I_n$ is the~$\complex^{n \times n}$ identity matrix.
 Therefore, $\lambda$ is an eigenvalue of $\mat A$ if and only if $\det(\mat A - \lambda \mat I_n) = 0$.
 In other words, the eigenvalues of $\mat A$ are the roots of $\det(\mat A - \lambda \mat I_n)$,
 which is called the \emph{characteristic polynomial}.
 
-\begin{remark}
-There is a definition parallel to \cref{definition:diagonalizable} for matrices in $\mat A \in \complex^{n \times n}$.
-A matrix with real entries may not be diagonalizable in the sense of \cref{definition:diagonalizable} (over $\real$),
-but still be diagonalizable over $\complex$,
-i.e.\ when viewed as an element of $\complex^{n \times n}$.
-\end{remark}
-
 \subsection*{Symmetric matrices and spectral theorem}%
-The transpose of a matrix $\mat A \in \real^{m \times n}$ is denoted by $\mat A^\t \in \real^{n \times m}$
+The transpose of a matrix $\mat A \in \complex^{m \times n}$ is denoted by $\mat A^\t \in \real^{n \times m}$
 and defined as the matrix with entries~$a^\t_{ij} = a_{ji}$.
-A matrix equal to its transpose is necessarily square and called \emph{symmetric}.
-Symmetric matrices enjoy many nice properties,
-the main one being that they are diagonalizable with a matrix $\mat P$ that is orthogonal,
-i.e. such that $\mat P^{-1} = \mat P^\t$.
+The conjugate transpose of $\mat A$ is the matrix obtained by taking the transpose and taking the complex conjugate of all the entries.
+A real matrix equal to its transpose is necessarily square and called \emph{symmetric},
+and a complex matrix equal to its conjugate transpose is called \emph{Hermitian}.
+Hermitian matrices, of which real symmetric matrices are a subset,
+enjoy many nice properties,
+the main one being that they are diagonalizable with a matrix $\mat P$ that is unitary,
+i.e. such that $\mat P^{-1} = \mat P^*$.
 This is the content of the \emph{spectral theorem},
 a pillar of linear algebra with important generalizations to infinite-dimensional operators.
 
 Before stating the spectral theorem,
-we note that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a symmetric matrix associated with different eigenvalues,
+we note that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a Hermitian matrix associated with different eigenvalues,
 then they are necessarily orthogonal for the Euclidean inner product.
-Indeed, since $\mat A = \mat A^\t$ it holds that
+Indeed, since $\mat A = \mat A^*$ it holds that
 \[
     (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
-    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2}
+    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \overline{\lambda_2} \vect e_2}
     = \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
     = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^\t \vect e_1, \vect e_2} = 0.
 \]
 \begin{theorem}
-    [Spectral theorem for real symmetric matrices]
+    [Spectral theorem for Hermitian matrices]
     \label{theorem:spectral_theorem}
-    If $\mat A \in \real^{n \times n}$ is symmetric,
-    then there exists an orthogonal matrix $\mat Q \in \real^{n \times n}$ and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
+    If $\mat A \in \complex^{n \times n}$ is Hermitian,
+    then there exists an unitary matrix $\mat Q \in \complex^{n \times n}$ and a diagonal matrix $\mat D \in \real^{n \times n}$ such that
     \[
         \mat A \mat Q = \mat Q \mat D.
     \]
@@ -386,8 +382,8 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
     [Sketch of the proof]
     The result is trivial for $n = 1$.
     Reasoning by induction,
-    we assume that the result is true for symmetric matrices in $\real^{n-1 \times n-1}$
-    and prove that it then also holds for~$A \in \real^{n \times n}$.
+    we assume that the result is true for Hermitian matrices in $\complex^{n-1 \times n-1}$
+    and prove that it then also holds for~$A \in \complex^{n \times n}$.
     % \begin{itemize}
         % \item
 
@@ -395,38 +391,31 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
             \textbf{Step 1. Existence of a real eigenvalue}.
             By the fundamental theorem of algebra,
             there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(\mat A - \lambda \mat I_n) = 0$,
-            to which there corresponds a solution $\vect e_1 \in \complex^n$ to the equation $(\mat A - \lambda_1 \mat I_n) \vect e = 0$.
+            to which there corresponds a solution $\vect q_1 \in \complex^n$ of norm 1 to the equation $(\mat A - \lambda_1 \mat I_n) \vect q_{1} = 0$.
             The eigenvalue $\lambda_1$ is necessarily real because
             \[
-                \overline \lambda_1 \vect e_1^* \vect e_1
-                = (\lambda_1 \vect e_1)^* \vect e_1
-                = (\mat A \vect e_1)^* \vect e_1
-                = \vect e_1^* \mat A^* \vect e_1
-                = \vect e_1^* (\mat A \vect e_1)
-                = \vect e_1^* (\lambda_1 \vect e_1)
-                = \lambda_1 \vect e_1^* \vect e_1.
+                \lambda_1 \ip{\vect e_1, \vect e_1}
+                = \ip{\lambda_1 \vect e_1, \vect e_1}
+                = \ip{\mat A \vect e_1, \vect e_1}
+                = \ip{\vect e_1, \mat A\vect e_1}
+                = \ip{\vect e_1, \lambda_1 \vect e_1}
+                = \ip{\vect e_1, \lambda_1 \vect e_1}
+                = \overline \lambda_1 \ip{\vect e_1, \vect e_1}.
             \]
-            Here $\overline \placeholder$ denotes the complex conjugate,
-            and $\placeholder^*$ denotes the conjugate transpose.
-            Since $\lambda_1$ is real, there exists a solution $\vect q_1 \in \real^n$,
-            which we may multiply by an appropriate factor so that
-            it is of norm 1,
-            % $\norm{\vect q_1}^2 = 1$,
-            to the equation $(\mat A - \lambda_1 \mat I_n) \vect e = 0$.
 
         % \item
             \vspace{.3cm}
             \textbf{Step 2. Using the induction hypothesis}.
             Next,
             take an orthonormal basis $(\vect e_2, \dotsc, \vect e_n)$ of the orthogonal complement $\Span\{\vect q_1\}^\perp$
-            and construct the orthogonal matrix
+            and construct the unitary matrix
             \[
                 V = \begin{pmatrix} \vect q_1 & \vect e_2 & \dots & \vect e_n \end{pmatrix},
             \]
             i.e.\ the matrix with columns $\vect q_1$, $\vect e_2$, etc.
-            A calculation gives
+            A calculation gives,
             \[
-                \mat V^T \mat A \mat V =
+                \mat V^* \mat A \mat V =
                 \begin{pmatrix}
                     \ip{\vect q_1, \mat A \vect q_1} & \ip{\vect q_1, \mat A \vect e_2} & \dots & \ip{\vect q_1, \mat A \vect e_n} \\
                     \ip{\vect e_2, \mat A \vect q_1} & \ip{\vect e_2, \mat A \vect e_2} & \dots & \ip{\vect e_2, \mat A \vect e_n} \\
@@ -442,7 +431,7 @@ Indeed, since $\mat A = \mat A^\t$ it holds that
                 \end{pmatrix}.
             \]
             Let us denote the $n-1 \times n-1$ lower right block of this matrix by $\mat V_{n-1}$.
-            This is a symmetric matrix of size $n-1$ so,
+            This is a Hermitian matrix of size $n-1$ so,
             using the induction hypothesis,
             we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^\t$
             for appropriate matrices $\mat Q_{n-1} \in \real^{n-1 \times n-1}$ and $\mat D_{n-1} \in \real^{n-1 \times n-1}$

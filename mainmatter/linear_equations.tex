@@ -1367,7 +1367,8 @@ Concretely, this means that~$\mat M$ should be diagonal, triangular, block diago
 
 At this point,
 it is natural to wonder whether there exist sufficient conditions on the matrix $\mat A$ such that the inequality $\rho(\mat M^{-1} \mat N) < 1$ is satisfied.
-We present here a criterion that can be employed in order to establish the convergence of the Gauss--Seidel and relaxation method.
+We present here
+a criterion that can be employed in order to establish the convergence of the Gauss--Seidel and relaxation method.
 \begin{proposition}
     \label{proposition:criterion_convergence}
     Let $\mat A$ be Hermitian and positive definite.
@@ -1535,6 +1536,34 @@ the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
 Then the value of the second entry can be obtained from the second equation, etc.
 Unlike the Jacobi method,
 the Gauss--Seidel method is inherently sequential and cannot be implemented in parallel.
+It is possible to prove its convergence for strictly diagonally dominant by rows or columns.
+We recall that a matrix $\mat A$ is said to be row or column diagonally dominant
+if, respectively,
+\[
+    \lvert a_{ii} \rvert \geq \sum_{j \neq i} \lvert a_{ij} \rvert \quad \forall i
+    \qquad \text{ or } \qquad
+    \lvert a_{jj} \rvert \geq \sum_{i \neq j} \lvert a_{ij} \rvert \quad \forall j.
+\]
+\begin{proposition}
+    Assume that $\mat A$ is strictly diagonally dominant (by row or by columns or both).
+    Then $\rho(\mat M^{-1} \mat N) < 1$ for the Gauss--Seidel splitting.
+\end{proposition}
+\begin{proof}
+    Assume that $\lambda$ is an eigenvalue of $\mat M^{-1} \mat N$
+    and $\vect v$ is the associated unit eigenvector.
+    Then
+    \[
+        \mat M^{-1} \mat N \vect v = \lambda \vect v
+        \quad \Leftrightarrow
+        \mat N \vect v = \lambda \mat M \vect v
+        \quad \Leftrightarrow
+        (\mat N - \lambda \mat M) \vect v = 0.
+    \]
+    If $\abs{\lambda} > 1$,
+    then the matrix $\mat N - \lambda \mat M$ is diagonally dominant and thus invertible.
+    Therefore $\vect v = 0$, but this is a contradiction because $\vect v$ is vector of of unit norm.
+    Consequently, all the eigenvalues bounded from above strictly by 1 in modulus.
+\end{proof}
 
 \subsubsection{Relaxation method}%
 
@@ -1637,6 +1666,12 @@ the following alternatives are available:
 \end{itemize}
 
 \subsection{Exercises}%
+
+\begin{exercise}
+    \label{exercise:invertibility_diagonal_dominant}
+    Show that if $\mat A$ is diagonally dominant by rows or columns,
+    then $\mat A$ is invertible.
+\end{exercise}
 
 \begin{exercise}
     Let $\mat T$ be a nonsingular matrix.
