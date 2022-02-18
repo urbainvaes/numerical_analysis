@@ -1320,8 +1320,8 @@ Concretely, this means that~$\mat M$ should be diagonal, triangular, block diago
 \begin{proposition}
     [Convergence]
     \label{proposition:linear_convergence}
-    Assume that $\rho(\mat M^{-1} \mat N) < 1$.
-    Then the method converges for any initial guess $\vect x^{(0)}$.
+    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial guess $\vect x^{(0)}$.
+    if and only if $\rho(\mat M^{-1} \mat N) < 1$.
     In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
     \[
         \forall k \geq K,
@@ -1365,7 +1365,50 @@ Concretely, this means that~$\mat M$ should be diagonal, triangular, block diago
     Rearranging this inequality gives the statement.
 \end{proof}
 
-We now list three instances of splitting methods.
+At this point,
+it is natural to wonder whether there exist sufficient conditions on the matrix $\mat A$ such that the inequality $\rho(\mat M^{-1} \mat N) < 1$ is satisfied.
+We present here a criterion that can be employed in order to establish the convergence of the Gauss--Seidel and relaxation method.
+\begin{proposition}
+    \label{proposition:criterion_convergence}
+    Let $\mat A$ be Hermitian and positive definite.
+    If the Hermitian matrix $\mat M^* + \mat N$ is positive definite,
+    then $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proposition}
+\begin{proof}
+    First, notice that $\mat M + \mat N^*$ is indeed Hermitian because
+    \[
+        (\mat M + \mat N^*)^* = \mat M^* + \mat N = \mat A^* + \mat N^* + \mat N = \mat A + \mat N^* + \mat N.
+    \]
+    We will show that $\norm{\mat M^{-1} \mat N}_{\mat A} < 1$,
+    where $\norm{\placeholder}_{\mat A}$ is the matrix norm induced by the following norm on vectors:
+    \[
+        \norm{\vect x}_{\mat A} := \sqrt{\vect x^* \mat A \vect x}.
+    \]
+    Showing that this indeed defines a vector norm is the goal of~\eqref{exercise:linear_norm_induced_A}.
+    Since $\mat N = \mat M - \mat A$, it holds that
+    \(
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \norm{\mat I - \mat M^{-1} \mat A}_{\mat A}.
+    \)
+    and so
+    \[
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
+    \]
+    Letting $\vect y = \mat M^{-1} \mat A \vect x$, we calculate
+    \begin{align*}
+        \forall \vect x \in \real^n \text{~with~} \norm{\vect x}_{\mat A} \leq 1, \quad
+        \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}^2
+        &= \vect x^* \mat A \vect x - \vect y^* \mat A \vect x - \vect x^* \mat A \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \mat M^{-1} \mat A \vect x - (\mat M^{-1} \mat A \vect x)^* \mat M^* \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \vect y - \vect y^* \mat M^* \vect y + \vect y^* (\mat M - \mat N) \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* (\mat M^* + \mat N) \vect y \leq 1 - \vect y^* (\mat M^* + \mat N) \vect y < 1,
+        % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
+    \end{align*}
+    where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
+    This shows that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\), and so $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proof}
+
 \subsubsection{Richardson's method}%
 \label{ssub:richardson_s_method}
 
@@ -1605,6 +1648,7 @@ the following alternatives are available:
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:linear_norm_induced_A}
     Let $\mat A \in \real^{n \times n}$ be a symmetric positive definite matrix.
     Show that the functional
     \[
