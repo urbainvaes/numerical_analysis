@@ -1301,18 +1301,18 @@ one step of this general method reads
     \label{eq:linear_system_iterative_method}
     \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b.
 \end{equation}
-Note that, no matter the choice of splitting,
+For any choice of splitting,
 the exact solution $\vect x$ to the linear system is a fixed point of this iteration,
 in the sense that if $\vect x^{(0)} = \vect x$, then $\vect x^{(k)} = \vect x$ for all $k \geq 0$.
 \Cref{eq:linear_system_iterative_method} is a linear system with matrix~$\mat M$,
 unknown $\vect x^{(k+1)}$, and right-hand side $\mat N \vect x^{(k)} + \vect b$.
-There is a compromise between the cost of a single step and the speed of convergence.
+There is a compromise between the cost of a single step and the speed of convergence of the method.
 In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
 the method converges to the exact solution in one step,
 but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
-Concretely, this means that~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
+Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
 
 \subsubsection{Convergence of the splitting method}%
 \label{ssub:convergence_of_the_basic_splitting_method}

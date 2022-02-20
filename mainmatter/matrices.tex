@@ -17,7 +17,7 @@ and those of a matrix $\mat A \in \complex^{m \times n}$ are denoted by~$(a_{ij}
 We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
 For generality,
 we consider the case of a \emph{complex} vector space,
-i.e.\ a vector space for which the scalar field is $\complex$,
+i.e.\ a vector space for which the scalar field is $\complex$.
 \begin{definition}
     An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex$ satisfying the following axioms:
     \begin{itemize}
@@ -359,16 +359,6 @@ i.e. such that $\mat P^{-1} = \mat P^*$.
 This is the content of the \emph{spectral theorem},
 a pillar of linear algebra with important generalizations to infinite-dimensional operators.
 
-Before stating the spectral theorem,
-we note that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a Hermitian matrix associated with different eigenvalues,
-then they are necessarily orthogonal for the Euclidean inner product.
-Indeed, since $\mat A = \mat A^*$ it holds that
-\[
-    (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
-    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \overline{\lambda_2} \vect e_2}
-    = \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
-    = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^\t \vect e_1, \vect e_2} = 0.
-\]
 \begin{theorem}
     [Spectral theorem for Hermitian matrices]
     \label{theorem:spectral_theorem}
@@ -383,7 +373,7 @@ Indeed, since $\mat A = \mat A^*$ it holds that
     The result is trivial for $n = 1$.
     Reasoning by induction,
     we assume that the result is true for Hermitian matrices in $\complex^{n-1 \times n-1}$
-    and prove that it then also holds for~$A \in \complex^{n \times n}$.
+    and prove that it then also holds for~$\mat A \in \complex^{n \times n}$.
     % \begin{itemize}
         % \item
 
@@ -433,9 +423,9 @@ Indeed, since $\mat A = \mat A^*$ it holds that
             Let us denote the $n-1 \times n-1$ lower right block of this matrix by $\mat V_{n-1}$.
             This is a Hermitian matrix of size $n-1$ so,
             using the induction hypothesis,
-            we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^\t$
+            we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^*$
             for appropriate matrices $\mat Q_{n-1} \in \real^{n-1 \times n-1}$ and $\mat D_{n-1} \in \real^{n-1 \times n-1}$
-            which are orthogonal and diagonal, respectively.
+            which are unitary and diagonal, respectively.
 
         % \item
             \vspace{.3cm}
@@ -449,15 +439,15 @@ Indeed, since $\mat A = \mat A^*$ it holds that
                     \vect 0 & \mat Q_{n-1}
                 \end{pmatrix}.
             \]
-            It is not difficult to verify that $\mat Q$ is an orthogonal matrix,
+            It is not difficult to verify that $\mat Q$ is a unitary matrix,
             and we have
             \[
-                \mat Q^\t \mat A \mat Q =
+                \mat Q^* \mat A \mat Q =
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}^\t
+                    \vect 0 & \mat Q_{n-1}^*
                 \end{pmatrix}
-                \mat V^\t \mat A \mat V
+                \mat V^* \mat A \mat V
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
                     \vect 0 & \mat Q_{n-1}
@@ -465,7 +455,7 @@ Indeed, since $\mat A = \mat A^*$ it holds that
                 =
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}^\t
+                    \vect 0 & \mat Q_{n-1}^*
                 \end{pmatrix}
                 \begin{pmatrix}
                     \lambda_1 & \vect 0^\t \\
@@ -478,7 +468,7 @@ Indeed, since $\mat A = \mat A^*$ it holds that
             \]
             Developing the last expression, we obtain
             \[
-                \mat Q^\t \mat A \mat Q
+                \mat Q^* \mat A \mat Q
                 =
                 \begin{pmatrix}
                     1 & \vect 0^\t \\
@@ -489,32 +479,49 @@ Indeed, since $\mat A = \mat A^*$ it holds that
     % \end{itemize}
 \end{proof}
 
+We deduce, as a corollary of the spectral theorem,
+that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a Hermitian matrix associated with different eigenvalues,
+then they are necessarily orthogonal for the Euclidean inner product.
+Indeed, since $\mat A = \mat A^*$ and the eigenvalues are real, it holds that
+\[
+    (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
+    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2}
+    = \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
+    = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^* \vect e_1, \vect e_2} = 0.
+\]
+
+The largest eigenvalue of a matrix, in modulus,
+is called the \emph{spectral radius} and denoted by~$\rho$.
+The following results relates the 2-norm of a matrix to the spectral radius of $\mat A \mat A^*$.
+\begin{proposition}
+    It holds that $\norm{\mat A}_2 = \mat A^* \mat A$.
+\end{proposition}
+\begin{proof}
+    Since $\mat A^* \mat A$ is Hermitian,
+    it holds by the spectral theorem that $\mat A^* \mat A = \mat Q \mat D \mat Q^*$ for some unitary matrix $\mat Q$ and real diagonal matrix $\mat D$.
+    Therefore, denoting by $(\mu_i)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$
+    and introducing $\vect y := \mat Q^* \vect x$,
+    we have
+    \begin{equation}
+        \label{eq:matrices_link_norm_spectral_radius}
+        \norm{\mat A \vect x}
+        = \sqrt{\vect x^* \mat A^* \mat A \vect x}
+        = \sqrt{\vect x^* \mat Q \mat D \mat Q^* \vect x}
+        = \sqrt{\sum_{i=1}^{n} \mu_i y_i^2}
+        \leq \sqrt{\rho(\mat A^* \mat A)} \sqrt{\sum_{i=1}^{n} y_i^2}
+        =  \sqrt{\rho(\mat A^* \mat A)} \norm{\vect x},
+    \end{equation}
+    where we used in the last equality the fact that $\vect y$ has the same norm as $\vect x$,
+    because $\mat Q$ is unitary.
+    It follows from~\eqref{eq:matrices_link_norm_spectral_radius} that $\norm{\mat A} \leq \sqrt{\rho(\mat A^* \mat A)}$,
+    and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^* \mat A) \norm{\vect x}$
+    if $\vect x$ is the eigenvector of $\mat A^* \mat A$ corresponding to an eigenvalue of modulus~$\rho(\mat A^* \mat A)$.
+\end{proof}
+
 \begin{exercise}
     Prove that if $\mat A \in \real^{n \times n}$ is diagonalizable as in~\eqref{eq:eigen_decomposition},
     then $\mat A^n = \mat P \mat D^n \mat P^{-1}$.
 \end{exercise}
-
-The largest eigenvalue of a matrix, in absolute value,
-is called the \emph{spectral radius} and denoted by~$\rho$.
-The 2-norm of a general matrix $\mat A \in \real^{n \times n}$
-coincides with the spectral radius of $\mat A^\t \mat A$.
-Indeed, by the spectral theorem it holds that $\mat A^\t \mat A = \mat Q \mat D \mat Q^\t$ with an orthogonal matrix $\mat Q$.
-Therefore, denoting by $(\lambda_i^2)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$,
-we have
-\begin{equation}
-    \label{eq:matrices_link_norm_spectral_radius}
-    \norm{\mat A \vect x}
-    = \sqrt{\vect x^\t \mat A^\t \mat A \vect x}
-    = \sqrt{\vect x^\t \mat Q \mat D \mat Q^\t \vect x}
-    = \sqrt{\sum_{i=1}^{n} \lambda_i^2 y_i^2}
-    \leq \sqrt{\rho(\mat A^\t \mat A)} \sqrt{\sum_{i=1}^{n} y_i^2}
-    =  \sqrt{\rho(\mat A^\t \mat A)} \norm{\vect y},
-\end{equation}
-where $\vect y := \mat Q^\t \vect x$ has the same norm as $\vect x$ since $\mat Q$ is orthogonal.
-It follows from this inequality that $\norm{\mat A} \leq \sqrt{\rho(\mat A^\t \mat A)}$,
-and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^\t \mat A) \norm{\vect x}$
-if $\vect x$ is the eigenvector of $\mat A^\t \mat A$ associated with the largest eigenvalue $\rho(\mat A^\t \mat A)$.
-
 
 \section{Similarity transformation and Jordan normal form}%
 \label{sec:similarity_transformation_and_jordan_normal_form}
@@ -572,7 +579,7 @@ The power of a Jordan block admits an explicit expression.
         \sum_{i=1}^{k} \binom{k}{i} (\lambda \mat I)^{k-i} \mat N^{i}.
     \]
     To conclude the proof,
-    we use the fact that $\mat N^{i}$ is a matrix with zeros everywhere except in the $i$-th super-diagonal,
+    we use the fact that $\mat N^{i}$ is a matrix with zeros everywhere except for $i$-th super-diagonal,
     which contains only ones.
     Moreover $\mat N^i = \mat 0_{n \times n}$ if $i \geq n$.
 \end{proof}
@@ -625,8 +632,7 @@ for any matrix norm $\norm{\placeholder}$.
     If $\rho(\mat A) \geq 1$,
     then denoting by $\vect v$ the eigenvector of $\mat A$ associated with the eigenvalue~$\pm \rho(\mat A)$,
     we have $\norm{\mat A^k \vect v} = \rho(\mat A)^k \norm{\vect v} \geq \norm{\vect v}$.
-    Therefore, the sequence $(\mat A^k)_{k \in \nat}$ does not converge to the zero matrix in a $p$-norm,
-    or any other matrix norm since they are all equivalent.
+    Therefore, the sequence $(\mat A^k)_{k \in \nat}$ does not converge to the zero matrix in the $2$-norm.
     This shows the implication $\norm{\mat A^k} \to 0 \Rightarrow \rho(\mat A) < 1$.
 
     To show the converse implication,
