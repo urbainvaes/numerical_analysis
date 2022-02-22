@@ -1313,14 +1313,23 @@ but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
+The error $\vect e^{(k)}$ and residue $\vect r^{(k)}$ at iteration $k$ are defined as follows:
+\[
+    \vect e^{(k)} = \vect x^{(k)} - \vect x,
+    \qquad
+    \vect r^{(k)} = \mat A \vect x^{(k)} - \vect b.
+\]
 
 \subsubsection{Convergence of the splitting method}%
 \label{ssub:convergence_of_the_basic_splitting_method}
+Before presenting concrete examples of splitting methods,
+we obtain a necessary and sufficient condition for the convergence of~\eqref{eq:linear_system_iterative_method}
+for any initial guess~$\vect x^{(0)}$.
 
 \begin{proposition}
     [Convergence]
     \label{proposition:linear_convergence}
-    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial guess $\vect x^{(0)}$.
+    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial guess~$\vect x^{(0)}$
     if and only if $\rho(\mat M^{-1} \mat N) < 1$.
     In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
     \[
@@ -1331,14 +1340,13 @@ Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, 
 \end{proposition}
 \begin{proof}
     Let us denote by $\vect x$ the solution to the linear system.
-    Since $\vect b = \mat M \vect x - \mat N \vect x$,
+    Since $\mat M \vect x - \mat N \vect x = \vect b$,
     we have
     \[
         \mat M (\vect x^{(k+1)} - \vect x) = \mat N (\vect x^{(k)} - \vect x).
     \]
-    Denoting the error by $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
-    and using the assumption that $\mat M$ is nonsingular,
-    we obtain
+    Using the assumption that $\mat M$ is nonsingular,
+    we obtain that the error satisfies the equation
     \[
         \vect e^{(k+1)} = (\mat M^{-1} \mat N) \vect e^{(k)}.
     \]
@@ -1346,14 +1354,17 @@ Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, 
     \[
         \vect e^{(k+1)} = (\mat M^{-1} \mat N)^2 \vect e^{(k-1)} = \dots = (\mat M^{-1} \mat N)^{k+1} \vect e^{(0)}.
     \]
-    We conclude that
+    Therefore,
+    it holds that
     \[
         \forall k \geq 0, \qquad
         \norm{\vect e^{(k)}}
         \leq \norm[bigl]{(\mat M^{-1} \mat N)^{k}} \norm{\vect e^{(0)}}.
     \]
-    By Gelfand's formula, see~\cref{proposition:matrices_gelfands},
-    it holds that
+    In order to conclude the proof,
+    we will used Gelfand's formula,
+    proved in~\cref{proposition:matrices_gelfands} of \cref{cha:vectors_and_matrices}.
+    This states that
     \[
         \lim_{k \to \infty} \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} = \rho(\mat M^{-1} \mat N).
     \]
@@ -1362,53 +1373,26 @@ Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, 
         \forall k \geq K, \qquad
         \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} \leq \rho(\mat M^{-1} \mat N) + \varepsilon.
     \]
-    Rearranging this inequality gives the statement.
+    Rearranging this inequality gives that $\norm[bigl]{(\mat M^{-1} \mat N)^{k}} $ the statement.
 \end{proof}
 
 At this point,
-it is natural to wonder whether there exist sufficient conditions on the matrix $\mat A$ such that the inequality $\rho(\mat M^{-1} \mat N) < 1$ is satisfied.
-We present here
-a criterion that can be employed in order to establish the convergence of the Gauss--Seidel and relaxation method.
-\begin{proposition}
-    \label{proposition:criterion_convergence}
-    Let $\mat A$ be Hermitian and positive definite.
-    If the Hermitian matrix $\mat M^* + \mat N$ is positive definite,
-    then $\rho(\mat M^{-1} \mat N) < 1$.
-\end{proposition}
-\begin{proof}
-    First, notice that $\mat M + \mat N^*$ is indeed Hermitian because
-    \[
-        (\mat M + \mat N^*)^* = \mat M^* + \mat N = \mat A^* + \mat N^* + \mat N = \mat A + \mat N^* + \mat N.
-    \]
-    We will show that $\norm{\mat M^{-1} \mat N}_{\mat A} < 1$,
-    where $\norm{\placeholder}_{\mat A}$ is the matrix norm induced by the following norm on vectors:
-    \[
-        \norm{\vect x}_{\mat A} := \sqrt{\vect x^* \mat A \vect x}.
-    \]
-    Showing that this indeed defines a vector norm is the goal of~\eqref{exercise:linear_norm_induced_A}.
-    Since $\mat N = \mat M - \mat A$, it holds that
-    \(
-        \norm{\mat M^{-1} \mat N}_{\mat A}
-        = \norm{\mat I - \mat M^{-1} \mat A}_{\mat A}.
-    \)
-    and so
-    \[
-        \norm{\mat M^{-1} \mat N}_{\mat A}
-        = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
-    \]
-    Letting $\vect y = \mat M^{-1} \mat A \vect x$, we calculate
-    \begin{align*}
-        \forall \vect x \in \real^n \text{~with~} \norm{\vect x}_{\mat A} \leq 1, \quad
-        \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}^2
-        &= \vect x^* \mat A \vect x - \vect y^* \mat A \vect x - \vect x^* \mat A \vect y + \vect y^* \mat A \vect y \\
-        &= \vect x^* \mat A \vect x - \vect y^* \mat M \mat M^{-1} \mat A \vect x - (\mat M^{-1} \mat A \vect x)^* \mat M^* \vect y + \vect y^* \mat A \vect y \\
-        &= \vect x^* \mat A \vect x - \vect y^* \mat M \vect y - \vect y^* \mat M^* \vect y + \vect y^* (\mat M - \mat N) \vect y \\
-        &= \vect x^* \mat A \vect x - \vect y^* (\mat M^* + \mat N) \vect y \leq 1 - \vect y^* (\mat M^* + \mat N) \vect y < 1,
-        % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
-    \end{align*}
-    where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
-    This shows that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\), and so $\rho(\mat M^{-1} \mat N) < 1$.
-\end{proof}
+it is natural to wonder whether there exist sufficient conditions on the matrix~$\mat A$ such that the inequality $\rho(\mat M^{-1} \mat N) < 1$ is satisfied,
+which is best achieved on a case by case basis.
+In the next sections,
+we present four instances of splitting methods.
+For each of them,
+we obtain a sufficient condition for convergence.
+We are particularly interested in the case where the matrix~$\mat A$ is symmetric (or Hermitian) and positive definite,
+which often arises in applications,
+and in the case where $\mat A$ is strictly row or column diagonally dominant.
+We recall that a matrix $\mat A$ is said to be row or column diagonally dominant
+if, respectively,
+\[
+    \lvert a_{ii} \rvert \geq \sum_{j \neq i} \lvert a_{ij} \rvert \quad \forall i
+    \qquad \text{ or } \qquad
+    \lvert a_{jj} \rvert \geq \sum_{i \neq j} \lvert a_{ij} \rvert \quad \forall j.
+\]
 
 \subsubsection{Richardson's method}%
 \label{ssub:richardson_s_method}
@@ -1451,18 +1435,18 @@ The maximum is minimized when its two arguments are equal,
 i.e.\ when $1 - \omega \lambda_{\min} = \omega \lambda_{\max} -1$.
 From this we deduce the optimal value of $\omega$ and the associated spectral radius:
 \[
-    \omega_{\rm opt} = \frac{1}{\lambda_{\min} + \lambda_{\max}},
+    \omega_{\rm opt} = \frac{2}{\lambda_{\max} + \lambda_{\min}},
     \qquad
     \rho_{\rm opt}
-    = 1 - \frac{\lambda_{\min}}{\lambda_{\min} + \lambda_{\max}}
-    = \frac{\lambda_{\max}}{\lambda_{\min} + \lambda_{\max}}
-    =  \frac{\kappa_2(\mat A)}{1 + \kappa_2(\mat A)}.
+    = 1 - \frac{2\lambda_{\min}}{\lambda_{\max} + \lambda_{\min}}
+    = \frac{\lambda_{\max} - \lambda_{\min}}{\lambda_{\max} + \lambda_{\min}}
+    =  \frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}.
 \]
 We observe that the smaller the condition number of the matrix $\mat A$,
 the better the asymptotic rate of convergence.
 
 \begin{remark}
-    [Link with optimization]
+    [Link to optimization]
     In the case where $\mat A$ is symmetric and positive definite,
     the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm
     for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
@@ -1473,20 +1457,24 @@ the better the asymptotic rate of convergence.
     The gradient of this function is $\nabla f(\vect x) = \mat A \vect x - \vect b$,
     and its Hessian matrix is $\mat A$.
     Since the Hessian matrix is positive definite, the function is convex
-    and its minimum occurs when $\nabla f$ is zero,
+    and attains its global minimum when $\nabla f$ is zero,
     i.e.\ when $\mat A x = \vect b$.
 \end{remark}
 
 \subsubsection{Jacobi's method}%
 \label{ssub:jacobi_s_method}
 In Jacobi's method, the matrix $\mat M$ in the splitting is the diagonal matrix $\mat D$ with the same entries as those of $\mat A$ on the diagonal.
+We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of $\mat A$,
+without the diagonal.
 One step of the method reads
 \begin{equation}
     \label{eq:linear_jacobi}
-    \mat D \vect x^{(k+1)} = (\mat D - \mat A) \vect x^{(k)} + \vect b
+    \mat D \vect x^{(k+1)}
+    = (\mat D - \mat A) \vect x^{(k)} + \vect b
+    = - (\mat L + \mat U) \vect x^{(k)} + \vect b
 \end{equation}
 Since the matrix $\mat D$ on the left-hand side is diagonal,
-this linear system with unknown $\vect x^{(k+1)}$ is very easy to solve.
+this linear system with unknown $\vect x^{(k+1)}$ is very simple to solve.
 The equation~\eqref{eq:linear_jacobi} can be rewritten equivalently as
 \begin{equation*}
     \left\{
@@ -1504,6 +1492,34 @@ The computational cost of one iteration,
 measured in number of floating point operations required,
 scales as $\mathcal O(n^2)$ if~$\mat A$ is a full matrix,
 or $\mathcal O(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per row on average.
+It is simple to prove the convergence of Jacobi's method is the case where $\mat A$ is diagonally dominant.
+\begin{proposition}
+    \label{proposition:linear_convergence_jacobi}
+    Assume that $\mat A$ is strictly (row or column) diagonally dominant.
+    Then it holds that $\rho(\mat M^{-1} \mat N) < 1$ for the Jacobi splitting.
+\end{proposition}
+\begin{proof}
+    Assume that $\lambda$ is an eigenvalue of $\mat M^{-1} \mat N$
+    and $\vect v$ is the associated unit eigenvector.
+    Then
+    \[
+        \mat M^{-1} \mat N \vect v = \lambda \vect v
+        \quad \Leftrightarrow \quad
+        \mat N \vect v = \lambda \mat M \vect v
+        \quad \Leftrightarrow \quad
+        (\mat N - \lambda \mat M) \vect v = 0.
+    \]
+    In the case of Jacobi's splitting,
+    this is equivalent to
+    \[
+        - (\mat L + \lambda \mat D + \mat L) \vect v = 0.
+    \]
+    If $\abs{\lambda} > 1$,
+    then the matrix on the left-hand side of this equation is diagonally dominant and thus invertible
+    (see \cref{exercise:invertibility_diagonal_dominant}).
+    Therefore $\vect v = 0$, but this is a contradiction because $\vect v$ is vector of of unit norm.
+    Consequently, all the eigenvalues are bounded from above strictly by 1 in modulus.
+\end{proof}
 
 
 \subsubsection{Gauss--Seidel's method}%
@@ -1511,8 +1527,6 @@ or $\mathcal O(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per
 
 In Gauss Seidel's method, the matrix $\mat M$ in the splitting is the lower triangular part of $\mat A$,
 including the diagonal.
-We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of $\mat A$,
-without the diagonal.
 One step of the method then reads
 \begin{equation}
     \label{eq:linear_gauss_seidel}
@@ -1525,7 +1539,7 @@ The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
        \begin{aligned}
         & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + a_{13} x^{(k)}_3 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
         & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + a_{23} x^{(k)}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
-        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
+        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{3n} x^{(k)}_n = b_2 \\
         & \vdots \\
         & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + a_{n3} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
        \end{aligned}
@@ -1534,36 +1548,17 @@ The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
 Given $\vect x^{(k)}$,
 the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
 Then the value of the second entry can be obtained from the second equation, etc.
-Unlike the Jacobi method,
-the Gauss--Seidel method is inherently sequential and cannot be implemented in parallel.
-It is possible to prove its convergence for strictly diagonally dominant by rows or columns.
-We recall that a matrix $\mat A$ is said to be row or column diagonally dominant
-if, respectively,
-\[
-    \lvert a_{ii} \rvert \geq \sum_{j \neq i} \lvert a_{ij} \rvert \quad \forall i
-    \qquad \text{ or } \qquad
-    \lvert a_{jj} \rvert \geq \sum_{i \neq j} \lvert a_{ij} \rvert \quad \forall j.
-\]
-\begin{proposition}
-    Assume that $\mat A$ is strictly diagonally dominant (by row or by columns or both).
-    Then $\rho(\mat M^{-1} \mat N) < 1$ for the Gauss--Seidel splitting.
-\end{proposition}
-\begin{proof}
-    Assume that $\lambda$ is an eigenvalue of $\mat M^{-1} \mat N$
-    and $\vect v$ is the associated unit eigenvector.
-    Then
-    \[
-        \mat M^{-1} \mat N \vect v = \lambda \vect v
-        \quad \Leftrightarrow
-        \mat N \vect v = \lambda \mat M \vect v
-        \quad \Leftrightarrow
-        (\mat N - \lambda \mat M) \vect v = 0.
-    \]
-    If $\abs{\lambda} > 1$,
-    then the matrix $\mat N - \lambda \mat M$ is diagonally dominant and thus invertible.
-    Therefore $\vect v = 0$, but this is a contradiction because $\vect v$ is vector of of unit norm.
-    Consequently, all the eigenvalues bounded from above strictly by 1 in modulus.
-\end{proof}
+Unlike Jacobi's method,
+the Gauss--Seidel method is sequential and the entries of $\vect x^{(k+1)}$ cannot be updated in parallel.
+
+It is possible to prove the convergence of the Gauss--Seidel method in particular cases.
+For example, the method converges if $\mat A$ is strictly diagonally dominant.
+Proving this,
+using an approach similar to that in the proof of~\cref{proposition:linear_convergence_jacobi},
+is the goal of~\cref{exercise:linear_convergence_gauss_seidel}.
+It is also possible to prove convergence when $\mat A$ is Hermitian and positive definite.
+We show this in the next section for the relaxation method,
+which generalizes the Gauss--Seidel method.
 
 \subsubsection{Relaxation method}%
 
@@ -1574,22 +1569,11 @@ It corresponds to the splitting
 \end{equation}
 When $\omega = 1$,
 this is simply the Gauss--Seidel splitting.
-The hope is that,
+The idea is that,
 by letting $\omega$ be a parameter that can differ from 1,
 faster convergence can be achieved.
 This intuition will be verified later.
 The equation~\eqref{eq:linear_system_iterative_method} for this splitting can be rewritten equivalently as
-% \begin{equation*}
-%     \left\{
-%        \begin{aligned}
-%         & a_{11} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_1 + (1 - \omega^{-1}) x^{(k)}_1 \Bigr) + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
-%         & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_2 + (1 - \omega^{-1}) x^{(k)}_2 \Bigr)  + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
-%         & \vdots \\
-%         & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} \Bigl(\omega^{-1} x^{(\textcolor{darkblue}{k+1})}_n + (1 - \omega^{-1}) x^{(k)}_n \Bigr) = b_n.
-%        \end{aligned}
-%    \right .
-% \end{equation*}
-% Rearranging these equations, we have
 \begin{equation*}
     \left\{
        \begin{aligned}
@@ -1600,9 +1584,122 @@ The equation~\eqref{eq:linear_system_iterative_method} for this splitting can be
        \end{aligned}
    \right .
 \end{equation*}
-The coefficient on the right-hand side is larger than in Gauss--Seidel's update if $\omega > 1$,
+The coefficient on the right-hand side is larger than in the Gauss--Seidel method if $\omega > 1$,
 and smaller if $\omega < 1$.
 These regimes are called \emph{over-relaxation} and \emph{under-relaxation}, respectively.
+
+To conclude this section,
+we establish a sufficient condition for the convergence of the relaxation method,
+and also of the Gauss--Seidel method as a particular case when $\omega = 1$,
+when the matrix $\mat A$ is Hermitian and positive definite.
+To this end, we begin by showing the following preparatory result,
+which concerns a general splitting $\mat A = \mat M - \mat N$.
+\begin{proposition}
+    \label{proposition:criterion_convergence}
+    Let $\mat A$ be Hermitian and positive definite.
+    If the Hermitian matrix $\mat M^* + \mat N$ is positive definite,
+    then $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proposition}
+\begin{proof}
+    First, notice that $\mat M + \mat N^*$ is indeed Hermitian because
+    \[
+        (\mat M + \mat N^*)^* = \mat M^* + \mat N = \mat A^* + \mat N^* + \mat N = \mat A + \mat N^* + \mat N.
+    \]
+    We will show that $\norm{\mat M^{-1} \mat N}_{\mat A} < 1$,
+    where $\norm{\placeholder}_{\mat A}$ is the matrix norm induced by the following norm on vectors:
+    \[
+        \norm{\vect x}_{\mat A} := \sqrt{\vect x^* \mat A \vect x}.
+    \]
+    Showing that this indeed defines a vector norm is the goal of~\cref{exercise:linear_norm_induced_A}.
+    Since $\mat N = \mat M - \mat A$, it holds that
+    \(
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \norm{\mat I - \mat M^{-1} \mat A}_{\mat A},
+    \)
+    and so
+    \[
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
+    \]
+    Letting $\vect y = \mat M^{-1} \mat A \vect x$, we calculate
+    \begin{align*}
+        \forall \vect x \in \real^n \text{~with~} \norm{\vect x}_{\mat A} \leq 1, \quad
+        \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}^2
+        &= \vect x^* \mat A \vect x - \vect y^* \mat A \vect x - \vect x^* \mat A \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \mat M^{-1} \mat A \vect x - (\mat M^{-1} \mat A \vect x)^* \mat M^* \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \vect y - \vect y^* \mat M^* \vect y + \vect y^* (\mat M - \mat N) \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* (\mat M^* + \mat N) \vect y \leq 1 - \vect y^* (\mat M^* + \mat N) \vect y < 1,
+        % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
+    \end{align*}
+    where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
+    This shows that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\), and so $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proof}
+
+As a corollary,
+we obtain a sufficient condition for the convergence of the relaxation method.
+\begin{corollary}
+    \label{corollary:convergence_relaxation}
+    Assume that $\mat A$ is Hermitian and positive definite.
+    Then the relaxation method converges if $\omega \in (0, 2)$.
+\end{corollary}
+\begin{proof}
+    For the relaxation method,
+    we have
+    \[
+        \mat M + \mat N^*
+        = \left( \frac{\mat D}{\omega} + \mat L \right) + \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right)^*.
+    \]
+    Since $\mat A$ is Hermitian,
+    it holds that $\mat D^* = \mat D$ and $\mat U^* = \mat L$.
+    Therefore,
+    \[
+        \mat M + \mat N^*
+        = \frac{2 - \omega}{\omega} \mat D.
+    \]
+    The diagonal elements of $\mat D$ are all positive,
+    because $\mat A$ is positive definite.
+    (Indeed, if there was an index $i$ such that $d_{ii} < 0$,
+    then it would hold that $\vect e_i^\t \mat A \vect e_i = d_{ii} < 0$,
+    contradicting the assumption that $\mat A$ is positive definite.)
+    We deduce that $\mat M + \mat N^*$ is positive definite if and only if $\omega \in (0, 2)$.
+    We can then conclude the proof by using \cref{proposition:criterion_convergence}.
+\end{proof}
+Note that \cref{corollary:convergence_relaxation} implies as a particular case
+the convergence of the Gauss--Seidel method when $\mat A$ is Hermitian and positive definite.
+The condition $\omega \in (0, 2)$ is fact necessary for the convergence of the relaxation method,
+not only in the case of a Hermitian positive definite matrix $\mat A$ but in general.
+\begin{proposition}
+    Let $\mat A \in \complex^{n \times n}$ be an invertible matrix,
+    and let $\mat A = \mat M_{\omega} - \mat N_{\omega}$ denote the splitting of the relaxation method with parameter~$\omega$.
+    It holds that
+    \[
+        \forall \omega \neq 0, \qquad
+        \rho(\mat M_{\omega}^{-1} \mat N_{\omega})
+        \geq \abs{\omega - 1}.
+    \]
+\end{proposition}
+\begin{proof}
+    We recall the following facts:
+    \begin{itemize}
+        \item the determinant of a product of matrices is equal to the product of the determinants.
+        \item the determinant of a triangular matrix is equal to the product of its diagonal entries;
+        \item the determinant of a matrix is equal to the product of its eigenvalues,
+            to the power of their algebraic multiplicity.
+            This can be shown for the previous two item, 
+            by passing to the Jordan normal form.
+    \end{itemize}
+    Therefore,
+    we have that
+    \[
+        \det (\mat M_{\omega}^{-1} \mat N_{\omega}) = \det (\mat M_{\omega})^{-1}  \det (\mat N_{\omega})
+        = \frac {\det \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right)}{\det \left( \frac{\mat D}{\omega} + \mat L \right)}
+        = (1 - \omega)^n.
+    \]
+    Since the determinant on the left-hand side is the product of the eigenvalues of $\mat M_{\omega}^{-1} \mat N_{\omega}$,
+    it is bounded from above in modulus by $\rho(\mat M_{\omega}^{-1} \mat N_{\omega})^n$,
+    and so we deduce $\rho(\mat M_{\omega}^{-1} \mat N_{\omega})^n \geq \abs{1 - \omega}^n$.
+    The statement then follows by taking the $n$-th root.
+\end{proof}
 
 \subsubsection{Monitoring the convergence}
 \label{ssub:monitoring_the_convergence}
@@ -1614,7 +1711,7 @@ Nevertheless,
 the two are related by the equation
 \[
     \vect r^{(k)} = \mat A \vect e^{(k)}
-    \Leftrightarrow \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
+    \quad \Leftrightarrow \quad \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
 \]
 Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
 Likewise, the relative error satisfies
@@ -1638,7 +1735,7 @@ then controlling the residue enables a good control of the error.
 
 In practice,
 several criteria can be employed to determine when to stop iterating.
-Given a small number $\varepsilon$ (unrelated to the epsilon machine in \cref{cha:rounding_errors}),
+Given a small number $\varepsilon$ (unrelated to the machine epsilon in \cref{cha:rounding_errors}),
 the following alternatives are available:
 \begin{itemize}
     \item
@@ -1669,7 +1766,7 @@ the following alternatives are available:
 
 \begin{exercise}
     \label{exercise:invertibility_diagonal_dominant}
-    Show that if $\mat A$ is diagonally dominant by rows or columns,
+    Show that if $\mat A$ is row or column diagonally dominant,
     then $\mat A$ is invertible.
 \end{exercise}
 
@@ -1797,6 +1894,13 @@ the following alternatives are available:
     \]
     Plot the norm of the residue as a function of the iteration index in both cases.
 \end{compexercise}
+
+\begin{exercise}
+    \label{exercise:linear_convergence_gauss_seidel}
+    Prove that, if the matrix $\mat A$ is strictly diagonally dominant (by rows or columns),
+    then the Gauss--Seidel method converges, i.e.\ $\rho(\mat M^{-1} \mat N) < 1$.
+    You can use the same approach as in the proof of \cref{proposition:linear_convergence_jacobi}.
+\end{exercise}
 
 
 % \begin{minted}{julia}
