@@ -1512,7 +1512,7 @@ It is simple to prove the convergence of Jacobi's method is the case where $\mat
     In the case of Jacobi's splitting,
     this is equivalent to
     \[
-        - (\mat L + \lambda \mat D + \mat L) \vect v = 0.
+        - (\mat L + \lambda \mat D + \mat U) \vect v = 0.
     \]
     If $\abs{\lambda} > 1$,
     then the matrix on the left-hand side of this equation is diagonally dominant and thus invertible
@@ -1658,8 +1658,8 @@ we obtain a sufficient condition for the convergence of the relaxation method.
     \]
     The diagonal elements of $\mat D$ are all positive,
     because $\mat A$ is positive definite.
-    (Indeed, if there was an index $i$ such that $d_{ii} < 0$,
-    then it would hold that $\vect e_i^\t \mat A \vect e_i = d_{ii} < 0$,
+    (Indeed, if there was an index $i$ such that $d_{ii} \leq 0$,
+    then it would hold that $\vect e_i^\t \mat A \vect e_i = d_{ii} \leq 0$,
     contradicting the assumption that $\mat A$ is positive definite.)
     We deduce that $\mat M + \mat N^*$ is positive definite if and only if $\omega \in (0, 2)$.
     We can then conclude the proof by using \cref{proposition:criterion_convergence}.
@@ -1685,7 +1685,7 @@ not only in the case of a Hermitian positive definite matrix $\mat A$ but in gen
         \item the determinant of a triangular matrix is equal to the product of its diagonal entries;
         \item the determinant of a matrix is equal to the product of its eigenvalues,
             to the power of their algebraic multiplicity.
-            This can be shown for the previous two item, 
+            This can be shown for the previous two item,
             by passing to the Jordan normal form.
     \end{itemize}
     Therefore,
@@ -1892,7 +1892,13 @@ the following alternatives are available:
         \qquad
         h = \frac{1}{n}.
     \]
-    Plot the norm of the residue as a function of the iteration index in both cases.
+    Plot the norm of the residue as a function of the iteration index.
+    Use as stopping criterion the condition
+    \[
+        \norm{\vect r^{(k)}} \leq \varepsilon \norm{\vect b},
+        \qquad \varepsilon = 10^{-10}.
+    \]
+    The code will be tested with $n = 20,\!000$.
 \end{compexercise}
 
 \begin{exercise}
