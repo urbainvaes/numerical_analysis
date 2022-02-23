@@ -1539,7 +1539,7 @@ The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
        \begin{aligned}
         & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + a_{13} x^{(k)}_3 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
         & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + a_{23} x^{(k)}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
-        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{3n} x^{(k)}_n = b_2 \\
+        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{3n} x^{(k)}_n = b_3 \\
         & \vdots \\
         & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + a_{n3} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
        \end{aligned}
@@ -1685,7 +1685,7 @@ not only in the case of a Hermitian positive definite matrix $\mat A$ but in gen
         \item the determinant of a triangular matrix is equal to the product of its diagonal entries;
         \item the determinant of a matrix is equal to the product of its eigenvalues,
             to the power of their algebraic multiplicity.
-            This can be shown for the previous two item,
+            This can be shown from the previous two items,
             by passing to the Jordan normal form.
     \end{itemize}
     Therefore,
@@ -1700,6 +1700,115 @@ not only in the case of a Hermitian positive definite matrix $\mat A$ but in gen
     and so we deduce $\rho(\mat M_{\omega}^{-1} \mat N_{\omega})^n \geq \abs{1 - \omega}^n$.
     The statement then follows by taking the $n$-th root.
 \end{proof}
+
+\subsubsection{Comparison between Jacobi and Gauss--Seidel for tridiagonal matrices~\moreinfo}%
+\label{ssub:comparison_between_jacobi_and_gauss_seidel_for_tridiagonal_matrices}
+For tridiagonal matrices,
+the convergence rate of the Jacobi and Gauss--Seidel methods satisfy an explicit relation,
+which we prove in this section.
+We denote the Jacobi and Gauss--Seidel splittings by $\mat M_{\mathcal J} - \mat N_{\mathcal J}$ and  $\mat M_{\mathcal G} - \mat N_{\mathcal G}$,
+respectively,
+and use the following notation for the entries of the matrix $\mat A$:
+\[
+    \begin{pmatrix}
+        a_1 & b_1 \\
+        c_1 & \ddots & \ddots  \\
+             & \ddots & \ddots & b_{n-1} \\
+             & & c_{n-1} & a_n
+    \end{pmatrix}.
+\]
+Before presenting and proving the result,
+notice that for any $\mu \neq 0$ it holds that
+\begin{equation}
+    \label{eq:preliminary_equation}
+    \begin{pmatrix}
+        \mu \\
+        & \mu^{2} &  \\
+        & & \ddots & \\
+        & & & \mu^{n}
+    \end{pmatrix}
+    \mat A
+    \begin{pmatrix}
+        \mu^{-1}  \\
+        & \mu^{-2} &  \\
+        & & \ddots & \\
+        & & & \mu^{-n}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        a_1 & \mu^{-1} b_1 \\
+        \mu c_1 & \ddots & \ddots  \\
+             & \ddots & \ddots & \mu^{-1} b_{n-1} \\
+             & & \mu c_{n-1} & a_n
+    \end{pmatrix}.
+\end{equation}
+\begin{proposition}
+    Assume that $\mat A$ is tridiagonal with nonzero diagonal elements,
+    so that both $\mat M_{\mathcal J} = \mat D$ and $\mat \mat M_{\mathcal G} = \mat L + \mat D$ are invertible.
+    Then
+    \[
+        \rho(\mat M_{\mathcal G}^{-1} \mat N_{\mathcal  G})
+        = \rho(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal  J})^2
+    \]
+\end{proposition}
+\begin{proof}
+    If $\lambda$ is an eigenvalue of $\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$ with associated unit eigenvector $\vect v$,
+    then
+    \[
+        \mat M_{\mathcal G}^{-1} \mat N_{\mathcal G} \vect v = \lambda \vect v
+        \quad \Leftrightarrow \quad
+        \mat N_{\mathcal G} \vect v = \lambda \mat M_{\mathcal G} \vect v
+        \quad \Leftrightarrow \quad
+        (\mat N_{\mathcal G} - \lambda \mat M_{\mathcal G}) \vect v = 0.
+    \]
+    For fixed $\lambda$,
+    there exists a nontrivial solution $\vect v$ to the last equation if and only if
+    \[
+        p_{\mathcal G}(\lambda) := \det (\mat N_{\mathcal G} - \lambda \mat M_{\mathcal G})
+        = - \det (\lambda \mat L + \lambda \mat D + \mat U) = 0.
+    \]
+    Likewise, $\lambda$ is an eigenvalue of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ if and only if
+    \[
+        p_{\mathcal J}(\lambda) := \det (\mat N_{\mathcal J} - \lambda \mat M_{\mathcal J})
+        = - \det (\mat L + \lambda \mat D + \mat U) = 0.
+    \]
+    Now notice that
+    \[
+        p_{\mathcal G}(\lambda^2)
+        = - \det \bigl(\lambda^2 \mat L + \lambda^2 \mat D + \mat U\bigr)
+        = - \lambda^n \det \bigl(\lambda \mat L + (\lambda \mat D) + \lambda^{-1} \mat U\bigr).
+    \]
+    Applying~\eqref{eq:preliminary_equation} with $\mu = \lambda \neq 0$,
+    we deduce
+    \[
+        p_{\mathcal G}(\lambda^2)
+        = - \lambda^n \det \bigl(\mat L + \lambda \mat D + \mat U\bigr)
+        = \lambda^n p_{\mathcal J}(\lambda)
+    \]
+    It is clear that this relation is true also if $\lambda = 0$.
+    Consequently, it holds that if $\lambda$ is an eigenvalue of the matrix $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ then
+    $\lambda^2$ is an eigenvalue of $\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$.
+    Conversely, if $\lambda$ is an eigenvalue of~$\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$,
+    then the two square roots of $\lambda$ are eigenvalues of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$.
+\end{proof}
+
+If a matrix $\mat A$ is tridiagonal and Toeplitz,
+i.e.\ if it is of the form
+\[
+    \begin{pmatrix}
+        a & b \\
+        c & \ddots & \ddots  \\
+             & \ddots & \ddots & b \\
+             & & c & a
+    \end{pmatrix},
+\]
+then it is possible to prove that the eigenvalues of~$\mat A$ are given by
+\[
+    \lambda_k =
+    a + 2\sqrt{bc} \cos \left(\frac{k \pi}{n+1} \right),
+    \qquad k = 1, \dots, n.
+\]
+In this case, the spectral radius of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ can be determined explicitly.
 
 \subsubsection{Monitoring the convergence}
 \label{ssub:monitoring_the_convergence}
