@@ -1743,6 +1743,7 @@ notice that for any $\mu \neq 0$ it holds that
     \end{pmatrix}.
 \end{equation}
 \begin{proposition}
+    \label{proposition:tridiagonal}
     Assume that $\mat A$ is tridiagonal with nonzero diagonal elements,
     so that both $\mat M_{\mathcal J} = \mat D$ and $\mat \mat M_{\mathcal G} = \mat L + \mat D$ are invertible.
     Then
@@ -1803,11 +1804,12 @@ i.e.\ if it is of the form
     \end{pmatrix},
 \]
 then it is possible to prove that the eigenvalues of~$\mat A$ are given by
-\[
+\begin{equation}
+    \label{eq:linear_eigenvalues_toeplitz}
     \lambda_k =
     a + 2\sqrt{bc} \cos \left(\frac{k \pi}{n+1} \right),
     \qquad k = 1, \dots, n.
-\]
+\end{equation}
 In this case, the spectral radius of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ can be determined explicitly.
 
 \subsubsection{Monitoring the convergence}
@@ -2009,6 +2011,12 @@ the following alternatives are available:
     \]
     As initial guess, use a vector of zeros.
     The code will be tested with $n = 20,\!000$.
+
+    \vspace{.2cm}
+    \noindent \textbf{Extra credit (difficult):} Find a formula for the optimal value of $\omega$ in the relaxation method given $n$.
+    The proof of \cref{proposition:tridiagonal},
+    as well as the formula~\eqref{eq:linear_eigenvalues_toeplitz} for the eigenvalues of a tridiagonal matrix,
+    are useful to this end.
 \end{compexercise}
 
 \begin{exercise}
