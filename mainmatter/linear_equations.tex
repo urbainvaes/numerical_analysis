@@ -1942,7 +1942,7 @@ we calculate that
     \label{eq:linear_steepest}
     &= f\bigl( \vect x^{(k)} \bigr) + \frac{\omega_k^2}{2} \vect d^\t \mat A \vect d - \omega_k \vect d^\t \vect r^{(k)}.
 \end{align}
-When viewed as a function of the real parameter $\omega_k$, 
+When viewed as a function of the real parameter $\omega_k$,
 the right-hand side is a convex quadratic function.
 It is minimized when its derivative is equal to zero,
 i.e.\ when
@@ -1959,7 +1959,8 @@ the error $\vect x - \vect x_*$ is nonincreasing in the norm $\vect x \mapsto \s
 In order to quantify more precisely the decrease of the error in this norm,
 we introduce the notation
 \[
-    E_k = \norm{\vect x - \vect x_*}^2_{\mat A} := (\vect x^{(k+1)} - \vect x_*)^\t \mat A (\vect x^{(k+1)} - \vect x_*).
+    E_k = \norm{\vect x - \vect x_*}^2_{\mat A} := (\vect x^{(k)} - \vect x_*)^\t \mat A (\vect x^{(k)} - \vect x_*)
+    = (\mat A \vect x^{(k)} - \vect b)^\t \mat A^{-1} (\mat A \vect x^{(k)} - \vect b).
 \]
 We begin by showing the following auxiliary lemma.
 \begin{lemma}
@@ -2019,18 +2020,27 @@ We are now able to prove the convergence of the steepest descent method.
 \end{theorem}
 \begin{proof}
     Let us introduce $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$ and $g(\vect e) = \frac{1}{2} \vect e^\t \mat A \vect e$.
-    Notice that $\vect e^{(k+1)} = \vect e^{(k)} - \omega_k \vect d$ and $\vect d = \nabla g(\vect e^{(k)})$.
-    In other words, $\vect e^{(k+1)}$ can be obtained from $\vect e^{(k+}$ using a steepest descent iteration for the function $g$.
-
-    Employing the formula for the step size~\eqref{eq:linear_optimal_step_size_steepest_descent},
-    we obtain,
+    Notice that $\vect e^{(k+1)} = \vect e^{(k)} - \omega_k \vect d$ and $\vect d = \nabla g(\vect e^{(k)}) = \vect r^{(k)}$.
+    In other words, $\vect e^{(k+1)}$ can be obtained from $\vect e^{(k)}$ using a steepest descent iteration for the function $g$.
+    Substituting the formula for the step size~\eqref{eq:linear_optimal_step_size_steepest_descent},
+    we obtain
     \begin{align*}
-        E_{k+1} 
-        &= g\bigl( \vect e^{(k+1)} \bigr) 
-        = g\bigl( \vect e^{(k)} - \omega_k \vect d \bigr) 
-        = E_k - 2 \omega_k (\vect e^{(k)})^\t \mat A \vect d + \omega_k^2 \vect d^\t \mat A \vect d \\
-        &=  E_k - \omega_k^2 \vect d^\t \mat A \vect d \\
+        E_{k+1}
+        &= 2 g\bigl( \vect e^{(k+1)} \bigr)
+        = 2  g\bigl( \vect e^{(k)} - \omega_k \vect d \bigr)
+        = E_k - 2 \omega_k \vect d^\t \mat A \vect e^{(k)} + \omega_k^2 \vect d^\t \mat A \vect d \\
+        &=  E_k - \frac{(\vect d^\t \vect d)^\t}{\vect d^\t \mat A \vect d}
+        =  \left( 1 - \frac{(\vect d^\t \vect d)^2}{(\vect d^\t \mat A \vect d) (\vect d^\t \mat A^{-1} \vect d)} \right) E_k.
     \end{align*}
+    Using the Kantorovich inequality,
+    we obtain
+    \begin{align*}
+        E_{k+1}
+        \leq \left( 1  - \frac{4 \lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}  \right) E_k
+        \leq \left(\frac{\lambda_1 - \lambda_n}{\lambda_1 + \lambda_n}  \right)^2 E_k
+        = \left(\frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}  \right)^2 E_k.
+    \end{align*}
+    We immediately deduce the statement from this inequality.
 \end{proof}
 
 \begin{algorithm}
