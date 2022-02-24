@@ -2018,11 +2018,19 @@ We are now able to prove the convergence of the steepest descent method.
     \]
 \end{theorem}
 \begin{proof}
-    Substituting the optimal step size~\eqref{eq:linear_optimal_step_size_steepest_descent} in~\eqref{eq:linear_steepest},
-    we obtain
-    \[
-        f\bigl( \vect x^{(k)} \bigr) + \frac{\omega_k^2}{2} \vect d^\t \mat A \vect d - \omega_k \vect d^\t \vect b
-    \]
+    Let us introduce $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$ and $g(\vect e) = \frac{1}{2} \vect e^\t \mat A \vect e$.
+    Notice that $\vect e^{(k+1)} = \vect e^{(k)} - \omega_k \vect d$ and $\vect d = \nabla g(\vect e^{(k)})$.
+    In other words, $\vect e^{(k+1)}$ can be obtained from $\vect e^{(k+}$ using a steepest descent iteration for the function $g$.
+
+    Employing the formula for the step size~\eqref{eq:linear_optimal_step_size_steepest_descent},
+    we obtain,
+    \begin{align*}
+        E_{k+1} 
+        &= g\bigl( \vect e^{(k+1)} \bigr) 
+        = g\bigl( \vect e^{(k)} - \omega_k \vect d \bigr) 
+        = E_k - 2 \omega_k (\vect e^{(k)})^\t \mat A \vect d + \omega_k^2 \vect d^\t \mat A \vect d \\
+        &=  E_k - \omega_k^2 \vect d^\t \mat A \vect d \\
+    \end{align*}
 \end{proof}
 
 \begin{algorithm}
