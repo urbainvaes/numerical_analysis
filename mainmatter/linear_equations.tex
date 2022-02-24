@@ -57,6 +57,8 @@ This chapter is organized as follows.
     \item
         In \cref{sec:iterative_methods},
         we present iterative methods for solving linear systems.
+        We focus in particular on basic iterative methods based on a splitting,
+        and on the conjugate gradient method.
 \end{itemize}
 
 \section{Conditioning}%
@@ -414,7 +416,7 @@ known as \emph{Gaussian elimination},
 for calculating the $\mat L \mat U$ decomposition of a matrix.
 We begin by introducing the concept of \emph{Gaussian transformation}.
 \begin{definition}
-    A Gaussian transformation is a matrix of the form $\mat M_k = \mat I - \vect c^{(k)} \vect e_k$,
+    A Gaussian transformation is a matrix of the form $\mat M_k = \mat I - \vect c^{(k)} \vect e_k^\t$,
     where~$\vect e_k$ is the column vector with entry at index $k$ equal to 1 and all the other entries equal to zero,
     and $\vect c^{(k)}$ is a column vector of the following form:
     \[
@@ -1302,8 +1304,8 @@ one step of this general method reads
     \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b.
 \end{equation}
 For any choice of splitting,
-the exact solution $\vect x$ to the linear system is a fixed point of this iteration,
-in the sense that if $\vect x^{(0)} = \vect x$, then $\vect x^{(k)} = \vect x$ for all $k \geq 0$.
+the exact solution $\vect x_*$ to the linear system is a fixed point of this iteration,
+in the sense that if $\vect x^{(0)} = \vect x_*$, then $\vect x^{(k)} = \vect x_*$ for all $k \geq 0$.
 \Cref{eq:linear_system_iterative_method} is a linear system with matrix~$\mat M$,
 unknown $\vect x^{(k+1)}$, and right-hand side $\mat N \vect x^{(k)} + \vect b$.
 There is a compromise between the cost of a single step and the speed of convergence of the method.
@@ -1315,7 +1317,7 @@ the linear system~\eqref{eq:linear_system_iterative_method} should be relatively
 Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
 The error $\vect e^{(k)}$ and residue $\vect r^{(k)}$ at iteration $k$ are defined as follows:
 \[
-    \vect e^{(k)} = \vect x^{(k)} - \vect x,
+    \vect e^{(k)} = \vect x^{(k)} - \vect x_*,
     \qquad
     \vect r^{(k)} = \mat A \vect x^{(k)} - \vect b.
 \]
@@ -1339,8 +1341,8 @@ for any initial guess~$\vect x^{(0)}$.
     \]
 \end{proposition}
 \begin{proof}
-    Let us denote by $\vect x$ the solution to the linear system.
-    Since $\mat M \vect x - \mat N \vect x = \vect b$,
+    Let $\vect x_*$ denote the solution to the linear system.
+    Since $\mat M \vect x_* - \mat N \vect x_* = \vect b$,
     we have
     \[
         \mat M (\vect x^{(k+1)} - \vect x) = \mat N (\vect x^{(k)} - \vect x).
@@ -1447,6 +1449,7 @@ the better the asymptotic rate of convergence.
 
 \begin{remark}
     [Link to optimization]
+    \label{remark:linear_link_optimization}
     In the case where $\mat A$ is symmetric and positive definite,
     the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm
     for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
@@ -1816,7 +1819,7 @@ In this case, the spectral radius of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal 
 \label{ssub:monitoring_the_convergence}
 In practice,
 we have access to the residue $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
-but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x$,
+but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$,
 as calculating the latter would require to know the exact solution of the problem.
 Nevertheless,
 the two are related by the equation
@@ -1873,8 +1876,188 @@ the following alternatives are available:
         because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
 \end{itemize}
 
-\subsection{Exercises}%
+\subsection{The conjugate gradient method}%
+\label{sub:the_conjugate_gradient_method}
 
+As already mentioned in~\cref{remark:linear_link_optimization},
+when the matrix $\mat A \in \real^{n \times n}$ in the linear system $\mat A \vect x = \vect b$ is symmetric and positive definite,
+the system can be interpreted as a minimization problem for the function
+\begin{equation}
+    \label{eq:function_optimization}
+    f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+\end{equation}
+The fact that
+the exact solution $\vect x_*$ to the linear system is the unique minimizer of this function appears clearly
+when rewriting $f$ as follows:
+\[
+    f(\vect x)
+    = \frac{1}{2} (\vect x - \vect x_*)^\t \mat A (\vect x - \vect x_*)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}.
+\]
+The second term is constant with $\vect x$,
+and the first term is strictly positive if $\vect x - \vect x_* \neq \vect 0$,
+because~$\mat A$ is positive definite.
+We saw that Richardson's method can be interpreted as a steepest descent with fixed step size,
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}).
+\]
+In this section,
+we will present and study other methods
+for solving the linear system~\eqref{eq:linear_system}
+which can be viewed as optimization methods.
+Since $\mat A$ is symmetric,
+it is diagonalizable and the function $f$ can be rewritten as
+\begin{align*}
+    f(\vect x)
+    &= \frac{1}{2} (\vect x - \vect x_*)^\t \mat Q \mat D \mat Q^\t (\vect x - \vect x_*)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*} \\
+    &= \frac{1}{2} (\mat Q^\t \vect e)^\t \mat D (\mat Q^\t \vect e)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}, \qquad  \vect e = \vect x - \vect x_*.
+\end{align*}
+Therefore, we have that
+\begin{align*}
+    f(\vect x)= \frac{1}{2} \sum_{i=1}^{n} \lambda_i \eta_i^2 - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}, \qquad  \vect \eta = \vect Q^\t (\vect x - \vect x_*),
+\end{align*}
+where $(\lambda_i)_{1 \leq i \leq n}$ are the diagonal entries of $\mat D$.
+This shows that $f$ is a paraboloid
+after a change of coordinates.
+
+\subsubsection{Steepest descent method}%
+\label{ssub:steepest_descent_method}
+
+The steepest descent method is more general than Richardson's method in the sense that
+the step size can change from iteration to iteration
+and the method is not restricted to quadratic functions of the form~\eqref{eq:function_optimization}.
+Its general form is
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \omega_k \nabla f(\vect x^{(k)}).
+\]
+It is natural to wonder whether the step size $\omega_k$ can be fixed in such a way that
+$f(\vect x^{(k+1)})$ is as small as possible.
+For the case of the quadratic function~\eqref{eq:function_optimization},
+this value of $\omega_k$ can be calculated explicitly.
+Indeed, letting $\vect d = \nabla f(\vect x^{(k)})$,
+we calculate that
+\begin{align}
+    \notag
+    f(\vect x^{(k+1)})
+    &= f\bigl(\vect x^{(k)} - \omega_k \vect d\bigr) = \frac{1}{2} \left( \vect x^{(k)} - \omega_k \vect d\right)^\t \mat A \left(\vect x^{(k)} - \omega_k \vect d\right) - \left(\vect x^{(k)} - \omega_k \vect d\right)^\t \vect b \\
+    \label{eq:linear_steepest}
+    &= f\bigl( \vect x^{(k)} \bigr) + \frac{\omega_k^2}{2} \vect d^\t \mat A \vect d - \omega_k \vect d^\t \vect r^{(k)}.
+\end{align}
+When viewed as a function of the real parameter $\omega_k$, 
+the right-hand side is a convex quadratic function.
+It is minimized when its derivative is equal to zero,
+i.e.\ when
+\begin{equation}
+    \label{eq:linear_optimal_step_size_steepest_descent}
+    \omega_k \vect d^\t \mat A \vect d - \vect d^\t (\mat A \vect x_k - \vect b) = 0
+    \qquad \Rightarrow  \qquad \omega_k = \frac{\vect d^\t \vect r^{(k)}}{\vect d^\t \mat A \vect d}.
+\end{equation}
+The steepest descent algorithm with step size obtained from this equation is summarized in~\cref{algo:steepest_descent_method} below.
+By construction,
+the function value $f(\vect x^{(k)})$ is nonincreasing with $k$,
+which is equivalent to saying that
+the error $\vect x - \vect x_*$ is nonincreasing in the norm $\vect x \mapsto \sqrt{\vect x^\t \mat A \vect x}$.
+In order to quantify more precisely the decrease of the error in this norm,
+we introduce the notation
+\[
+    E_k = \norm{\vect x - \vect x_*}^2_{\mat A} := (\vect x^{(k+1)} - \vect x_*)^\t \mat A (\vect x^{(k+1)} - \vect x_*).
+\]
+We begin by showing the following auxiliary lemma.
+\begin{lemma}
+    [Kantorovich inequality]
+    Let $\mat A \in \real^{n \times n}$ be a symmetric and positive definite matrix,
+    and let $\lambda_0 \leq \dots \leq \lambda_n$ denote its eigenvalues.
+    Then for all nonzero $\vect z \in \real^n$ it holds that
+    \[
+        \frac{(\vect z^\t \vect z)^2}{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        \geq \frac{\lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}.
+    \]
+\end{lemma}
+\begin{proof}
+    By the AM-GM (arithmetic mean-geometric mean) inequality,
+    it holds for all $t > 0$ that
+    \begin{align*}
+        \sqrt{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        &= \sqrt{(t\vect z^\t \mat A \vect z) (t^{-1} \vect z^\t \mat A^{-1} \vect z)}
+        \leq \frac{1}{2} \left( t \vect z^\t \mat A \mat z + \frac{1}{t} \vect z^\t \mat A^{-1} \mat z \right) \\
+        &= \frac{1}{2} \vect z^\t \left( t \mat A + \frac{1}{t} \mat A^{-1} \right) \vect z.
+    \end{align*}
+    The matrix on the right-hand side is also symmetric and positive definite,
+    with eigenvalues equal to $t \lambda_i + (t \lambda_i)^{-1}$.
+    Therefore, we deduce
+    \begin{equation}
+        \label{eq:linear_kantorovich_bound}
+        \forall t \geq 0, \qquad
+        \sqrt{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        \leq \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right) \vect z^\t \vect z.
+    \end{equation}
+    The function $x \mapsto x + x^{-1}$ is convex,
+    and so over any closed interval $[x_{\min}, x_{\max}]$
+    it attains its maximum either at $x_{\min}$ or at $x_{\max}$.
+    Consequently, it holds that
+    \[
+        \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right)
+        = \max \left\{ t \lambda_{\min} + \frac{1}{t \lambda_{\min}}, t \lambda_{\max} + \frac{1}{t \lambda_{\max}} \right\}.
+    \]
+    In order to obtain the best possible bound from~\eqref{eq:linear_kantorovich_bound},
+    we should let $t$ be such that the maximum is minimized,
+    which occurs when the two arguments of the maximum are equal:
+    \[
+            t \lambda_{\min} + \frac{1}{t \lambda_{\min}} = t \lambda_{\max} + \frac{1}{t \lambda_{\max}}
+            \qquad \Rightarrow \qquad t = \frac{1}{\sqrt{\lambda_{\min} \lambda_{\max}}}.
+    \]
+    Substituting this value of $t$ and rearranging,
+    we obtain the statement.
+\end{proof}
+
+We are now able to prove the convergence of the steepest descent method.
+\begin{theorem}
+    [Convergence of the steepest descent]
+    It holds that
+    \[
+        E_{k+1}  = \left( 1 - \right) E_k.
+    \]
+\end{theorem}
+\begin{proof}
+    Substituting the optimal step size~\eqref{eq:linear_optimal_step_size_steepest_descent} in~\eqref{eq:linear_steepest},
+    we obtain
+    \[
+        f\bigl( \vect x^{(k)} \bigr) + \frac{\omega_k^2}{2} \vect d^\t \mat A \vect d - \omega_k \vect d^\t \vect b
+    \]
+\end{proof}
+
+\begin{algorithm}
+\caption{Steepest descent method}%
+\label{algo:steepest_descent_method}%
+\begin{algorithmic}[1]
+\State Pick $\varepsilon$ and initial $\vect x$%
+\State $\vect r \gets \mat A \vect x - \vect b$%
+\While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
+    \State $\vect d \gets \mat A \vect x - \vect b$
+    \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
+    \State $\vect x \gets \vect x - \omega \vect d$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+% Note that we did not need to use the definition of $\vect d$;
+% equation~\eqref{eq:linear_optimal_step_size_steepest_descent} gives the step size minimizing~$f(\vect x^{(k+1)}$ in any descent direction~$\vect d$.
+
+\begin{center}
+\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
+\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
+\fill (1.5mm,7mm) circle (1.5mm);
+\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
+\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
+\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
+        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
+\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
+        (-3mm,0mm)--++(-100:3mm)coordinate (d);
+\draw[ultra thick] (d) -- ++(-45:1.25cm);
+\end{tikzpicture}
+\textcolor{red}{Work in progress}
+\end{center}
+
+\subsection{Exercises}%
 \begin{exercise}
     \label{exercise:invertibility_diagonal_dominant}
     Show that if $\mat A$ is row or column diagonally dominant,
@@ -2025,22 +2208,3 @@ the following alternatives are available:
     then the Gauss--Seidel method converges, i.e.\ $\rho(\mat M^{-1} \mat N) < 1$.
     You can use the same approach as in the proof of \cref{proposition:linear_convergence_jacobi}.
 \end{exercise}
-
-
-% \begin{minted}{julia}
-% \end{minted}
-
-\begin{center}
-\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
-\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
-\fill (1.5mm,7mm) circle (1.5mm);
-\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
-\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
-\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
-        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
-\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
-        (-3mm,0mm)--++(-100:3mm)coordinate (d);
-\draw[ultra thick] (d) -- ++(-45:1.25cm);
-\end{tikzpicture}
-\textcolor{red}{Work in progress}
-\end{center}
