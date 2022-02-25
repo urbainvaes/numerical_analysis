@@ -1970,7 +1970,7 @@ We begin by showing the following auxiliary lemma.
     Then for all nonzero $\vect z \in \real^n$ it holds that
     \[
         \frac{(\vect z^\t \vect z)^2}{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
-        \geq \frac{\lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}.
+        \geq \frac{4\lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}.
     \]
 \end{lemma}
 \begin{proof}
@@ -1997,14 +1997,14 @@ We begin by showing the following auxiliary lemma.
     Consequently, it holds that
     \[
         \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right)
-        = \max \left\{ t \lambda_{\min} + \frac{1}{t \lambda_{\min}}, t \lambda_{\max} + \frac{1}{t \lambda_{\max}} \right\}.
+        = \max \left\{ t \lambda_{1} + \frac{1}{t \lambda_{1}}, t \lambda_{n} + \frac{1}{t \lambda_{n}} \right\}.
     \]
     In order to obtain the best possible bound from~\eqref{eq:linear_kantorovich_bound},
     we should let $t$ be such that the maximum is minimized,
     which occurs when the two arguments of the maximum are equal:
     \[
-            t \lambda_{\min} + \frac{1}{t \lambda_{\min}} = t \lambda_{\max} + \frac{1}{t \lambda_{\max}}
-            \qquad \Rightarrow \qquad t = \frac{1}{\sqrt{\lambda_{\min} \lambda_{\max}}}.
+            t \lambda_{1} + \frac{1}{t \lambda_{1}} = t \lambda_{n} + \frac{1}{t \lambda_{n}}
+            \qquad \Rightarrow \qquad t = \frac{1}{\sqrt{\lambda_{1} \lambda_{n}}}.
     \]
     Substituting this value of $t$ and rearranging,
     we obtain the statement.
@@ -2015,7 +2015,7 @@ We are now able to prove the convergence of the steepest descent method.
     [Convergence of the steepest descent]
     It holds that
     \[
-        E_{k+1}  = \left( 1 - \right) E_k.
+        E_{k+1}  = \left(\frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}  \right)^2 E_k.
     \]
 \end{theorem}
 \begin{proof}
