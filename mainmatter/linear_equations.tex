@@ -1876,7 +1876,7 @@ the following alternatives are available:
         because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
 \end{itemize}
 
-\subsection{The conjugate gradient method}%
+\subsection{The conjugate gradients method}%
 \label{sub:the_conjugate_gradient_method}
 
 As already mentioned in~\cref{remark:linear_link_optimization},
@@ -1989,16 +1989,17 @@ We begin by showing the following auxiliary lemma.
         \label{eq:linear_kantorovich_bound}
         \forall t \geq 0, \qquad
         \sqrt{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
-        \leq \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right) \vect z^\t \vect z.
+        \leq \frac{1}{2} \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right) \vect z^\t \vect z.
     \end{equation}
     The function $x \mapsto x + x^{-1}$ is convex,
     and so over any closed interval $[x_{\min}, x_{\max}]$
     it attains its maximum either at $x_{\min}$ or at $x_{\max}$.
     Consequently, it holds that
-    \[
+    \begin{equation*}
+        % \label{eq:maximum_between_two_things}
         \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right)
         = \max \left\{ t \lambda_{1} + \frac{1}{t \lambda_{1}}, t \lambda_{n} + \frac{1}{t \lambda_{n}} \right\}.
-    \]
+    \end{equation*}
     In order to obtain the best possible bound from~\eqref{eq:linear_kantorovich_bound},
     we should let $t$ be such that the maximum is minimized,
     which occurs when the two arguments of the maximum are equal:
@@ -2006,13 +2007,19 @@ We begin by showing the following auxiliary lemma.
             t \lambda_{1} + \frac{1}{t \lambda_{1}} = t \lambda_{n} + \frac{1}{t \lambda_{n}}
             \qquad \Rightarrow \qquad t = \frac{1}{\sqrt{\lambda_{1} \lambda_{n}}}.
     \]
-    Substituting this value of $t$ and rearranging,
+    For this value of $t$,
+    the maximum in~\eqref{eq:linear_kantorovich_bound} is equal to
+    \[
+        \sqrt{\frac{\lambda_1}{\lambda_{n}}} + \sqrt{\frac{\lambda_{n}}{\lambda_1}}.
+    \]
+    By substituting this expression in~\eqref{eq:linear_kantorovich_bound} and rearranging,
     we obtain the statement.
 \end{proof}
 
 We are now able to prove the convergence of the steepest descent method.
 \begin{theorem}
-    [Convergence of the steepest descent]
+    [Convergence of the steepest descent method]
+    \label{theorem:linear_convergenec_steepest_descent}
     It holds that
     \[
         E_{k+1}  = \left(\frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}  \right)^2 E_k.
@@ -2029,11 +2036,11 @@ We are now able to prove the convergence of the steepest descent method.
         &= 2 g\bigl( \vect e^{(k+1)} \bigr)
         = 2  g\bigl( \vect e^{(k)} - \omega_k \vect d \bigr)
         = E_k - 2 \omega_k \vect d^\t \mat A \vect e^{(k)} + \omega_k^2 \vect d^\t \mat A \vect d \\
-        &=  E_k - \frac{(\vect d^\t \vect d)^\t}{\vect d^\t \mat A \vect d}
-        =  \left( 1 - \frac{(\vect d^\t \vect d)^2}{(\vect d^\t \mat A \vect d) (\vect d^\t \mat A^{-1} \vect d)} \right) E_k.
+        &=  E_k - \frac{(\vect d^\t \vect d)^2}{\vect d^\t \mat A \vect d}
+        =  \left( 1 - \frac{(\vect d^\t \vect d)^2}{(\vect d^\t \mat A \vect d) (\vect d^\t \mat A^{-1} \vect d)} \right) E_k,
     \end{align*}
     Using the Kantorovich inequality,
-    we obtain
+    we have
     \begin{align*}
         E_{k+1}
         \leq \left( 1  - \frac{4 \lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}  \right) E_k
@@ -2050,12 +2057,198 @@ We are now able to prove the convergence of the steepest descent method.
 \State Pick $\varepsilon$ and initial $\vect x$%
 \State $\vect r \gets \mat A \vect x - \vect b$%
 \While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
-    \State $\vect d \gets \mat A \vect x - \vect b$
+    \State $\vect r \gets \mat A \vect x - \vect b$
+    \State $\vect d \gets \vect r$
     \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
     \State $\vect x \gets \vect x - \omega \vect d$
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
+
+\subsubsection{Preconditioned steepest descent}%
+\label{ssub:preconditioned_steepest_descent}
+We observe from \cref{theorem:linear_convergenec_steepest_descent} that the convergence of the steepest descent method is faster when
+the condition number of the matrix $\mat A$ is low.
+This naturally leads to the following question:
+can we reformulate the minimization of $f(\vect x)$ in~\eqref{eq:function_optimization}
+as another optimization problem which is of the same but involves a matrix with a lower condition number,
+thereby providing scope for faster convergence?
+In order to answer this question,
+we consider a linear change of coordinates~$\vect y = \mat T^{-1} \vect x$,
+where $\mat T$ is an invertible matrix,
+and we define
+\begin{equation}
+    \label{eq:linear_quadratic_function}
+    \widetilde f(\vect y) = f(\mat T \vect y)
+    = \frac{1}{2} \vect y^\t (\mat T^{\t} \mat A \mat T) \vect y - (\mat T^{\t} \vect b)^{\t} \vect y.
+\end{equation}
+This function is of the same form as $f$~in~\eqref{eq:function_optimization},
+except that the matrix is $\widetilde {\mat A} := \mat T^\t \mat A \mat T$ instead of~$\mat A$ and the vector is $\widetilde {\vect b} := \mat T^{\t} \vect b$ instead of $\vect b$.
+Its minimizer is $\vect y_* = \mat T^{-1} \vect y$.
+The steepest descent algorithm can be applied to~\eqref{eq:linear_quadratic_function} and,
+from an approximation $\vect y^{(k)}$ of the minimizer~$\vect y_*$,
+an approximation $\vect x^{(k)}$ of $\vect x_*$ is obtained by the change of variable $\vect x^{(k)} = \mat T \vect y^{(k)}$.
+This approach is called \emph{preconditioning}.
+By \cref{theorem:linear_convergenec_steepest_descent},
+the steepest descent method,
+satisfies the following error estimate
+when applied to the function~\eqref{eq:linear_quadratic_function}:
+\begin{align*}
+    E_{k+1}
+    \leq
+    \left(\frac{\kappa_2(\mat T^\t \mat A \mat T) - 1}{\kappa_2(\mat T^\t \mat A \mat T) + 1} \right)^2 E_k,
+    \qquad E_{k} &= (\vect y^{(k)} - \vect y_*)^\t \widetilde {\mat A} (\vect y^{(k)} - \vect y_*), \\
+    &= (\vect x^{(k)} - \vect x_*)^\t \mat A (\vect x^{(k)} - \vect x_*).
+\end{align*}
+Consequently, the convergence is faster than that of the usual steepest descent method if and only if $\kappa_2(\mat T^\t \mat A \mat T) < \kappa_2(\mat A)$.
+The optimal change of coordinates is given by $\mat T = \mat C^{-\t}$,
+where $\mat C$ is the factor of the Cholesky factorization of $\mat A$ as $\mat C \mat C^\t$.
+Indeed, in this case
+\[
+    \mat T^\t \mat A \mat T = \mat C^{-1} \mat C \mat C^\t \mat C^{-\t} = \mat I
+    \qquad \Rightarrow \qquad
+    \kappa_2(\mat T^\t \mat A \mat T) = 1,
+\]
+and the method converges in a single iteration!
+However,
+this iteration amounts to solving the linear system by direct Cholesky factorization of $\mat A$.
+In practice, it is usual to define $\mat T$ from an approximation of the Cholesky factorization,
+such as the \emph{incomplete Cholesky factorization}.
+
+To conclude this section,
+we demonstrate that the change of variable from $\vect x$ to $\vect y$ need not be performed explicitly in practice.
+Indeed, one step of the steepest descent algorithm applied to function $\widetilde f$ reads
+\[
+    \vect y^{(k+1)} = \vect y^{(k)} - \widetilde \omega_k (\widetilde {\mat A} \vect y^{(k)} - \widetilde{\vect b}),
+    \qquad \widetilde \omega_k = \frac{(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})^\t(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})}{(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})^\t \widetilde{\mat A} (\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})}.
+\]
+Letting $\vect x^{(k)} = \mat T \vect y^{(k)}$,
+this equation can be rewritten as the following iteration:
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \widetilde \omega_k \vect d_k,
+    \qquad \widetilde \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}, \qquad \vect d_k = \mat T^{\t} \mat T (\mat A \vect x^{(k)} - \vect b).
+\]
+A comparison with~\eqref{eq:linear_optimal_step_size_steepest_descent} shows that the step size $\widetilde \omega_k$ is such that $f(\vect x^{(k+1)})$ is minimized.
+This reasoning shows that the preconditioned conjugate gradient method amounts to choosing the direction~$\vect d^{(k)} = \mat T \mat T^{\t} \vect r^{(k)}$ at each iteration,
+instead of just $\vect r^{(k)}$,
+as is apparent in \cref{algo:preconditioned_steepest_descent_method}.
+It is simple to check that $- \vect d^{(k)}$ is a descent direction for $f$:
+\[
+    -\nabla f(\vect x)^\t \bigl(\mat T^\t \mat T (\mat A \vect x - \vect b)\bigr) =
+    -\bigl(\mat T (\mat A \vect x - \vect b)\bigr)^\t \bigl(\mat T (\mat A \vect x - \vect b)\bigr) \leq 0.
+\]
+\begin{algorithm}[ht]
+\caption{Preconditioned steepest descent method}%
+\label{algo:preconditioned_steepest_descent_method}%
+\begin{algorithmic}[1]
+\State Pick $\varepsilon$, invertible $\mat T$ and initial $\vect x$%
+\State $\vect r \gets \mat A \vect x - \vect b$%
+\While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
+    \State $\vect r \gets \mat A \vect x - \vect b$
+    \State $\vect d \gets \mat T^\t \mat T \vect r$
+    \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
+    \State $\vect x \gets \vect x - \omega \vect d$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\vspace{-.5cm}
+
+\subsubsection{Conjugate directions method}%
+\label{ssub:conjugate_directions}
+\begin{definition}
+    [Conjugate directions]
+    Let $\mat A$ be a symmetric positive definite matrix.
+    Two vectors $\vect d_1$ and $\vect d_2$ are called $\mat A$-orthogonal or conjugate with respect to $\mat A$
+    if $\vect d_1^\t \mat A \vect d_2 = 0$,
+    i.e.\ if they are orthogonal for the inner product $\ip{\vect x, \vect y}_{\mat A} = \vect x^\t \mat A \vect y$.
+\end{definition}
+
+Assume that $\vect d_0, \dotsc, \vect d_{n-1}$ are $n$ pairwise $\mat A$-orthogonal directions.
+By \cref{exercise:linear_independence_conjugate_directions},
+these vectors are linearly independent,
+and so they form a basis of $\real^n$.
+Consequently, for any initial guess $\vect x_0$ the exact solution~$\vect x_*$ to the linear system $\mat A \vect x = \vect b$
+can be decomposed as
+\[
+    \vect x_* - \vect x^{(0)} = \alpha_0 \vect d_0 + \dotsb + \alpha_{n-1} \vect d_{n-1}.
+\]
+Taking the $\ip{\placeholder, \placeholder}_{\mat A}$ inner product of both sides with $\vect d_k$,
+with $k \in \{0, \dotsc, n-1\}$,
+we obtain an expression for the scalar coefficient $\alpha_k$
+\[
+    \alpha_k = \frac{\vect d_k^\t \mat A (\vect x_* - \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k}
+    = \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k}.
+\]
+Notice that calculating the expression of the coefficient does not require to know the exact solution $\vect x_*$.
+Given conjugate directions the exact solution can be obtained as
+\begin{equation}
+    \label{eq:linear_expansion_conjugate_direction}
+    \vect x_* = \vect x^{(0)} + \sum_{k=0}^{n-1} \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k} \vect d_k.
+\end{equation}
+From this equation we deduce,
+denoting by $\mat D$ the matrix $\begin{pmatrix} \vect d_0 & \hdots & \vect d_{n-1} \end{pmatrix}$,
+that the inverse of $\mat A$ can be expressed as
+\[
+    \mat A^{-1} = \mat D (\mat D^\t \mat A \mat D)^{-1} \mat D^\t
+    = \sum_{k=0}^{n-1} \frac{\vect d_k \vect d_k^\t}{\nu_k}, \qquad \nu_k = \vect d_k^\t \mat A \vect d_k.
+\]
+In this equation, $\nu_k$ is the $k$-th diagonal entry of the matrix $\mat D^\t \mat A \mat D$.
+The conjugate directions method is illustrated in~\cref{algo:conjugate_directions}.
+Its implementation is very similar to the steepest descent method,
+the only difference being that the descent direction at iteration $k$ is given by $\vect d_k$ instead of~$\vect r^{(k)}$.
+In particular, the step size at each iteration minimizes $f(\vect x^{(k+1)})$.
+\begin{algorithm}
+    \caption{Conjugate directions method}%
+    \label{algo:conjugate_directions}%
+    \begin{algorithmic}[1]
+        \State Assuming $\vect d_0, \dotsc, \vect d_{n-1}$ are given.
+        \State Pick initial $\vect x$
+        \For{$k$ in $\{0, \dotsc, n-1\}$}
+            \State $\vect r \gets \mat A \vect x - \vect b$
+            \State $\vect d \gets \vect d_i$
+            \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
+            \State $\vect x \gets \vect x - \omega \vect d$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Let us now establish the connection between the~\cref{algo:conjugate_directions} and~\eqref{eq:linear_expansion_conjugate_direction}.
+\begin{proposition}
+    [Convergence of the conjugate directions method]
+    The vector $\vect x^{(k)}$ obtained after $k$ iterations of the conjugate directions method is given by
+    \begin{equation}
+        \label{eq:series_expansion_of_y}
+        \vect x^{(k)} = \vect x^{(0)}
+        + \sum_{i=0}^{k-1} \frac{\vect d_i^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_i^\t \mat A \vect d_i} \vect d_i.
+    \end{equation}
+    In particular,
+    the method converges in at most $n$ iterations.
+\end{proposition}
+\begin{proof}
+    Let us denote by $\vect y^{(k)}$ the solution obtained after $k$ steps of \cref{algo:conjugate_directions}.
+    Our goal is to show that $\vect y^{(k)}$ coincides with $\vect x^{(k)}$ defined in~\eqref{eq:series_expansion_of_y}.
+    The result is trivial for $k = 0$.
+    Reasoning by induction,
+    we assume that it holds true up to~$k$.
+    Then preforming the $(k+1)$-th step of the algorithm gives
+    \[
+        \vect y^{(k+1)} = \vect y^{(k)} - \omega_k \vect d_k, \qquad \omega_k = \frac{\vect d_k^\t (\mat A \vect y^{(k)} - \vect b)}{\vect d_k^\t \mat A \vect d_k}.
+    \]
+    On the other hand,
+    it holds from~\eqref{eq:series_expansion_of_y} that
+    \[
+        \vect x^{(k+1)} = \vect x^{(k)} + \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k} \vect d_k.
+    \]
+    By the induction hypothesis it holds that $\vect y^{(k)} = \vect x^{(k)}$ and so,
+    in order to prove the equality $\vect y^{(k+1)} = \vect x^{(k+1)}$,
+    it remains to show that
+    \[
+        \omega_k = - \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(k)})}{\vect d_k^\t \mat A \vect d_k}
+        \quad \Leftrightarrow \quad
+        \vect d_k^\t \mat A \vect x^{(k)} = \vect d_k^\t \mat A \vect x^{(0)}.
+    \]
+    The latter equality is clear from the $\mat A$-orthonormality of the directions.
+\end{proof}
 
 % Note that we did not need to use the definition of $\vect d$;
 % equation~\eqref{eq:linear_optimal_step_size_steepest_descent} gives the step size minimizing~$f(\vect x^{(k+1)}$ in any descent direction~$\vect d$.
@@ -2225,4 +2418,11 @@ We are now able to prove the convergence of the steepest descent method.
     Prove that, if the matrix $\mat A$ is strictly diagonally dominant (by rows or columns),
     then the Gauss--Seidel method converges, i.e.\ $\rho(\mat M^{-1} \mat N) < 1$.
     You can use the same approach as in the proof of \cref{proposition:linear_convergence_jacobi}.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:linear_independence_conjugate_directions}
+    Let $\mat A \in \real^{n \times n}$ denote a symmetric positive definite matrix,
+    and assume that the vectors $\vect d_1, \dotsc, \vect d_n$ are pairwise $\mat A$-orthogonal directions.
+    Show that $\vect d_1, \dotsc, \vect d_n$ are linearly independent.
 \end{exercise}
