@@ -2674,3 +2674,50 @@ which completes the proof.
     and assume that the vectors $\vect d_1, \dotsc, \vect d_n$ are pairwise $\mat A$-orthogonal directions.
     Show that $\vect d_1, \dotsc, \vect d_n$ are linearly independent.
 \end{exercise}
+
+\begin{compexercise}
+    [Steepest descent algorithm]
+    Consider the linear system
+    \begin{equation}
+        \label{eq:exercise_linear_system}
+        \mat A \vect x :=
+        \begin{pmatrix}
+            3 & 1 \\ 1 & 3
+        \end{pmatrix}
+        \begin{pmatrix}
+            x_1 \\
+            x_2
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            1 \\
+            1
+        \end{pmatrix} =: \vect b.
+    \end{equation}
+    \begin{itemize}
+        \item
+            Show that $\mat A$ is positive definite.
+
+        \item
+            Draw the contour lines of the function
+            \[
+                f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+            \]
+
+        \item
+            Plot the contour lines of~$f$ in Julia using the function \julia{contourf} from the package \julia{Plots}.
+
+        \item
+            Using \cref{theorem:linear_convergenec_steepest_descent},
+            estimate the number~$K$ of iterations of the steepest descent algorithm required in order to guarantee that $E_K \leq 10^{-8}$,
+            when starting from the vector $\vect x^{(0)} = (0~0)^\t$.
+
+        \item
+            Implement the steepest descent method for finding the solution to~\eqref{eq:exercise_linear_system},
+            and plot the iterates as linked dots over the filled contour of~$f$.
+
+        \item
+            Plot the error $E_k$ as a function of the iteration index,
+            using a linear scale for the $x$ axis and a logarithmic scale for the $y$ axis.
+    \end{itemize}
+\end{compexercise}
