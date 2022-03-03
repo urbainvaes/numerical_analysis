@@ -2278,7 +2278,7 @@ In fact, it also satisfies the following stronger property.
     \[
         \vect y = \vect x^{(0)} + \beta_0 \vect d_0 + \dotsb + \beta_{k-1} \vect v_{k-1}.
     \]
-    Employing these two expressions, the expression of $f$ in~\eqref{eq:rewritten_expression_of_f},
+    Employing these two expressions, the formula for $f$ in~\eqref{eq:rewritten_expression_of_f},
     and the $\mat A$-orthogonality of the directions,
     we obtain
     \begin{align*}
@@ -2721,3 +2721,8 @@ which completes the proof.
             using a linear scale for the $x$ axis and a logarithmic scale for the $y$ axis.
     \end{itemize}
 \end{compexercise}
+
+\begin{exercise}
+    Compute the number of floating point operations required for performing one iteration of the conjugate gradient method,
+    assuming that the matrix $\mat A$ contains $\alpha \ll n$ nonzero elements per row.
+\end{exercise}
