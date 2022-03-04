@@ -1580,10 +1580,10 @@ The equation~\eqref{eq:linear_system_iterative_method} for this splitting can be
 \begin{equation*}
     \left\{
        \begin{aligned}
-        & a_{11} \bigl(x^{(\textcolor{darkblue}{k+1})}_1 - x^{(k)}_1 \bigr) =  \omega \left(a_{11} x^{(k)}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n - b_1 \right) \\
-        & a_{22} \bigl(x^{(\textcolor{darkblue}{k+1})}_2 - x^{(k)}_2 \bigr) =  \omega \left(a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(k)}_2 + \dotsb + a_{2n} x^{(k)}_n - b_2 \right) \\
+        & a_{11} \bigl(x^{(\textcolor{darkblue}{k+1})}_1 - x^{(k)}_1 \bigr) =  -\omega \left(a_{11} x^{(k)}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n - b_1 \right) \\
+        & a_{22} \bigl(x^{(\textcolor{darkblue}{k+1})}_2 - x^{(k)}_2 \bigr) =  -\omega \left(a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(k)}_2 + \dotsb + a_{2n} x^{(k)}_n - b_2 \right) \\
         & \vdots \\
-        & a_{nn} \bigl(x^{(\textcolor{darkblue}{k+1})}_n - x^{(k)}_n \bigr) =  \omega \left(a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} x^{(k)}_n - b_n \right).
+        & a_{nn} \bigl(x^{(\textcolor{darkblue}{k+1})}_n - x^{(k)}_n \bigr) =  -\omega \left(a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} x^{(k)}_n - b_n \right).
        \end{aligned}
    \right .
 \end{equation*}
@@ -2726,3 +2726,7 @@ which completes the proof.
     Compute the number of floating point operations required for performing one iteration of the conjugate gradient method,
     assuming that the matrix $\mat A$ contains $\alpha \ll n$ nonzero elements per row.
 \end{exercise}
+
+\section{Discussion and bibliography}%
+
+The reference~\cite{shewchuk1994introduction} is an excellent introduction to the conjugate gradient method.
