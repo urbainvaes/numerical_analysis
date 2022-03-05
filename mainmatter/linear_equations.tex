@@ -35,7 +35,7 @@ There are two main approaches for solving linear systems:
     \item
         Iterative methods, on the other hand,
         enable to progressively calculate increasingly accurate approximations of the solution.
-        Iterations may be stopped once the \emph{the residue} is sufficiently small.
+        Iterations may be stopped once the \emph{the residual} is sufficiently small.
         These methods are often preferable when the dimension $n$ of the linear system is very large.
 \end{itemize}
 
@@ -1285,7 +1285,7 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
 \section{Iterative methods for linear systems}%
 \label{sec:iterative_methods}
 Iterative methods enjoy more flexibility than direct methods,
-because they can be stopped at any point if the residue is deemed sufficiently small.
+because they can be stopped at any point if the residual is deemed sufficiently small.
 This generally enables to obtain a good solution at a computational cost that is significantly lower than that of direct methods.
 In this section,
 we present and study two classes of iterative methods:
@@ -1315,7 +1315,7 @@ but performing this step amounts to solving the initial problem.
 In practice, in order for the method to be useful,
 the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
 Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
-The error $\vect e^{(k)}$ and residue $\vect r^{(k)}$ at iteration $k$ are defined as follows:
+The error $\vect e^{(k)}$ and residual $\vect r^{(k)}$ at iteration $k$ are defined as follows:
 \[
     \vect e^{(k)} = \vect x^{(k)} - \vect x_*,
     \qquad
@@ -1820,7 +1820,7 @@ In this case, the spectral radius of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal 
 \subsubsection{Monitoring the convergence}
 \label{ssub:monitoring_the_convergence}
 In practice,
-we have access to the residue $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
+we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
 but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$,
 as calculating the latter would require to know the exact solution of the problem.
 Nevertheless,
@@ -1841,10 +1841,10 @@ we deduce
      \frac{\norm{\vect e^{(k)}}}{\vect x}
      \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
 \]
-The fraction on the right-hand side is the \emph{relative residue}.
+The fraction on the right-hand side is the \emph{relative residual}.
 If the system is well conditioned,
 that is if $\kappa(A)$ is close to one,
-then controlling the residue enables a good control of the error.
+then controlling the residual enables a good control of the error.
 
 \subsubsection{Stopping criterion}%
 \label{ssub:stopping_criterion}
@@ -1865,7 +1865,7 @@ the following alternatives are available:
         a splitting method with rescaled initial guess $k \vect x^{(0)}$
         will require a number of iterations that depends on $k$:
         fewer if $k \ll 1$ and more if $k \gg 1$.
-        In practice, controlling the relative residue and the relative error is often preferable.
+        In practice, controlling the relative residual and the relative error is often preferable.
 
     \item
         Stop when $\norm{\vect r^{(k)}} / \norm{\vect r^{(0)}} \leq \varepsilon$.
@@ -2171,25 +2171,26 @@ By \cref{exercise:linear_independence_conjugate_directions},
 these vectors are linearly independent,
 and so they form a basis of $\real^n$.
 Consequently, for any initial guess $\vect x^{(0)}$,
-the vector $\vect x_* - \vect x^{(0)}$,
+the vector $\vect x^{(0)} - \vect x_*$,
 where $\vect x_*$ is the solution to the linear system $\mat A \vect x = \vect b$,
 can be decomposed as
 \[
-    \vect x_* - \vect x^{(0)} = \alpha_0 \vect d_0 + \dotsb + \alpha_{n-1} \vect d_{n-1}.
+    \vect x^{(0)} - \vect x_* = \alpha_0 \vect d_0 + \dotsb + \alpha_{n-1} \vect d_{n-1}.
 \]
 Taking the $\ip{\placeholder, \placeholder}_{\mat A}$ inner product of both sides with $\vect d_k$,
 with $k \in \{0, \dotsc, n-1\}$,
 we obtain an expression for the scalar coefficient $\alpha_k$
 \[
-    \alpha_k = \frac{\vect d_k^\t \mat A (\vect x_* - \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k}
-    = \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k}.
+    \alpha_k = \frac{\vect d_k^\t \mat A (\vect x^{(0)} - \vect x_*)}{\vect d_k^\t \mat A \vect d_k}
+    = \frac{\vect d_k^\t (\mat A \vect x^{(0)} - \vect b)}{\vect d_k^\t \mat A \vect d_k}.
 \]
-Notice that calculating the expression of the coefficient does not require to know the exact solution $\vect x_*$.
-Given conjugate directions the exact solution can be obtained as
+Therefore, calculating the expression of the coefficient does not require to know the exact solution $\vect x_*$.
+Given conjugate directions, the exact solution can be obtained as
 \begin{equation}
     \label{eq:linear_expansion_conjugate_direction}
-    \vect x_* = \vect x^{(0)} + \sum_{k=0}^{n-1} \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k} \vect d_k.
+    \vect x_* = \vect x^{(0)} - \sum_{k=0}^{n-1} \alpha_k \vect d_k, \qquad \alpha_k = \frac{\vect d_k^\t \vect r^{(0)}}{\vect d_k^\t \mat A \vect d_k}.
 \end{equation}
+
 From this equation we deduce,
 denoting by $\mat D$ the matrix $\begin{pmatrix} \vect d_0 & \hdots & \vect d_{n-1} \end{pmatrix}$,
 that the inverse of~$\mat A$ can be expressed as
@@ -2217,7 +2218,8 @@ In particular, the step size at each iteration is such that $f(\vect x^{(k+1)})$
 \end{algorithm}
 
 Let us now establish the connection between the~\cref{algo:conjugate_directions} and~\eqref{eq:linear_expansion_conjugate_direction},
-which is not immediately apparent because~\eqref{eq:linear_expansion_conjugate_direction} involves only the initial residue~$\mat A \vect x^{(0)} - \vect b$.
+which is not immediately apparent because~\eqref{eq:linear_expansion_conjugate_direction} involves only the initial residual~$\mat A \vect x^{(0)} - \vect b$,
+while the residual at the current iteration~$\vect r^{(k)}$ is used in the algorithm.
 \begin{proposition}
     [Convergence of the conjugate directions method]
     \label{proposition:conjugate_directions}
@@ -2225,7 +2227,8 @@ which is not immediately apparent because~\eqref{eq:linear_expansion_conjugate_d
     \begin{equation}
         \label{eq:series_expansion_of_y}
         \vect x^{(k)} = \vect x^{(0)}
-        + \sum_{i=0}^{k-1} \frac{\vect d_i^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_i^\t \mat A \vect d_i} \vect d_i.
+        - \sum_{i=0}^{k-1} \alpha_i \vect d_i,
+        \qquad \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i}.
     \end{equation}
     In particular,
     the method converges in at most $n$ iterations.
@@ -2238,25 +2241,27 @@ which is not immediately apparent because~\eqref{eq:linear_expansion_conjugate_d
     we assume that it holds true up to~$k$.
     Then performing step $k+1$ of the algorithm gives
     \[
-        \vect y^{(k+1)} = \vect y^{(k)} - \omega_k \vect d_k, \qquad \omega_k = \frac{\vect d_k^\t (\mat A \vect y^{(k)} - \vect b)}{\vect d_k^\t \mat A \vect d_k}.
+        \vect y^{(k+1)} = \vect y^{(k)} - \omega_k \vect d_k, \qquad \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}.
     \]
     On the other hand,
     it holds from~\eqref{eq:series_expansion_of_y} that
     \[
-        \vect x^{(k+1)} = \vect x^{(k)} + \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_k^\t \mat A \vect d_k} \vect d_k.
+        \vect x^{(k+1)} = \vect x^{(k)} - \alpha_k \vect d_k, \qquad \alpha_k = \frac{\vect d_k^\t \vect r^{(0)}}{\vect d_k^\t \mat A \vect d_k}.
     \]
     By the induction hypothesis it holds that $\vect y^{(k)} = \vect x^{(k)}$ and so,
     in order to prove the equality $\vect y^{(k+1)} = \vect x^{(k+1)}$,
-    it is sufficient to show that
+    it is sufficient to show that $\omega_k = \alpha_k$, i.e. that
     \[
-        \omega_k = - \frac{\vect d_k^\t (\vect b - \mat A \vect x^{(k)})}{\vect d_k^\t \mat A \vect d_k}
+        \vect d_k^\t \vect r^{(k)} = \vect d_k^\t \vect r^{(0)}
         \quad \Leftrightarrow \quad
-        \vect d_k^\t \mat A \vect x^{(k)} = \vect d_k^\t \mat A \vect x^{(0)}.
+        \vect d_k^\t (\vect r^{(k)} - \vect r^{(0)}) = 0
+        \quad \Leftrightarrow \quad
+        \vect d_k^\t \mat A (\vect x^{(k)} - \vect x^{(0)}) = 0.
     \]
-    The latter equality is clear from the $\mat A$-orthonormality of the directions.
+    The latter equality is obvious from the $\mat A$-orthonormality of the directions.
 \end{proof}
 
-Since $\omega$ in~\cref{algo:conjugate_directions} coincides with the expression in~\eqref{eq:linear_optimal_step_size_steepest_descent},
+Since $\omega_k$ in~\cref{algo:conjugate_directions} coincides with the expression in~\eqref{eq:linear_optimal_step_size_steepest_descent},
 the conjugate directions algorithm satisfies the following ``local optimization'' property:
 the iterate $\vect x^{(x+1)}$ minimizes $f$ on the straight line $\omega \mapsto \vect x^{(k)} - \omega \vect d_k$.
 In fact, it also satisfies the following stronger property.
@@ -2271,14 +2276,14 @@ In fact, it also satisfies the following stronger property.
     By~\eqref{eq:linear_expansion_conjugate_direction},
     it holds that
     \begin{equation*}
-        \vect x_* = \vect x^{(0)} + \sum_{i=0}^{n-1} \alpha_i \vect d_i,
+        \vect x_* = \vect x^{(0)} - \sum_{i=0}^{n-1} \alpha_i \vect d_i,
         \qquad
-        \alpha_i = \frac{\vect d_i^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_i^\t \mat A \vect d_i}
+        \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i}
     \end{equation*}
     On the other hand,
     any vector $\vect y \in \vect x^{(0)} + \mathcal B_k$ can be expanded as
     \[
-        \vect y = \vect x^{(0)} + \beta_0 \vect d_0 + \dotsb + \beta_{k-1} \vect v_{k-1}.
+        \vect y = \vect x^{(0)} - \beta_0 \vect d_0 - \dotsb - \beta_{k-1} \vect d_{k-1}.
     \]
     Employing these two expressions, the formula for $f$ in~\eqref{eq:rewritten_expression_of_f},
     and the $\mat A$-orthogonality of the directions,
@@ -2292,13 +2297,32 @@ In fact, it also satisfies the following stronger property.
     This is minimized when $\beta_i = \alpha_i$ for all $i \in \{0, \dotsc, k-1\}$,
     in which case $\vect y$ coincides with the $k$-th iterate $\vect x^{(k)}$ of the conjugate directions method in view of~\cref{proposition:conjugate_directions}.
 \end{proof}
+\begin{remark}
+    Let $\norm{\placeholder}_{\mat A}$ denote the norm induced by the inner product $(\vect x, \vect y) \mapsto \vect x^\t \mat A \vect y$.
+    Since
+    \[
+        \norm{\vect x^{(k)} - \vect x_*}_{\mat A} = \sqrt{2f(\vect x^{(k)}) + \vect x_*^\t \mat A \vect x_*},
+    \]
+    \cref{proposition:optimality_conjugate_directions} shows that $\vect x^{(k)}$ minimizes the norm~$\norm{\vect x^{(k)} - \vect x_*}_{\mat A}$
+    over $\vect x^{(0)} + \mathcal  B_k$.
+    % Equation~\eqref{eq:series_expansion_of_y} shows that $\vect x^{(k)} - \vect x^{(0)}$ is the orthogonal projection,
+    % with respect to the inner product $(\vect x, \vect y) \mapsto \vect x^\t \mat A \vect y$,
+    % of the vector $\vect x_* - \vect x^{(0)}$ over $\mathcal B_k$.
+    % In order to prove \cref{proposition:optimality_conjugate_directions},
+    % we could have simply invoked the property that the orthogonal projections in Hilbert spaces,
+    % it holds that $\vect x^{(k)} - \vect x^{(0)}$ minimizes
+    % \[
+    %     \norm[big]{(\vect x^{(k)} - \vect x^{(0)}) - (\vect x_* - \vect x^{(0)})}_{\mat A} = \norm{\vect x^{(k)} - \vect x_*}_{\mat A} = \sqrt{2f(\vect x^{(k)}) + \vect x_*^\t \mat A \vect x_*}.
+    % \]
+\end{remark}
+
 A corollary of~\eqref{proposition:optimality_conjugate_directions} is that the gradient of~$f$ at $\vect x^{(k)}$,
 i.e. the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$,
 is orthogonal to any vector in $\{\vect d_0, \dotsc, \vect d_{k-1} \}$ for the usual Euclidean inner product.
 This can also be checked directly from the formula
 \[
     \vect x^{(k)} - \vect x_* = \sum_{i=k}^{n-1} \alpha_i \vect d_i,
-    \qquad \alpha_i = \frac{\vect d_i^\t (\vect b - \mat A \vect x^{(0)})}{\vect d_i^\t \mat A \vect d_i},
+    \qquad \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i},
 \]
 which follows directly from \cref{proposition:conjugate_directions}.
 Indeed, it holds that
@@ -2341,9 +2365,9 @@ to deduce that
 \end{equation}
 It appears from~\eqref{eq:conjugate_gradient_gram_schmidt} that the cost of calculating a new direction grows linearly with the iteration index.
 In fact, it turns out that only the last term in the sum is nonzero,
-and so the cost of computing a does not grow with the iteration index~$k$.
+and so the cost of computing a new direction does not grow with the iteration index~$k$.
 In order to explain why only the last term of the sum in~\eqref{eq:conjugate_gradient_gram_schmidt} is nonzero,
-we begin by making a couple observations:
+we begin by making a couple of observations:
 \begin{itemize}
     \item
         Since the directions are obtained from the residuals,
@@ -2363,7 +2387,9 @@ we begin by making a couple observations:
             = \mat A \vect x^{(i+1)} - \vect b
             = \mat A(\vect x^{(i)} - \omega_i \vect d_i) - \vect b = \vect r^{(i)} - \omega_i \mat A \vect d_i.
         \end{equation}
-        Rearranging this equation and noting that $\vect r^{(i+1)} - \vect r^{(i)}$ is a linear combination of the first $i+1$ conjugate directions by~\eqref{eq:conjugate_gradient_equality_span},
+        Note that $\omega_i > 0$ if $\vect r^{(i)} \neq \vect 0$ by~\eqref{eq:conjugate_gradient_positive_omega}.
+        Rearranging this equation and noting that
+        the difference $\vect r^{(i+1)} - \vect r^{(i)}$ is a linear combination of the first $i+1$ conjugate directions by~\eqref{eq:conjugate_gradient_equality_span},
         we deduce that there exist scalar coefficients $(\alpha_{i,j})_{0 \leq j \leq i+1}$ such that
         \[
             \mat A \vect d_i
@@ -2377,10 +2403,10 @@ These two observations imply that
     = (\mat A \vect d_i)^\t \vect r^{(k)}
     = \left(\sum_{j=0}^{i+1} \alpha_{i,j} \vect d_j \right)^\t \vect r^{(k)}.
 \]
-Using the orthonormality property~\eqref{eq:orthogonality_residual} for the residue of the conjugate directions method,
+Using the orthonormality property~\eqref{eq:orthogonality_residual} for the residual of the conjugate directions method,
 we deduce that the right-hand side of this equation is zero for all $i \in \{0, \dotsc, k-2\}$,
 implying that only the last term in the sum of~\eqref{eq:conjugate_gradient_gram_schmidt} is nonzero.
-This leads to~\cref{algo:conjugate_directions}.
+This leads to~\cref{algo:conjugate_gradient}.
 \begin{algorithm}
     \caption{Conjugate gradient method}%
     \label{algo:conjugate_gradient}%
@@ -2401,7 +2427,6 @@ This leads to~\cref{algo:conjugate_directions}.
 \end{algorithm}
 
 The subspace spanned by the descent directions of the conjugate gradient method can be characterized precisely as follows.
-
 \begin{proposition}
     \label{proposition:krylov_subspace}
     Assume for simplicity that $\norm{\vect r^{(k)}} \neq 0$ for $k < n$,
@@ -2426,11 +2451,11 @@ The subspace spanned by the descent directions of the conjugate gradient method 
         \vect r^{(k+1)} = \vect r^{(k)} - \omega_k \mat A \vect d_k.
     \end{equation}
     By the induction hypothesis and~$\eqref{eq:conjugate_gradient_equality_span}$,
-    there exist scalar coefficients $(\alpha_i)_{0\leq i \leq k}$ such that
+    there exist scalar coefficients $(\gamma_i)_{0\leq i \leq k}$ such that
     \[
-        \vect d_k = \alpha_0 \vect r^{(0)} + \alpha_1 \mat A \vect r^{(0)} + \dotsb + \alpha_{k} \mat A^k \vect r^{(0)}
+        \vect d_k = \gamma_0 \vect r^{(0)} + \gamma_1 \mat A \vect r^{(0)} + \dotsb + \gamma_{k} \mat A^k \vect r^{(0)}
     \]
-    The coefficient $\alpha_k$ is necessarily nonzero,
+    The coefficient $\gamma_k$ is necessarily nonzero,
     otherwise $\vect d_k$ would be a linear combination of the previous conjugate directions.
     The residual $\vect r^{(k)}$ admits a decomposition of the same form:
     \[
@@ -2439,15 +2464,15 @@ The subspace spanned by the descent directions of the conjugate gradient method 
     Substituting these expressions in~\eqref{eq:residual_iteration},
     we conclude that
     \[
-        \vect r^{(k+1)} = \beta_0 \vect r^{(0)} + (\beta_1 - \omega_0 \alpha_0) \mat A \vect r^{(0)}  + \dotsb + (\beta_k - \omega_{k-1} \alpha_{k-1}) \mat A^k \vect r^{(0)} - \omega_k \alpha_k \mat A^{(k+1)} \vect r^{(0)} .
+        \vect r^{(k+1)} = \beta_0 \vect r^{(0)} + (\beta_1 - \omega_0 \gamma_0) \mat A \vect r^{(0)}  + \dotsb + (\beta_k - \omega_{k-1} \gamma_{k-1}) \mat A^k \vect r^{(0)} - \omega_k \gamma_k \mat A^{(k+1)} \vect r^{(0)} .
     \]
-    Since both $\omega_k$ and $\alpha_k$ are nonzero,
+    Since both $\omega_k$ and $\gamma_k$ are nonzero,
     the proof is complete.
 \end{proof}
 
 Although the conjugate gradient method converges in a finite number of iterations,
 performing $n$ iterations for very large systems  would require an excessive computational cost,
-so it is therefore sometimes desirable to stop iterating when the residual is sufficiently small.
+and so it is sometimes desirable to stop iterating when the residual is sufficiently small.
 To conclude this section, we study the convergence of the method.
 \begin{theorem}
     [Convergence of the conjugate gradient method]
@@ -2545,7 +2570,7 @@ which completes the proof.
 \end{exercise}
 
 \begin{exercise}
-    Show that the residue satisfies the equation
+    Show that the residual satisfies the equation
     \[
         \vect r^{(k+1)} = \mat N \mat M^{-1} \vect r^{(k)} = (\mat I - \mat A \mat M^{-1}) \vect r^{(k)}.
     \]
@@ -2616,6 +2641,7 @@ which completes the proof.
 \end{solution}
 
 \begin{compexercise}
+    \label{exercise:one_dim_finite_difference}
     Implement an iterative method based on a splitting for finding a solution to the following linear system on $\real^n$.
     \[
         \frac{1}{h^2}
@@ -2647,7 +2673,7 @@ which completes the proof.
         \qquad
         h = \frac{1}{n}.
     \]
-    Plot the norm of the residue as a function of the iteration index.
+    Plot the norm of the residual as a function of the iteration index.
     Use as stopping criterion the condition
     \[
         \norm{\vect r^{(k)}} \leq \varepsilon \norm{\vect b},
@@ -2829,6 +2855,29 @@ which completes the proof.
     Compute the number of floating point operations required for performing one iteration of the conjugate gradient method,
     assuming that the matrix $\mat A$ contains $\alpha \ll n$ nonzero elements per row.
 \end{exercise}
+
+\begin{compexercise}
+    [Solving the Poisson equation over a rectangle]
+    We consider in this exercise Poisson's equation in the domain $\Omega = (0, 2) \times (0, 1)$,
+    equipped with homogeneous Dirichlet boundary conditions:
+    \[
+        \begin{aligned}
+            - \laplacian f(x, y) &= b(x, y), \qquad x \in \Omega, \\
+            f(x) &= 0, \quad \qquad x \in \partial \Omega.
+        \end{aligned}
+    \]
+    The right-hand side is
+    \[
+        b(x, y) = \sin(4\pi x) + \sin(2\pi y).
+    \]
+    A number of methods can be employed in order to discretize this partial differential equation.
+    After discretization, a finite-dimensional linear system of the form~$\mat A \vect x = \vect b$ is obtained.
+    % and solving this system is often the most computationally expensive part of approximating the solution~$f$.
+    A Julia function for calculating the matrix $\mat A$ and the vector $\vect b$ using the finite difference method is given to you on the course website,
+    as well as a function to plot the solution.
+    The goal of this exercise is to solve the linear system using the conjugate gradient method.
+    Use the same stopping criterion as in~\cref{exercise:one_dim_finite_difference}.
+\end{compexercise}
 
 \section{Discussion and bibliography}%
 
