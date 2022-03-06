@@ -2476,13 +2476,15 @@ and so it is sometimes desirable to stop iterating when the residual is sufficie
 To conclude this section, we study the convergence of the method.
 \begin{theorem}
     [Convergence of the conjugate gradient method]
+    \label{theorem:convergence_conjugate_gradient}
     The error for the conjugate gradient method,
     measured as $E_{k+1} := (\vect x^{(k+1)} - \vect x_*)^\t  \mat A (\vect x^{(k+1)} - \vect x_*)$,
     satisfies the following inequality,
-    \[
-        \forall p_k \in \poly(k), \qquad
-        E_{k+1} \leq  \max_{1\leq i \leq n}\bigl(1 + \lambda_i p_k(\lambda_i) \bigr)^2   E_0.
-    \]
+    \begin{equation}
+        \label{equation:convergence_conjugate_gradient}
+        \forall q_k \in \poly(k), \qquad
+        E_{k+1} \leq  \max_{1\leq i \leq n}\bigl(1 + \lambda_i q_k(\lambda_i) \bigr)^2   E_0.
+    \end{equation}
     Here $\poly(k)$ is the vector space of polynomials of degree less than or equal to $k$.
 \end{theorem}
 \begin{proof}
@@ -2507,23 +2509,122 @@ Noting that
 \end{align*}
 we deduce that
 \[
-    \forall p_k \in \poly(k), \qquad
-    E_{k+1} \leq (\vect x^{(0)} - \vect x_*)^\t \mat A \bigl(\mat I + \mat A p_k(\mat A) \bigr)^2  (\vect x^{(0)} - \vect x_*),
+    \forall q_k \in \poly(k), \qquad
+    E_{k+1} \leq (\vect x^{(0)} - \vect x_*)^\t \mat A \bigl(\mat I + \mat A q_k(\mat A) \bigr)^2  (\vect x^{(0)} - \vect x_*),
 \]
 In order to exploit this inequality,
 it is useful to diagonalize $\mat A$ as $\mat A = \mat Q \mat D \mat Q^\t$,
 for an orthogonal matrix $\mat Q$ and a diagonal matrix $\mat D$.
-Since $p_k(\mat A) = \mat Q p_k(\mat D) \mat Q^\t$,
+Since $q_k(\mat A) = \mat Q q_k(\mat D) \mat Q^\t$ for all $q_k \in \poly(k)$,
 it holds that
 \begin{align*}
-    \forall p_k \in \poly(k), \qquad
+    \forall q_k \in \poly(k), \qquad
     E_{k+1}
-    &= \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D \bigl(\mat I + \mat D p_k(\mat D) \bigr)^2  \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr) \\
-    &\leq \Bigl( \max_{1\leq i \leq n}\bigl(1 + \lambda_i p_k(\lambda_i) \bigr)^2 \Bigr)  \underbrace{\bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D   \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)}_{E_0},
+    &= \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D \bigl(\mat I + \mat D q_k(\mat D) \bigr)^2  \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr) \\
+    &\leq \Bigl( \max_{1\leq i \leq n}\bigl(1 + \lambda_i q_k(\lambda_i) \bigr)^2 \Bigr)  \underbrace{\bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D   \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)}_{E_0},
 \end{align*}
 which completes the proof.
 \end{proof}
 
+An corollary of~\cref{theorem:convergence_conjugate_gradient} is that,
+if $\mat A$ has $m \leq n$ distinct eigenvalues,
+then the conjugate gradient method converges in at most $m$ iterations.
+Indeed, in this case we can take
+\[
+    q_k(\lambda) = \frac{1}{\lambda} \left( \frac{(\lambda_1 - \lambda) \dotsc (\lambda_m - \lambda)}{\lambda_1 \dotsc \lambda_m} - 1 \right).
+\]
+It is simple to check that the right-hand side is indeed a polynomial,
+and that $q_k(\lambda_i) = 0$ for all eigenvalues of $\mat A$.
+
+In general, finding the polynomial that minimizes the right-hand side of~\eqref{equation:convergence_conjugate_gradient} is not possible,
+because the eigenvalues of the matrix $\mat A$ are unknown.
+However, it is possible to derive an error estimate with a dependence on the condition number of $\kappa_2(\mat A)$ from this equation.
+\begin{theorem}
+    It holds that
+    \[
+        \forall k \geq 0, \qquad
+        E_{k} \leq  4 \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{2(k+1)} E_0,
+    \]
+\end{theorem}
+\begin{proof}
+    [Sketch of the proof]
+\Cref{theorem:convergence_conjugate_gradient} implies that
+\begin{equation*}
+    \forall q_k \in \poly(k), \qquad
+    E_{k+1} \leq  \max_{\lambda \in [\lambda_1, \lambda_n]}\bigl(1 + \lambda q_k(\lambda) \bigr)^2   E_0,
+\end{equation*}
+where $\lambda_1$ and $\lambda_n$ are the minimum and maximum eigenvalues of $\mat A$.
+We show at the end of the proof that the right-hand side is minimized when
+\begin{equation}
+    \label{eq:conjugate_gradient_optimal_polynom}
+    1 + \lambda q_k(\lambda) = \frac{T_{k+1}\left(\frac{\lambda_n + \lambda_1 - \lambda}{\lambda_n - \lambda_1}\right)}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)},
+\end{equation}
+where $T_{k+1}$ is the \emph{Chebyshev} polynomial of degree $k+1$.
+These polynomials are defined as
+\[
+    T_i(x) =
+    \begin{cases}
+        \cos(i\arccos x) \qquad & \text{ for }~ |x| \le 1 \\
+        \dfrac{1}{2} \Big(x-\sqrt{x^2-1} \Big)^i + \dfrac{1}{2} \Big(x+\sqrt{x^2-1} \Big)^i   \qquad & \text{ for }~ |x| \ge 1.
+    \end{cases}
+\]
+It is clear from this definition that $|T_i(x)| \leq 1$ for all $x \in [-1, 1]$.
+Consequently, the following inequality holds true for all $\lambda \in [\lambda_1, \lambda_n]$:
+\begin{align*}
+    \bigl\lvert 1 + \lambda q_k(\lambda) \bigr\rvert
+    \leq \frac{1}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)}
+    &= 2\left( \Big(r-\sqrt{r^2-1} \Big)^{k+1} + \Big(r+\sqrt{r^2-1}\Big)^{k+1} \right)^{-1},  \\
+    &= 2 \left( \left( \frac{\sqrt{\kappa} + 1}{\sqrt{\kappa} - 1} \right)^{k+1} + \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{k+1} \right)^{-1}.
+\end{align*}
+where $r = \frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}$.
+Since the second term in the bracket converges to zero as $k \to \infty$,
+it is natural to bound this expression by keeping only the first term,
+which after simple algebraic manipulations leads to
+\[
+    \forall \lambda \in [\lambda_1, \lambda_n], \qquad
+    \bigl\lvert 1 + \lambda q_k(\lambda) \bigr\rvert
+    \leq 2 \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{k+1}.
+\]
+From this inequality,
+the statement of the theorem follows immediately.
+
+Let us now prove the optimality of~\eqref{eq:conjugate_gradient_optimal_polynom}.
+To this end, we first observe that since
+\[
+    \forall j \in \{0, \dotsc, k+1\}, \qquad
+    T_{k+1} \left( \cos\left( \frac{j \pi}{k+1} \right) \right) = \cos \left( j \pi \right) = (-1)^j,
+\]
+it holds for all $\forall j \in \{0, \dotsc, k+1\}$ that
+\begin{equation}
+    \label{eq:equioscillations}
+    1 + \mu_j q_k(\mu_j) = T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right) ^{-1} (-1)^j,
+    \qquad \mu_j = \lambda_n + \lambda_1 - (\lambda_n - \lambda_1) \cos \left( j \pi \right).
+\end{equation}
+Note that the points $(\mu_j)_{0 \leq j \leq k+1}$ are all in the interval $[\lambda_1, \lambda_n]$,
+Reasoning by contradiction,
+we assume that there is another polynomial $\widetilde q_k \in \poly(k)$ such that
+\begin{equation}
+    \label{eq:contradiction_inequatily}
+    \max_{\lambda \in [\lambda_1, \lambda_n]} \abs{1 + \lambda \widetilde q_k(\lambda)}
+    <  T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right) ^{-1}.
+\end{equation}
+Then $t_{k+1}(\lambda) = \bigl(1 + \lambda q_k(\lambda)\bigr) - \bigl(1 + \lambda \widetilde q_k(\lambda)\bigr)$ is a polynomial of degree $k+1$
+with a zero at $\lambda = 0$.
+In addition,
+by~\eqref{eq:equioscillations} and~\eqref{eq:contradiction_inequatily} it holds that
+\[
+    \forall j \in \{0, \dotsc, k+1\}, \qquad
+    t_k(\mu_j)~\text{is}
+    \begin{cases}
+        \text{strictly positive if $j$ is even,} \\
+        \text{strictly negative if $j$ is odd.}
+    \end{cases}
+\]
+But this implies, by the intermediate value theorem,
+that $t_{k+1}$ has $k+1$ roots in the interval $[\lambda_1, \lambda_n]$,
+so $k+2$ roots in total,
+which is impossible for a nonzero polynomial of degree $k+1$.
+\end{proof}
 
 % Note that we did not need to use the definition of $\vect d$;
 % equation~\eqref{eq:linear_optimal_step_size_steepest_descent} gives the step size minimizing~$f(\vect x^{(k+1)}$ in any descent direction~$\vect d$.
@@ -2765,7 +2866,6 @@ which completes the proof.
     the modulus increases as $\mu$ increases,
     which suggests that
     \begin{equation}
-        \label{eq:sor_spectral_radius}
         \rho(\mat M_{\omega}^{-1} \mat N_{\omega}) =
         \left| \frac{\omega^2 \mu_*^2}{2} + 1 - \omega + \omega \abs{\mu_*} \sqrt{\frac{\omega^2 \mu_*^2}{4} + 1 - \omega} \right|,
         \qquad \mu_* = \rho(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}).
