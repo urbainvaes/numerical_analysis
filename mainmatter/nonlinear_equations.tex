@@ -1,3 +1,63 @@
 \chapter{Solution of nonlinear systems}
 \label{cha:solution_of_nonlinear_systems}
 
+This chapter concerns the numerical solution of nonlinear equations of the general form
+\begin{equation}
+    \label{eq:nonlinear_equation}
+    f(\vect x) = 0, \qquad f: \real^n \to \real^n.
+\end{equation}
+A solution to this equation is called a \emph{zero} of the function $f$.
+Except in particular cases (for example linear systems),
+there does not exist a numerical method for solving~\eqref{eq:nonlinear_equation} in a finite number of operations,
+so iterative methods are required.
+
+In contrast with the previous chapter,
+it may not be the case that~\eqref{eq:nonlinear_equation} admits one and only one solution.
+For example, the equation $1 + x^2 = 0$ does not have a solution,
+and the equation $\cos(x) = 0$ has infinitely many.
+Therefore, convergence results usually contain assumptions on the function~$f$ that guarantee the existence and uniqueness of a solution in~$\real^n$ or a subset of~$\real^n$.
+
+\section{Fixed point methods}
+
+Let $\vect s$ denote a zero of the function $f$.
+The idea of iterative methods for~\eqref{eq:nonlinear_equation} is to construct,
+starting from an initial guess $\vect x_0$,
+a sequence $(\vect x_k)_{k=0, 1, \dotsc}$ approaching~$\vect s$.
+A number of iterative methods for solving ~\eqref{eq:nonlinear_equation} are based on an iteration of the form
+\begin{equation}
+    \label{eq:fixed_point}
+    \vect x_{k+1} = F(\vect x_{k}),
+\end{equation}
+for an appropriate continuous function $F$.
+Assume that $\vect x_k$ converges to some point $\vect x_* \in \real^n$ in the limit as $k \to \infty$.
+Then, taking the limit $k \to \infty$ in~\eqref{eq:fixed_point},
+we find that $\vect x_*$ satisfies
+\[
+    F(\vect x_*) = \vect x_*.
+\]
+Such a point~$\vect x_*$ is called a \emph{fixed point} of the function $F$.
+Several definitions of the function~$F$ can be employed in order to ensure that
+a fixed point of $F$ coincides with a zero of $f$.
+On may, for example, define $F(\vect x) = \alpha f(\vect x) + \vect x$,
+for some nonzero scalar coefficient $\alpha$.
+Then $F(\vect x_*) = \vect x_*$ if and only if $f(\vect x_*) = 0$.
+Later in this chapter,
+we study two instances of numerical methods which can be recast in the form~\eqref{eq:fixed_point}.
+Before this,
+we study the convergence of the iteration~\eqref{eq:fixed_point} for a general function~$F$.
+
+
+\begin{center}
+\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
+\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
+\fill (1.5mm,7mm) circle (1.5mm);
+\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
+\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
+\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
+        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
+\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
+        (-3mm,0mm)--++(-100:3mm)coordinate (d);
+\draw[ultra thick] (d) -- ++(-45:1.25cm);
+\end{tikzpicture}
+% \textcolor{red}{Work in progress}
+\end{center}
