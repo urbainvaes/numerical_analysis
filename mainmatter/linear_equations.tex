@@ -1878,7 +1878,7 @@ the following alternatives are available:
         because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
 \end{itemize}
 
-\subsection{The conjugate gradients method}%
+\subsection{The conjugate gradient method}%
 \label{sub:the_conjugate_gradient_method}
 
 As already mentioned in~\cref{remark:linear_link_optimization},
@@ -2429,11 +2429,10 @@ This leads to~\cref{algo:conjugate_gradient}.
 The subspace spanned by the descent directions of the conjugate gradient method can be characterized precisely as follows.
 \begin{proposition}
     \label{proposition:krylov_subspace}
-    Assume for simplicity that $\norm{\vect r^{(k)}} \neq 0$ for $k < n$,
-    so that the method does not terminate early.
-    It holds that
+    Assume that $\norm{\vect r^{(k)}} \neq 0$ for $k < m \leq n$,
+    Then it holds that
     \[
-        \forall k \in \{0, \dotsc n-1\}, \quad
+        \forall k \in \{0, \dotsc m\}, \quad
         \Span\{ \vect r^{(0)}, \vect r^{(1)}, \dotsc, \vect r^{(k)} \}
         = \Span\{ \vect r^{(0)}, \mat A \vect r^{(0)}, \dotsc, \mat A^k \vect r^{(0)} \}
     \]
@@ -2443,7 +2442,7 @@ The subspace spanned by the descent directions of the conjugate gradient method 
 \begin{proof}
     The result is clear for $k = 0$.
     Reasoning by induction,
-    we prove that if the result is true up to $k$,
+    we prove that if the result is true up to $k < m$,
     then it is also true for $k+1$.
     From~\eqref{eq:conjugate_gradient_iteration_residual} we have
     \begin{equation}
@@ -2479,7 +2478,7 @@ To conclude this section, we study the convergence of the method.
     \label{theorem:convergence_conjugate_gradient}
     The error for the conjugate gradient method,
     measured as $E_{k+1} := (\vect x^{(k+1)} - \vect x_*)^\t  \mat A (\vect x^{(k+1)} - \vect x_*)$,
-    satisfies the following inequality,
+    satisfies the following inequality:
     \begin{equation}
         \label{equation:convergence_conjugate_gradient}
         \forall q_k \in \poly(k), \qquad
@@ -2510,7 +2509,7 @@ Noting that
 we deduce that
 \[
     \forall q_k \in \poly(k), \qquad
-    E_{k+1} \leq (\vect x^{(0)} - \vect x_*)^\t \mat A \bigl(\mat I + \mat A q_k(\mat A) \bigr)^2  (\vect x^{(0)} - \vect x_*),
+    E_{k+1} \leq (\vect x^{(0)} - \vect x_*)^\t \mat A \bigl(\mat I + \mat A q_k(\mat A) \bigr)^2  (\vect x^{(0)} - \vect x_*).
 \]
 In order to exploit this inequality,
 it is useful to diagonalize $\mat A$ as $\mat A = \mat Q \mat D \mat Q^\t$,
@@ -2538,7 +2537,7 @@ and that $q_k(\lambda_i) = 0$ for all eigenvalues of $\mat A$.
 
 In general, finding the polynomial that minimizes the right-hand side of~\eqref{equation:convergence_conjugate_gradient} is not possible,
 because the eigenvalues of the matrix $\mat A$ are unknown.
-However, it is possible to derive an error estimate with a dependence on the condition number of $\kappa_2(\mat A)$ from this equation.
+However, it is possible to derive from this equation an error estimate with a dependence on the condition number of $\kappa_2(\mat A)$.
 \begin{theorem}
     It holds that
     \[
@@ -2557,17 +2556,18 @@ where $\lambda_1$ and $\lambda_n$ are the minimum and maximum eigenvalues of $\m
 We show at the end of the proof that the right-hand side is minimized when
 \begin{equation}
     \label{eq:conjugate_gradient_optimal_polynom}
-    1 + \lambda q_k(\lambda) = \frac{T_{k+1}\left(\frac{\lambda_n + \lambda_1 - \lambda}{\lambda_n - \lambda_1}\right)}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)},
+    1 + \lambda q_k(\lambda) = \frac{T_{k+1}\left(\frac{\lambda_n + \lambda_1 - 2\lambda}{\lambda_n - \lambda_1}\right)}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)},
 \end{equation}
 where $T_{k+1}$ is the \emph{Chebyshev} polynomial of degree $k+1$.
-These polynomials are defined as
-\[
+These polynomials may be defined defined from the formula
+\begin{equation}
+    \label{eq:chebyshev_polynomials}
     T_i(x) =
     \begin{cases}
         \cos(i\arccos x) \qquad & \text{ for }~ |x| \le 1 \\
         \dfrac{1}{2} \Big(x-\sqrt{x^2-1} \Big)^i + \dfrac{1}{2} \Big(x+\sqrt{x^2-1} \Big)^i   \qquad & \text{ for }~ |x| \ge 1.
     \end{cases}
-\]
+\end{equation}
 It is clear from this definition that $|T_i(x)| \leq 1$ for all $x \in [-1, 1]$.
 Consequently, the following inequality holds true for all $\lambda \in [\lambda_1, \lambda_n]$:
 \begin{align*}
@@ -2598,9 +2598,9 @@ it holds for all $\forall j \in \{0, \dotsc, k+1\}$ that
 \begin{equation}
     \label{eq:equioscillations}
     1 + \mu_j q_k(\mu_j) = T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right) ^{-1} (-1)^j,
-    \qquad \mu_j = \lambda_n + \lambda_1 - (\lambda_n - \lambda_1) \cos \left( j \pi \right).
+    \qquad \mu_j = \frac{\lambda_n + \lambda_1 - (\lambda_n - \lambda_1) \cos \left( j \pi \right)}{2}.
 \end{equation}
-Note that the points $(\mu_j)_{0 \leq j \leq k+1}$ are all in the interval $[\lambda_1, \lambda_n]$,
+Note that the points $(\mu_j)_{0 \leq j \leq k+1}$ are all in the interval $[\lambda_1, \lambda_n]$.
 Reasoning by contradiction,
 we assume that there is another polynomial $\widetilde q_k \in \poly(k)$ such that
 \begin{equation}
@@ -2620,10 +2620,10 @@ by~\eqref{eq:equioscillations} and~\eqref{eq:contradiction_inequatily} it holds 
         \text{strictly negative if $j$ is odd.}
     \end{cases}
 \]
-But this implies, by the intermediate value theorem,
+This implies, by the intermediate value theorem,
 that $t_{k+1}$ has $k+1$ roots in the interval $[\lambda_1, \lambda_n]$,
 so $k+2$ roots in total,
-which is impossible for a nonzero polynomial of degree $k+1$.
+but this is impossible for a nonzero polynomial of degree $k+1$.
 \end{proof}
 
 % Note that we did not need to use the definition of $\vect d$;
@@ -2979,6 +2979,15 @@ which is impossible for a nonzero polynomial of degree $k+1$.
     Use the same stopping criterion as in~\cref{exercise:one_dim_finite_difference}.
 \end{compexercise}
 
+\begin{exercise}
+    Show that~\eqref{eq:chebyshev_polynomials} indeed defines a polynomial,
+    and find its expression in the usual polynomial notation.
+\end{exercise}
+
 \section{Discussion and bibliography}%
 
+In this chapter,
+we presented direct methods and some of the standard iterative methods for solving linear systems.
+We focused particularly on linear systems with a symmetric positive definite matrix.
+The book~\cite{MR1990645} is a very detailed reference on iterative methods for solving sparse linear systems.
 The reference~\cite{shewchuk1994introduction} is an excellent introduction to the conjugate gradient method.
