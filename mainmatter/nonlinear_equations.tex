@@ -4,7 +4,7 @@
 This chapter concerns the numerical solution of nonlinear equations of the general form
 \begin{equation}
     \label{eq:nonlinear_equation}
-    f(\vect x) = 0, \qquad f: \real^n \to \real^n.
+    f(\vect x) = 0, \qquad f\colon \real^n \to \real^n.
 \end{equation}
 A solution to this equation is called a \emph{zero} of the function $f$.
 Except in particular cases (for example linear systems),
@@ -46,6 +46,99 @@ we study two instances of numerical methods which can be recast in the form~\eqr
 Before this,
 we study the convergence of the iteration~\eqref{eq:fixed_point} for a general function~$F$.
 
+\section{Convergence of fixed point methods}
+Equation~\eqref{eq:fixed_point} may be viewed as a \emph{discrete-time} dynamical system.
+In order to study the behavior of the system as $k \to \infty$,
+it is important to understand the concept of stability of a fixed point.
+The concept of stability appears also in the field of ordinary differential equations,
+which are \emph{continuous-time} dynamical systems.
+Before we define this concept,
+we introduce the notation
+\[
+    B_{\delta} (\vect x) := \bigl\{ \vect y \in \real^n : \norm{\vect y - \vect x} < \delta \bigr\}
+\]
+for the open ball of radius $\delta$ around $\vect x \in \real^n$.
+\vspace{-.2cm}
+\begin{definition}
+    [Stability of fixed points]
+    Let $(\vect x_k)_{k\geq0}$ denote iterates obtained from~\eqref{eq:fixed_point} when starting from an initial vector~$\vect x_0$.
+    Then we say that a fixed point $\vect x_*$ is
+    \begin{itemize}
+        \item
+            an \emph{attractor} if there exists a neighborhood $\mathcal V$ of $s$ such that
+            \begin{equation}
+                \label{eq:nonlinear_attractor}
+                \forall \vect x_0 \in \mathcal V, \qquad
+                \vect x_k \xrightarrow[k \to \infty]{} \vect x_*.
+            \end{equation}
+            The largest neighborhood for which this is true,
+            i.e. the set of values of $\vect x_0$ such that~\eqref{eq:nonlinear_attractor} holds true,
+            is called the basin of attraction of $\vect x_*$.
+
+        \item
+            stable (in the sense of Lyapunov) if for all $\varepsilon > 0$,
+            there exists $\delta > 0$ such that
+            \[
+                \forall \vect x_0 \in B_{\delta}(\vect x_*), \qquad
+                \norm{\vect x_k - \vect x_*} < \varepsilon.
+            \]
+
+        \item
+            asymptotically stable if it is stable and an attractor.
+
+        \item
+            exponentially stable if there exists $C > 0$, $\alpha \in (0, 1)$, and $\delta > 0$ such that
+            \[
+                \forall \vect x_0 \in B_{\delta}(\vect x_*),
+                \quad \forall k \in \nat, \qquad
+                \norm{\vect x_k - \vect x_*} \leq C \alpha^k \norm{\vect x_0 - \vect x_*}.
+            \]
+
+        \item
+            globally exponentially stable if there exists $C > 0$, $\alpha \in (0, 1)$ such that
+            \[
+                \forall \vect x_0 \in \real^n,
+                \quad \forall k \in \nat, \qquad
+                \norm{\vect x_k - \vect x_*} \leq C \alpha^k \norm{\vect x_0 - \vect x_*}.
+            \]
+        \item
+            Unstable if it is not stable.
+    \end{itemize}
+\end{definition}
+Clearly, global exponential stability implies exponential stability,
+which itself implies asymptotic stability and stability.
+If $\vect x_*$ is globally exponentially stable,
+then $\vect x_*$ is the unique fixed point of $F$.
+If $\vect x_*$ is an attractor,
+then the system is said to be locally convergent to~$\vect x_*$.
+The larger the basin of attraction of $\vect x_*$,
+the less careful we need to be when picking the initial~$\vect x_0$.
+Global exponential stability of~\eqref{eq:fixed_point} can sometimes be shown
+provided that $f$ satisfies a strong hypothesis.
+
+\begin{definition}
+    [Lipschitz continuity]
+    A function $F\colon \real^n \to \real$ is said to be \emph{Lipschitz} continuous
+    with constant $L$ if
+    \[
+        \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
+        \abs[big]{f(\vect y) - f(\vect x)} \leq L \norm{\vect y - \vect x}.
+    \]
+\end{definition}
+A function $F$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
+
+% In practice, it is therefore desirable to define the function~$F$ in such a manner that the basin of attraction is as large as possible.
+
+\section{Exercises}
+\begin{exercise}
+    Find a discrete-time dynamical system over $\real$ of the form
+    \[
+        x_{k+1} = F(x_{k})
+    \]
+    for which $0$ is an attractor but is not stable.
+
+    \noindent \textbf{Hint:} Use a function $F$ that is discontinuous.
+\end{exercise}
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
