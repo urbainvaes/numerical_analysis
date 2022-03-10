@@ -38,7 +38,7 @@ superlinear if $q > 1$ and quadratic if $q = 2$.
 \State Assume that $f(a) f(b) < 0$ with $a < b$.
 \State Pick $\varepsilon > 0$.
 \State $x \gets a/2 + b/2$
-\While{$|f(x)| \geq \varepsilon$}
+\While{$|b - a| \geq \varepsilon$}
     \If{$f(x) f(a) \geq 0$}
         \State $a \gets x$
     \Else
@@ -155,7 +155,7 @@ showing this is the aim of~\cref{exercise:global_exponential_stability}.
 If $\vect x_*$ is an attractor,
 then the system is said to be locally convergent to~$\vect x_*$.
 The larger the basin of attraction of $\vect x_*$,
-the less careful we need to be when picking the initial~$\vect x_0$.
+the less careful we need to be when picking the initial guess~$\vect x_0$.
 Global exponential stability of~\eqref{eq:fixed_point} can sometimes be shown
 provided that $f$ satisfies a strong hypothesis.
 
@@ -196,9 +196,9 @@ In this case, it is possible to prove the global exponential stability of the fi
         &\leq (L^n + \dotsb + L^m) \norm{\vect x_{1} - \vect x_0} \leq L^m (1 + L + \dotsb) \norm{\vect x_{1} - \vect x_0}
         = \frac{L^m}{1-L} \norm{\vect x_{1} - \vect x_0}.
     \end{align*}
-    Therefore, the sequence $(\vect x_k)_{k\geq0}$ is Cauchy in $\real^n$,
+    It follows that the sequence $(\vect x_k)_{k\geq0}$ is Cauchy in $\real^n$,
     implying by completeness that $\vect x_k \to \vect x_*$ in the limit as $k \to \infty$,
-    for some limit $\vect x_*$.
+    for some limit $\vect x_* \in \real^n$.
     Being a contraction, the function $F$ is continuous,
     and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point} we obtain that $\vect x_*$ is a fixed point of~$F$.
     Then
@@ -218,7 +218,7 @@ In this case, it is possible to prove the global exponential stability of the fi
         \norm[big]{\vect y_* - \vect x_{*}}
         \leq \dots \leq L^{k} \norm{\vect y_* - \vect x_*},
     \end{equation*}
-    which is impossible.
+    which is impossible since $L < 1$.
 \end{proof}
 
 It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$f$.
