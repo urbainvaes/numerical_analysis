@@ -17,6 +17,48 @@ For example, the equation $1 + x^2 = 0$ does not have a solution,
 and the equation $\cos(x) = 0$ has infinitely many.
 Therefore, convergence results usually contain assumptions on the function~$f$ that guarantee the existence and uniqueness of a solution in~$\real^n$ or a subset of~$\real^n$.
 
+For an iterative method generating approximations $(\vect x_k)_{k \geq 0}$ of a root $\vect x_*$,
+we define the error as $\vect e_k = \vect x_k - \vect x_*$.
+If the sequence $(\vect x_k)_{k \geq 0}$ converges in the limit as $k \to \infty$
+and if
+\[
+    \lim_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}^q} = r,
+\]
+then we say that $(\vect x_k)_{k \geq 0}$ converges with \emph{order of convergence} $q$ and
+\emph{rate of convergence} $r$.
+In addition, we say that the convergence is linear $q = 1$,
+superlinear if $q > 1$ and quadratic if $q = 2$.
+
+\section{Bisection method}
+
+\begin{algorithm}
+\caption{Bisection method}%
+\label{algo:bisection}%
+\begin{algorithmic}
+\State Assume that $f(a) f(b) < 0$ with $a < b$.
+\State Pick $\varepsilon > 0$.
+\State $x \gets a/2 + b/2$
+\While{$|f(x)| \geq \varepsilon$}
+    \If{$f(x) f(a) \geq 0$}
+        \State $a \gets x$
+    \Else
+        \State $b \gets x$
+    \EndIf
+    \State $x \gets a/2 + b/2$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+    Assume that $f\colon \real \to \real$ is a continuous function.
+    Let $[a_j, b_j]$ denote the interval obtained after $j$ iterations of the bisection method,
+    and let $x_j$ denote the midpoint $(a_j + b_j)/2$. 
+    Then it holds that
+    \[
+        \abs{x_j - x_*} \leq (b_0 - a_0) 2^{-(j+1)}.
+    \]
+\end{proposition}
+
 \section{Fixed point methods}
 
 Let $\vect s$ denote a zero of the function $f$.
@@ -179,10 +221,56 @@ In this case, it is possible to prove the global exponential stability of the fi
     which is impossible.
 \end{proof}
 
-It is 
-% In practice, it is therefore desirable to define the function~$F$ in such a manner that the basin of attraction is as large as possible.
+It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$f$.
+\begin{theorem}
+    \label{theorem:local_convergence}
+    Assume that $F\colon: \real^n \to \real^n$ has a fixed point $\vect x_*$ and satisfies the local Lipschitz condition
+    \begin{equation}
+        \label{eq:local_lipschitz}
+        \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+        \norm[big]{F(\vect x) - F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+    \end{equation}
+    with $0 \leq L < 1$ and $\delta > 0$.
+    Then for all $\vect x_0 \in B_{\delta}(\vect x_*)$ it holds that
+    \begin{itemize}
+        \item All the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
+        \item The sequence $(\vect x_k)_{k \in \nat}$ converges exponentially to $\vect x_*$.
+        \item There is no other fixed point of $F$ inside $B_{\delta}(\vect x_*)$.
+    \end{itemize}
+\end{theorem}
+\begin{proof}
+    See~\cref{exercise:prove_local_convergence}
+\end{proof}
+It is possible to guarantee that condition~\eqref{eq:local_lipschitz} holds provided that
+we have sufficiently good control of the derivatives of the function~$F$.
+The function $F$ is differentiable at $\vect x$ (in the sense of Fréchet) if
+there exists a linear operator $\D F_{\vect x} \colon \real^n \to \real^n$ such that
+\[
+    \lim_{\vect h \to 0} \frac{\norm{F(\vect x + \vect h) - \vect F(\vect x) - \D F_{\vect x}(\vect h)}}{\norm{\vect h}}
+    = 0.
+\]
+If $F$ is differentiable, 
+then the Jacobian matrix of~$F$ at $\vect x$ is defined as as
+\[
+    J_F(\vect x) =
+    \begin{pmatrix}
+        \partial_{1} h_1(\vect x) & \hdots & \partial_n h_1(\vect x) \\
+        \vdots & \ddots & \vdots \\
+        \partial_{1} h_n(\vect x) & \hdots & \partial_n h_n(\vect x)
+    \end{pmatrix},
+\]
+and it holds that $\D F_{\vect x}(\vect h) = J_F(\vect x) \vect h$.
+We recall that by Taylor's theorem.
 
 \section{Exercises}
+
+\begin{compexercise}
+Implement the bisection method for finding the solution(s) to the equation
+\[
+    x = \cos(x).
+\]
+\end{compexercise}
+
 \begin{exercise}
     Find a discrete-time dynamical system over $\real$ of the form
     \[
@@ -197,6 +285,11 @@ It is
     \label{exercise:global_exponential_stability}
     Show that if $\vect x_*$ is a globally exponentially stable fixed point of~$F$,
     then~$F$ does not have any other fixed point: $\vect x_*$ is the unique fixed point.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:prove_local_convergence}
+    Prove \cref{theorem:local_convergence}.
 \end{exercise}
 
 \begin{center}
