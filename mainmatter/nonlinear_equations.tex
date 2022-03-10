@@ -108,7 +108,8 @@ for the open ball of radius $\delta$ around $\vect x \in \real^n$.
 Clearly, global exponential stability implies exponential stability,
 which itself implies asymptotic stability and stability.
 If $\vect x_*$ is globally exponentially stable,
-then $\vect x_*$ is the unique fixed point of $F$.
+then $\vect x_*$ is the unique fixed point of $F$;
+showing this is the aim of~\cref{exercise:global_exponential_stability}.
 If $\vect x_*$ is an attractor,
 then the system is said to be locally convergent to~$\vect x_*$.
 The larger the basin of attraction of $\vect x_*$,
@@ -118,15 +119,67 @@ provided that $f$ satisfies a strong hypothesis.
 
 \begin{definition}
     [Lipschitz continuity]
-    A function $F\colon \real^n \to \real$ is said to be \emph{Lipschitz} continuous
+    A function $F\colon \real^n \to \real^n$ is said to be \emph{Lipschitz} continuous
     with constant $L$ if
     \[
         \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
-        \abs[big]{f(\vect y) - f(\vect x)} \leq L \norm{\vect y - \vect x}.
+        \norm[big]{f(\vect y) - f(\vect x)} \leq L \norm{\vect y - \vect x}.
     \]
 \end{definition}
 A function $F$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
+In this case, it is possible to prove the global exponential stability of the fixed point.
+\begin{theorem}
+    Assume that $F$ is a contraction.
+    Then there exists a unique fixed point of~\eqref{eq:fixed_point},
+    and it holds that
+    \[
+        \forall \vect x_0 \in \real^n,
+        \quad \forall k \in \nat, \qquad
+        \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+    \]
+\end{theorem}
+\begin{proof}
+    It holds that
+    \[
+        \norm[big]{\vect x_{k+2} - \vect x_{k+1}}
+        = \norm[big]{F(\vect x_{k+1}) - F(\vect x_k)}
+        \leq L\norm{\vect x_{k+1} - \vect x_k}
+        \leq \dots \leq L^{k+1} \norm{\vect x_{1} - \vect x_0}.
+    \]
+    Therefore, for any $n \geq m$,
+    we have by the triangle inequality
+    \begin{align*}
+        \norm{\vect x_{n} - \vect x_{m}}
+        &\leq \norm{\vect x_{n} - \vect x_{n-1}} + \dotsb + \norm{\vect x_{m+1} - \vect x_{m}} \\
+        &\leq (L^n + \dotsb + L^m) \norm{\vect x_{1} - \vect x_0} \leq L^m (1 + L + \dotsb) \norm{\vect x_{1} - \vect x_0}
+        = \frac{L^m}{1-L} \norm{\vect x_{1} - \vect x_0}.
+    \end{align*}
+    Therefore, the sequence $(\vect x_k)_{k\geq0}$ is Cauchy in $\real^n$,
+    implying by completeness that $\vect x_k \to \vect x_*$ in the limit as $k \to \infty$,
+    for some limit $\vect x_*$.
+    Being a contraction, the function $F$ is continuous,
+    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point} we obtain that $\vect x_*$ is a fixed point of~$F$.
+    Then
+    \begin{equation}
+        \label{eq:contraction}
+        \norm[big]{\vect x_{k} - \vect x_{*}}
+        = \norm[big]{F(\vect x_{k-1}) - F(\vect x_*)}
+        \leq L\norm{\vect x_{k-1} - \vect x_*}
+        \leq \dots \leq L^{k} \norm{\vect x_{0} - \vect x_*},
+    \end{equation}
+    proving the statement.
+    To prove the uniqueness of the fixed point,
+    assume there was another fixed point $\vect y_*$.
+    Then, taking $\vect x_0 = \vect y_*$ in~\eqref{eq:contraction},
+    we find
+    \begin{equation*}
+        \norm[big]{\vect y_* - \vect x_{*}}
+        \leq \dots \leq L^{k} \norm{\vect y_* - \vect x_*},
+    \end{equation*}
+    which is impossible.
+\end{proof}
 
+It is 
 % In practice, it is therefore desirable to define the function~$F$ in such a manner that the basin of attraction is as large as possible.
 
 \section{Exercises}
@@ -138,6 +191,12 @@ A function $F$ that is Lipschitz continuous with a constant $L < 1$ is called a 
     for which $0$ is an attractor but is not stable.
 
     \noindent \textbf{Hint:} Use a function $F$ that is discontinuous.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:global_exponential_stability}
+    Show that if $\vect x_*$ is a globally exponentially stable fixed point of~$F$,
+    then~$F$ does not have any other fixed point: $\vect x_*$ is the unique fixed point.
 \end{exercise}
 
 \begin{center}
