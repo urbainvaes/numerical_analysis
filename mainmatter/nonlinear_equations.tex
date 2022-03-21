@@ -4,7 +4,7 @@
 This chapter concerns the numerical solution of nonlinear equations of the general form
 \begin{equation}
     \label{eq:nonlinear_equation}
-    f(\vect x) = 0, \qquad f\colon \real^n \to \real^n.
+    \vect f(\vect x) = 0, \qquad \vect f\colon \real^n \to \real^n.
 \end{equation}
 A solution to this equation is called a \emph{zero} of the function $f$.
 Except in particular cases (for example linear systems),
@@ -93,32 +93,32 @@ by a slight abuse of terminology.
 
 \section{Fixed point methods}
 
-Let $\vect s$ denote a zero of the function $f$.
+Let $\vect x_*$ denote a zero of the function $\vect f$.
 The idea of iterative methods for~\eqref{eq:nonlinear_equation} is to construct,
 starting from an initial guess $\vect x_0$,
-a sequence $(\vect x_k)_{k=0, 1, \dotsc}$ approaching~$\vect s$.
+a sequence $(\vect x_k)_{k=0, 1, \dotsc}$ approaching~$\vect x_*$.
 A number of iterative methods for solving ~\eqref{eq:nonlinear_equation} are based on an iteration of the form
 \begin{equation}
     \label{eq:fixed_point}
-    \vect x_{k+1} = F(\vect x_{k}),
+    \vect x_{k+1} = \vect F(\vect x_{k}),
 \end{equation}
 for an appropriate continuous function $F$.
 Assume that $\vect x_k$ converges to some point $\vect x_* \in \real^n$ in the limit as $k \to \infty$.
 Then, taking the limit $k \to \infty$ in~\eqref{eq:fixed_point},
 we find that $\vect x_*$ satisfies
 \[
-    F(\vect x_*) = \vect x_*.
+    \vect F(\vect x_*) = \vect x_*.
 \]
-Such a point~$\vect x_*$ is called a \emph{fixed point} of the function $F$.
-Several definitions of the function~$F$ can be employed in order to ensure that
-a fixed point of $F$ coincides with a zero of $f$.
-On may, for example, define $F(\vect x) = \alpha f(\vect x) + \vect x$,
+Such a point~$\vect x_*$ is called a \emph{fixed point} of the function $\vect F$.
+Several definitions of the function~$\vect F$ can be employed in order to ensure that
+a fixed point of $\vect F$ coincides with a zero of $\vect f$.
+On may, for example, define $\vect F(\vect x) = \alpha \vect f(\vect x) + \vect x$,
 for some nonzero scalar coefficient $\alpha$.
-Then $F(\vect x_*) = \vect x_*$ if and only if $f(\vect x_*) = 0$.
+Then $\vect F(\vect x_*) = \vect x_*$ if and only if $\vect f(\vect x_*) = 0$.
 Later in this chapter,
 we study two instances of numerical methods which can be recast in the form~\eqref{eq:fixed_point}.
 Before this,
-we study the convergence of the iteration~\eqref{eq:fixed_point} for a general function~$F$.
+we study the convergence of the iteration~\eqref{eq:fixed_point} for a general function~$\vect F$.
 
 \section{Convergence of fixed point methods}
 Equation~\eqref{eq:fixed_point} may be viewed as a \emph{discrete-time} dynamical system.
@@ -127,12 +127,12 @@ it is important to understand the concept of stability of a fixed point.
 The concept of stability appears also in the field of ordinary differential equations,
 which are \emph{continuous-time} dynamical systems.
 Before we define this concept,
-we introduce the notation
+we introduce the following notation
+for the open ball of radius $\delta$ around $\vect x \in \real^n$:
 \[
-    B_{\delta} (\vect x) := \bigl\{ \vect y \in \real^n : \norm{\vect y - \vect x} < \delta \bigr\}
+    B_{\delta} (\vect x) := \bigl\{ \vect y \in \real^n : \norm{\vect y - \vect x} < \delta \bigr\}.
 \]
-for the open ball of radius $\delta$ around $\vect x \in \real^n$.
-\vspace{-.2cm}
+\vspace{-.7cm}
 \begin{definition}
     [Stability of fixed points]
     Let $(\vect x_k)_{k\geq0}$ denote iterates obtained from~\eqref{eq:fixed_point} when starting from an initial vector~$\vect x_0$.
@@ -182,28 +182,28 @@ for the open ball of radius $\delta$ around $\vect x \in \real^n$.
 Clearly, global exponential stability implies exponential stability,
 which itself implies asymptotic stability and stability.
 If $\vect x_*$ is globally exponentially stable,
-then $\vect x_*$ is the unique fixed point of $F$;
+then $\vect x_*$ is the unique fixed point of~$\vect F$;
 showing this is the aim of~\cref{exercise:global_exponential_stability}.
 If $\vect x_*$ is an attractor,
-then the system is said to be locally convergent to~$\vect x_*$.
+then the dynamical system~\eqref{eq:fixed_point} is said to be locally convergent to~$\vect x_*$.
 The larger the basin of attraction of $\vect x_*$,
 the less careful we need to be when picking the initial guess~$\vect x_0$.
-Global exponential stability of~\eqref{eq:fixed_point} can sometimes be shown
-provided that $f$ satisfies a strong hypothesis.
+Global exponential stability of a fixed point can sometimes be shown
+provided that $\vect F$ satisfies a strong hypothesis.
 
 \begin{definition}
     [Lipschitz continuity]
-    A function $F\colon \real^n \to \real^n$ is said to be \emph{Lipschitz} continuous
+    A function $\vect F\colon \real^n \to \real^n$ is said to be \emph{Lipschitz} continuous
     with constant $L$ if
     \[
         \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
-        \norm[big]{f(\vect y) - f(\vect x)} \leq L \norm{\vect y - \vect x}.
+        \norm[big]{\vect F(\vect y) - \vect F(\vect x)} \leq L \norm{\vect y - \vect x}.
     \]
 \end{definition}
-A function $F$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
-In this case, it is possible to prove the global exponential stability of the fixed point.
+A function $\vect F\colon \real^n \to \real^n$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
+For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a unique globally exponentially stable fixed point.
 \begin{theorem}
-    Assume that $F$ is a contraction.
+    Assume that $\vect F$ is a contraction.
     Then there exists a unique fixed point of~\eqref{eq:fixed_point},
     and it holds that
     \[
@@ -216,7 +216,7 @@ In this case, it is possible to prove the global exponential stability of the fi
     It holds that
     \[
         \norm[big]{\vect x_{k+2} - \vect x_{k+1}}
-        = \norm[big]{F(\vect x_{k+1}) - F(\vect x_k)}
+        = \norm[big]{\vect F(\vect x_{k+1}) - \vect F(\vect x_k)}
         \leq L\norm{\vect x_{k+1} - \vect x_k}
         \leq \dots \leq L^{k+1} \norm{\vect x_{1} - \vect x_0}.
     \]
@@ -225,24 +225,25 @@ In this case, it is possible to prove the global exponential stability of the fi
     \begin{align*}
         \norm{\vect x_{n} - \vect x_{m}}
         &\leq \norm{\vect x_{n} - \vect x_{n-1}} + \dotsb + \norm{\vect x_{m+1} - \vect x_{m}} \\
-        &\leq (L^n + \dotsb + L^m) \norm{\vect x_{1} - \vect x_0} \leq L^m (1 + L + \dotsb) \norm{\vect x_{1} - \vect x_0}
-        = \frac{L^m}{1-L} \norm{\vect x_{1} - \vect x_0}.
+        &\leq (L^{n-1} + \dotsb + L^{m}) \norm{\vect x_{1} - \vect x_0}
+        \leq L^{m} (1 + L + \dotsb) \norm{\vect x_{1} - \vect x_0}
+        = \frac{L^{m}}{1-L} \norm{\vect x_{1} - \vect x_0}.
     \end{align*}
     It follows that the sequence $(\vect x_k)_{k\geq0}$ is Cauchy in $\real^n$,
     implying by completeness that $\vect x_k \to \vect x_*$ in the limit as $k \to \infty$,
     for some limit $\vect x_* \in \real^n$.
-    Being a contraction, the function $F$ is continuous,
-    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point} we obtain that $\vect x_*$ is a fixed point of~$F$.
+    Being a contraction, the function $\vect F$ is continuous,
+    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point} we obtain that $\vect x_*$ is a fixed point of~$\vect F$.
     Then
     \begin{equation}
         \label{eq:contraction}
         \norm[big]{\vect x_{k} - \vect x_{*}}
-        = \norm[big]{F(\vect x_{k-1}) - F(\vect x_*)}
+        = \norm[big]{\vect F(\vect x_{k-1}) - \vect F(\vect x_*)}
         \leq L\norm{\vect x_{k-1} - \vect x_*}
         \leq \dots \leq L^{k} \norm{\vect x_{0} - \vect x_*},
     \end{equation}
     proving the statement.
-    To prove the uniqueness of the fixed point,
+    To show the uniqueness of the fixed point,
     assume there was another fixed point $\vect y_*$.
     Then, taking $\vect x_0 = \vect y_*$ in~\eqref{eq:contraction},
     we find
@@ -253,46 +254,126 @@ In this case, it is possible to prove the global exponential stability of the fi
     which is impossible since $L < 1$.
 \end{proof}
 
-It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$f$.
+It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$\vect F$.
 \begin{theorem}
     \label{theorem:local_convergence}
-    Assume that $F\colon: \real^n \to \real^n$ has a fixed point $\vect x_*$ and satisfies the local Lipschitz condition
+    Assume that $\vect x_*$ is a fixed point of~\eqref{eq:fixed_point} and that $\vect F\colon \real^n \to \real^n$ satisfies the local Lipschitz condition
     \begin{equation}
         \label{eq:local_lipschitz}
         \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-        \norm[big]{F(\vect x) - F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+        \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
     \end{equation}
     with $0 \leq L < 1$ and $\delta > 0$.
     Then for all $\vect x_0 \in B_{\delta}(\vect x_*)$ it holds that
     \begin{itemize}
         \item All the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
         \item The sequence $(\vect x_k)_{k \in \nat}$ converges exponentially to $\vect x_*$.
-        \item There is no other fixed point of $F$ inside $B_{\delta}(\vect x_*)$.
+        \item There is no other fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$.
     \end{itemize}
 \end{theorem}
 \begin{proof}
-    See~\cref{exercise:prove_local_convergence}
+    See~\cref{exercise:prove_local_convergence}.
 \end{proof}
 It is possible to guarantee that condition~\eqref{eq:local_lipschitz} holds provided that
-we have sufficiently good control of the derivatives of the function~$F$.
-The function $F$ is differentiable at $\vect x$ (in the sense of Fréchet) if
-there exists a linear operator $\D F_{\vect x} \colon \real^n \to \real^n$ such that
-\[
-    \lim_{\vect h \to 0} \frac{\norm{F(\vect x + \vect h) - \vect F(\vect x) - \D F_{\vect x}(\vect h)}}{\norm{\vect h}}
+we have sufficiently good control of the derivatives of the function~$\vect F$.
+The function $\vect F$ is differentiable at $\vect x$ (in the sense of Fréchet) if
+there exists a linear operator $\D \vect F_{\vect x} \colon \real^n \to \real^n$ such that
+\begin{equation}
+    \label{eq:limit_differentiability}
+    \lim_{\vect h \to 0} \frac{\norm{\vect F(\vect x + \vect h) - \vect F(\vect x) - \D F_{\vect x}(\vect h)}}{\norm{\vect h}}
     = 0.
-\]
-If $F$ is differentiable,
-then the Jacobian matrix of~$F$ at $\vect x$ is defined as as
+\end{equation}
+If $\vect F$ is differentiable,
+then all its first partial derivatives exist.
+The Jacobian matrix of~$\vect F$ at $\vect x$ is defined as
 \[
-    J_F(\vect x) =
+    \mat J_F(\vect x) =
     \begin{pmatrix}
-        \partial_{1} h_1(\vect x) & \hdots & \partial_n h_1(\vect x) \\
+        \partial_{1} F_1(\vect x) & \hdots & \partial_n F_1(\vect x) \\
         \vdots & \ddots & \vdots \\
-        \partial_{1} h_n(\vect x) & \hdots & \partial_n h_n(\vect x)
+        \partial_{1} F_n(\vect x) & \hdots & \partial_n F_n(\vect x)
     \end{pmatrix},
 \]
-and it holds that $\D F_{\vect x}(\vect h) = J_F(\vect x) \vect h$.
-We recall that by Taylor's theorem.
+and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
+
+\begin{proposition}
+    Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point},
+    and assume that there exists $\delta$ and a subordinate matrix norm such that
+    $\vect F$ is differentiable everywhere in $B_{\delta}(\vect x_*)$ and
+    \[
+        \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+        \norm{\mat J_F(\vect x)} \leq L < 1.
+    \]
+    Then condition~\eqref{eq:local_lipschitz} is satisfied in the associated vector norm,
+    and so the fixed point $\vect x_*$ is locally exponentially stable.
+\end{proposition}
+\begin{proof}
+    Let $\vect x \in B_{\delta}(\vect x_*)$
+    By the fundamental theorem of calculus and the chain rule,
+    we have
+    \begin{align*}
+        \vect F(\vect x) - \vect F(\vect x_*)
+        &= \int_{0}^{1} \frac{\d}{\d t} \Bigl( \vect F\bigl(\vect x_* + t(\vect x - \vect x_*) \bigr) \Bigr) \d t
+        = \int_{0}^{1} \mat J_F\bigl(\vect x_* + t(\vect x - \vect x_*)\bigr) \left(\vect x - \vect x_* \right) \d t.
+    \end{align*}
+    Therefore,
+    it holds that
+    \begin{align*}
+        \norm{\vect F(\vect x) - \vect F(\vect x_*)}
+        \leq \int_{0}^{1} \norm*{\mat J_F\bigl(\vect x + t(\vect x - \vect x_*)\bigr)}  \, \d t \, \norm{\vect x - \vect x_*}
+        = \int_{0}^{1} L \, \d t \, \norm{\vect x - \vect x_*} = L \norm{\vect x - \vect x_*},
+    \end{align*}
+    which is the statement.
+\end{proof}
+
+In fact, it is possible to prove that a fixed point~$\vect x_*$ is exponentially locally stable under an even weaker condition,
+involving only the derivative of $\vect F$ at $\vect x_*$.
+
+\begin{proposition}
+    Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point} and that $f$ is differentiable at $\vect x_*$ with
+    \[
+        \norm{\mat J_F(\vect x_*)} = L < 1,
+    \]
+    in a subordinate vector norm.
+    Then there exists $\delta > 0$ such that condition~\eqref{eq:local_lipschitz} is satisfied in the associated vector norm,
+    and so the fixed point $\vect x_*$ is locally exponentially stable.
+\end{proposition}
+\begin{proof}
+    Let $\varepsilon = \frac{1}{2} (1-L) > 0$.
+    By the definition of differentiability~\eqref{eq:limit_differentiability},
+    there exists $\delta > 0$ such that
+    \[
+        \forall \vect h \in B_{\delta} (\vect 0) \backslash \{ \vect 0 \}, \qquad
+        \frac{\norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h}}{\norm{\vect h}} \leq \varepsilon.
+    \]
+    By the triangle inequality, 
+    this implies
+    \begin{align*}
+        \forall \vect h \in B_{\delta} (\vect 0), \qquad
+        \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*)}
+        &\leq 
+        \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h} + \norm{\mat J_F(\vect x_*)\vect h} \\
+        &\leq 
+        \varepsilon \norm{\vect h} + \norm{\mat J_F(\vect x_*)} \norm{\vect h}
+        \leq (\varepsilon + L) \norm{\vect h} = (1 - \varepsilon) \norm{\vect h}.
+    \end{align*}
+    This shows that $\vect F$ satisfies the condition~\eqref{eq:local_lipschitz} in the neighborhood $B_{\delta}(\vect x_*)$.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
+\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
+\fill (1.5mm,7mm) circle (1.5mm);
+\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
+\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
+\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
+        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
+\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
+        (-3mm,0mm)--++(-100:3mm)coordinate (d);
+\draw[ultra thick] (d) -- ++(-45:1.25cm);
+\end{tikzpicture}
+% \textcolor{red}{Work in progress}
+\end{center}
 
 \section{Exercises}
 
@@ -323,18 +404,3 @@ Implement the bisection method for finding the solution(s) to the equation
     \label{exercise:prove_local_convergence}
     Prove \cref{theorem:local_convergence}.
 \end{exercise}
-
-\begin{center}
-\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
-\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
-\fill (1.5mm,7mm) circle (1.5mm);
-\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
-\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
-\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
-        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
-\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
-        (-3mm,0mm)--++(-100:3mm)coordinate (d);
-\draw[ultra thick] (d) -- ++(-45:1.25cm);
-\end{tikzpicture}
-% \textcolor{red}{Work in progress}
-\end{center}

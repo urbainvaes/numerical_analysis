@@ -30,3 +30,28 @@
 \newcommand{\moreinfo}{\texorpdfstring{{\normalfont \color{lightred}$^{\text{\faSearchPlus}}$}}{}}
 \newcommand{\laplacian}{\triangle}
 \newcommand{\julia}[1]{\mintinline{julia}{#1}}
+
+% \makeatletter
+% \DeclareDocumentCommand \derivative{s m o m}{%
+%     \def\@der{\IfBooleanTF{#1}{\mathrm{d}}{\partial}}
+%     \def\@default{%
+%         \mathchoice{%
+%                 \frac{%
+%                     \@der\ifnum\pdfstrcmp{#2}{1}=0\else^{#2}\fi {\IfNoValueTF{#3}{}{#3}}
+%                 }{%
+%                     \@for\@token:={#4}\do{\@der \@token}
+%                 }
+%             } {%
+%                 \@for\@token:={#4}\do{\@der_{\@token}\ifnum\pdfstrcmp{#2}{1}=0\else^{#2}\fi} \IfNoValueTF{#3}{}{#3}
+%             } {} {}
+%     }
+%     \IfBooleanTF{#1}{\IfNoValueTF{#3}{\@default}{%
+%                 #3%
+%                 \ifnum\pdfstrcmp{#2}{1}=0'\else%
+%                 \ifnum\pdfstrcmp{#2}{2}=0''\else%
+%                 \ifnum\pdfstrcmp{#2}{3}=0'''\else%
+%                 \ifnum\pdfstrcmp{#2}{4}=0^{(iv)}\else^{(#2)}\fi\fi\fi\fi
+%             }
+%         }{\@default}
+% }
+% \makeatother
