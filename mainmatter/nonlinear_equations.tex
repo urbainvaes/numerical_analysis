@@ -13,24 +13,36 @@ so iterative methods are required.
 
 In contrast with the previous chapter,
 it may not be the case that~\eqref{eq:nonlinear_equation} admits one and only one solution.
-For example, the equation $1 + x^2 = 0$ does not have a solution,
+For example, the equation $1 + x^2 = 0$ does not have a (real) solution,
 and the equation $\cos(x) = 0$ has infinitely many.
 Therefore, convergence results usually contain assumptions on the function~$f$ that guarantee the existence and uniqueness of a solution in~$\real^n$ or a subset of~$\real^n$.
 
 For an iterative method generating approximations $(\vect x_k)_{k \geq 0}$ of a root $\vect x_*$,
 we define the error as $\vect e_k = \vect x_k - \vect x_*$.
-If the sequence $(\vect x_k)_{k \geq 0}$ converges in the limit as $k \to \infty$
+If the sequence $(\vect x_k)_{k \geq 0}$ converges to $\vect x_*$ in the limit as $k \to \infty$
 and if
-\[
+\begin{equation}
+    \label{eq:rate_of_convergence}
     \lim_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}^q} = r,
-\]
+\end{equation}
 then we say that $(\vect x_k)_{k \geq 0}$ converges with \emph{order of convergence} $q$ and
 \emph{rate of convergence} $r$.
 In addition, we say that the convergence is linear $q = 1$,
 superlinear if $q > 1$ and quadratic if $q = 2$.
 
-\section{Bisection method}
-
+\section{The bisection method}
+As an introduction to numerical methods for solving nonlinear equations,
+we present the bisection method.
+This method applies only in the case of a real-valued function $f\colon \real \to \real$,
+and relies on the knowledge of two points $a < b$ such that $f(a)$ and $f(b)$ have different signs.
+By the intermediate value theorem,
+there necessarily exists $x_* \in (a, b)$ such that $f(x_*) = 0$.
+The idea of the bisection method it to successively divide the interval in two equal parts,
+and to retain, based on the sign of $f$ at the midpoint $x_{1/2}$,
+the one that necessarily contains a root.
+If $f(x_{1/2}) f(a) \geq 0$, then $f(x_{1/2}) f(b) \leq 0$ and so there necessarily exists a root of $f$ in the interval $[x_{1/2}, b)$ by the intermediate value theorem.
+In contrast, if $f(x_{1/2}) f(a) < 0$, then there necessarily is a root in the interval $(a, x_{1/2})$.
+The algorithm is presented in \cref{algo:bisection}.
 \begin{algorithm}
 \caption{Bisection method}%
 \label{algo:bisection}%
@@ -49,15 +61,35 @@ superlinear if $q > 1$ and quadratic if $q = 2$.
 \end{algorithmic}
 \end{algorithm}
 
+The following result establishes the convergence of the method.
 \begin{proposition}
+    \label{proposition:convergence_bisection}
     Assume that $f\colon \real \to \real$ is a continuous function.
     Let $[a_j, b_j]$ denote the interval obtained after $j$ iterations of the bisection method,
-    and let $x_j$ denote the midpoint $(a_j + b_j)/2$. 
-    Then it holds that
-    \[
+    and let $x_j$ denote the midpoint $(a_j + b_j)/2$.
+    Then there exists a root~$x_*$ of $f$ such that
+    \begin{equation}
+        \label{eq:error_bisection}
         \abs{x_j - x_*} \leq (b_0 - a_0) 2^{-(j+1)}.
-    \]
+    \end{equation}
 \end{proposition}
+\begin{proof}
+    By construction, $f(a_j) f(b_j) \leq 0$ and $f(b) \neq 0$.
+    Therefore, by the intermediate value theorem,
+    there exists a root of $f$ in the interval $[a_j, b_j)$,
+    implying that
+    \[
+        \abs{x_j - x_*} \leq \frac{b_j - a_j}{2}.
+    \]
+    Since $b_j - a_j = 2^{-j} (b_0 - a_0)$,
+    the statement follows.
+\end{proof}
+Although the limit in~\eqref{eq:rate_of_convergence} may not be well-defined (for example, $x_1$ may be a root of~$f$),
+the error $x_j - x_*$ is bounded in absolute value by the sequence $(\widetilde e_j)_{j \geq 0}$,
+where $\widetilde e_j = (b_0 - a_0) 2^{-(j+1)}$ by \cref{proposition:convergence_bisection}.
+Since the latter sequence exhibits linear convergence to 0,
+the convergence of the bisection method is said to be linear,
+by a slight abuse of terminology.
 
 \section{Fixed point methods}
 
@@ -249,7 +281,7 @@ there exists a linear operator $\D F_{\vect x} \colon \real^n \to \real^n$ such 
     \lim_{\vect h \to 0} \frac{\norm{F(\vect x + \vect h) - \vect F(\vect x) - \D F_{\vect x}(\vect h)}}{\norm{\vect h}}
     = 0.
 \]
-If $F$ is differentiable, 
+If $F$ is differentiable,
 then the Jacobian matrix of~$F$ at $\vect x$ is defined as as
 \[
     J_F(\vect x) =
