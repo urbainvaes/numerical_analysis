@@ -28,7 +28,31 @@ and if
 then we say that $(\vect x_k)_{k \geq 0}$ converges with \emph{order of convergence} $q$ and
 \emph{rate of convergence} $r$.
 In addition, we say that the convergence is linear $q = 1$,
-superlinear if $q > 1$ and quadratic if $q = 2$.
+and quadratic if $q = 2$.
+The convergence is said to be superlinear if
+\begin{equation}
+    \label{eq:superlinear}
+    \lim_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}} = 0.
+\end{equation}
+In particular,
+the convergence is superlinear if the order of convergence is $q > 1$.
+
+\begin{remark}
+    The definition~\eqref{eq:superlinear} for the order and rate of convergence is not entirely satisfactory,
+    as the limit may not exist.
+    A more general definition for the order of convergence of a sequence~$(\vect x_k)_{k\geq0}$ is the following:
+    \[
+        q(\vect x_0) = \inf \left\{ p \in [1, \infty) : \limsup_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}^p} = \infty \right\},
+    \]
+    or $q(\vect x_0) = \infty$ if the numerator and denominator of the fraction are zero for sufficiently large $k$.
+    It is possible to define similarly the order of convergence of an iterative method
+    for an initial guess in a neighborhood $V$ of $\vect x_*$:
+    \[
+        q = \inf \left\{ p \in [1, \infty) : \sup_{\vect x_0 \in V} \left( \limsup_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}^p} \right) = \infty \right\},
+    \]
+    where the fraction should be interpreted as 0 if the numerator and denominator are zero.
+    A more detailed discussion of this subject is beyond the scope of this course.
+\end{remark}
 
 \section{The bisection method}
 As an introduction to numerical methods for solving nonlinear equations,
@@ -90,6 +114,11 @@ where $\widetilde e_j = (b_0 - a_0) 2^{-(j+1)}$ by \cref{proposition:convergence
 Since the latter sequence exhibits linear convergence to 0,
 the convergence of the bisection method is said to be linear,
 by a slight abuse of terminology.
+
+% \section{Convergence speed}
+% The definition~\eqref{eq:rate_of_convergence} for the rate of convergence is not completely satisfactory,
+% because the limit on the left-hand side may not have exist.
+% It is therefore preferable to replace the limit in the definition by a \emph{limit superior}.
 
 \section{Fixed point methods}
 
@@ -203,6 +232,7 @@ provided that $\vect F$ satisfies a strong hypothesis.
 A function $\vect F\colon \real^n \to \real^n$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
 For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a unique globally exponentially stable fixed point.
 \begin{theorem}
+    \label{eq:exponenital_convergence_fixed_point}
     Assume that $\vect F$ is a contraction.
     Then there exists a unique fixed point of~\eqref{eq:fixed_point},
     and it holds that
@@ -328,8 +358,8 @@ and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
 
 In fact, it is possible to prove that a fixed point~$\vect x_*$ is exponentially locally stable under an even weaker condition,
 involving only the derivative of $\vect F$ at $\vect x_*$.
-
 \begin{proposition}
+    \label{proposition:local_convergence}
     Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point} and that $f$ is differentiable at $\vect x_*$ with
     \[
         \norm{\mat J_F(\vect x_*)} = L < 1,
@@ -346,19 +376,61 @@ involving only the derivative of $\vect F$ at $\vect x_*$.
         \forall \vect h \in B_{\delta} (\vect 0) \backslash \{ \vect 0 \}, \qquad
         \frac{\norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h}}{\norm{\vect h}} \leq \varepsilon.
     \]
-    By the triangle inequality, 
+    By the triangle inequality,
     this implies
     \begin{align*}
         \forall \vect h \in B_{\delta} (\vect 0), \qquad
         \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*)}
-        &\leq 
+        &\leq
         \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h} + \norm{\mat J_F(\vect x_*)\vect h} \\
-        &\leq 
+        &\leq
         \varepsilon \norm{\vect h} + \norm{\mat J_F(\vect x_*)} \norm{\vect h}
-        \leq (\varepsilon + L) \norm{\vect h} = (1 - \varepsilon) \norm{\vect h}.
+        = (\varepsilon + L) \norm{\vect h} = (1 - \varepsilon) \norm{\vect h}.
     \end{align*}
     This shows that $\vect F$ satisfies the condition~\eqref{eq:local_lipschitz} in the neighborhood $B_{\delta}(\vect x_*)$.
 \end{proof}
+
+The estimate in~\cref{eq:exponenital_convergence_fixed_point} suggests that
+when the fixed point iteration~\eqref{eq:fixed_point} converges,
+the convergence is linear.
+While this is usually the case,
+the convergence is superlinear if $\mat J_F(\vect x_*) = 0$.
+
+\begin{proposition}
+    Assume that $\vect x_*$ is a fixed point of~\eqref{eq:fixed_point} and that~$\mat J_F(\vect x_*) = 0$.
+    Then the convergence to $\vect x_*$ is superlinear,
+    in the sense that if $\vect x_k \to \vect x_*$ as $k \to \infty$,
+    then
+    \[
+        \lim_{k \to \infty} \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}} = 0.
+    \]
+\end{proposition}
+\begin{proof}
+    By \cref{proposition:local_convergence},
+    there exists $\delta > 0$ such that $(\vect x_k)_{k\geq 0}$ is a sequence converging to $\vect x_*$ for all $\vect x_0 \in B_{\delta}(\vect x_*)$.
+    It holds that
+    \[
+        \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}}
+        = \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)}}{\norm{\vect x_k - \vect x_*}}
+        =  \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*) - \mat J_F(\vect x_*) (\vect x_k - \vect x_*)}}{\norm{\vect x_k - \vect x_*}}.
+    \]
+    Since $\vect x_k - \vect x_* \to \vect 0$ as $k \to \infty$,
+    the right-hand side converges to 0 by~\eqref{eq:limit_differentiability}.
+\end{proof}
+
+Similarly, if
+\[
+    \norm{\vect F(x) - \vect F(x_*)} \leq C \norm{\vect x - \vect x_*}^q,
+\]
+then
+\[
+    \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}^q}
+    = \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)}}{\norm{\vect x_k - \vect x_*}^q}
+    \leq C,
+\]
+suggesting that the order of convergence is at least $q$.
+
+
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
@@ -403,4 +475,15 @@ Implement the bisection method for finding the solution(s) to the equation
 \begin{exercise}
     \label{exercise:prove_local_convergence}
     Prove \cref{theorem:local_convergence}.
+\end{exercise}
+
+\begin{exercise}
+    Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point}.
+    Show that if
+    \[
+        \rho\bigl(\mat J_F(\vect x_*)\bigr) < 1,
+    \]
+    then $\vect x_*$ is locally exponentially stable.
+
+    \noindent \textbf{Hint:} Construct a subordinate matrix norm such that $\norm{\mat J_F(\vect x_*)} < 1$.
 \end{exercise}
