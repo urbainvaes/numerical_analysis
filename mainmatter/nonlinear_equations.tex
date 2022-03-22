@@ -121,6 +121,7 @@ by a slight abuse of terminology.
 % It is therefore preferable to replace the limit in the definition by a \emph{limit superior}.
 
 \section{Fixed point methods}
+\label{sec:fixed_point_methods}
 
 Let $\vect x_*$ denote a zero of the function $\vect f$.
 The idea of iterative methods for~\eqref{eq:nonlinear_equation} is to construct,
@@ -141,7 +142,7 @@ we find that $\vect x_*$ satisfies
 Such a point~$\vect x_*$ is called a \emph{fixed point} of the function $\vect F$.
 Several definitions of the function~$\vect F$ can be employed in order to ensure that
 a fixed point of $\vect F$ coincides with a zero of $\vect f$.
-On may, for example, define $\vect F(\vect x) = \alpha \vect f(\vect x) + \vect x$,
+One may, for example, define $\vect F(\vect x) = \vect x - \alpha^{-1} \vect f(\vect x)$,
 for some nonzero scalar coefficient $\alpha$.
 Then $\vect F(\vect x_*) = \vect x_*$ if and only if $\vect f(\vect x_*) = 0$.
 Later in this chapter,
@@ -397,6 +398,7 @@ While this is usually the case,
 the convergence is superlinear if $\mat J_F(\vect x_*) = 0$.
 
 \begin{proposition}
+    \label{proposition:superlinear_convergence}
     Assume that $\vect x_*$ is a fixed point of~\eqref{eq:fixed_point} and that~$\mat J_F(\vect x_*) = 0$.
     Then the convergence to $\vect x_*$ is superlinear,
     in the sense that if $\vect x_k \to \vect x_*$ as $k \to \infty$,
@@ -418,19 +420,61 @@ the convergence is superlinear if $\mat J_F(\vect x_*) = 0$.
     the right-hand side converges to 0 by~\eqref{eq:limit_differentiability}.
 \end{proof}
 
-Similarly, if
+Similarly, if there exist $\delta > 0$, $C > 0$ and $q \in (1, \infty)$ such that
 \[
-    \norm{\vect F(x) - \vect F(x_*)} \leq C \norm{\vect x - \vect x_*}^q,
+    \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+    \norm{\vect F(\vect x) - \vect F(\vect x_*)} \leq C \norm{\vect x - \vect x_*}^q,
 \]
-then
+then assuming that $(\vect x_k)_{k\geq0}$ converges to $\vect x_*$,
+it holds for sufficiently large $k$ that
 \[
     \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}^q}
     = \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)}}{\norm{\vect x_k - \vect x_*}^q}
-    \leq C,
+    \leq C.
 \]
-suggesting that the order of convergence is at least $q$.
+In this case, the order of convergence is at least $q$.
 
+\section{Example of fixed point methods}
+As we mentioned in \cref{sec:fixed_point_methods},
+there are several choices for the function $\vect F$ that guarantee
+the equivalence $\vect F(\vect x) = \vect x \Leftrightarrow \vect f(\vect x) = \vect 0$.
+In the case where $f$ is a function from $\real$ to $\real$,
+the simplest approach is to define
+\[
+    F(x) = x - \alpha^{-1} f(x).
+\]
+The fixed point iteration~\eqref{eq:error_bisection} in this case admits a simple geometric interpretation:
+at each step, the function $f$ is approximated by the affine function $x \mapsto f(x_k) + \alpha (x - x_k)$,
+and the new iterate is defined as the zero of this function,
+i.e.
+\[
+    x_{k+1} = x_k - \alpha^{-1} f(x_k) = F(x_k).
+\]
+By~\cref{proposition:local_convergence},
+a sufficient condition to ensure local convergence is that
+\begin{equation}
+    \label{eq:sufficient_condition_fixed_point}
+    \abs{F'(x_*)} = \abs{1 - \alpha^{-1} f'(x_*)} < 1.
+\end{equation}
+In order for this condition to hold true,
+the slope $\alpha$ must be of the same sign as $f'(x_*)$
+the inequality $\abs{\alpha} \geq \abs{f'(x_*)}/2$ must be satisfied.
+If $f'(x_*) = 0$,
+then the sufficient condition~\eqref{eq:sufficient_condition_fixed_point} is never satisfied.
+By~\cref{proposition:superlinear_convergence},
+the convergence is superlinear if~$\alpha = f'(x_*)$.
+In practice, the solution $x_*$ is unknown,
+and so this choice is not realistic.
+Nevertheless, the above reasoning suggests that, by letting the slope $\alpha$ vary from iteration to iteration in such a manner that $\alpha_k$ approaches $f'(x_*)$ as $k \to \infty$,
+fast convergence can be obtained.
+This is precisely what the Newton--Raphson method achieves.
 
+In the case multi-dimensional case where $\vect f$ is a function from $\real^n$ to $\real^n$,
+the above approach can be generalized to
+\[
+    \vect F(\vect x) = \vect x - \mat A^{-1} \vect f(\vect x),
+\]
+where $\mat A$ is an invertible matrix.
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
