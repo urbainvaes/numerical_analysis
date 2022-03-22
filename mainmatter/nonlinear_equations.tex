@@ -445,11 +445,12 @@ the simplest approach is to define
 \]
 The fixed point iteration~\eqref{eq:error_bisection} in this case admits a simple geometric interpretation:
 at each step, the function $f$ is approximated by the affine function $x \mapsto f(x_k) + \alpha (x - x_k)$,
-and the new iterate is defined as the zero of this function,
+and the new iterate is defined as the zero of this affine function,
 i.e.
-\[
+\begin{equation}
+    \label{eq:naive_fixed_point}
     x_{k+1} = x_k - \alpha^{-1} f(x_k) = F(x_k).
-\]
+\end{equation}
 By~\cref{proposition:local_convergence},
 a sufficient condition to ensure local convergence is that
 \begin{equation}
@@ -475,6 +476,39 @@ the above approach can be generalized to
     \vect F(\vect x) = \vect x - \mat A^{-1} \vect f(\vect x),
 \]
 where $\mat A$ is an invertible matrix.
+The method admits a similar geometric interpretation in this case:
+at each step, the function $\vect f$ is approximated by the affine function
+$\vect x \mapsto \vect x_k + \mat A(\vect x - \vect x_k)$,
+and the next iterate is given by the unique zero of latter function.
+Superlinear convergence is achieved when~$\mat A = \mat J_f(\vect x_*)$.
+
+\subsection{The Newton--Raphson method}
+Let us consider the first the case of a function from $\real$ to $\real$.
+The Newton--Raphson method applies when $f$ is continuously differentiable.
+At each step, the function $f$ is approximated by the affine function
+$x \mapsto f(x_k) + f'(x_k) (x - x_k)$ and the unique zero of this function is returned.
+In other words, one iteration of the Newton--Raphson method reads
+\begin{equation}
+    \label{eq:newton_raphson}
+    x_{k+1} = x_k - f'(x_k)^{-1} f(x_k).
+\end{equation}
+For this iteration to be well-defined,
+it is necessary that $f'(x_k) \neq 0$.
+The Newton--Raphson method may be viewed as a variation on~\eqref{eq:naive_fixed_point} where the slope~$\alpha$ is adapted as the simulation progresses.
+If the method converges, then $f'(x_k) \to f'(x_*)$ in the limit as $k \to \infty$.
+Equation~\eqref{eq:newton_raphson} may be recast as a fixed point iteration of the form~\eqref{eq:error_bisection} with
+\[
+    F(x) = x - \frac{f(x)}{f'(x)}.
+\]
+Clearly, if $x_*$ is a simple root of $f$, that is if $f(x_*) = 0$ and $f'(x_*) \neq 0$,
+then $x_*$ is a fixed point of $F$.
+If the function~$f$ is twice continuously differentiable,
+then the convergence of the Newton--Raphson method is superlinear,
+because then
+\[
+    F'(x_*) = \frac{f(x_*) f''(x_*)}{f'(x_*)^2} = 0.
+\]
+
 
 \begin{center}
 \begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
