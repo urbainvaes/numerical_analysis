@@ -711,3 +711,25 @@ Implement the bisection method for finding the solution(s) to the equation
 
     \noindent \textbf{Hint:} Construct a subordinate matrix norm such that $\norm{\mat J_F(\vect x_*)} < 1$.
 \end{exercise}
+
+\begin{exercise}
+    Calculate $x = \sqrt[3]{3 + \sqrt[3]{3 + \sqrt[3]{3 + \sqrt{\dots}}}}$ using the bisection method.
+\end{exercise}
+
+\begin{exercise}
+    Solve the equation $f(x) = \e^x - 2 = 0$ using a fixed point iteration of the form
+    \[
+        x_{k+1} = F(x_k), \qquad
+        F(x) = x - \alpha^{-1} f(x).
+    \]
+    Using your knowledge of the exact solution $x_* = \log 2$,
+    write a sufficient condition on $\alpha$ to guarantee that $x_*$ is locally exponentially stable.
+    Verify your finding numerically and plot,
+    using a logarithmic scale for the $y$ axis,
+    the error in absolute value as a function of $k$.
+\end{exercise}
+
+\begin{exercise}
+    Implement the Newton--Raphson method for solving $f(x) = \e^x - 2 = 0$,
+    and plot the error in absolute value as a function of the iteration index $k$.
+\end{exercise}
