@@ -724,7 +724,7 @@ Implement the bisection method for finding the solution(s) to the equation
     \]
     Using your knowledge of the exact solution $x_* = \log 2$,
     write a sufficient condition on $\alpha$ to guarantee that $x_*$ is locally exponentially stable.
-    Verify your finding numerically and plot,
+    Verify your findings numerically and plot,
     using a logarithmic scale for the $y$ axis,
     the error in absolute value as a function of $k$.
 \end{exercise}
@@ -733,3 +733,31 @@ Implement the bisection method for finding the solution(s) to the equation
     Implement the Newton--Raphson method for solving $f(x) = \e^x - 2 = 0$,
     and plot the error in absolute value as a function of the iteration index $k$.
 \end{exercise}
+
+\begin{exercise}
+    Find the point $(x, y)$ on the parabola $y = x^2$ that is closest to the point $(3, 1)$.
+\end{exercise}
+
+\begin{exercise}
+    Consider the linear system
+    \begin{equation*}
+        \left \{
+            \begin{aligned}
+                &y = (x-1)^2 \\
+                &x^2 + y^2 = 4
+            \end{aligned}
+        \right.
+    \end{equation*}
+    By drawing these two constraints in the $xy$ plane,
+    find an approximation of the solution(s).
+    Then calculate the solution(s) using a fixed-point method.
+\end{exercise}
+
+\begin{exercise}
+    Find solutions $(\psi, \lambda)$, with $\lambda > 0$,
+    to the following eigenvalue problem:
+    \[
+        \psi'' = - \lambda^2 \psi, \qquad \psi(0) = 0, \qquad \psi'(1) = \psi(1).
+    \]
+\end{exercise}
+
