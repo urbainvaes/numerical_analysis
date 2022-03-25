@@ -439,7 +439,7 @@ As we mentioned in \cref{sec:fixed_point_methods},
 there are several choices for the function $\vect F$ that guarantee
 the equivalence $\vect F(\vect x) = \vect x \Leftrightarrow \vect f(\vect x) = \vect 0$.
 In the case where $f$ is a function from $\real$ to $\real$,
-the simplest approach is to define
+the simplest approach, sometimes called the \emph{chord method}, is to define
 \[
     F(x) = x - \alpha^{-1} f(x).
 \]
@@ -656,20 +656,104 @@ we can show the following result on the convergence of the multi-dimensional New
     which concludes the proof.
 \end{proof}
 
-\begin{center}
-\begin{tikzpicture}[limb/.style={line cap=round,line width=1.5mm,line join=bevel}]
-\draw[line width=2mm,rounded corners,fill=yellow] (-2,0) -- (0,-2) -- (2,0) -- (0,2) -- cycle;
-\fill (1.5mm,7mm) circle (1.5mm);
-\fill(0,-7.5mm) -- ++(10mm,0mm) -- ++(120:2mm)--++(100:1mm)--++(150:2mm) arc (70:170:2.5mm and 1mm);
-\draw[limb] (-7.5mm,-6.5mm)--++(70:4mm)--++(85:4mm) coordinate(a)--++(-45:5mm)--(-2.5mm,-6.5mm);
-\fill[rotate around={45:(a)}] ([shift={(-0.5mm,0.55mm)}]a) --++(0mm,-3mm)--++
-        (7mm,-0.5mm)coordinate(b)--++(0mm,4mm)coordinate(c)--cycle;
-\draw[limb] ([shift={(-0.6mm,-0.4mm)}]b) --++(-120:5mm) ([shift={(-0.5mm,-0.5mm)}]c) --++
-        (-3mm,0mm)--++(-100:3mm)coordinate (d);
-\draw[ultra thick] (d) -- ++(-45:1.25cm);
-\end{tikzpicture}
-% \textcolor{red}{Work in progress}
-\end{center}
+\subsection{The secant method}
+The Newton--Raphson method exhibits very fast convergence,
+but it requires the knowledge of the derivatives of the function $\vect f$.
+To conclude this chapter,
+we describe a root-finding algorithm,
+known as the secant method,
+that enjoys superlinear convergence but does not require the derivatives of~$\vect f$.
+This method applies only when $\vect f$ is a function from $\real$ to $\real$,
+and so we drop the vector notation in the rest of this section.
+
+Unlike the other methods presented so far in~\cref{sec:fixed_point_methods},
+the secant method \emph{can not} be recast as a fixed point iteration of the form~$x_{k+1} = F(x_{k})$.
+Instead, it is of the more form general form~$x_{k+2} = F(x_k, x_{k+1})$.
+The geometric intuition behind the method in the following: given $x_k$ and $x_{k+1}$,
+the function $f$ is approximated by the unique linear function that passes through $\bigl(x_k, f(x_k)\bigr)$ and
+$\bigl(x_{k+1}, f(x_{k+1})\bigr)$,
+and the iterate $x_{k+2}$ is defined as the root of this linear function.
+In other words, $f$ is approximated as follows:
+\[
+    \widetilde f(x) = f(x_k) + \frac{f(x_{k+1}) - f(x_k)}{x_{k+1} - x_k} (x - x_k).
+\]
+Solving $\widetilde f(x) = 0$ gives the following expression for $x_{k+2}$:
+\begin{equation}
+    \label{eq:secant_method}
+    x_{k+2} = \frac{f(x_{k+1}) x_k - f(x_k) x_{k+1}}{f(x_{k+1}) - f(x_k)},
+\end{equation}
+Showing the convergence of the secant method rigorously under general assumptions is tedious,
+so in this course we restrict our attention to the case where $f$ is a quadratic function.
+Extending the proof of convergence to a more general smooth function can be achieved
+by using a quadratic Taylor approximation around the root~$x_*$ of~$f$,
+which is accurate in a close neighborhood of~$x_*$.
+
+\begin{theorem}
+    [Convergence of the secant method]
+    Assume that $f$ is a convex quadratic polynomial with a simple root at $x_*$,
+    and that the secant method converges: $\lim_{k\to \infty} x_k = x_*$.
+\end{theorem}
+\begin{proof}
+    Equation~\eqref{eq:secant_method} implies that
+    \begin{equation*}
+        \label{eq:secant_error}
+        x_{k+2} - x_* = \frac{f(x_{k+1}) (x_k - x_*) - f(x_k) (x_{k+1}-x_*)}{f(x_{k+1}) - f(x_k)}.
+    \end{equation*}
+    By assumption, the function $f$ may be expressed as
+    \[
+        f(x) = \lambda (x - x_*) + \mu (x - x_*)^2, \qquad \lambda \neq 0.
+    \]
+    Substituting this expression in~\eqref{eq:secant_error} and letting $e_k = x_k - x_*$,
+    we obtain
+    \[
+        e_{k+2} 
+        = \frac{\mu e_k e_{k+1} (e_{k+1} - e_{k})}{\lambda (e_{k+1} - e_k) + \mu (e_{k+1}^2 - e_k^2)}
+        = \frac{\mu e_k e_{k+1}}{\lambda + \mu (e_{k+1} + e_k)}.
+    \]
+    Rearranging this equation, 
+    we have
+    \begin{equation}
+        \label{eq:secant_method_rearranged}
+        \frac{e_{k+2}}{e_{k+1}}
+        = \frac{\mu e_k}{\lambda + \mu (e_{k+1} + e_k)}.
+    \end{equation}
+    By assumption, the right-hand side converges to zero,
+    and so the left-hand side must also converge to zero;
+    the convergence is superlinear.
+
+    In order to find the order of convergence,
+    let us define
+    \[
+        q_* = \inf \left\{ q \geq 1: \limsup_{k \to \infty} \frac{\abs{e_{k+1}}}{\abs{e_k}^q} = \infty \right\}.
+    \]
+    It is clear that $q_* \leq 2$,
+    because
+
+    Further rearranging~\eqref{eq:secant_method_rearranged} and taking absolute values,
+    we obtain
+    \begin{equation}
+        \label{eq:secant_method_rearranged}
+        \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
+        = \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}\frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
+    \end{equation}
+
+    \begin{equation}
+        \label{eq:secant_method_rearranged}
+        \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
+        \frac{\abs{e_{k+1}}^{q-1}}{\abs{e_k}}
+        = \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
+    \end{equation}
+    Let $q \in (1, q_*)$.
+    Taking the limit of both sides,
+    we obtain
+    \[
+        0 
+        = \lim_{k\to \infty} \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}
+        = \lim_{k\to \infty} \left( \frac{\abs{e_{k+1}}}{\abs{e_k}^{\frac{1}{q-1}}} \right)^{1-q}.
+    \]
+    Therefore $\frac{1}{q-1} < q_*$.
+\end{proof}
+
 
 \section{Exercises}
 
@@ -796,5 +880,14 @@ y = [0.6761488864859304; 0.6345697680852508; 0.6396283580587062; 0.6132010027973
         \label{fig:solution_exercise_approximation}
     \end{figure}
 \end{exercise}
+
+% \begin{exercise}
+%     [Proof of convergence for Newton--Raphson]
+%     The aim of this exercise is to prove the convergence of the Newton--Raphson method under simple assumptions.
+%     Specifically, let $f \in C^2(\real)$ be a smooth function such that
+%     \[
+%         fa
+%     \]
+% \end{exercise}
 
 \section{Discussion and bibliography}
