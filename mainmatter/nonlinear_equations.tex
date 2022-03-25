@@ -520,10 +520,10 @@ In the rest of this section,
 we show that the iteration~\eqref{eq:iteration_newton_raphson_nonlinear} is well-defined in a small neighborhood of a root of $\vect f$ under appropriate assumptions,
 and we demonstrate the \emph{second order} convergence of the method.
 We begin by proving the following preparatory lemma,
-which we will then employ in the particular case where the matrix-valued function $\mat A$ is equal to~$\mat J_f(\vect x_*)$.
+which we will then employ in the particular case where the matrix-valued function $\mat A$ is equal to~$\mat J_f$.
 \begin{lemma}
     \label{lemma:lemma_newton_raphson}
-    Let $\mat A\colon \real^n \to \real^{n \times n}$ denote a continuous matrix-valued function on $\real^n$ such that~$\mat A(\vect x_*)$ is nonsingular,
+    Let $\mat A\colon \real^n \to \real^{n \times n}$ denote a matrix-valued function on $\real^n$ that is both continuous and nonsingular at $\vect x_*$,
     and let $\vect f$ be a function that is differentiable at $\vect x_*$ where $\vect f(\vect x_*) = 0$.
     Then the function
     \[
@@ -562,7 +562,7 @@ which we will then employ in the particular case where the matrix-valued functio
     In order to prove~\eqref{eq:jacobian_G},
     we need to show that
     \[
-        \lim_{\norm{\vect h} \to 0} \frac{\norm[big]{\vect G(\vect x + \vect h) - \vect G(\vect x) - \bigl(\mat I - \mat A(\vect x_*)^{-1} \mat J_f(\vect x_*)\bigr) \vect h}}{\norm {\vect h}} = 0
+        \lim_{\norm{\vect h} \to 0} \frac{\norm[big]{\vect G(\vect x_* + \vect h) - \vect G(\vect x_*) - \bigl(\mat I - \mat A(\vect x_*)^{-1} \mat J_f(\vect x_*)\bigr) \vect h}}{\norm {\vect h}} = 0
     \]
     By definition of $\vect G$, the argument of the norm in the numerator is equal to
     \begin{align*}
@@ -615,7 +615,7 @@ we can show the following result on the convergence of the multi-dimensional New
     \]
     is well-defined in a neighborhood $B_{\delta}(\vect x_*)$ of $\vect x_*$
     for sufficiently small $\delta$.
-    In addition, the second statement in~\cref{lemma:lemma_newton_raphson} gives that $\mat J_F(\vect x_*) = \mat I - \mat J_F(\vect x_*) \mat J_F(\vect x_*) = 0$,
+    In addition, the second statement in~\cref{lemma:lemma_newton_raphson} gives that $\mat J_F(\vect x_*)^{-1} = \mat I - \mat J_F(\vect x_*) \mat J_F(\vect x_*) = 0$,
     which establishes the superlinear convergence by~\cref{proposition:superlinear_convergence}.
 
     In order to show that the convergence is quadratic,
@@ -708,8 +708,14 @@ Implement the bisection method for finding the solution(s) to the equation
         \rho\bigl(\mat J_F(\vect x_*)\bigr) < 1,
     \]
     then $\vect x_*$ is locally exponentially stable.
+    It is sufficient by~\cref{proposition:local_convergence} to find a subordinate matrix norm such that $\norm{\mat J_F(\vect x_*)} < 1$.
+    In other words, this exercise amounts to showing that for any matrix $\mat A \in \real^{n \times n}$ with $\rho(\mat A) < 1$,
+    there exists a matrix norm such that $\norm{\mat A} < 1$.
 
-    \noindent \textbf{Hint:} Construct a subordinate matrix norm such that $\norm{\mat J_F(\vect x_*)} < 1$.
+    \noindent \textbf{Hint:} One may employ a matrix norm of the form $\norm{\mat A}_{\mat T} := \norm{\mat T^{-1} \mat A \mat T}_2$,
+    which is a subordinate norm by~\cref{exercise:induced_matrix_norm}.
+    The Jordan normal form is useful for constructing the matrix $\mat T$,
+    and equation~\eqref{eq:preliminary_equation} is also useful.
 \end{exercise}
 
 \begin{exercise}
@@ -761,3 +767,34 @@ Implement the bisection method for finding the solution(s) to the equation
     \]
 \end{exercise}
 
+\begin{exercise}
+    \label{exercise:nonlinear_approximation}
+    Suppose that we have $n$ data points $(x_i, y_i)$ of an unknown function~$y = f(x)$.
+    We wish to approximate $f$ by a function of the form
+    \[
+        \widetilde f(x) = \frac{a}{b + x}
+    \]
+    by minimizing the sum of squares
+    \[
+        \sum_{i=1}^{n} \abs[big]{\widetilde f(x_i) - y_i}^2.
+    \]
+    Write a system of nonlinear equations that the minimizer $(a, b)$ must satisfy,
+    and solve this system using the Newton--Raphson method.
+    The data is given below:
+    \begin{minted}{julia}
+x = [0.0; 0.1; 0.2; 0.3; 0.4; 0.5; 0.6; 0.7; 0.8; 0.9; 1.0]
+y = [0.6761488864859304; 0.6345697680852508; 0.6396283580587062; 0.6132010027973919;
+     0.5906142598705267; 0.5718728461471725; 0.5524549902830562; 0.538938885654085;
+     0.5373495476994958; 0.514904589752926; 0.49243437874655027]
+    \end{minted}
+    Plot the data points together with the function~$\widetilde f$ over the interval $[0, 1]$.
+    Your plot should look like \cref{fig:solution_exercise_approximation}.
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.6\linewidth]{figures/approx.pdf}
+        \caption{Solution to \cref{exercise:nonlinear_approximation}.}%
+        \label{fig:solution_exercise_approximation}
+    \end{figure}
+\end{exercise}
+
+\section{Discussion and bibliography}
