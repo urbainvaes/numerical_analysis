@@ -706,11 +706,11 @@ which is accurate in a close neighborhood of~$x_*$.
     Substituting this expression in~\eqref{eq:secant_error} and letting $e_k = x_k - x_*$,
     we obtain
     \[
-        e_{k+2} 
+        e_{k+2}
         = \frac{\mu e_k e_{k+1} (e_{k+1} - e_{k})}{\lambda (e_{k+1} - e_k) + \mu (e_{k+1}^2 - e_k^2)}
         = \frac{\mu e_k e_{k+1}}{\lambda + \mu (e_{k+1} + e_k)}.
     \]
-    Rearranging this equation, 
+    Rearranging this equation,
     we have
     \begin{equation}
         \label{eq:secant_method_rearranged}
@@ -727,33 +727,33 @@ which is accurate in a close neighborhood of~$x_*$.
         q_* = \inf \left\{ q \geq 1: \limsup_{k \to \infty} \frac{\abs{e_{k+1}}}{\abs{e_k}^q} = \infty \right\}.
     \]
     It is clear that $q_* \leq 2$,
-    because
+    (in progress)
+    % because
 
-    Further rearranging~\eqref{eq:secant_method_rearranged} and taking absolute values,
-    we obtain
-    \begin{equation}
-        \label{eq:secant_method_rearranged}
-        \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
-        = \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}\frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
-    \end{equation}
+    % Further rearranging~\eqref{eq:secant_method_rearranged} and taking absolute values,
+    % we obtain
+    % \begin{equation}
+    %     \label{eq:secant_method_rearranged}
+    %     \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
+    %     = \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}\frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
+    % \end{equation}
 
-    \begin{equation}
-        \label{eq:secant_method_rearranged}
-        \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
-        \frac{\abs{e_{k+1}}^{q-1}}{\abs{e_k}}
-        = \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
-    \end{equation}
-    Let $q \in (1, q_*)$.
-    Taking the limit of both sides,
-    we obtain
-    \[
-        0 
-        = \lim_{k\to \infty} \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}
-        = \lim_{k\to \infty} \left( \frac{\abs{e_{k+1}}}{\abs{e_k}^{\frac{1}{q-1}}} \right)^{1-q}.
-    \]
-    Therefore $\frac{1}{q-1} < q_*$.
+    % \begin{equation}
+    %     \label{eq:secant_method_rearranged}
+    %     \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
+    %     \frac{\abs{e_{k+1}}^{q-1}}{\abs{e_k}}
+    %     = \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
+    % \end{equation}
+    % Let $q \in (1, q_*)$.
+    % Taking the limit of both sides,
+    % we obtain
+    % \[
+    %     0
+    %     = \lim_{k\to \infty} \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}
+    %     = \lim_{k\to \infty} \left( \frac{\abs{e_{k+1}}}{\abs{e_k}^{\frac{1}{q-1}}} \right)^{1-q}.
+    % \]
+    % Therefore $\frac{1}{q-1} < q_*$.
 \end{proof}
-
 
 \section{Exercises}
 
