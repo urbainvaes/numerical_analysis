@@ -233,7 +233,7 @@ provided that $\vect F$ satisfies a strong hypothesis.
 A function $\vect F\colon \real^n \to \real^n$ that is Lipschitz continuous with a constant $L < 1$ is called a \emph{contraction}.
 For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a unique globally exponentially stable fixed point.
 \begin{theorem}
-    \label{eq:exponenital_convergence_fixed_point}
+    \label{theorem:exponenital_convergence_fixed_point}
     Assume that $\vect F$ is a contraction.
     Then there exists a unique fixed point of~\eqref{eq:fixed_point},
     and it holds that
@@ -328,6 +328,7 @@ The Jacobian matrix of~$\vect F$ at $\vect x$ is defined as
 and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
 
 \begin{proposition}
+    \label{proposition:local_convergence_fixed_point}
     Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point},
     and assume that there exists $\delta$ and a subordinate matrix norm such that
     $\vect F$ is differentiable everywhere in $B_{\delta}(\vect x_*)$ and
@@ -391,7 +392,7 @@ involving only the derivative of $\vect F$ at $\vect x_*$.
     This shows that $\vect F$ satisfies the condition~\eqref{eq:local_lipschitz} in the neighborhood $B_{\delta}(\vect x_*)$.
 \end{proof}
 
-The estimate in~\cref{eq:exponenital_convergence_fixed_point} suggests that
+The estimate in~\cref{theorem:exponenital_convergence_fixed_point} suggests that
 when the fixed point iteration~\eqref{eq:fixed_point} converges,
 the convergence is linear.
 While this is usually the case,
