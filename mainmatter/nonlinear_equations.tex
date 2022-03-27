@@ -685,13 +685,22 @@ Solving $\widetilde f(x) = 0$ gives the following expression for $x_{k+2}$:
 Showing the convergence of the secant method rigorously under general assumptions is tedious,
 so in this course we restrict our attention to the case where $f$ is a quadratic function.
 Extending the proof of convergence to a more general smooth function can be achieved
-by using a quadratic Taylor approximation around the root~$x_*$ of~$f$,
+by using a quadratic Taylor approximation of~$f$ around the root~$x_*$,
 which is accurate in a close neighborhood of~$x_*$.
 
 \begin{theorem}
     [Convergence of the secant method]
-    Assume that $f$ is a convex quadratic polynomial with a simple root at $x_*$,
+    Assume that $f$ is a convex quadratic polynomial with a simple root at $x_*$
     and that the secant method converges: $\lim_{k\to \infty} x_k = x_*$.
+    Then the order of convergence is given by the golden ration
+    \[
+        \varphi = \frac{1 + \sqrt{5}}{2}.
+    \]
+    More precisely, there exists a positive real number $y_{\infty}$ such that
+    \begin{equation}
+        \label{eq:convergence_secant}
+        \lim_{k \to \infty} \frac{\abs{x_{k+1} - x_*}}{\abs{x_{k} - x_*}^{\varphi}} = y_{\infty}.
+    \end{equation}
 \end{theorem}
 \begin{proof}
     Equation~\eqref{eq:secant_method} implies that
@@ -720,39 +729,40 @@ which is accurate in a close neighborhood of~$x_*$.
     By assumption, the right-hand side converges to zero,
     and so the left-hand side must also converge to zero;
     the convergence is superlinear.
-
     In order to find the order of convergence,
-    let us define
+    we take absolute values in the previous equation to obtain,
+    after rearranging,
     \[
-        q_* = \inf \left\{ q \geq 1: \limsup_{k \to \infty} \frac{\abs{e_{k+1}}}{\abs{e_k}^q} = \infty \right\}.
+        \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^{\varphi}}
+        =  \left( \frac{\abs{e_{k+1}}}{\abs{e_{k}}^{\frac{1}{\varphi -1}}}  \right)^{1 - \varphi} \frac{\mu}{\abs{\lambda + \mu (e_{k+1} + e_k)}}
+        =  \left( \frac{\abs{e_{k+1}}}{\abs{e_{k}}^{\varphi}}  \right)^{1 - \varphi} \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}},
     \]
-    It is clear that $q_* \leq 2$,
-    (in progress)
-    % because
-
-    % Further rearranging~\eqref{eq:secant_method_rearranged} and taking absolute values,
-    % we obtain
-    % \begin{equation}
-    %     \label{eq:secant_method_rearranged}
-    %     \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
-    %     = \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}\frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
-    % \end{equation}
-
-    % \begin{equation}
-    %     \label{eq:secant_method_rearranged}
-    %     \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^q}
-    %     \frac{\abs{e_{k+1}}^{q-1}}{\abs{e_k}}
-    %     = \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
-    % \end{equation}
-    % Let $q \in (1, q_*)$.
-    % Taking the limit of both sides,
-    % we obtain
-    % \[
-    %     0
-    %     = \lim_{k\to \infty} \frac{\abs{e_k}}{\abs{e_{k+1}}^{q-1}}
-    %     = \lim_{k\to \infty} \left( \frac{\abs{e_{k+1}}}{\abs{e_k}^{\frac{1}{q-1}}} \right)^{1-q}.
-    % \]
-    % Therefore $\frac{1}{q-1} < q_*$.
+    where we used that $\varphi = \frac{1}{\varphi- 1}$,
+    since $\varphi$ is a root of the equation $\varphi^2 - \varphi - 1 = 0$.
+    Thus, introducing the ratio $y_k = \abs{e_{k+1}}/\abs{e_k}^{\varphi}$,
+    we have
+    \[
+        y_{k+1} = y_k^{1 - \varphi} \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}}.
+    \]
+    Taking logarithms in this equation,
+    we deduce
+    \[
+        \log(y_{k+1}) = (1 - \varphi) \log(y_k) + c_k,
+        \qquad c_k := \log \left( \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}} \right).
+    \]
+    This is a recurrence equation for $\log(y_k)$,
+    whose explicit solution can be obtained from the variation of constants formula:
+    \[
+        \log(y_k) = (1 - \varphi)^{k-1} \log(y_1) + \sum_{i=1}^{k-1} (1 - \varphi)^{k-1-i} c_i.
+    \]
+    Since $(c_k)_{k \geq 0}$ converges to a constant $c_{\infty} = \abs{\mu/\lambda}$ by assumption,
+    the sequence $\bigl(\log(y_k)\bigr)_{k\geq 0}$ converges to $c_{\infty} / \varphi$ (prove this!).
+    Therefore, by continuity of the exponential function,
+    it holds that
+    \[
+        y_k =  \exp \bigl(  \log(y_k) \bigr) \xrightarrow[k \to \infty]{} \exp \left( \frac{c_{\infty}}{\varphi} \right),
+    \]
+    and so we deduce~\eqref{eq:convergence_secant}.
 \end{proof}
 
 \section{Exercises}
