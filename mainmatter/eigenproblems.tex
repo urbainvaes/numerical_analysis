@@ -6,10 +6,45 @@ Eigenvalue problems naturally arise in quantum physics,
 solid mechanics, structural engineering and molecular dynamics,
 to name just a few applications.
 The aim of this chapter is to present an overview of the standard methods for calculating eigenvalues and eigenvectors numerically.
+We focus predominantly on the case of a Hermitian matrix $\mat A \in \complex^{n \times n}$,
+which is technically simpler and arises in many applications.
+The reader is invited to go through the background material in~\cref{sec:diagonalization} before reading this chapter.
 The rest of this chapter is organized as follows
 \begin{itemize}
-    \item In 
+    \item 
+        In \cref{sec:general_remarks},
+        we make general remarks concerning concerning the calculation of eigenvalues.
 \end{itemize}
 
-\section{}
-\label{sec:review_eigenvalue_problems}
+\section{Numerical methods for eigenvalue problems: general remarks}
+\label{sec:general_remarks}
+
+As mentioned in~\cref{sec:diagonalization},
+a complex number $\lambda \in \complex$ is an eigenvalue of $\mat A \in \complex^{n \times n}$
+if and only if $\lambda$ is a root of the characteristic polynomial of $\mat A$:
+\[
+    p_A
+    \colon \complex \to \complex
+    \colon \lambda \mapsto \det (\mat A - \lambda \mat I).
+\]
+One may,
+therefore,
+calculate the eigenvalues of $\mat A$ by calculating the roots of the polynomial~$p_A$ using,
+for example, one of the methods presented in~\cref{cha:solution_of_nonlinear_systems}.
+While feasible for small matrices,
+this approach is not viable for large matrices,
+because the number of floating point operations required for calculating calculating the coefficients of the characteristic polynomial scales as~$n!$,
+which is prohibitive for large~$n$.
+
+Therefore, 
+other methods are required for calculating eigenvalues numerically. 
+All the methods that we study in this chapter are iterative in nature.
+While some of them are aimed at calculating all the eigenpairs of the matrix~$\mat A$,
+other methods enable to calculate only a small number of eigenpairs.
+Calculating all the eigenvalues of a matrix is computationally expensive;
+on a personal computer, the following Julia code takes well over a second to terminate:
+\begin{minted}{julia}
+    import LinearAlgebra
+    LinearAlgebra.eigen(rand(2000, 2000))
+\end{minted}
+
