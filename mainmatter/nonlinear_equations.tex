@@ -57,7 +57,26 @@ the convergence is superlinear if the order of convergence is $q > 1$.
     A more detailed discussion of this subject is beyond the scope of this course.
 \end{remark}
 
+The rest of chapter is organized as follows:
+\begin{itemize}
+    \item 
+        In \cref{sec:bisection_method},
+        by way of introduction to the subject of numerical methods for nonlinear equations,
+        we present and analyze the bisection method.
+
+    \item
+        In \cref{sec:fixed_point_methods},
+        we present a general method based on a fixed point iteration for solving~\eqref{eq:nonlinear_equation}.
+        The convergence of this method is analyzed in~\cref{sec:convergence_fixed_point_methods}.
+
+    \item
+        In \cref{sec:examples_of_fixed_point_methods},
+        two concrete examples of fixed point methods are studied:
+        the chord method and the Newton--Raphson method.
+\end{itemize}
+
 \section{The bisection method}
+\label{sec:bisection_method}
 As an introduction to numerical methods for solving nonlinear equations,
 we present the bisection method.
 This method applies only in the case of a real-valued function $f\colon \real \to \real$,
@@ -149,11 +168,13 @@ One may, for example, define $\vect F(\vect x) = \vect x - \alpha^{-1} \vect f(\
 for some nonzero scalar coefficient $\alpha$.
 Then $\vect F(\vect x_*) = \vect x_*$ if and only if $\vect f(\vect x_*) = 0$.
 Later in this chapter,
+in \cref{sec:examples_of_fixed_point_methods},
 we study two instances of numerical methods which can be recast in the form~\eqref{eq:fixed_point}.
 Before this,
 we study the convergence of the iteration~\eqref{eq:fixed_point} for a general function~$\vect F$.
 
 \section{Convergence of fixed point methods}
+\label{sec:convergence_fixed_point_methods}
 Equation~\eqref{eq:fixed_point} may be viewed as a \emph{discrete-time} dynamical system.
 In order to study the behavior of the system as $k \to \infty$,
 it is important to understand the concept of stability of a fixed point.
@@ -438,7 +459,8 @@ it holds for sufficiently large $k$ that
 \]
 In this case, the order of convergence is at least $q$.
 
-\section{Example of fixed point methods}
+\section{Examples of fixed point methods}
+\label{sec:examples_of_fixed_point_methods}
 As we mentioned in \cref{sec:fixed_point_methods},
 there are several choices for the function $\vect F$ that guarantee
 the equivalence $\vect F(\vect x) = \vect x \Leftrightarrow \vect f(\vect x) = \vect 0$.
@@ -463,20 +485,23 @@ a sufficient condition to ensure local convergence is that
 \end{equation}
 In order for this condition to hold true,
 the slope $\alpha$ must be of the same sign as $f'(x_*)$
-the inequality $\abs{\alpha} \geq \abs{f'(x_*)}/2$ must be satisfied.
+and the inequality $\abs{\alpha} \geq \abs{f'(x_*)}/2$ must be satisfied.
 If $f'(x_*) = 0$,
-then the sufficient condition~\eqref{eq:sufficient_condition_fixed_point} is never satisfied.
+then the sufficient condition~\eqref{eq:sufficient_condition_fixed_point} is never satisfied;
+in this case, the convergence must be studied on a case-by-case basis.
 By~\cref{proposition:superlinear_convergence},
-the convergence is superlinear if~$\alpha = f'(x_*)$.
+the convergence of the chord method is superlinear if~$\alpha = f'(x_*)$.
 In practice, the solution $x_*$ is unknown,
 and so this choice is not realistic.
 Nevertheless, the above reasoning suggests that, by letting the slope $\alpha$ vary from iteration to iteration in such a manner that~$\alpha_k$ approaches $f'(x_*)$ as $k \to \infty$,
 fast convergence can be obtained.
-This is precisely what the Newton--Raphson method achieves.
+This is precisely what the Newton--Raphson method aims to achieve;
+see~\cref{sub:newton_raphson}
 
-In the case multi-dimensional case where $\vect f$ is a function from $\real^n$ to $\real^n$,
-the above approach can be generalized to
+When $\vect f$ is a function from $\real^n$ to $\real^n$,
+the above approach generalizes to
 \[
+    x_{k+1} = \vect F(\vect x_k), \qquad
     \vect F(\vect x) = \vect x - \mat A^{-1} \vect f(\vect x),
 \]
 where $\mat A$ is an invertible matrix.
@@ -485,9 +510,12 @@ at each step, the function $\vect f$ is approximated by the affine function
 $\vect x \mapsto \vect x_k + \mat A(\vect x - \vect x_k)$,
 and the next iterate is given by the unique zero of latter function.
 Superlinear convergence is achieved when~$\mat A = \mat J_f(\vect x_*)$.
+Notice that each iteration requires to calculate $\vect y := \mat A^{-1} \vect f(\vect x_k)$,
+which is generally achieved by solving the linear system $\mat A \vect y = \vect f(\vect x_k)$.
 
 \subsection{The Newton--Raphson method}
-Let us consider the first the case of a function from $\real$ to $\real$.
+\label{sub:newton_raphson}
+Let us first consider the case of a function from $\real$ to $\real$.
 The Newton--Raphson method applies when $f$ is continuously differentiable.
 At each step, the function $f$ is approximated by the affine function
 $x \mapsto f(x_k) + f'(x_k) (x - x_k)$ and the unique zero of this function is returned.
@@ -499,7 +527,8 @@ In other words, one iteration of the Newton--Raphson method reads
 For this iteration to be well-defined,
 it is necessary that $f'(x_k) \neq 0$.
 The Newton--Raphson method may be viewed as a variation on~\eqref{eq:naive_fixed_point} where the slope~$\alpha$ is adapted as the simulation progresses.
-If the method converges, then $f'(x_k) \to f'(x_*)$ in the limit as $k \to \infty$.
+If the method converges, then $f'(x_k) \to f'(x_*)$ in the limit as $k \to \infty$,
+which indicates that superlinear convergence could occur.
 Equation~\eqref{eq:newton_raphson} may be recast as a fixed point iteration of the form~\eqref{eq:error_bisection} with
 \[
     F(x) = x - \frac{f(x)}{f'(x)}.
@@ -512,7 +541,7 @@ because then
 \[
     F'(x_*) = \frac{f(x_*) f''(x_*)}{f'(x_*)^2} = 0.
 \]
-The Newton--Raphson can be generalized to the case where $f$ is a function from $\real^n$ to $\real^n$.
+The Newton--Raphson method generalizes to nonlinear equations in $\real^n$ of the form~\eqref{eq:nonlinear_equation}.
 In this case $\vect F(\vect x) = \vect x - \mat J_f(\vect x)^{-1} \vect f(\vect x)$,
 and so an iteration of the method reads
 \begin{equation}
@@ -660,7 +689,7 @@ we can show the following result on the convergence of the multi-dimensional New
     which concludes the proof.
 \end{proof}
 
-\subsection{The secant method}
+\subsection{The secant method~\moreinfo}
 The Newton--Raphson method exhibits very fast convergence,
 but it requires the knowledge of the derivatives of the function $\vect f$.
 To conclude this chapter,
@@ -909,3 +938,5 @@ y = [0.6761488864859304; 0.6345697680852508; 0.6396283580587062; 0.6132010027973
 The content of this chapter is largely based on the lecture notes~\cite{VanDooren}.
 Several of the exercises are taken or inspired from~\cite{Legat}.
 The proof of convergence of the secant method is inspired from the general proof presented in the short paper~\cite{MR1186462}.
+For a detailed treatment of iterative methods for nonlinear equations,
+see the book~\cite{MR1744713}.
