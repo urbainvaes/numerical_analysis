@@ -11,7 +11,7 @@ which is technically simpler and arises in many applications.
 The reader is invited to go through the background material in~\cref{sec:diagonalization} before reading this chapter.
 The rest of this chapter is organized as follows
 \begin{itemize}
-    \item 
+    \item
         In \cref{sec:general_remarks},
         we make general remarks concerning concerning the calculation of eigenvalues.
 \end{itemize}
@@ -33,18 +33,113 @@ calculate the eigenvalues of $\mat A$ by calculating the roots of the polynomial
 for example, one of the methods presented in~\cref{cha:solution_of_nonlinear_systems}.
 While feasible for small matrices,
 this approach is not viable for large matrices,
-because the number of floating point operations required for calculating calculating the coefficients of the characteristic polynomial scales as~$n!$,
-which is prohibitive for large~$n$.
+because the number of floating point operations required for calculating calculating the coefficients of the characteristic polynomial scales as~$n!$.
 
-Therefore, 
-other methods are required for calculating eigenvalues numerically. 
+In view of the prohibitive computational cost required for calculating the characteristic polynomial,
+other methods are required for solving large eigenvalue problems numerically.
 All the methods that we study in this chapter are iterative in nature.
 While some of them are aimed at calculating all the eigenpairs of the matrix~$\mat A$,
-other methods enable to calculate only a small number of eigenpairs.
-Calculating all the eigenvalues of a matrix is computationally expensive;
+other methods enable to calculate only a small number of eigenpairs at a lower computational cost,
+which is often desirable.
+Indeed, calculating all the eigenvalues of a large matrix is computationally expensive;
 on a personal computer, the following Julia code takes well over a second to terminate:
 \begin{minted}{julia}
     import LinearAlgebra
     LinearAlgebra.eigen(rand(2000, 2000))
 \end{minted}
 
+In many applications,
+the matrix $\mat A$ is sparse,
+and in this case it is important that algorithms for eigenvalue problems do not destroy the sparsity structure.
+Note that the eigenvectors of a sparse matrix are generally not sparse.
+
+To conclude this section,
+we introduce some notation used throughout this chapter.
+For a diagonalizable matrix $\mat A$,
+we denote the eigenvalues by $\lambda_1, \dotsc, \lambda_n$,
+with $\abs{\lambda_1} \geq \abs{\lambda_2} \geq \dotsc \geq \abs{\lambda_n}$.
+The associated eigenvectors are denoted by $\vect v_1, \dotsc, \vect v_n$.
+Therefore, it holds that
+\[
+    \mat V^{-1} \mat A \mat V = \diag(\lambda_1, \dotsc, \lambda_n),
+    \qquad \text{where } \mat V = \begin{pmatrix} \vect v_1 & \hdots & \vect v_n \end{pmatrix}.
+\]
+
+\section{Simple vector iterations}
+\label{sec:simple_vector_iterations}
+
+In this section,
+we present simple iterative methods aimed at calculating just one eigenvector of the matrix~$\mat A$,
+which we assume to be diagonalizable for simplicity.
+
+\subsection{The power iteration}
+The power iteration is the simplest method for calculating the eigenpair associated with the eigenvalue of~$\mat A$ with largest modulus.
+Since the eigenvectors of $\mat A$ span $\complex^n$,
+any vector $\vect x_0$ may be decomposed as
+\[
+    \vect x_0 = \alpha_1 \vect v_1 + \dotsb + \alpha_n \vect v_n.
+\]
+The idea of the power iteration is to repeatedly left-multiply this vector by the matrix $\mat A$,
+in order to amplify the coefficient of $\vect v_0$ relative to the other ones.
+Indeed, notice that
+\[
+    \mat A^k \vect x_0 = \lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n.
+\]
+If $\lambda_1$ is strictly larger in modulus than the other eigenvalues,
+and if $\alpha_1 \neq 0$,
+then for large $k$ the vector $\mat A^k \vect x_0$ is approximately aligned,
+in a sense made precise below,
+with the eigenvector~$\vect v_1$.
+In order to avoid overflow errors at the numerical level,
+the iterates are normalized at each iteration.
+The power iteration is presented in~\cref{algo:power_iteration}.
+\begin{algorithm}
+\caption{Power iteration}%
+\label{algo:power_iteration}%
+\begin{algorithmic}
+\State $\vect x \gets \vect x_0$
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State $\vect x = \mat A \vect x$
+    \State $\vect x = \vect x / \norm{\vect x}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+To precisely quantify the convergence of the power method,
+we introduce the notion of \emph{angle} between vectors of $\complex^n$.
+\[
+    \angle(\vect x, \vect y)
+    = \arccos\left( \frac{\abs{\vect x^* \vect y}}{\sqrt{\vect x^* \vect x} \sqrt{\vect y^* \vect y}}\right).
+\]
+This definition generalizes the familiar notion of angle for vectors in $\real^2$ or $\real^3$.
+We can then prove the following convergence result.
+\begin{proposition}
+    [Convergence of the power iteration]
+    \label{proposition:convergence_of_the_power_iteration}
+    Suppose that $\mat A$ is diagonalizable and that $\abs{\lambda_1} > \abs{\lambda_2}$.
+    Then, for every initial guess with $\alpha_1 \neq 0$,
+    the sequence $(\vect x_k)_{k \geq 0}$ generated by the power iteration satisfies
+    \[
+        \lim_{k \to \infty} \angle(\vect x_k, \vect v_1) = 0.
+    \]
+\end{proposition}
+\begin{proof}
+    By construction,
+    it holds that
+    \[
+        \vect x_k
+        = \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
+        = \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_n}}.
+    \]
+    Clearly, it holds hat $\vect x_k \to \vect v_1/ \norm{\vect v_1}$.
+    Using the definition of the angle between two vectors in $\complex^n$,
+    and the continuity of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
+    we calculate
+    \[
+        \angle(\vect x_k, \vect v_1)
+        = \arccos\left( \frac{\abs{\vect x_k^* \vect v_1}}{\sqrt{\vect x_k^* \vect x_k} \sqrt{\vect v_1^* \vect v_1}}\right)
+        = \arccos\left( \frac{\abs{\vect x_k^* \vect v_1}}{\sqrt{\vect v_1^* \vect v_1}} \right)
+        \xrightarrow[k \to \infty]{} \arccos(1) = 0,
+    \]
+    which concludes the proof.
+\end{proof}
