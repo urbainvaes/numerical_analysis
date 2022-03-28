@@ -755,11 +755,11 @@ which is accurate in a close neighborhood of~$x_*$.
         \qquad c_k := \log \left( \frac{\abs{\mu}}{\abs{\lambda + \mu (e_{k+1} + e_k)}} \right).
     \]
     This is a recurrence equation for $\log(y_k)$,
-    whose explicit solution can be obtained from the variation of constants formula:
+    whose explicit solution can be obtained from the variation-of-constants formula:
     \[
         \log(y_k) = (1 - \varphi)^{k-1} \log(y_1) + \sum_{i=1}^{k-1} (1 - \varphi)^{k-1-i} c_i.
     \]
-    Since $(c_k)_{k \geq 0}$ converges to a constant $c_{\infty} = \abs{\mu/\lambda}$ by assumption,
+    Since $(c_k)_{k \geq 0}$ converges to the constant $c_{\infty} = \abs{\mu/\lambda}$ by the assumption that $e_k \to 0$,
     the sequence $\bigl(\log(y_k)\bigr)_{k\geq 0}$ converges to $c_{\infty} / \varphi$ (prove this!).
     Therefore, by continuity of the exponential function,
     it holds that
