@@ -76,9 +76,10 @@ which we assume to be diagonalizable for simplicity.
 The power iteration is the simplest method for calculating the eigenpair associated with the eigenvalue of~$\mat A$ with largest modulus.
 Since the eigenvectors of $\mat A$ span $\complex^n$,
 any vector $\vect x_0$ may be decomposed as
-\[
+\begin{align}
+    \label{eq:eigen_decomposition_x0}
     \vect x_0 = \alpha_1 \vect v_1 + \dotsb + \alpha_n \vect v_n.
-\]
+\end{align}
 The idea of the power iteration is to repeatedly left-multiply this vector by the matrix $\mat A$,
 in order to amplify the coefficient of $\vect v_0$ relative to the other ones.
 Indeed, notice that
@@ -99,18 +100,20 @@ The power iteration is presented in~\cref{algo:power_iteration}.
 \begin{algorithmic}
 \State $\vect x \gets \vect x_0$
 \For{$i \in \{1, 2, \dotsc\}$}
-    \State $\vect x = \mat A \vect x$
-    \State $\vect x = \vect x / \norm{\vect x}$
+    \State $\vect x \gets \mat A \vect x$
+    \State $\vect x \gets \vect x / \norm{\vect x}$
 \EndFor
 \end{algorithmic}
 \end{algorithm}
 
 To precisely quantify the convergence of the power method,
 we introduce the notion of \emph{angle} between vectors of $\complex^n$.
-\[
+\begin{align*}
     \angle(\vect x, \vect y)
-    = \arccos\left( \frac{\abs{\vect x^* \vect y}}{\sqrt{\vect x^* \vect x} \sqrt{\vect y^* \vect y}}\right).
-\]
+    &= \arccos\left( \frac{\abs{\vect x^* \vect y}}{\sqrt{\vect x^* \vect x} \sqrt{\vect y^* \vect y}}\right) \\
+    &= \arcsin\left( \frac{\norm{(\mat I - \mat P_{\vect y}) \vect x}} {\norm{\vect x}} \right),
+    \qquad \mat P_{\vect y} := \frac{\vect y \vect y^*}{\vect y^* \vect y}.
+\end{align*}
 This definition generalizes the familiar notion of angle for vectors in $\real^2$ or $\real^3$.
 We can then prove the following convergence result.
 \begin{proposition}
@@ -126,11 +129,12 @@ We can then prove the following convergence result.
 \begin{proof}
     By construction,
     it holds that
-    \[
+    \begin{equation}
+        \label{eq:power_iteration_iterate}
         \vect x_k
         = \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
-        = \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_n}}.
-    \]
+        = \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}}.
+    \end{equation}
     Clearly, it holds hat $\vect x_k \to \vect v_1/ \norm{\vect v_1}$.
     Using the definition of the angle between two vectors in $\complex^n$,
     and the continuity of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
@@ -143,3 +147,111 @@ We can then prove the following convergence result.
     \]
     which concludes the proof.
 \end{proof}
+An inspection of the proof shows that the dominant term in the error,
+asymptotically in the limit as $k \to \infty$,
+is the one with coefficient $\frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1}$.
+Therefore, we deduce that
+\[
+    \angle(\vect x_k, \vect v_1) = \mathcal O \left( \abs*{\frac{\lambda_2}{\lambda_1}}^k \right).
+\]
+The convergence is slow if $\abs{\lambda_2/\lambda_1}$ is close to one,
+and fast if $\abs{\lambda_2} \ll \abs{\lambda_1}$.
+Once an approximation of the eigenvector $\vect v_1$ has been calculated,
+the corresponding eigenvalue $\lambda_1$ can be estimated from the \emph{Rayleigh quotient:}
+\[
+    \rho_{\mat A}\colon \mat \complex^n_* \to \complex\colon \vect x \mapsto \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}.
+\]
+For any eigenvector~$\vect v$ of $\mat A$,
+the corresponding eigenvalue is equal to~$\rho_{\mat A}(\vect v)$.
+In order to study the error on the eigenvalue~$\lambda_1$ for the power iteration,
+we assume for simplicity that $\mat A$ is Hermitian
+and that the eigenvectors $\vect v_1, \dotsc, \vect v_n$ are orthonormal.
+Substituting in~\eqref{eq:power_iteration_iterate},
+we obtain
+\[
+    \rho_{\mat A}(\vect x_k)
+    = \frac{\lambda_1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \lambda_2 +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \lambda_n}
+    {1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 +  \dotsb +  \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2}.
+\]
+Therefore,
+we deduce
+\[
+    \abs{\rho_{\mat A}(\vect x_k) - \lambda_1}
+    \leq  \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_2 - \lambda_1} +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_n- \lambda_1}
+    = \mathcal O\left(\abs*{\frac{\lambda_2}{\lambda_1}}^{2k}\right).
+\]
+
+\subsection{Inverse iteration}
+The power iteration is simple but enables to calculate only the dominant eigenvalue of the matrix~$\mat A$,
+i.e.\ the eigenvalue of largest modulus.
+Additionally, its convergence is slow when $\abs{\lambda_2} \approx \abs{\lambda_1}$.
+The inverse iteration enables a more efficient calculation of not only the dominant eigenvalue
+but also the other eigenvalues of~$\mat A$.
+It is based on applying the power iteration to the matrix $(\mat A - \mu \mat I)^{-1}$,
+where $\mu \in \complex$ is a shift.
+The eigenvalues of the matrix $(\mat A - \mu \mat I)^{-1}$ are given by $(\lambda_1 - \mu)^{-1}, \dotsc, (\lambda_n - \mu)^{-1}$,
+with associated eigenvectors $\vect v_1, \dotsc, \vect v_n$.
+If $\abs{\lambda_i - \mu} < \abs{\lambda_j - \mu}$ for all $j \neq i$,
+then the dominant eigenvalue of the matrix $(\mat A - \mu \mat I)^{-1}$ is $(\lambda_i - \mu)^{-1}$,
+and so the power iteration applied to this matrix produces an approximation of the eigenvector $\vect v_i$.
+In other words, by choosing the shift~$\mu$ sufficiently close to $\lambda_i$,
+an approximation of~$\vect v_i$ may be obtained.
+The inverse iteration is presented in~\cref{algo:inverse_iteration}.
+In practice, the inverse $(\mat A - \mu \mat I)^{-1}$ need not be calculated,
+and it is often preferable to solve a linear system at each iteration.
+\begin{algorithm}
+\caption{Inverse iteration}%
+\label{algo:inverse_iteration}%
+\begin{algorithmic}
+\State $\vect x \gets \vect x_0$
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State Solve $(\mat A - \mu \mat I) \vect y = \vect x$
+    \State $\vect x \gets \vect y / \norm{\vect y}$
+\EndFor
+\State $\lambda \gets \vect x^* \mat A \vect x / \vect x^* \vect x$
+\State \Return $\vect x, \lambda$
+\end{algorithmic}
+\end{algorithm}
+
+An application of~\cref{proposition:convergence_of_the_power_iteration} immediately gives the following convergence result for the inverse iteration.
+\begin{proposition}
+    [Convergence of the inverse iteration]
+    Assume that $\mat A \in \complex^n$ is diagonalizable
+    and that there exist $J$ and $K$ such that
+    \[
+        0 < \abs{\lambda_J - \mu} < \abs{\lambda K - \mu} \leq \abs{\lambda_i - \mu} \qquad \forall j \neq J.
+    \]
+    Assume also that $\alpha_J \neq 0$,
+    where $\alpha_J$ is the coefficient of $\vect x_J$ in the expansion of $\vect x_0$ given in~\eqref{eq:eigen_decomposition_x0}.
+    Then the iterates of the inverse iteration method satisfy
+    \[
+        \lim_{k \to \infty} \angle(\vect x_k, \vect v_J) = 0.
+    \]
+    More precisely,
+    \[
+        \angle(\vect x_k, \vect v_J) = \mathcal O \left( \abs*{\frac{\lambda_J - \mu}{\lambda_K - \mu}}^k \right).
+    \]
+\end{proposition}
+Notice that the closer $\lambda_J$ is to the targeted eigenvalue,
+the faster the inverse iteration converges.
+
+\subsection{Rayleigh quotient iteration}
+Since the inverse iteration is fast when $\mu$ is close to an eigenvalue $\lambda_i$,
+it is natural to wonder whether fast convergence can be achieved by progressively updating $\mu$ as the simulation progresses.
+Specifically, the current approximation of the eigenvalue may be employed in place of~$\mu$.
+This leads to the iteration of the Rayleigh quotient,
+presented in
+\begin{algorithm}
+\caption{Inverse iteration}%
+\label{algo:rayleigh_quotient}%
+\begin{algorithmic}
+\State $\vect x \gets \vect x_0$
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State $\mu \gets \vect x^* \mat A \vect x / \vect x^* \vect x$
+    \State Solve $(\mat A - \mu \mat I) \vect y = \vect x$
+    \State $\vect x \gets \vect y / \norm{\vect y}$
+\EndFor
+\State $\lambda \gets \vect x^* \mat A \vect x / \vect x^* \vect x$
+\State \Return $\vect x, \lambda$
+\end{algorithmic}
+\end{algorithm}
