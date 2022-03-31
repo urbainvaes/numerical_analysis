@@ -79,11 +79,11 @@
 \begin{question}
     [8 marks]
     Let $\mat A \in \real^{n \times n}$ be a symmetric positive definite matrix and let~$\vect b \in \real^{n}$.
-    The steepest descent algorithm for solving $\mat A \vect x = \vect b$ is given below:
+    The steepest descent algorithm for solving $\mat A \vect x = \vect b$ is given hereafter:
 
     \begin{center}
     \begin{algorithmic}
-    \State Pick $\varepsilon$ and initial $\vect x$%
+    \State Pick $\varepsilon > 0$ and initial $\vect x$%
     \State $\vect r \gets \mat A \vect x - \vect b$%
     \While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
         \State $\omega \gets \vect r^\t \vect r/\vect r^\t \mat A \vect r$
@@ -113,7 +113,7 @@
                 We consider the following modification of the algorithm:
                 \begin{center}
                 \begin{algorithmic}
-                \State Pick $\varepsilon$, $\omega$ and initial $\vect x$%
+                \State Pick $\varepsilon > 0$, $\omega > 0$ and initial $\vect x$%
                 \State $\vect r \gets \mat A \vect x - \vect b$%
                 \While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
                     \State $\vect x \gets \vect x - \omega \vect r$
@@ -132,7 +132,7 @@
                         -1 & 0 \\ 0 & -2
                     \end{pmatrix}.
                 \]
-                Then the steepest descent algorithm is convergent for any initial $\vect x$.
+                In this case, the steepest descent algorithm is convergent for any initial $\vect x$.
         \end{enumerate}
     \end{itemize}
 \end{question}
@@ -156,7 +156,7 @@
 
         \item
             Let $e_k = x_k - x_*$, where $x_*$ is the exact solution to~\eqref{eq:nonlinear_equation}.
-            Write a recurrence relation for the error and,
+            Find a recurrence relation for the error and,
             assuming that the initial guess is $x_0 = 2$,
             write down an explicit expression for $e_k$.
 
