@@ -23,7 +23,7 @@
         \item Let $(\placeholder)_2$ denote binary representation.
             It holds that
             \(
-                (0.11111)_2 + (0.00001)_2 = 1.
+                (0.1111)_2 + (0.0001)_2 = 1.
             \)
         \item It holds that
             \(
@@ -36,7 +36,7 @@
         \item In base 16, all the natural numbers from 1 to 200 can be represented using 2 digits.
         \item In Julia, \julia{Float64(.1) == Float32(.1)} evaluates to \julia{true}.
         \item The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
-        \item It holds that $(0.\overline{10101})_2 = 1.2345$.
+        \item It holds that $(0.\overline{10101})_2 = (1.2345)_{10}$.
         \item Machine addition~$\madd$ is an associative operation.
             More precisely, given any three double-precision floating point numbers $x$, $y$ and $z$,
             the following equality holds:
@@ -49,7 +49,7 @@
         \item
             Let $\varepsilon$ denote the machine epsilon for the double-precision format.
             Let also~$\madd$ and~$\mdiv$ denote respectively the machine addition and the machine division operators for the double-precision format.
-            It holds that $1 \madd (\varepsilon \mdiv 64) = 1$.
+            It holds that $1 \madd (\varepsilon \mdiv 64) = 1$ and that $\varepsilon \mdiv 64 \neq 0$.
 
         \item
             Assume that $x \in \real$ belongs to the double-precision floating point format (that is,
@@ -63,7 +63,7 @@
 \begin{question}
     [8 marks]
     Assume that $\mat A \in \real^{n \times n}$ is an invertible matrix
-    and that $\vect b \in \real^n$ and~$\vect \beta \in \real^n$ are two vectors in $\real^n$.
+    and that $\vect b \in \real^n$ and~$\vect \beta \in \real^n$ are two nonzero vectors in $\real^n$.
     We denote by $\vect x$ and $\vect \xi$ the solutions to the linear equations~$\mat A \vect x = \vect b$ and $\mat A \vect \xi = \vect \beta$,
     respectively.
     Show that
@@ -72,14 +72,14 @@
     \]
     Here $\norm{\placeholder}$ denotes both the Euclidean vector norm and the induced matrix norm.
 
-    \noindent \textbf{Bonus question} (2 marks): Let $\kappa := \norm{\mat A} \norm{\mat A^{-1}}$. Prove that $\kappa \geq 1$ .
+    \noindent \textbf{Bonus question} (1 mark): Let $\kappa := \norm{\mat A} \norm{\mat A^{-1}}$. Prove that $\kappa \geq 1$ .
 \end{question}
 
 \newpage
 \begin{question}
     [8 marks]
     Let $\mat A \in \real^{n \times n}$ be a symmetric positive definite matrix and let~$\vect b \in \real^{n}$.
-    The steepest descent algorithm is given below:
+    The steepest descent algorithm for solving $\mat A \vect x = \vect b$ is given below:
 
     \begin{center}
     \begin{algorithmic}
@@ -145,7 +145,7 @@
     To this end, we consider the simple one-dimensional equation
     \begin{equation}
         \label{eq:nonlinear_equation}
-        f(x) := x^2 = 0.
+        f(x) := (x-1)^2 = 0.
     \end{equation}
     \begin{enumerate}
         \item
@@ -155,15 +155,17 @@
             \]
 
         \item
-            Assuming that the initial guess is $x_0 = 1$,
-            write down an explicit expression for $x_k$.
+            Let $e_k = x_k - x_*$, where $x_*$ is the exact solution to~\eqref{eq:nonlinear_equation}.
+            Write a recurrence relation for the error and,
+            Assuming that the initial guess is $x_0 = 2$,
+            write down an explicit expression for $e_k$.
 
         \item
             What is the order of convergence of the method in this case?
 
         \item
             \textbf{Bonus question} (1 mark):
-            Repeat the previous exercises for the equation $x^3 = 0$.
+            Repeat the previous exercises for the equation $(x-1)^3 = 0$.
             What is the order of convergence in this case,
             and what is the rate of convergence?
     \end{enumerate}
