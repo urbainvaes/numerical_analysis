@@ -453,7 +453,7 @@ we begin by proving the following preparatory lemma.
     Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge to $\vect v_1, \dotsc, \vect v_{p-1}$.
     Then the $p$-th column $\vect q_p$ at iteration $k$ obeys
     \[
-        \vect q_p^{(k)} \vect q_p^{(k)}^* = \mat Q_k \mat Q_k^* - \vect q_1^{(k)} \vect q_1^{(k)}^* - \dotsb - \vect q_{p-1}^{(k)} \vect q_{p-1}^{(k)}^*
+        \vect q_p^{(k)} \vect {q_p^{(k)}}^* = \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} \vect {q_{p-1}^{(k)}}^*
         = \mat Q_k \mat Q_k^* - \vect q_1 \vect q_1^* - \dotsb - \vect q_{p-1} \vect q_{p-1}^*
         \xrightarrow[k \to \infty]{} \vect v_p \vect v_p^{*}.
     \]
