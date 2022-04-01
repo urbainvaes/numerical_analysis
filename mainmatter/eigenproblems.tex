@@ -133,9 +133,10 @@ We can then prove the following convergence result.
         \label{eq:power_iteration_iterate}
         \vect x_k
         = \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
-        = \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}}.
+        = \e^{i \theta_k} \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}},
+        \qquad \e^{i \theta_k} := \frac{\lambda_1^k \alpha_1}{\abs{\lambda_1^k \alpha_1}}.
     \end{equation}
-    Clearly, it holds hat $\vect x_k \to \vect v_1/ \norm{\vect v_1}$.
+    Clearly, it holds hat $\vect x_k \to \e^{i \theta_k} \vect v_1/ \norm{\vect v_1}$.
     Using the definition of the angle between two vectors in $\complex^n$,
     and the continuity of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
     we calculate
@@ -257,7 +258,204 @@ presented in
 \end{algorithm}
 
 It is possible to show, see~\cite{MR3396212} and the references therein,
-that when~$\mat A$ is Hermitian the Rayleigh quotient iteration converges to an eigenvector for almost every initial guess~$\vect x_0$.
-Furthermore, if convergence to an eigenvector occurs, the $\mu$ converges cubically to the corresponding eigenvalue.
+that, when~$\mat A$ is Hermitian,
+the Rayleigh quotient iteration converges to an eigenvector for almost every initial guess~$\vect x_0$.
+Furthermore, if convergence to an eigenvector occurs,
+then $\mu$ converges cubically to the corresponding eigenvalue.
 
-\section{Subspace iterations}
+\section{Subspace iteration}
+The subspace iteration resembles the power iteration but it is more general:
+not just one but several vectors are updated at each iteration.
+Let $\mat X_0 = \begin{pmatrix} \vect x_1 & \dotsc & \vect x_p \end{pmatrix}$ denote an initial set of linearly independent vectors.
+The subspace iteration is presented in~\cref{algo:subspace_iteration}.
+\begin{algorithm}
+\caption{Subspace iteration}%
+\label{algo:subspace_iteration}%
+\begin{algorithmic}
+\State $\mat X \gets \mat X_0$
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State $\mat X \gets \mat A \mat X$
+    \State $\mat X \gets \mat X \mat Z_i$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+In this algorithm, the matrix $\mat Z_i \in \complex^{p \times p}$ is a full rank matrix that plays the role of a normalization;
+it ensures that the columns of $\mat X$ are orthonormal at the end of each iteration.
+More precisely, the right-multiplication with the matrix~$\mat Z$ performs a Gram--Schmidt orthonormalization,
+which is strongly related to the $\mat Q \mat R$ decomposition.
+We recall that the Gram--Schmidt process enables to incrementally construct,
+starting form an ordered set of $p$ vectors $\{\vect x_1, \dotsc, \vect x_p \}$ in $\complex^n$,
+a new set of vectors $\{\vect q_1, \dotsc, \vect q_p \}$
+which are \emph{orthonormal} and span the same subset of $\complex^n$ as the original vectors.
+It is simple to see,
+by inspection of the Gram--Schmidt process,
+that each of the original vectors may be expressed as a linear combination of the new vectors
+\begin{equation}
+    \label{eq:gram_schmidt}
+    \vect x_i = \alpha^i_{1} \vect q_{1} + \dotsb + \alpha^i_{i} \vect q_i.
+\end{equation}
+Gathering the original and new vectors in matrices $\mat X = \begin{pmatrix} \vect x_1 & \hdots & \vect x_p \end{pmatrix}$
+and $\mat Q = \begin{pmatrix} \vect q_1 & \hdots & \vect q_p \end{pmatrix}$,
+and rewriting~\eqref{eq:gram_schmidt} in matrix form,
+we obtain
+\[
+    \mat X = \mat Q
+    \begin{pmatrix}
+        \alpha^1_1 & \alpha^2_1 & \hdots & \alpha^p_1 \\
+                   & \alpha^2_2 & \hdots & \alpha^p_2 \\
+                   &            & \ddots & \vdots \\
+                   & & & \alpha^p_p
+        \alpha
+    \end{pmatrix}.
+\]
+The rightmost matrix is square and upper triangular,
+and this decomposition of the matrix $\mat X$ is known as a \emph{reduced $\mat Q \mat R$ decomposition}
+or simply \emph{$\mat Q \mat R$ decomposition} if $p = n$,
+in which case $\mat X$ is a square matrix and $\mat Q$ is a unitary matrix.
+This decomposition is unique if we require that the diagonal coefficients of~$\mat R$ are real and positive.
+In practice, the matrix $\mat Z$ in~\eqref{algo:subspace_iteration} is not explicitly calculated.
+Instead, the reduced $\mat Q \mat R$ decomposition of $\mat X$ is computed and we set $\mat X \leftarrow \mat Q$.
+
+Observe that the normalization step does not influence the subspace spanned by the columns of $\mat X$.
+Therefore, this subspace after~$k$ iterations
+coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
+The aim of normalizing the vectors at each step is to avoid overflow errors but,
+mathematically, it would be equivalent to perform the Gram--Schmidt process only once as a final step,
+after the \julia{for} loop.
+In order to show the convergence of the subspace iteration,
+we begin by proving the following preparatory lemma.
+\begin{lemma}
+    [Continuity of the QR decomposition]
+    \label{lemma:continuity_qr}
+    Assume that $\mat Q_k \mat R_k \to \mat Q \mat R$,
+    where $\mat Q$ is orthogonal and $\mat R$ is upper triangular with positive real entries on the diagonal,
+    then $\mat Q_k \to \mat Q$.
+\end{lemma}
+\begin{proof}
+    We reason by contradiction and assume
+    there is $\varepsilon > 0$ and a subsequence $(\mat Q_{k_n})_{n\geq 0}$ such that $\norm{\mat Q_{k_n} - \mat Q} \geq \varepsilon$.
+    Since the set of unitary matrices form a compact subset of $\mat C^{n \times n}$,
+    there exists a further subsequence $(\mat Q_{k_{n_m}})_{m\geq 0}$ that converges to a limit $\mat Q_{\infty}$
+    which is also a unitary matrix and at least $\varepsilon$ away in norm from $\mat Q$.
+    But then
+    \[
+        \mat R_{k_{n_m}}
+        = \mat Q_{k_{n_m}}^{-1} (\mat Q_{k_{n_m}} \mat R_{k_{n_m}})
+        = \mat Q_{k_{n_m}}^* ( \mat Q_{k_{n_m}} \mat R_{k_{n_m}})
+        \xrightarrow[m \to \infty]{} \mat Q_{\infty}^* \mat Q \mat R =: \mat R_{\infty}.
+    \]
+    Since $\mat R_k$ is upper triangular with positive diagonal elements for all $k$,
+    clearly $\mat R_{\infty}$ is also upper triangular with positive diagonal elements.
+    But then $\mat Q_{\infty} \mat R_{\infty} = \mat Q \mat R$,
+    and by uniqueness of the decomposition we deduce that $\mat Q = \mat Q_{\infty}$,
+    which is a contradiction.
+\end{proof}
+
+\begin{theorem}
+    [Convergence of the subspace iteration]
+    \label{theorem:convergence_subspace_iteration}
+    Assume that $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable and that
+    \begin{equation}
+        \label{eq:assumption_subspace_iteration}
+        \col(\mat X_0) \cap \Span \{ \vect v_{p+1}, \dotsc, \vect v_n \} = \varnothing.
+    \end{equation}
+    Assume also that
+    \begin{equation}
+        \label{eq:order_eigenvalues}
+        \lambda_1 > \lambda_2 > \dotsb > \lambda_p > \lambda_{p+1} \geq \lambda_{p+2} \geq \dotsc \geq \lambda_n.
+    \end{equation}
+    Then $\mat X_k$ converges essentially to $\mat V_1 := \begin{pmatrix} \vect v_1 & \hdots & \vect v_p \end{pmatrix}$.
+\end{theorem}
+\begin{proof}
+    Let $\mat B = \mat V^{-1} \mat X_0 \in \complex^{n \times p}$, so that $\mat X_0 = \mat V \mat B$,
+    and note that $\mat A^k \mat X_0 = \mat V \mat D^k \mat B$.
+    We denote by~$\mat B_1 \in \complex^{p \times p}$ and $\mat B_2 \in \complex^{(n-p) \times p}$ the upper $p \times p$ and lower $(n-p) \times p$ blocks of $\mat B$,
+    respectively.
+    The matrix~$\mat B_1$ is nonsingular,
+    otherwise the assumption~\eqref{eq:assumption_subspace_iteration} would not hold.
+    Indeed, if there was a nonzero vector $\vect z \in \complex^p$ such that $\mat B_1 \vect z = 0$,
+    then
+    \[
+        \mat X_0
+        \vect z
+        = \mat V
+        \begin{pmatrix}
+            \mat B_1 \\
+            \mat B_2
+        \end{pmatrix}
+        \vect z
+        =
+        \begin{pmatrix}
+            \mat V_1
+            & \mat V_2
+        \end{pmatrix}
+        \begin{pmatrix}
+            \vect 0 \\
+            \mat B_2 \vect z
+        \end{pmatrix}
+        = \mat V_2 \mat B_2 \vect z.
+    \]
+    implying that $\mat X_0 \vect z$ is a linear combination of the vectors in $\mat V_2 =
+    \begin{pmatrix}
+        \vect v_{p+1} & \hdots \vect v_n,
+    \end{pmatrix}$
+    which contradicts the assumption.
+    From the expression of $\mat A^k \mat X_0$,
+    we have
+    \begin{align}
+        \notag
+        \mat A^k \mat X_0
+        &= \begin{pmatrix} \mat V_1 & \mat V_2 \end{pmatrix}
+        \begin{pmatrix}
+            \mat D_1^k & \\
+                       & \mat D_2^k
+        \end{pmatrix}
+        \begin{pmatrix}
+            \mat B_1 \\ \mat B_2
+        \end{pmatrix}
+        =
+        \mat V_1 \mat D_1^k \mat B_1 + \mat V_2 \mat D_2^k \mat B_2, \\
+        \label{eq:factorization}
+        &= \left(\mat V_1  + \mat V_2 \mat D_2^{k} \mat B_2 \mat B_1^{-1}\mat D_1^{-k}\right) \mat D_1^k \mat B_1.
+    \end{align}
+    Notice that the second term in the bracket on the right-hand side converges to zero in the limit as $k \to \infty$ by~\eqref{eq:order_eigenvalues}.
+    Let $\widetilde{\mat Q_k} \widetilde {\mat R_k}$~denote the reduced $\mat Q \mat R$ decomposition of the bracketed term.
+    By~\cref{lemma:continuity_qr},
+    which we proved for the standard $\mat Q \mat R$ decomposition but also holds for the reduced one,
+    we deduce from $\widetilde{\mat Q_k} \widetilde{\mat R_k} \to \mat V_1$ that $\widetilde{\mat Q_k} \to \mat V_1$.
+    Rearranging~\eqref{eq:factorization},
+    we have
+    \[
+        \mat A^k \mat X_0 = \widetilde{\mat Q_k} (\widetilde{\mat R_k} \mat D_1^k \mat B_1).
+    \]
+    Since the matrix between brackets is a $p \times p$ square invertible matrix,
+    this equation implies that $\col(\mat A^k \mat X_0) = \col (\widetilde{\mat Q_k})$.
+    Denoting by $\mat Q_k \mat R_k$ the $\mat Q \mat R$ decomposition of~$\mat A_k \mat X_0$,
+    we therefore have~$\col(\mat Q_k) = \col(\widehat {\mat Q_k})$,
+    and so the projectors on these subspaces are equal.
+    We recall that, for a set of orthonormal vectors $\vect r_1, \dotsc, \vect r_p$,
+    gathered in a matrix $\mat R = \begin{pmatrix} \vect r_1 & \hdots & \vect r_p \end{pmatrix}$,
+    the projector on $\col(\mat R) = \Span \{\vect r_1, \dotsc, \vect r_p \} \subset \complex^n$
+    is the square $n \times n$ matrix
+    \[
+        \mat R \mat R^*
+        = \vect r_1 \vect r_1^* + \dotsb + \vect r_p \vect r_p^*.
+    \]
+    Consequently,
+    the equality of the projectors implies
+    \(
+        \mat Q_k \mat Q_k^* = \widehat{\mat Q_k} \widehat {\mat Q_k}^*.
+    \)
+    Now, we want to establish the convergence of $\mat Q_k$ to $\mat V_1$.
+    To this end, we reason by induction,
+    relying on the fact that the first $k$ columns of $\mat X_0$ undergo a subspace iteration independent of the later columns.
+    For example, the first column simply undergoes a power iteration, and so it converges to~$\vect v_1$.
+    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge to $\vect v_1, \dotsc, \vect v_{p-1}$.
+    Then the $p$-th column $\vect q_p$ at iteration $k$ obeys
+    \[
+        \vect q_p^{(k)} \vect q_p^{(k)}^* = \mat Q_k \mat Q_k^* - \vect q_1^{(k)} \vect q_1^{(k)}^* - \dotsb - \vect q_{p-1}^{(k)} \vect q_{p-1}^{(k)}^*
+        = \mat Q_k \mat Q_k^* - \vect q_1 \vect q_1^* - \dotsb - \vect q_{p-1} \vect q_{p-1}^*
+        \xrightarrow[k \to \infty]{} \vect v_p \vect v_p^{*}.
+    \]
+\end{proof}
+
