@@ -459,3 +459,110 @@ we begin by proving the following preparatory lemma.
     \]
 \end{proof}
 
+\section{Exercises}
+
+\begin{exercise}
+    PageRank is an algorithm for assigning a rank to the vertices in a directed graph.
+    It is used by many search engines, notably Google,
+    for sorting search results.
+    In this context,
+    the directed graph encodes the links between pages of the World Wide Web:
+    the vertices of the directed graph are webpages,
+    and there is an edge going from page~$i$ to page~$j$ if page~$i$ contains a hyperlink to page~$j$.
+
+    Let us consider a directed graph $G(V, E)$ with vertices $V = \{1, \dotsc, n\}$ and edges $E$.
+    The graph can be represented by its adjacency matrix $\mat A \in \{0, 1\}^{n \times n}$,
+    whose entries are given by
+    \[
+        a_{ij} =
+        \begin{cases}
+            1 & \text{if there is an edge from $i$ to $j$,} \\
+            0 & \text{otherwise.}
+        \end{cases}
+    \]
+    Let $r_i$ denote the ``value'' assigned to vertex $i$.
+    The idea of PageRank in its simplest form is to assign values to the vertices
+    by solving the following system of equations;
+    \begin{equation}
+        \label{eq:equation_page_rank}
+        \forall i \in V, \qquad
+        r_i
+        = \sum_{j \in \text{neighbors}} \frac{r_j}{o_j}.
+        % = \sum_{j=1}^{n} \frac{a_{ji}}{o_j} r_j
+    \end{equation}
+    where $o_j$ is the outdegree of vertex $j$,
+    i.e.\ the number of edges leaving from~$j$,
+    and the sum is over all the neighbors of $i$.
+    \begin{itemize}
+        \item
+            Read the Wikipedia page on \emph{PageRank} to familiarize yourself with the algorithm.
+
+        \item
+            Let~$\vect r = \begin{pmatrix} r_1 & \hdots & r_n \end{pmatrix}^\t$.
+            Show using~\eqref{eq:equation_page_rank} that $\vect r$ satisfies
+            \[
+                \vect r =
+                \mat A^\t
+                \begin{pmatrix}
+                    \frac{1}{o_1} & & & \\
+                                  & \ddots & \\
+                                  & & \frac{1}{o_n}
+                \end{pmatrix}
+                \vect r =:  \mat A^\t \mat O^{-1} \vect r.
+            \]
+            In other words, $\vect r$ is an eigenvector with eigenvalue $1$ of the matrix $\mat A^\t \mat O^{-1}$.
+
+        \item
+            Show that $\mat O^{-1} \mat A$ is a left-stochastic matrix,
+            i.e.\ that each column sums to 1.
+
+        \item
+            Prove that the eigenvalues of any matrix $\mat M \in \real^{n \times n}$ coincide with those of $\mat M^\t$.
+            You may use the fact that $\det(\mat M) = \det(\mat M^\t)$.
+
+        \item
+            Show that $\rho(\mat A^\t \mat O^{-1}) = 1$ and that the eigenvalue with largest modulus is 1.
+            For the first part, find a subordinate matrix norm such that $\norm{\mat O^{-1} \mat A} = 1$.
+
+        \item
+            Implement PageRank in order to rank pages from a 2013 snapshot of English Wikipedia.
+            A dataset is available on the course website to this end.
+            This dataset contains a subset of the data publicly available \hyperlink{https://snap.stanford.edu/data/enwiki-2013.html}{here},
+            and was generated from the full dataset by retaining only the 5\% best rated articles.
+            After decompressing the archive,
+            you can load the dataset in Julia by using the following commands:
+
+            \begin{minted}{julia}
+    import CSV
+    import DataFrames
+
+    # Data (nodes and edges)
+    nodes = CSV.read("names.csv", DataFrames.DataFrame)
+    edges = CSV.read("edges.csv", DataFrames.DataFrame)
+
+    # Convert data to matrices
+    nodes = Matrix(nodes)
+    edges = Matrix(edges)
+            \end{minted}
+
+            After you have assigned a rank to all the pages,
+            print the 10 pages with the highest ranks.
+            My code returns the following entries: ``United States", ``United Kingdom", ``World War~II", ``Latin", ``France", ``Germany", ``English language", ``China", ``Canada", ``India".
+
+        \item
+            \textbf{Extra credit:}
+            Write a function \julia{search(keyword)} that can be employed for searching the database.
+            Here is an example of what it could return:
+
+    \begin{minted}{julia}
+    julia> search("New York")
+    481-element Vector{String}:
+     "New York City"
+     "New York"
+     "The New York Times"
+     "New York Stock Exchange"
+     "New York University"
+     …
+    \end{minted}
+    \end{itemize}
+\end{exercise}
