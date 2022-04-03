@@ -34,6 +34,38 @@ function plot_solution(f)
     PlotlyJS.plot(PlotlyJS.contour(x=xgrid, y=ygrid, z=z))
 end
 
+function conjugate_gradient(A, b) # A is matrix, b is vector
+
+    # initialize conjugate vector(estimated solution), residue, direction
+    x = zeros(length(A))
+    r = A*x - b
+    p = -r # initial conjugate vector = negative residue at initial point
+
+    norm_r = norm(r)
+    #step
+    k = 0
+
+    # iterate until it meets the criterion given 
+    while norm_r >= 1.0e-8 * sqrt(n)
+
+        # step size
+        a = (r' * r) / (p' * A * p)
+        x_new = x + a * p
+
+        r_new = r + a * A * p # new residual
+
+        # new linear combination
+        b = (r_new' * r_new) / (r' * r)
+
+        # generate new conjugate vector
+        p_new = -r_new + b * p
+
+        # updating residue
+        norm_r = norm(r_new)
+    end
+    
+    return x
+end
 # Calculate matrix and right-hand side of linear system
 A, b = discretize(nx, ny)
 
