@@ -334,12 +334,13 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     \end{align*}
     Under the restriction that the diagonal elements of $\mat R$ is real and positive,
     the first equation enables to uniquely determines $\vect x_1$ and $\alpha^1_1 = \norm{\vect x_1}$.
-    Then, projecting both sides of the second equation onto $\Span \{ \vect q_1 \}^\perp$,
+    Then, projecting both sides of the second equation onto $\Span \{ \vect q_1 \}$ and $\Span \{ \vect q_1 \}^\perp$,
     we obtain
     \[
+        \vect q_1^* \vect x_2 = \alpha_1^2, \qquad
         \vect x_2 - (\vect q_1 \vect q_1^*) \vect x_2 = \alpha^2_2 \vect q_2,
     \]
-    which enables to calculate $\vect q_2$ and $\alpha^2_2$.
+    and the second equation enables to calculate $\vect q_2$ and $\alpha^2_2$.
     This process can be iterated $p$ times in order to fully construct the matrices~$\mat Q$ and~$\mat R$.
 \end{proof}
 Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
@@ -367,8 +368,17 @@ We emphasize that
 the factorization step at each iteration does not influence the subspace spanned by the columns of~$\mat X$.
 Therefore, this subspace after~$k$ iterations
 coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
-Mathematically, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
+In fact, mathematically, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
 after the \julia{for} loop.
+Indeed, denoting by $\mat Q_k \mat R_k$ the decomposition at the $k$-th step,
+it holds that $\mat Q_k \mat R_k = \mat A \mat Q_{k-1}$ and so
+\begin{align*}
+    &\mat X_k = \mat A \mat X_{k-1} \mat R_k^{-1} = \mat A^2 \mat X_{k-2} \mat R_{k-1}^{-1} \mat R_k^{-1} = \dotsb 
+    = \mat A^k \mat X_0 \mat R_1^{-1} \dotsc \mat R_k^{-1} \\
+    &\Leftrightarrow \quad \mat X_k (\mat R_k \dotsc \mat R_1) = \mat A^k \mat X_0.
+\end{align*}
+Since $\mat X_k$ has orthonormal columns and $\mat R_k \dotsc \mat R_1$ is an upper triangular matrix,
+it follows that $\mat X_k$ can be obtained by $\mat Q \mat R$ factorization of $\mat A^k \mat X_0$.
 In order to show the convergence of the subspace iteration,
 we begin by proving the following preparatory lemma.
 \begin{lemma}
