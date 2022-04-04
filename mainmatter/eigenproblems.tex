@@ -13,7 +13,16 @@ The rest of this chapter is organized as follows
 \begin{itemize}
     \item
         In \cref{sec:general_remarks},
-        we make general remarks concerning concerning the calculation of eigenvalues.
+        we make general remarks concerning the calculation of eigenvalues.
+
+    \item
+        In \cref{sec:simple_vector_iterations},
+        we present standard methods based on a simple vector iteration.
+
+    \item
+        In \cref{sec:subspace_iteration},
+        we present a method for calculating several eigenvectors simultaneously,
+        based on iterating a subspace.
 \end{itemize}
 
 \section{Numerical methods for eigenvalue problems: general remarks}
@@ -61,7 +70,7 @@ with $\abs{\lambda_1} \geq \abs{\lambda_2} \geq \dotsc \geq \abs{\lambda_n}$.
 The associated eigenvectors are denoted by $\vect v_1, \dotsc, \vect v_n$.
 Therefore, it holds that
 \[
-    \mat V^{-1} \mat A \mat V = \diag(\lambda_1, \dotsc, \lambda_n),
+    \mat V^{-1} \mat A \mat V = \mat D = \diag(\lambda_1, \dotsc, \lambda_n),
     \qquad \text{where } \mat V = \begin{pmatrix} \vect v_1 & \hdots & \vect v_n \end{pmatrix}.
 \]
 
@@ -114,7 +123,8 @@ we introduce the notion of \emph{angle} between vectors of $\complex^n$.
     &= \arcsin\left( \frac{\norm{(\mat I - \mat P_{\vect y}) \vect x}} {\norm{\vect x}} \right),
     \qquad \mat P_{\vect y} := \frac{\vect y \vect y^*}{\vect y^* \vect y}.
 \end{align*}
-This definition generalizes the familiar notion of angle for vectors in $\real^2$ or $\real^3$.
+This definition generalizes the familiar notion of angle for vectors in $\real^2$ or $\real^3$,
+and we note that the angle function satisfies $\angle(\e^{i \theta_1} \vect x, \e^{i \theta_2} \vect y) = \angle(\vect x, \vect y)$.
 We can then prove the following convergence result.
 \begin{proposition}
     [Convergence of the power iteration]
@@ -134,8 +144,11 @@ We can then prove the following convergence result.
         \vect x_k
         = \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
         = \e^{i \theta_k} \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}},
-        \qquad \e^{i \theta_k} := \frac{\lambda_1^k \alpha_1}{\abs{\lambda_1^k \alpha_1}}.
     \end{equation}
+    where
+    \[
+        \e^{i \theta_k} := \frac{\lambda_1^k \alpha_1}{\abs{\lambda_1^k \alpha_1}}.
+    \]
     Clearly, it holds hat $\vect x_k \to \e^{i \theta_k} \vect v_1/ \norm{\vect v_1}$.
     Using the definition of the angle between two vectors in $\complex^n$,
     and the continuity of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
@@ -148,7 +161,11 @@ We can then prove the following convergence result.
     \]
     which concludes the proof.
 \end{proof}
-An inspection of the proof shows that the dominant term in the error,
+Since $\vect v_1$ is normalized,
+equation~\eqref{eq:power_iteration_iterate} implies that $\e^{-i \theta_k} \vect x_k \to \vect v_1$ in the limit as~$k \to \infty$.
+We say that $\vect x_k$ converges \emph{essentially} to $\vect v_1$.
+
+An inspection of the proof also reveals that the dominant term in the error,
 asymptotically in the limit as $k \to \infty$,
 is the one with coefficient $\frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1}$.
 Therefore, we deduce that
@@ -159,15 +176,17 @@ The convergence is slow if $\abs{\lambda_2/\lambda_1}$ is close to one,
 and fast if $\abs{\lambda_2} \ll \abs{\lambda_1}$.
 Once an approximation of the eigenvector $\vect v_1$ has been calculated,
 the corresponding eigenvalue $\lambda_1$ can be estimated from the \emph{Rayleigh quotient:}
-\[
+\begin{equation}
+    \label{eq:rayleigh_quotient}
     \rho_{\mat A}\colon \mat \complex^n_* \to \complex\colon \vect x \mapsto \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}.
-\]
+\end{equation}
 For any eigenvector~$\vect v$ of $\mat A$,
 the corresponding eigenvalue is equal to~$\rho_{\mat A}(\vect v)$.
 In order to study the error on the eigenvalue~$\lambda_1$ for the power iteration,
 we assume for simplicity that $\mat A$ is Hermitian
 and that the eigenvectors $\vect v_1, \dotsc, \vect v_n$ are orthonormal.
-Substituting in~\eqref{eq:power_iteration_iterate},
+The convergence of the eigenvalue in this particular case is faster than for a general matrix in~$\complex^{n \times n}$.
+Substituting~\eqref{eq:power_iteration_iterate} in the Rayleigh quotient~\eqref{eq:rayleigh_quotient},
 we obtain
 \[
     \rho_{\mat A}(\vect x_k)
@@ -181,24 +200,29 @@ we deduce
     \leq  \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_2 - \lambda_1} +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_n- \lambda_1}
     = \mathcal O\left(\abs*{\frac{\lambda_2}{\lambda_1}}^{2k}\right).
 \]
+For general matrices,
+it is possible to show using a similar argument
+that the error is of order~$\mathcal O\bigl(\abs{\lambda_2/\lambda_1}^k\bigr)$
+in the limit as $k \to \infty$.
 
 \subsection{Inverse iteration}
 The power iteration is simple but enables to calculate only the dominant eigenvalue of the matrix~$\mat A$,
 i.e.\ the eigenvalue of largest modulus.
-Additionally, its convergence is slow when $\abs{\lambda_2} \approx \abs{\lambda_1}$.
+In addition, the convergence of the method is slow when $\abs{\lambda_2} \approx \abs{\lambda_1}$.
+
 The inverse iteration enables a more efficient calculation of not only the dominant eigenvalue
 but also the other eigenvalues of~$\mat A$.
-It is based on applying the power iteration to the matrix $(\mat A - \mu \mat I)^{-1}$,
+It is based on applying the power iteration to $(\mat A - \mu \mat I)^{-1}$,
 where $\mu \in \complex$ is a shift.
-The eigenvalues of the matrix $(\mat A - \mu \mat I)^{-1}$ are given by $(\lambda_1 - \mu)^{-1}, \dotsc, (\lambda_n - \mu)^{-1}$,
+The eigenvalues of $(\mat A - \mu \mat I)^{-1}$ are given by $(\lambda_1 - \mu)^{-1}, \dotsc, (\lambda_n - \mu)^{-1}$,
 with associated eigenvectors $\vect v_1, \dotsc, \vect v_n$.
-If $\abs{\lambda_i - \mu} < \abs{\lambda_j - \mu}$ for all $j \neq i$,
-then the dominant eigenvalue of the matrix $(\mat A - \mu \mat I)^{-1}$ is $(\lambda_i - \mu)^{-1}$,
-and so the power iteration applied to this matrix produces an approximation of the eigenvector $\vect v_i$.
-In other words, by choosing the shift~$\mu$ sufficiently close to $\lambda_i$,
-an approximation of~$\vect v_i$ may be obtained.
+If $0 < \abs{\lambda_J - \mu} < \abs{\lambda_K - \mu}$ for all $j \neq i$,
+then the dominant eigenvalue of the matrix $(\mat A - \mu \mat I)^{-1}$ is $(\lambda_J - \mu)^{-1}$,
+and so the power iteration applied to this matrix yields an approximation of the eigenvector $\vect v_i$.
+In other words,
+the inverse iteration with shift~$\mu$ enables to calculate an approximation of the eigenvector of~$\mat A$ corresponding to the eigenvalue nearest~$\mu$.
 The inverse iteration is presented in~\cref{algo:inverse_iteration}.
-In practice, the inverse $(\mat A - \mu \mat I)^{-1}$ need not be calculated,
+In practice, the inverse matrix $(\mat A - \mu \mat I)^{-1}$ need not be calculated,
 and it is often preferable to solve a linear system at each iteration.
 \begin{algorithm}
 \caption{Inverse iteration}%
@@ -220,11 +244,11 @@ An application of~\cref{proposition:convergence_of_the_power_iteration} immediat
     Assume that $\mat A \in \complex^n$ is diagonalizable
     and that there exist $J$ and $K$ such that
     \[
-        0 < \abs{\lambda_J - \mu} < \abs{\lambda K - \mu} \leq \abs{\lambda_i - \mu} \qquad \forall j \neq J.
+        0 < \abs{\lambda_J - \mu} < \abs{\lambda_K - \mu} \leq \abs{\lambda_j - \mu} \qquad \forall j \neq J.
     \]
     Assume also that $\alpha_J \neq 0$,
-    where $\alpha_J$ is the coefficient of $\vect x_J$ in the expansion of $\vect x_0$ given in~\eqref{eq:eigen_decomposition_x0}.
-    Then the iterates of the inverse iteration method satisfy
+    where $\alpha_J$ is the coefficient of $\vect v_J$ in the expansion of $\vect x_0$ given in~\eqref{eq:eigen_decomposition_x0}.
+    Then the iterates of the inverse iteration satisfy
     \[
         \lim_{k \to \infty} \angle(\vect x_k, \vect v_J) = 0.
     \]
@@ -233,15 +257,16 @@ An application of~\cref{proposition:convergence_of_the_power_iteration} immediat
         \angle(\vect x_k, \vect v_J) = \mathcal O \left( \abs*{\frac{\lambda_J - \mu}{\lambda_K - \mu}}^k \right).
     \]
 \end{proposition}
-Notice that the closer $\lambda_J$ is to the targeted eigenvalue,
+Notice that the closer $\mu$ is to~$\lambda_J$,
 the faster the inverse iteration converges.
+With $\mu = 0$, the inverse iteration enables to calculate the eigenvalue of~$\mat A$ of smallest modulus.
 
 \subsection{Rayleigh quotient iteration}
 Since the inverse iteration is fast when $\mu$ is close to an eigenvalue $\lambda_i$,
-it is natural to wonder whether fast convergence can be achieved by progressively updating $\mu$ as the simulation progresses.
-Specifically, the current approximation of the eigenvalue may be employed in place of~$\mu$.
-This leads to the iteration of the Rayleigh quotient,
-presented in
+it is natural to wonder whether the method can be improved by progressively updating $\mu$ as the simulation progresses.
+Specifically, an approximation of the eigenvalue associated with the current vector may be employed in place of~$\mu$.
+This leads to the Rayleigh quotient iteration,
+presented in~\cref{algo:rayleigh_quotient}.
 \begin{algorithm}
 \caption{Inverse iteration}%
 \label{algo:rayleigh_quotient}%
@@ -257,84 +282,106 @@ presented in
 \end{algorithmic}
 \end{algorithm}
 
-It is possible to show, see~\cite{MR3396212} and the references therein,
-that, when~$\mat A$ is Hermitian,
+It is possible to show that, when~$\mat A$ is Hermitian,
 the Rayleigh quotient iteration converges to an eigenvector for almost every initial guess~$\vect x_0$.
 Furthermore, if convergence to an eigenvector occurs,
 then $\mu$ converges cubically to the corresponding eigenvalue.
+See~\cite{MR3396212} and the references therein for more details.
 
 \section{Subspace iteration}
+\label{sec:subspace_iteration}
 The subspace iteration resembles the power iteration but it is more general:
 not just one but several vectors are updated at each iteration.
 Let $\mat X_0 = \begin{pmatrix} \vect x_1 & \dotsc & \vect x_p \end{pmatrix}$ denote an initial set of linearly independent vectors.
+Before we present the subspace iteration,
+we recall a statement concerning the $\mat Q \mat R$ decomposition of a matrix,
+which is related to the Gram--Schmidt orthonormalization process.
+We recall that the Gram--Schmidt method enables to construct,
+starting form an ordered set of $p$ vectors $\{\vect x_1, \dotsc, \vect x_p \}$ in $\complex^n$,
+a new set of vectors $\{\vect q_1, \dotsc, \vect q_p \}$
+which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the original vectors.
+\begin{proposition}
+    [Reduced QR decomposition]
+    Assume that $\mat X \in \complex^{n \times p}$ has linearly independent columns.
+    Then there exist a matrix $\mat Q \in \complex^{n \times p}$ with orthonormal columns and
+    an upper triangular matrix~$\mat R$ such that the following factorization holds:
+    \[
+        \mat X = \mat Q \mat R.
+    \]
+    This decomposition is known as a \emph{reduced $\mat Q \mat R$ decomposition} if $p < n$,
+    or simply \emph{$\mat Q \mat R$ decomposition} if $p = n$,
+    in which case $\mat X$ is a square matrix and $\mat Q$ is a unitary matrix.
+    The decomposition is unique if we require that the diagonal elements of~$\mat R$ are real and positive.
+\end{proposition}
+\begin{proof}
+    Let us denote the columns of $\mat q$ by $\vect q_1, \dotsc, \vect q_p$ and the entries of $\mat R$ by
+    \[
+        \mat R =
+        \begin{pmatrix}
+            \alpha^1_1 & \alpha^2_1 & \hdots & \alpha^p_1 \\
+                       & \alpha^2_2 & \hdots & \alpha^p_2 \\
+                       &            & \ddots & \vdots \\
+                       & & & \alpha^p_p
+        \end{pmatrix}.
+    \]
+    Expanding the matrix product and identifying columns of both sides,
+    we find that
+    \begin{align*}
+        \vect x_1 &= \alpha^1_1 \vect q_1 \\
+        \vect x_2 &= \alpha^2_1 \vect q_1 + \alpha^2_2 \vect q_2 \\
+        \vdots \\
+        \vect x_p &= \alpha^p_1 \vect q_1 + \alpha^p_2 \vect q_2 + \alpha^p_p \vect q_p.
+    \end{align*}
+    Under the restriction that the diagonal elements of $\mat R$ is real and positive,
+    the first equation enables to uniquely determines $\vect x_1$ and $\alpha^1_1 = \norm{\vect x_1}$.
+    Then, projecting both sides of the second equation onto $\Span \{ \vect q_1 \}^\perp$,
+    we obtain
+    \[
+        \vect x_2 - (\vect q_1 \vect q_1^*) \vect x_2 = \alpha^2_2 \vect q_2,
+    \]
+    which enables to calculate $\vect q_2$ and $\alpha^2_2$.
+    This process can be iterated $p$ times in order to fully construct the matrices~$\mat Q$ and~$\mat R$.
+\end{proof}
+Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
+would be obtained by applying the Gram--Schmidt method to the columns of~$\mat X$.
+In fact, the Gram--Schmidt process is one of several methods by which the $\mat Q \mat R$ decomposition can be calculated in practice.
+
 The subspace iteration is presented in~\cref{algo:subspace_iteration}.
+Like the normalization in the power iteration~\cref{algo:power_iteration},
+the $\mat Q \mat R$ decomposition performed at each step enables to avoid overflow errors.
+Notice that when $p = 1$,
+the subspace iteration reduces to the power iteration.
 \begin{algorithm}
 \caption{Subspace iteration}%
 \label{algo:subspace_iteration}%
 \begin{algorithmic}
 \State $\mat X \gets \mat X_0$
 \For{$i \in \{1, 2, \dotsc\}$}
-    \State $\mat X \gets \mat A \mat X$
-    \State $\mat X \gets \mat X \mat Z_i$
+    \State $\mat Y \gets \mat A \mat X$
+    \State Factorize $\mat Y = \mat Q \mat R$.
+    \State $\mat X \gets \mat Q$.
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-In this algorithm, the matrix $\mat Z_i \in \complex^{p \times p}$ is a full rank matrix that plays the role of a normalization;
-it ensures that the columns of $\mat X$ are orthonormal at the end of each iteration.
-More precisely, the right-multiplication with the matrix~$\mat Z$ performs a Gram--Schmidt orthonormalization,
-which is strongly related to the $\mat Q \mat R$ decomposition.
-We recall that the Gram--Schmidt process enables to incrementally construct,
-starting form an ordered set of $p$ vectors $\{\vect x_1, \dotsc, \vect x_p \}$ in $\complex^n$,
-a new set of vectors $\{\vect q_1, \dotsc, \vect q_p \}$
-which are \emph{orthonormal} and span the same subset of $\complex^n$ as the original vectors.
-It is simple to see,
-by inspection of the Gram--Schmidt process,
-that each of the original vectors may be expressed as a linear combination of the new vectors
-\begin{equation}
-    \label{eq:gram_schmidt}
-    \vect x_i = \alpha^i_{1} \vect q_{1} + \dotsb + \alpha^i_{i} \vect q_i.
-\end{equation}
-Gathering the original and new vectors in matrices $\mat X = \begin{pmatrix} \vect x_1 & \hdots & \vect x_p \end{pmatrix}$
-and $\mat Q = \begin{pmatrix} \vect q_1 & \hdots & \vect q_p \end{pmatrix}$,
-and rewriting~\eqref{eq:gram_schmidt} in matrix form,
-we obtain
-\[
-    \mat X = \mat Q
-    \begin{pmatrix}
-        \alpha^1_1 & \alpha^2_1 & \hdots & \alpha^p_1 \\
-                   & \alpha^2_2 & \hdots & \alpha^p_2 \\
-                   &            & \ddots & \vdots \\
-                   & & & \alpha^p_p
-        \alpha
-    \end{pmatrix}.
-\]
-The rightmost matrix is square and upper triangular,
-and this decomposition of the matrix $\mat X$ is known as a \emph{reduced $\mat Q \mat R$ decomposition}
-or simply \emph{$\mat Q \mat R$ decomposition} if $p = n$,
-in which case $\mat X$ is a square matrix and $\mat Q$ is a unitary matrix.
-This decomposition is unique if we require that the diagonal coefficients of~$\mat R$ are real and positive.
-In practice, the matrix $\mat Z$ in~\eqref{algo:subspace_iteration} is not explicitly calculated.
-Instead, the reduced $\mat Q \mat R$ decomposition of $\mat X$ is computed and we set $\mat X \leftarrow \mat Q$.
-
-Observe that the normalization step does not influence the subspace spanned by the columns of $\mat X$.
+We emphasize that
+the factorization step at each iteration does not influence the subspace spanned by the columns of~$\mat X$.
 Therefore, this subspace after~$k$ iterations
 coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
-The aim of normalizing the vectors at each step is to avoid overflow errors but,
-mathematically, it would be equivalent to perform the Gram--Schmidt process only once as a final step,
+Mathematically, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
 after the \julia{for} loop.
 In order to show the convergence of the subspace iteration,
 we begin by proving the following preparatory lemma.
 \begin{lemma}
     [Continuity of the QR decomposition]
     \label{lemma:continuity_qr}
-    Assume that $\mat Q_k \mat R_k \to \mat Q \mat R$,
-    where $\mat Q$ is orthogonal and $\mat R$ is upper triangular with positive real entries on the diagonal,
+    If $\mat Q_k \mat R_k \to \mat Q \mat R$,
+    where $\mat Q$ is orthogonal and~$\mat R$ is upper triangular with positive real entries on the diagonal,
     then $\mat Q_k \to \mat Q$.
 \end{lemma}
 \begin{proof}
     We reason by contradiction and assume
-    there is $\varepsilon > 0$ and a subsequence $(\mat Q_{k_n})_{n\geq 0}$ such that $\norm{\mat Q_{k_n} - \mat Q} \geq \varepsilon$.
-    Since the set of unitary matrices form a compact subset of $\mat C^{n \times n}$,
+    there is $\varepsilon > 0$ and a subsequence $(\mat Q_{k_n})_{n\geq 0}$ such that $\norm{\mat Q_{k_n} - \mat Q} \geq \varepsilon$ for all~$n$.
+    Since the set of unitary matrices is a compact subset of $\mat C^{n \times n}$,
     there exists a further subsequence $(\mat Q_{k_{n_m}})_{m\geq 0}$ that converges to a limit $\mat Q_{\infty}$
     which is also a unitary matrix and at least $\varepsilon$ away in norm from $\mat Q$.
     But then
@@ -342,7 +389,7 @@ we begin by proving the following preparatory lemma.
         \mat R_{k_{n_m}}
         = \mat Q_{k_{n_m}}^{-1} (\mat Q_{k_{n_m}} \mat R_{k_{n_m}})
         = \mat Q_{k_{n_m}}^* ( \mat Q_{k_{n_m}} \mat R_{k_{n_m}})
-        \xrightarrow[m \to \infty]{} \mat Q_{\infty}^* \mat Q \mat R =: \mat R_{\infty}.
+        \xrightarrow[m \to \infty]{} \mat Q_{\infty}^* (\mat Q \mat R) =: \mat R_{\infty}.
     \]
     Since $\mat R_k$ is upper triangular with positive diagonal elements for all $k$,
     clearly $\mat R_{\infty}$ is also upper triangular with positive diagonal elements.
@@ -351,20 +398,27 @@ we begin by proving the following preparatory lemma.
     which is a contradiction.
 \end{proof}
 
+Before presenting the convergence theorem,
+we introduce the following terminology: we say that $\mat X_k \in \complex^{n \times p}$ converges essentially to a matrix $\mat X_{\infty}$
+if each column of $\mat X_k$ converges essentially to the corresponding column of $\mat X_{\infty}$.
+We recall that a vector sequence $(\vect x_k)_{k \geq 1}$ converges essentially to $\vect x_{\infty}$ if there exists $(\theta_k)_{k \geq 1}$
+such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty}$.
 \begin{theorem}
-    [Convergence of the subspace iteration]
+    [Convergence of the subspace iteration~\moreinfo]
     \label{theorem:convergence_subspace_iteration}
-    Assume that $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable and that
+    Assume that $\mat A \in \complex^{n \times n}$ is diagonalizable,
+    and that~$\mat X \in \complex^{n \times p}$ has linearly independent columns.
+    Assume also that the subspace spanned by the column of~$\mat X_0$ satisfies
     \begin{equation}
         \label{eq:assumption_subspace_iteration}
         \col(\mat X_0) \cap \Span \{ \vect v_{p+1}, \dotsc, \vect v_n \} = \varnothing.
     \end{equation}
-    Assume also that
+    If it holds that
     \begin{equation}
         \label{eq:order_eigenvalues}
-        \lambda_1 > \lambda_2 > \dotsb > \lambda_p > \lambda_{p+1} \geq \lambda_{p+2} \geq \dotsc \geq \lambda_n.
+        \lambda_1 > \lambda_2 > \dotsb > \lambda_p > \lambda_{p+1} \geq \lambda_{p+2} \geq \dotsc \geq \lambda_n,
     \end{equation}
-    Then $\mat X_k$ converges essentially to $\mat V_1 := \begin{pmatrix} \vect v_1 & \hdots & \vect v_p \end{pmatrix}$.
+    then $\mat X_k$ converges \emph{essentially} to $\mat V_1 := \begin{pmatrix} \vect v_1 & \hdots & \vect v_p \end{pmatrix}$.
 \end{theorem}
 \begin{proof}
     Let $\mat B = \mat V^{-1} \mat X_0 \in \complex^{n \times p}$, so that $\mat X_0 = \mat V \mat B$,
@@ -395,11 +449,12 @@ we begin by proving the following preparatory lemma.
         \end{pmatrix}
         = \mat V_2 \mat B_2 \vect z.
     \]
-    implying that $\mat X_0 \vect z$ is a linear combination of the vectors in $\mat V_2 =
+    implying that $\mat X_0 \vect z \in \col(\mat X_0)$ is a linear combination of the vectors in $\mat V_2 =
     \begin{pmatrix}
         \vect v_{p+1} & \hdots \vect v_n,
     \end{pmatrix}$
     which contradicts the assumption.
+    We also denote by $\mat D_1$ and $\mat D_2$ the $p \times p$ upper-left and the~$(n-p) \times (n-p)$ lower-right blocks of $\mat D$, respectively.
     From the expression of $\mat A^k \mat X_0$,
     we have
     \begin{align}
@@ -418,7 +473,7 @@ we begin by proving the following preparatory lemma.
         \label{eq:factorization}
         &= \left(\mat V_1  + \mat V_2 \mat D_2^{k} \mat B_2 \mat B_1^{-1}\mat D_1^{-k}\right) \mat D_1^k \mat B_1.
     \end{align}
-    Notice that the second term in the bracket on the right-hand side converges to zero in the limit as $k \to \infty$ by~\eqref{eq:order_eigenvalues}.
+    The second term in the bracket on the right-hand side converges to zero in the limit as $k \to \infty$ by~\eqref{eq:order_eigenvalues}.
     Let $\widetilde{\mat Q_k} \widetilde {\mat R_k}$~denote the reduced $\mat Q \mat R$ decomposition of the bracketed term.
     By~\cref{lemma:continuity_qr},
     which we proved for the standard $\mat Q \mat R$ decomposition but also holds for the reduced one,
@@ -431,9 +486,9 @@ we begin by proving the following preparatory lemma.
     Since the matrix between brackets is a $p \times p$ square invertible matrix,
     this equation implies that $\col(\mat A^k \mat X_0) = \col (\widetilde{\mat Q_k})$.
     Denoting by $\mat Q_k \mat R_k$ the $\mat Q \mat R$ decomposition of~$\mat A_k \mat X_0$,
-    we therefore have~$\col(\mat Q_k) = \col(\widehat {\mat Q_k})$,
+    we therefore have~$\col(\mat Q_k) = \col(\widetilde {\mat Q_k})$,
     and so the projectors on these subspaces are equal.
-    We recall that, for a set of orthonormal vectors $\vect r_1, \dotsc, \vect r_p$,
+    We recall that, for a set of orthonormal vectors $\vect r_1, \dotsc, \vect r_p$
     gathered in a matrix $\mat R = \begin{pmatrix} \vect r_1 & \hdots & \vect r_p \end{pmatrix}$,
     the projector on $\col(\mat R) = \Span \{\vect r_1, \dotsc, \vect r_p \} \subset \complex^n$
     is the square $n \times n$ matrix
@@ -444,25 +499,39 @@ we begin by proving the following preparatory lemma.
     Consequently,
     the equality of the projectors implies
     \(
-        \mat Q_k \mat Q_k^* = \widehat{\mat Q_k} \widehat {\mat Q_k}^*.
+        \mat Q_k \mat Q_k^* = \widetilde{\mat Q_k} \widetilde {\mat Q_k}^*.
     \)
     Now, we want to establish the convergence of $\mat Q_k$ to $\mat V_1$.
     To this end, we reason by induction,
     relying on the fact that the first $k$ columns of $\mat X_0$ undergo a subspace iteration independent of the later columns.
-    For example, the first column simply undergoes a power iteration, and so it converges to~$\vect v_1$.
+    For example, the first column simply undergoes a power iteration, and so it converges essentially to~$\vect v_1$.
     Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge to $\vect v_1, \dotsc, \vect v_{p-1}$.
-    Then the $p$-th column $\vect q_p$ at iteration $k$ obeys
+    Then the $p$-th column of $\mat Q_k$ at iteration $k$,
+    which we denote by~$\vect q_p^{(k)}$,
+    obeys
+    \begin{align*}
+        \vect q_p^{(k)} {\vect q_p^{(k)}}^* &= \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^*
+        = \widetilde{\mat Q}_k \widetilde{\mat Q}_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^* \\
+        &\xrightarrow[k \to \infty]{} \mat V_1 \mat V_1^* - \vect v_1 \vect v_1^* - \dotsb - \vect v_{p-1} \vect v_{p-1}^* = \vect v_p \vect v_p^{*}.
+    \end{align*}
+    Therefore, noting that $\abs{a} = \sqrt{a \overline a}$ for every $a \in \complex$,
+    we deduce
     \[
-        \vect q_p^{(k)} \vect {q_p^{(k)}}^* = \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} \vect {q_{p-1}^{(k)}}^*
-        = \mat Q_k \mat Q_k^* - \vect q_1 \vect q_1^* - \dotsb - \vect q_{p-1} \vect q_{p-1}^*
-        \xrightarrow[k \to \infty]{} \vect v_p \vect v_p^{*}.
+        \abs{\vect v_p^* \vect q_p^{(k)}} = \sqrt{\vect v_p^* \vect q_p^{(k)} {\vect q_p^{(k)}}^* \vect v_p} \xrightarrow[k \to \infty]{} \sqrt{\vect v_p^* \vect v_p \vect v_p^* \vect v_p} = 1,
     \]
+    which shows that $\angle(\vect q_p^{(k)}, \vect v_p)$ converges to 0.
+    Noting that
+    \[
+        \norm*{\e^{- i \theta_k}\vect q_p^{(k)} - \vect v_p}^2 = 2 - 2 \abs{\vect v_p^* \vect q_p^{(k)}} \xrightarrow[k \to \infty]{} 0, \qquad
+        \theta_k = \frac{\vect v_p^* \vect q_p^{(k)}}{\abs{\vect v_p^* \vect q_p^{(k)}}},
+    \]
+    we conclude that $\vect q_p^{(k)}$ converges essentially to $\vect v_p$.
 \end{proof}
 
 \section{Exercises}
 
 \begin{exercise}
-    PageRank is an algorithm for assigning a rank to the vertices in a directed graph.
+    PageRank is an algorithm for assigning a rank to the vertices of a directed graph.
     It is used by many search engines, notably Google,
     for sorting search results.
     In this context,
@@ -530,7 +599,7 @@ we begin by proving the following preparatory lemma.
             This dataset contains a subset of the data publicly available \hyperlink{https://snap.stanford.edu/data/enwiki-2013.html}{here},
             and was generated from the full dataset by retaining only the 5\% best rated articles.
             After decompressing the archive,
-            you can load the dataset in Julia by using the following commands:
+            you can load the dataset into Julia by using the following commands:
 
             \begin{minted}{julia}
     import CSV
