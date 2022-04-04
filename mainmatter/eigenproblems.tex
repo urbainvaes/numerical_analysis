@@ -1,5 +1,6 @@
 \chapter{Numerical computation of eigenvalues}%
 \label{cha:numerical_computation_of_eigenvalues}
+\minitoc
 
 Calculating the eigenvalues and eigenvectors of a matrix is a task often encountered in scientific and engineering applications.
 Eigenvalue problems naturally arise in quantum physics,
@@ -23,6 +24,10 @@ The rest of this chapter is organized as follows
         In \cref{sec:subspace_iteration},
         we present a method for calculating several eigenvectors simultaneously,
         based on iterating a subspace.
+
+    \item
+        In \cref{sec:projection_methods},
+        we present method for constructing an approximation of the eigenvectors in a given subspace of~$\complex^{n}$.
 \end{itemize}
 
 \section{Numerical methods for eigenvalue problems: general remarks}
@@ -288,12 +293,16 @@ Furthermore, if convergence to an eigenvector occurs,
 then $\mu$ converges cubically to the corresponding eigenvalue.
 See~\cite{MR3396212} and the references therein for more details.
 
-\section{Subspace iteration}
+\section{Methods based on a subspace iteration}
 \label{sec:subspace_iteration}
 The subspace iteration resembles the power iteration but it is more general:
 not just one but several vectors are updated at each iteration.
+
+\subsection{Simultaneous iteration}
+\label{sub:simultaneous_iteration}
+
 Let $\mat X_0 = \begin{pmatrix} \vect x_1 & \dotsc & \vect x_p \end{pmatrix}$ denote an initial set of linearly independent vectors.
-Before we present the subspace iteration,
+Before we present the simultaneous iteration,
 we recall a statement concerning the $\mat Q \mat R$ decomposition of a matrix,
 which is related to the Gram--Schmidt orthonormalization process.
 We recall that the Gram--Schmidt method enables to construct,
@@ -338,32 +347,33 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     we obtain
     \[
         \vect q_1^* \vect x_2 = \alpha_1^2, \qquad
-        \vect x_2 - (\vect q_1 \vect q_1^*) \vect x_2 = \alpha^2_2 \vect q_2,
+        \vect x_2 - (\vect q_1 \vect q_1^*) \vect x_2 = \alpha^2_2 \vect q_2.
     \]
+    The first equation gives $\alpha_1^2$,
     and the second equation enables to calculate $\vect q_2$ and $\alpha^2_2$.
     This process can be iterated $p$ times in order to fully construct the matrices~$\mat Q$ and~$\mat R$.
 \end{proof}
 Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
-would be obtained by applying the Gram--Schmidt method to the columns of~$\mat X$.
+would be obtained by applying the Gram--Schmidt method to the columns of the matrix~$\mat X$.
 In fact, the Gram--Schmidt process is one of several methods by which the $\mat Q \mat R$ decomposition can be calculated in practice.
 
-The subspace iteration is presented in~\cref{algo:subspace_iteration}.
-Like the normalization in the power iteration~\cref{algo:power_iteration},
-the $\mat Q \mat R$ decomposition performed at each step enables to avoid overflow errors.
-Notice that when $p = 1$,
-the subspace iteration reduces to the power iteration.
-\begin{algorithm}
-\caption{Subspace iteration}%
+\begin{algorithm}[ht!]
+\caption{Simultaneous iteration}%
 \label{algo:subspace_iteration}%
 \begin{algorithmic}
 \State $\mat X \gets \mat X_0$
 \For{$i \in \{1, 2, \dotsc\}$}
-    \State $\mat Y \gets \mat A \mat X$
-    \State Factorize $\mat Y = \mat Q \mat R$.
+    \State $\mat X \gets \mat A \mat X$
+    \State Factorize $\mat X = \mat Q \mat R$.
     \State $\mat X \gets \mat Q$.
 \EndFor
 \end{algorithmic}
 \end{algorithm}
+The simultaneous iteration method is presented in~\cref{algo:subspace_iteration}.
+Like the normalization in the power iteration~\cref{algo:power_iteration},
+the $\mat Q \mat R$ decomposition performed at each step enables to avoid overflow errors.
+Notice that when $p = 1$,
+the simultaneous iteration reduces to the power iteration.
 We emphasize that
 the factorization step at each iteration does not influence the subspace spanned by the columns of~$\mat X$.
 Therefore, this subspace after~$k$ iterations
@@ -371,15 +381,15 @@ coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
 In fact, mathematically, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
 after the \julia{for} loop.
 Indeed, denoting by $\mat Q_k \mat R_k$ the decomposition at the $k$-th step,
-it holds that $\mat Q_k \mat R_k = \mat A \mat Q_{k-1}$ and so
+we have that $\mat X_k \mat R_k = \mat A \mat X_{k-1}$ and so
 \begin{align*}
-    &\mat X_k = \mat A \mat X_{k-1} \mat R_k^{-1} = \mat A^2 \mat X_{k-2} \mat R_{k-1}^{-1} \mat R_k^{-1} = \dotsb 
+    &\mat X_k = \mat A \mat X_{k-1} \mat R_k^{-1} = \mat A^2 \mat X_{k-2} \mat R_{k-1}^{-1} \mat R_k^{-1} = \dotsb
     = \mat A^k \mat X_0 \mat R_1^{-1} \dotsc \mat R_k^{-1} \\
     &\Leftrightarrow \quad \mat X_k (\mat R_k \dotsc \mat R_1) = \mat A^k \mat X_0.
 \end{align*}
 Since $\mat X_k$ has orthonormal columns and $\mat R_k \dotsc \mat R_1$ is an upper triangular matrix,
-it follows that $\mat X_k$ can be obtained by $\mat Q \mat R$ factorization of $\mat A^k \mat X_0$.
-In order to show the convergence of the subspace iteration,
+it follows that~$\mat X_k$ can be obtained by $\mat Q \mat R$ factorization of $\mat A^k \mat X_0$.
+In order to show the convergence of the simultaneous iteration,
 we begin by proving the following preparatory lemma.
 \begin{lemma}
     [Continuity of the QR decomposition]
@@ -413,10 +423,17 @@ we introduce the following terminology: we say that $\mat X_k \in \complex^{n \t
 if each column of $\mat X_k$ converges essentially to the corresponding column of $\mat X_{\infty}$.
 We recall that a vector sequence $(\vect x_k)_{k \geq 1}$ converges essentially to $\vect x_{\infty}$ if there exists $(\theta_k)_{k \geq 1}$
 such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty}$.
+We prove the convergence in the Hermitian case for simplicity.
+In the general case of~$\mat A \in \complex^{n \times n}$,
+it cannot be expected that $\mat X_k$ converges to $\mat V$,
+because the eigenvectors may not be orthogonal.
+In this case, the columns of $\mat X_k$ converge not to the eigenvectors
+but to the so-called Schur vectors of~$\mat A$;
+see~\cite{MR3396212} for more information.
 \begin{theorem}
     [Convergence of the subspace iteration~\moreinfo]
     \label{theorem:convergence_subspace_iteration}
-    Assume that $\mat A \in \complex^{n \times n}$ is diagonalizable,
+    Assume that $\mat A \in \complex^{n \times n}$ is Hermitian,
     and that~$\mat X \in \complex^{n \times p}$ has linearly independent columns.
     Assume also that the subspace spanned by the column of~$\mat X_0$ satisfies
     \begin{equation}
@@ -513,12 +530,12 @@ such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty
     \)
     Now, we want to establish the convergence of $\mat Q_k$ to $\mat V_1$.
     To this end, we reason by induction,
-    relying on the fact that the first $k$ columns of $\mat X_0$ undergo a subspace iteration independent of the later columns.
+    relying on the fact that the first $k$ columns of $\mat X_0$ undergo a simultaneous iteration independent of the other columns.
     For example, the first column simply undergoes a power iteration, and so it converges essentially to~$\vect v_1$.
     Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge to $\vect v_1, \dotsc, \vect v_{p-1}$.
     Then the $p$-th column of $\mat Q_k$ at iteration $k$,
     which we denote by~$\vect q_p^{(k)}$,
-    obeys
+    satisfies
     \begin{align*}
         \vect q_p^{(k)} {\vect q_p^{(k)}}^* &= \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^*
         = \widetilde{\mat Q}_k \widetilde{\mat Q}_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^* \\
@@ -530,7 +547,7 @@ such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty
         \abs{\vect v_p^* \vect q_p^{(k)}} = \sqrt{\vect v_p^* \vect q_p^{(k)} {\vect q_p^{(k)}}^* \vect v_p} \xrightarrow[k \to \infty]{} \sqrt{\vect v_p^* \vect v_p \vect v_p^* \vect v_p} = 1,
     \]
     which shows that $\angle(\vect q_p^{(k)}, \vect v_p)$ converges to 0.
-    Noting that
+    Finally, observing that
     \[
         \norm*{\e^{- i \theta_k}\vect q_p^{(k)} - \vect v_p}^2 = 2 - 2 \abs{\vect v_p^* \vect q_p^{(k)}} \xrightarrow[k \to \infty]{} 0, \qquad
         \theta_k = \frac{\vect v_p^* \vect q_p^{(k)}}{\abs{\vect v_p^* \vect q_p^{(k)}}},
@@ -538,8 +555,118 @@ such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty
     we conclude that $\vect q_p^{(k)}$ converges essentially to $\vect v_p$.
 \end{proof}
 
-\section{Exercises}
+In addition to this convergence result,
+it is possible to show that the error satisfies
+\[
+    \angle \Bigl(\col(\mat X_k), \col(\mat V_1)\Bigr)
+    = \mathcal O \left( \abs*{\frac{\lambda_{p+1}}{\lambda_p}}^k \right).
+\]
+Here,
+the angle between two subspaces $\mathcal A$ and $\mathcal B$ of $\complex^n$ is defined as
+\[
+    \angle (\mathcal A, \mathcal B) = \max_{\vect a \in \mathcal A \backslash \{\vect 0\}} \biggl( \min_{\vect b \in \mathcal B \backslash \{\vect 0\}} \angle(\vect a, \vect b) \biggr).
+\]
 
+\subsection{The $\mat Q \mat R$ algorithm}
+The $\mat Q \mat R$,
+which is based on the $\mat Q \mat R$ decomposition,
+is one of the most famous algorithms for calculating \emph{all} the eigenpairs of a matrix.
+We first present the algorithm and then relate it to the simultaneous iteration in~\cref{sub:simultaneous_iteration}.
+The method is presented in~\cref{algo:qr}.
+\begin{algorithm}
+\caption{QR algorithm}%
+\label{algo:qr}%
+\begin{algorithmic}
+\State $\mat X_0 = \mat A$
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State $\mat Q_k \mat R_k = \mat X_{k-1}$ (QR decomposition)
+    \State $\mat X_{k} = \mat R_k \mat Q_k$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Successive iterates of the QR algorithm are related by the equation
+\begin{equation}
+    \label{eq:qr_iteration_equation}
+    \mat X_{k} = \mat Q_k^{-1}  \mat X_{k-1} \mat Q_k
+    = \mat Q_k^* \mat X_{k-1} \mat Q_k
+    = \dots = (\mat Q_1 \dots \mat Q_k)^* \mat X_{0} (\mat Q_1 \dots \mat Q_k)
+\end{equation}
+Therefore, they are related by a unitary similarity transformation,
+and so they all have the same eigenvalues as $\mat X_0 = \mat A$.
+Rearranging~\eqref{eq:qr_iteration_equation},
+we have
+\[
+    (\mat Q_1 \dots \mat Q_k) \mat X_{k} = \mat A (\mat Q_1 \dots \mat Q_k),
+\]
+and so, introducing $\widetilde {\mat Q}_k = \mat Q_1 \dots \mat Q_k$
+and noting that $\mat X_k = \mat Q_{k+1} \mat R_{k+1}$,
+we deduce
+\[
+    \widetilde {\mat Q}_{k+1} \mat R_{k+1} = \mat A \widetilde {\mat Q}_k.
+\]
+This reveals that
+the matrix sequence $(\widetilde{\mat Q}_{k})_{k\geq 1}$ undergoes a simultaneous iteration and so,
+assuming that $\mat A$ is Hermitian with $n$~distinct nonzero eigenvalues,
+we deduce that $\mat Q_k \to \mat V$ essentially in the limit as $k \to \infty$,
+by~\cref{theorem:convergence_subspace_iteration}.
+As a consequence, by~\eqref{eq:qr_iteration_equation},
+it holds that~$\mat X_k \to \mat V^* \mat X_0 \mat V = \mat D$;
+the matrix $\mat X_k$ converges to a diagonal matrix with the eigenvalues of~$\mat A$ on the diagonal.
+
+\section{Projection methods}
+\label{sec:projection_methods}
+In this section,
+we begin by presenting a general method for constructing an approximation of the eigenvectors of~$\mat A$ in a given subspace~$\mathcal U$ of~$\complex^{n}$.
+We then discuss a particular choice for the space $\mathcal U$ that is very useful in practice.
+
+Assume that $\{\vect u_1, \dotsc, \vect u_p\}$ is an orthonormal basis of $\mathcal U$.
+Then for any vector $\vect v \in \complex^{n}$,
+the vector of $\mathcal U$ that is closest to $\vect v$ in the Euclidean distance is given by the orthogonal projection
+\[
+    \mat P_{\mat U} \vect v := \mat U \mat U^* \vect v = (\vect u_1 \vect u_1^* + \dotsb + \vect u_p \vect u_p^*) \vect v.
+\]
+In practice,
+the eigenvectors of~$\mat A$ are unknown,
+and so it is impossible to calculate approximations using this formula.
+The Rayleigh--Ritz method,
+which we present hereafter,
+is an alternative and practical method for constructing approximations of the eigenvectors and eigenvalues.
+In general, the subspace $\mathcal U$ does not contain eigenvectors of $\mat A$,
+and so the problem
+\begin{equation}
+    \label{eq:eigenproblem_subspace}
+    \mat A \vect v = \lambda \vect v, \qquad \vect v \in \mathcal U
+\end{equation}
+does not admit a solution.
+Let us denote by $\mat U$ the matrix with columns~$\vect u_1, \dotsc, \vect u_p$.
+Since any vector $\vect v \in \mathcal U$ is equal to $\mat U \vect z$ for some vector $\vect z \in \complex^p$,
+equation~\eqref{eq:eigenproblem_subspace} is equivalent to the problem
+\[
+    \mat A \mat U \vect z = \lambda \mat U \vect z,
+\]
+which is a system of $n$ equations with $p < n$ unknowns.
+The Rayleigh--Ritz method is based on the idea that,
+in order to obtain a problem with as many unknowns as there are equations,
+we can multiply this equation by~$\mat U^*$,
+which leads to the problem
+\begin{equation}
+    \label{eq:rayleigh_ritz}
+    (\mat U^* \mat A \mat U) \vect z = \lambda \vect z.
+\end{equation}
+This is standard eigenvalue problem for the matrix~$\mat U^* \mat A \mat U \in \complex^{p \times p}$,
+which is much easier to solve than the original problem if $p \ll n$.
+Equivalently, equation~\eqref{eq:rayleigh_ritz} may be formulated as follows: find $\vect v \in \mathcal U$
+such that
+\[
+    \vect u^* (\mat A \vect v - \lambda \vect v), \qquad \forall \vect u \in \mathcal U.
+\]
+
+Of course, the eigenvalues of this problem are in general different from those of~$\mat A$.
+
+
+
+\section{Exercises}
 \begin{exercise}
     PageRank is an algorithm for assigning a rank to the vertices of a directed graph.
     It is used by many search engines, notably Google,
