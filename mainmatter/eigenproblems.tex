@@ -624,7 +624,7 @@ Assume that $\{\vect u_1, \dotsc, \vect u_p\}$ is an orthonormal basis of $\math
 Then for any vector $\vect v \in \complex^{n}$,
 the vector of $\mathcal U$ that is closest to $\vect v$ in the Euclidean distance is given by the orthogonal projection
 \[
-    \mat P_{\mat U} \vect v := \mat U \mat U^* \vect v = (\vect u_1 \vect u_1^* + \dotsb + \vect u_p \vect u_p^*) \vect v.
+    \mat P_{\mathcal U} \vect v := \mat U \mat U^* \vect v = (\vect u_1 \vect u_1^* + \dotsb + \vect u_p \vect u_p^*) \vect v.
 \]
 In practice,
 the eigenvectors of~$\mat A$ are unknown,
@@ -652,7 +652,7 @@ we can multiply this equation by~$\mat U^*$,
 which leads to the problem
 \begin{equation}
     \label{eq:rayleigh_ritz}
-    (\mat U^* \mat A \mat U) \vect z = \lambda \vect z.
+    \mat B \vect z := (\mat U^* \mat A \mat U) \vect z = \lambda \vect z.
 \end{equation}
 This is standard eigenvalue problem for the matrix~$\mat U^* \mat A \mat U \in \complex^{p \times p}$,
 which is much easier to solve than the original problem if $p \ll n$.
@@ -661,10 +661,128 @@ such that
 \[
     \vect u^* (\mat A \vect v - \lambda \vect v), \qquad \forall \vect u \in \mathcal U.
 \]
+Of course, the eigenvalues of problem~\eqref{eq:rayleigh_ritz} are in general different from those of~$\mat A$.
+The eigenvalues of~$\mat B$ are called the Ritz values of~$\mat A$ relative to $\mathcal U$.
+Once an eigenvector $\vect y$ of~$\mat B$ has been calculated,
+an approximate eigenvector of~$\mat A$,
+called a \emph{Ritz vector} of~$\mat A$ relative to~$\mathcal U$,
+is obtained from the relation $\widehat {\vect v} = \mat U \vect y$.
+The Rayleigh--Ritz algorithm is presented in full in~\cref{algo:rayleigh_ritz}.
+\begin{algorithm}
+\caption{Rayleigh--Ritz}%
+\label{algo:rayleigh_ritz}%
+\begin{algorithmic}
+\State Choose $\mathcal U \subset \complex^n$
+\State Construct a matrix~$\mat U$ whose columns are orthonormal and span $\mathcal U$
+\State Find the eigenvalues $\widehat \lambda_i$ and eigenvectors $\vect y_i$ of $\mat B:= \mat U^* \mat A \mat U$
+\State Calculate the corresponding vectors $\widehat {\vect v}_i = \mat U \vect y_i$.
+\end{algorithmic}
+\end{algorithm}
 
-Of course, the eigenvalues of this problem are in general different from those of~$\mat A$.
+It is clear that if $\vect v_i \in \mathcal U$,
+then~$\lambda_i$ is an eigenvalue of $B$ in~\eqref{eq:rayleigh_ritz}.
+In fact,
+we can show the following more general statement.
+\begin{proposition}
+    If $\mathcal U$ is an invariant subspace of~$\mat A$,
+    meaning that $\mat A \mathcal U \subset \mathcal U$,
+    then each Ritz vector of~$\mat A$ relative to~$\mathcal U$ is an eigenvector of~$\mat A$.
+\end{proposition}
+\begin{proof}
+    Let $\mat U \in \complex^{n \times p}$ and $\mat W \in \complex^{n \times (n-p)}$ be matrices whose columns form orthonormal bases of~$\mathcal U$ and~$\mathcal U^\perp$,
+    respectively.
+    Then, since~$\mat W^* \mat A \mat U = \mat 0$ by assumption,
+    it holds that
+    \[
+        \mat Q^* \mat A \mat Q =
+        \begin{pmatrix}
+            \mat U^* \mat A \mat U & \mat U^* \mat A \mat W \\
+            \mat W^* \mat A \mat U & \mat W^* \mat A \mat W
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            \mat U^* \mat A \mat U & \mat U^* \mat A \mat W \\
+             \mat 0 & \mat W^* \mat A \mat W
+        \end{pmatrix},
+        \qquad
+        \mat Q = \begin{pmatrix} \mat U & \mat W \end{pmatrix}.
+    \]
+    If $(\vect y, \widehat \lambda)$ is an eigenvector of $\mat U^* \mat A \mat U$,
+    then
+    \[
+        \mat Q^* \mat A \mat Q
+        \begin{pmatrix}
+            \vect y \\
+            \vect 0
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            (\mat U^* \mat A \mat U) \vect y \\
+            \vect 0
+        \end{pmatrix}
+        =
+        \widehat \lambda
+        \begin{pmatrix}
+            \vect y \\
+            \vect 0
+        \end{pmatrix}
+        =:
+        \widehat \lambda \vect x,
+    \]
+    and so $(\vect x, \widehat \lambda)$ is an eigenpair of $\mat Q^* \mat A \mat Q$.
+    But then $(\mat Q \vect x, \widehat \lambda) = (\mat U \vect y, \widehat \lambda)$ is an eigenpair of~$\mat A$,
+    which proves the statement.
+\end{proof}
 
+If $\mathcal U$ is close to being an invariant subspace of~$\mat A$,
+then it is expected that the Ritz vectors and Ritz values of~$\mat A$ relative to~$\mathcal U$ will provide good approximations of some of the eigenpairs of~$\mat A$.
+Quantifying this approximation is difficult,
+so we only present without proof a convergence result.
+See~\cite{MR1990645} for more information.
+\begin{proposition}
+    Let~$\mat A$ be a full rank Hermitian matrix and $\mathcal U$ a $p$-dimensional subspace of~$\complex^n$.
+    Then there exists eigenvalues $\lambda_{i_1}, \dotsc, \lambda_{i_p}$ of~$\mat A$ which satisfy
+    \[
+        \forall j \in \{1, \dotsc, p\}, \qquad
+        \abs{\lambda_{i_j} - \widehat \lambda_j} \leq \norm{(\mat I - \mat P_{\mathcal U}) \mat A \mat P_{\mathcal U}}_2. 
+    \]
+\end{proposition}
 
+This projection approach is sometimes combined with a simultaneous subspace iteration:
+an approximation $\mat X_k$ of the $p$ first eigenvector is first calculated using~\cref{algo:subspace_iteration},
+and then the matrix $\mat X_k$ is used in place of~$\mat U$ in~\cref{algo:rayleigh_ritz}.
+
+\subsection{Projection method in a Krylov subspace}
+The power iteration constructs at iteration $k$ an approximation of $\vect v_1$ in the one-dimensional subspace spanned by the vector $\mat A^k \vect x_0$,
+and only the previous iteration $\vect x_{k}$ is employed to construct $\vect x^{k+1}$.
+One may wonder whether,
+by employing all the previous iterates rather than only the previous one, 
+a better approximation of~$\vect v_1$ can be constructed.
+More precisely, instead of looking for an approximation in the subspace $\Span \{\mat A^k \vect x_0\}$,
+would it be useful to extend the search area to the Krylov subspace
+\[
+    \mathcal K_{k+1}(\mat A, \vect x_0) := \Span \bigl\{ \vect x_0, \mat A \vect x_0, \dotsc, \mat A^k \vect x_0 \bigr\}?
+\]
+The answer to this question is positive,
+and the resulting method is often much faster than the power iteration.
+This is achieved by employing the Rayleigh--Ritz projection method~\cref{algo:rayleigh_ritz} with the choice $\mathcal U = \mathcal K_{k+1}(\mat A, \vect x_0)$.
+Applying this method requires to calculate an orthonormal basis of the Krylov subspace and to calculate the reduced matrix $\mat U^* \mat A \mat U$.
+The \emph{Arnoldi method} enables to achieve these two goals simultaneously.
+This method, which is based on the Gram--Schmidt process,
+is presented in~\cref{algo:arnoldi_method}
+\begin{algorithm}
+\caption{Arnoldi iteration}%
+\label{algo:arnoldi_method}%
+\begin{algorithmic}
+\State Choose $\vect x$ with unit norm.
+\For{$i \in \{1, 2, \dotsc\}$}
+    \State $\vect x \gets \mat A \vect x$
+    \State $\vect x \gets \vect x / \norm{\vect x}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+% by extending the search subspace to $\{\vect x_0  \}$
 
 \section{Exercises}
 \begin{exercise}
