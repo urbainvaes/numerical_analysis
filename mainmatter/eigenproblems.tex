@@ -426,7 +426,7 @@ We recall that a vector sequence $(\vect x_k)_{k \geq 1}$ converges essentially 
 such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty}$.
 We prove the convergence in the Hermitian case for simplicity.
 In the general case of~$\mat A \in \complex^{n \times n}$,
-it cannot be expected that~$\mat X_k$ converges to $\mat V$,
+it cannot be expected that~$\mat X_k$ converges essentially to $\mat V$,
 because the eigenvectors may not be orthogonal.
 In this case, the columns of $\mat X_k$ converge not to the eigenvectors
 but to the so-called Schur vectors of~$\mat A$;
@@ -870,7 +870,7 @@ This matrix if of the form
             & & & \beta_p & \alpha_p
     \end{pmatrix}
 \]
-Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_method}.
+Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_method}.r
 \begin{algorithm}
 \caption{Lanczos iteration for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect u_1)$}%
 \label{algo:lanczos_method}%
@@ -948,8 +948,8 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             You may use the fact that $\det(\mat M) = \det(\mat M^\t)$.
 
         \item
-            Show that $\rho(\mat A^\t \mat O^{-1}) = 1$ and that the eigenvalue with largest modulus is 1.
-            For the first part, find a subordinate matrix norm such that $\norm{\mat O^{-1} \mat A} = 1$.
+            Show that $\rho(\mat A^\t \mat O^{-1}) = 1$ and that 1 is an eigenvalue.
+            For the first part, find a subordinate matrix norm such that $\norm{\mat A^\t \mat O^{-1}}= 1$.
 
         \item
             Implement PageRank in order to rank pages from a 2013 snapshot of English Wikipedia.
