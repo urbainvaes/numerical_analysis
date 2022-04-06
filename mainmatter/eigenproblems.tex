@@ -908,7 +908,8 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
         \end{cases}
     \]
     Let $r_i$ denote the ``value'' assigned to vertex $i$.
-    The idea of PageRank in its simplest form is to assign values to the vertices
+    The idea of PageRank, in its simplest form,
+    is to assign values to the vertices
     by solving the following system of equations;
     \begin{equation}
         \label{eq:equation_page_rank}
@@ -937,10 +938,10 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
                 \end{pmatrix}
                 \vect r =:  \mat A^\t \mat O^{-1} \vect r.
             \]
-            In other words, $\vect r$ is an eigenvector with eigenvalue $1$ of the matrix $\mat A^\t \mat O^{-1}$.
+            In other words, $\vect r$ is an eigenvector with eigenvalue $1$ of the matrix $\mat M = \mat A^\t \mat O^{-1}$.
 
         \item
-            Show that $\mat A^\t \mat O^{-1}$ is a left-stochastic matrix,
+            Show that $\mat M$ is a left-stochastic matrix,
             i.e.\ that each column sums to 1.
 
         \item
@@ -948,12 +949,22 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             You may use the fact that $\det(\mat M) = \det(\mat M^\t)$.
 
         \item
-            Show that $\rho(\mat A^\t \mat O^{-1}) = 1$ and that 1 is an eigenvalue.
-            For the first part, find a subordinate matrix norm such that $\norm{\mat A^\t \mat O^{-1}}= 1$.
+            Show that $\rho(\mat M) = 1$ and that 1 is an eigenvalue.
+            For the first part, find a subordinate matrix norm such that $\norm{\mat M}= 1$.
 
         \item
-            Implement PageRank in order to rank pages from a 2013 snapshot of English Wikipedia.
-            A dataset is available on the course website to this end.
+            Implement PageRank  in order to rank pages from a 2013 snapshot of English Wikipedia.
+            You can use either the simplified version of the algorithm given in~\eqref{eq:equation_page_rank} or the improved version with a damping factor described on Wikipedia.
+            In the former case,
+            the following are both sensible stopping criteria:
+            \[
+                \frac{\norm{\mat M \widehat{\vect v} - \widehat{\vect v}}_1}{\norm{\widehat{\vect v}}_1} < 10^{-15}
+                \qquad \text{ or } \qquad
+                \frac{\norm{\mat M \widehat{\vect v} - \widehat \lambda \widehat{\vect v}}_1}{\norm{\vect v}_1} < 10^{-15},
+                \qquad \widehat \lambda = \frac{\widehat{\vect v}^\t \mat M \widehat{\vect v}}{\widehat{\vect v}^\t \widehat{\vect v}},
+            \]
+            where $\widehat{\vect v}$ is an approximation of the eigenvector corresponding to the dominant eigenvalue.
+            A dataset is available on the course website to complete this part.
             This dataset contains a subset of the data publicly available \hyperlink{https://snap.stanford.edu/data/enwiki-2013.html}{here},
             and was generated from the full dataset by retaining only the 5\% best rated articles.
             After decompressing the archive,
@@ -974,8 +985,21 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 
             After you have assigned a rank to all the pages,
             print the 10 pages with the highest ranks.
-            My code returns the following entries: ``United States", ``United Kingdom", ``World War~II", ``Latin", ``France", ``Germany", ``English language", ``China", ``Canada", ``India".
-
+            My code returns the following entries:
+            \begin{multicols}{3}
+                \begin{enumerate}
+                    \item United States
+                    \item United Kingdom
+                    \item World War~II
+                    \item Latin
+                    \item France
+                    \item Germany
+                    \item English language
+                    \item China
+                    \item Canada
+                    \item India
+                \end{enumerate}
+            \end{multicols}
         \item
             \textbf{Extra credit:}
             Write a function \julia{search(keyword)} that can be employed for searching the database.
