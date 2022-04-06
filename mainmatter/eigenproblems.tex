@@ -753,6 +753,7 @@ This projection approach is sometimes combined with a simultaneous subspace iter
 an approximation $\mat X_k$ of the $p$ first eigenvector is first calculated using~\cref{algo:subspace_iteration},
 and then the matrix $\mat X_k$ is used in place of~$\mat U$ in~\cref{algo:rayleigh_ritz}.
 
+
 \subsection{Projection method in a Krylov subspace}
 The power iteration constructs at iteration $k$ an approximation of $\vect v_1$ in the one-dimensional subspace spanned by the vector $\mat A^k \vect x_0$,
 and only the previous iteration $\vect x_{k}$ is employed to construct $\vect x^{k+1}$.
@@ -1016,4 +1017,186 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
      …
     \end{minted}
     \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+    Show the following properties of the Krylov $\mathcal K_p(\mat A, \vect x)$.
+    \begin{itemize}
+        \item
+            \(
+                \mathcal K_p(\mat A, \vect x) \subset \mathcal K_{p+1}(\mat A, \vect x).
+            \)
+
+        \item
+            \(
+                \mat A K_p(\mat A, \vect x) \subset \mathcal K_{p+1}(\mat A, \vect x).
+            \)
+
+        \item
+            The Krylov subspace $\mathcal K_p(\mat A, \vect x)$ is invariant under rescaling:
+            for all $\alpha \in \complex$,
+            \[
+                \mathcal K_p(\mat A, \vect x) = \mathcal K_p(\alpha \mat A, \vect x) = \mathcal K_p(\mat A, \alpha \vect x).
+            \]
+
+        \item
+            The Krylov subspace $\mathcal K_p(\mat A, \vect x)$ is invariant under shift of the matrix~$\mat A$:
+            for all $\alpha \in \complex$,
+            \[
+                \mathcal K_p(\mat A, \vect x) = \mathcal K_p(\mat A - \alpha \mat I, \vect x).
+            \]
+
+        \item
+            Similarity transformation: If $\mat T$ is nonsingular,
+            then
+            \[
+                \mathcal K_p(\mat T^{-1} \mat A \mat T, \mat T^{-1} \vect x) =
+                \mat T^{-1} \mathcal K_p(\mat A, \vect x).
+            \]
+    \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+    The minimal polynomial of a matrix $\mat A \in \complex^{n \times n}$ is the monic polynomial~$p$ of lowest degree such that $p(\mat A) = 0$.
+    Prove that, if~$\mat A$ is Hermitian with $m \leq n$ distinct eigenvalues,
+    then the minimal polynomial is given by
+    \[
+        p(t) = \prod_{i=1}^m (t - \lambda_i).
+    \]
+\end{exercise}
+
+\begin{exercise}
+    The minimal polynomial for a general matrix $\mat A \in \complex^{n \times n}$ is given by
+    \[
+        p(t) = \prod_{i=1}^m (t - \lambda_i)^{s_i}.
+    \]
+    where $s_i$ is the size of the largest Jordan block associated with the eigenvalue~$\lambda_i$ in the normal Jordan form of~$\mat A$.
+    Verify that $p(\mat A) = 0$.
+\end{exercise}
+
+\begin{exercise}
+    Let $d$ denote the degree of the minimal polynomial of~$\mat A$.
+    Show that
+    \[
+        \forall p \geq d, \qquad
+        \mathcal K_{p+1}(\mat A, \vect x) =
+        \mathcal K_{p}(\mat A, \vect x).
+    \]
+    Deduce that, for $p \geq n$,
+    the subspace $\mathcal K_{p}(\mat A, \vect x)$ is an invariant subspace of~$\mat A$.
+\end{exercise}
+
+\begin{exercise}
+    Let $\mat A \in \complex^{n \times n}$.
+    Show that $\mathcal K_{n}(\mat A, \vect x)$ is the smallest invariant subspace of~$\mat A$ that contains $\vect x$.
+\end{exercise}
+
+\begin{exercise}
+    [A posteriori error bound]
+    \label{exercise:a_posteriori_1}
+    Assume that $\mat A \in \complex^{n \times n}$ is Hermitian,
+    and that $\widehat {\vect v}$ is a normalized approximation of an eigenvector which satisfies
+    \[
+        \norm{\widehat {\vect z}} :=  \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}} = \delta,
+        \qquad \widehat \lambda = \frac{\widehat {\vect v}^* \mat A \widehat {\vect v}}{\widehat {\vect v}^* \widehat {\vect v}}.
+    \]
+    Prove that there is an eigenvalue~$\lambda$ of~$\mat A$ such that
+    \[
+        \abs{\widehat \lambda - \lambda} \leq \delta.
+    \]
+
+    \noindent \textbf{Hint:} Consider first the case where $\mat A$ is diagonal.
+\end{exercise}
+
+\begin{exercise}
+    [Bauer--Fike theorem]
+    \label{exercise:a_posteriori_2}
+    Assume that $\mat A \in \complex^{n \times n}$ is diagonalizable: $\mat A \mat V = \mat V \mat D$.
+    Show that, if $\widehat {\vect v}$ is a normalized approximation of an eigenvector which satisfies
+    \[
+        \norm{\vect r} :=  \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}} = \delta
+    \]
+    for some $\widehat \lambda \in \complex$,
+    then there is an eigenvalue~$\lambda$ of~$\mat A$ such that
+    \[
+        \abs{\widehat \lambda - \lambda} \leq \kappa_2(\mat V) \delta.
+    \]
+
+    \noindent{\textbf{Hint}:}
+    Notice that
+    \[
+        \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}
+        = \norm{\mat V \mat V^{-1} \mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}
+    \]
+\end{exercise}
+
+\begin{exercise}
+    In \cref{exercise:a_posteriori_1} and \cref{exercise:a_posteriori_2},
+    we saw examples~\emph{a posteriori} error estimates
+    which guarantee the existence of an eigenvalue of~$\mat A$ within a certain distance of the approximation~$\widehat \lambda$.
+    In this exercise,
+    our aim is to provide an answer to the following different question:
+    given an approximate eigenpair $(\widehat \lambda, \widehat {\vect v})$
+    what is the size of the minimum perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
+    $(\widehat \lambda, \widehat {\vect v})$ is an exact eigenpair, i.e.\ that
+    \[
+        (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v}
+    \]
+    Assume that $\widehat {\vect v}$ is normalized and
+    let $\mathcal E = \Bigl\{\mat E \in \complex^{n \times n}: (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v} \Bigr\}$.
+    Prove that
+    \begin{equation}
+        \label{eq:kahan_parlett_jiang}
+        \min_{\mat E \in \mathcal E} \norm{\mat E}_2 = \norm{\vect r}_2 := \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}.
+    \end{equation}
+    To this end,
+    you may proceed as follows:
+    \begin{itemize}
+        \item
+            Show first that any $\mat E \in \mathcal E$ satisfies $\mat E \widehat {\vect v} = - \vect r$.
+
+        \item
+            Deduce from the first item that
+            \[
+                \min_{\mat E \in \mathcal E} \norm{\mat E}_2 \geq \norm{\vect r}_2.
+            \]
+
+        \item
+            Find a rank one matrix $\mat E_*$ such that
+            \(
+                \norm{\mat E_*}_2 = \norm{\vect r}_2,
+            \)
+            and then conclude.
+            Recall that any rank 1 matrix can be written in the form $\mat E_* = \vect u \vect w^*$,
+            with norm $\norm{\vect u}_2 \norm{\vect w}_2$.
+    \end{itemize}
+    Equation~\eqref{eq:kahan_parlett_jiang} is known as the Kahan--Parlett--Jiang theorem
+    and is an example of a \emph{backward error estimate}.
+    Whereas forward error estimates quantify the distance between an approximation and the exact solution,
+    backward error estimates give the size of the perturbation that must be applied to a problem so that an approximation is exact.
+\end{exercise}
+
+\begin{exercise}
+    Assume that $(\vect x_k)_{k \geq 0}$ is a sequence of normalized vectors in $\complex^n$.
+    Show that the following statements are equivalent:
+    \begin{itemize}
+        \item $(\vect x_k)_{k \geq 0}$ converges essentially to $\vect x_{\infty}$ in the limit as $k \to \infty$.
+        \item The angle $\angle(\vect x_k, \vect x_{\infty})$ converges to zero in the limit as $k \to \infty$.
+    \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+    Assume that $\mat A \in \complex^{n \times n}$ is skew-Hermitian.
+    Derive a Lanczos-like algorithm for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect x)$ 
+    and calculating the reduced matrix
+    \[
+        \mat U^* \mat A \mat U,
+    \]
+    where $\mat U \in \complex^{n \times p}$ contains the vectors of the basis as columns.
+    Implement the algorithm with~$p = 20$ in order to approximate the dominant eigenvalue of the matrix~$\mat A$ constructed by the following piece of code:
+    \begin{minted}{julia}
+    n = 5000
+    A = rand(n, n) + im * randn(n, n)
+    A = A - A'
+    \end{minted}
 \end{exercise}
