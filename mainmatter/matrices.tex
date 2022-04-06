@@ -492,7 +492,7 @@ Indeed, since $\mat A = \mat A^*$ and the eigenvalues are real, it holds that
 
 The largest eigenvalue of a matrix, in modulus,
 is called the \emph{spectral radius} and denoted by~$\rho$.
-The following results relates the 2-norm of a matrix to the spectral radius of $\mat A \mat A^*$.
+The following result relates the 2-norm of a matrix to the spectral radius of $\mat A \mat A^*$.
 \begin{proposition}
     It holds that $\norm{\mat A}_2 = \sqrt{\rho(\mat A^* \mat A)}$.
 \end{proposition}
@@ -516,6 +516,60 @@ The following results relates the 2-norm of a matrix to the spectral radius of $
     It follows from~\eqref{eq:matrices_link_norm_spectral_radius} that $\norm{\mat A} \leq \sqrt{\rho(\mat A^* \mat A)}$,
     and the converse inequality also holds true since $\norm{\mat A \vect x} = \rho(\mat A^* \mat A) \norm{\vect x}$
     if $\vect x$ is the eigenvector of $\mat A^* \mat A$ corresponding to an eigenvalue of modulus~$\rho(\mat A^* \mat A)$.
+\end{proof}
+
+To conclude this section,
+we recall and prove the Courant--Fisher theorem.
+\begin{theorem}
+    [Courant--Fisher Min-Max theorem]
+    The eigenvalues $\lambda_1 \geq \lambda_2 \geq \dotsb \geq \lambda_n$ of a Hermitian matrix are characterized by the relation
+    \[
+        \lambda_k = \max_{\mathcal S, {\rm dim}(\mathcal S) = k} \left( \min_{\vect x \in \mathcal S \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x} \right).
+    \]
+\end{theorem}
+\begin{proof}
+    Let $\vect v_1, \dotsc, \vect v_n$ be orthonormalized eigenvectors associated with the eigenvalues $\lambda_1, \dotsc, \lambda_n$.
+    Let $\mathcal S_k = \Span \{ \vect v_1, \dotsc, \vect v_k \}$.
+    Any $\vect x \in \mathcal S_k$ may be expressed as~$\vect x = \alpha_1 \vect v_1 + \dotsb + \alpha_k \vect v_k$,
+    and so
+    \[
+        \forall \vect x \in \mathcal S_k, \qquad
+        \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x} =
+        \frac{\sum_{i=1}^{k} \lambda_i \abs{\alpha_i}^2}{\sum_{i=1}^{k} \abs{\alpha_i}^2}
+        \geq \lambda_k.
+    \]
+    Therefore,
+    it holds that
+    \[
+         \min_{\vect x \in \mathcal S_k \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}  \geq \lambda_k,
+    \]
+    which proves the $\geq$ direction.
+    For the $\leq$ direction,
+    let $\mathcal U_k = \Span \{ \vect v_{k}, \dots \vect v_n \}$.
+    Using a well-known result from linear algebra,
+    we calculate that
+    \begin{align*}
+        \dim(\mathcal S_k \cap \mathcal U_k)
+        &= \dim(\mathcal S_k) + \dim(\mathcal U_k) -\dim(\mathcal S_k + \mathcal U_k) \\
+        &=  k + (n - k + 1) - n = 1.
+    \end{align*}
+    Therefore, any $\mathcal S \subset \complex^n$ of dimension $k$
+    has a nonzero intersection with $\mathcal U_k$.
+    But since any vector in $\mathcal U_k$ can be expanded as $\beta_1 \vect v_k + \dotsb + \beta_n \vect v_n$,
+    we have
+    \[
+        \forall \vect x \in \mathcal U_k, \qquad
+        \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x} =
+        \frac{\sum_{i=k}^{n} \lambda_i \abs{\alpha_i}^2}{\sum_{i=k}^{n} \abs{\alpha_i}^2}
+        \leq \lambda_k.
+    \]
+    This shows that
+    \[
+        \forall \mathcal S \subset \complex^n, \quad \dim(\mathcal S) = k,
+        \qquad
+         \min_{\vect x \in \mathcal S \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}  \leq \lambda_k,
+    \]
+    which enables to conclude the proof.
 \end{proof}
 
 \begin{exercise}
