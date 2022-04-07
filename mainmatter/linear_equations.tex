@@ -2968,6 +2968,15 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
     and find its expression in the usual polynomial notation.
 \end{exercise}
 
+\begin{exercise}
+    Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
+    then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
+    \[
+        \mathcal K_n(\mat A, \vect b)
+        = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
+    \]
+\end{exercise}
+
 \section{Discussion and bibliography}%
 
 In this chapter,

@@ -379,7 +379,7 @@ We emphasize that
 the factorization step at each iteration does not influence the subspace spanned by the columns of~$\mat X$.
 Therefore, this subspace after~$k$ iterations
 coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
-In fact, mathematically, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
+In fact, in exact arithmetic, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
 after the \julia{for} loop.
 Indeed, denoting by $\mat Q_k \mat R_k$ the decomposition at the $k$-th step,
 we have that $\mat X_k \mat R_k = \mat A \mat X_{k-1}$ and so
@@ -749,6 +749,34 @@ See~\cite{MR1990645} for more information.
     \]
 \end{proposition}
 
+In the case where~$\mat A$ is Hermitian,
+it is possible to show that the Ritz values are bounded from above by the eigenvalues of~$\mat A$.
+\begin{proposition}
+    If $\mat A \in \complex^{n \times n}$ is Hermitian,
+    then 
+    \[
+        \forall i \in \{1, \dotsc, p\}, \qquad
+        \widehat \lambda_i \leq \lambda_i
+    \]
+\end{proposition}
+\begin{proof}
+Indeed, by the Courant--Fisher theorem recalled in~\cref{theorem:courant-fisher},
+it holds that
+\[
+    \widehat \lambda_i
+    = \max_{\mathcal S \subset \complex^p, {\rm dim}(\mathcal S) = i} \left( \min_{\vect x \in \mathcal S \backslash\{0\}} \frac{\vect x^* \mat B \vect x}{\vect x^* \vect x} \right)
+\]
+Letting $\vect y = \mat U \vect x$ and then $\mathcal R = \mat U \mathcal S$,
+we deduce that
+\begin{align*}
+    \widehat \lambda_i
+    &= \max_{\mathcal S \subset \complex^p, {\rm dim}(\mathcal S) = i} \left( \min_{\vect y \in \mat U \mathcal S \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right) \\
+    &= \max_{\mathcal R \subset \mat U \complex^p, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right)
+    \leq \max_{\mathcal R \subset \complex^n, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right) = \lambda_i,
+\end{align*}
+where we used the Courant--Fisher for the matrix~$\mat A$ in the last equality.
+\end{proof}
+
 This projection approach is sometimes combined with a simultaneous subspace iteration:
 an approximation $\mat X_k$ of the $p$ first eigenvector is first calculated using~\cref{algo:subspace_iteration},
 and then the matrix $\mat X_k$ is used in place of~$\mat U$ in~\cref{algo:rayleigh_ritz}.
@@ -907,17 +935,17 @@ This matrix if of the form
             & & & \beta_p & \alpha_p
     \end{pmatrix}
 \]
-Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_method}.r
+Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_method}.
 \begin{algorithm}
 \caption{Lanczos iteration for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect u_1)$}%
 \label{algo:lanczos_method}%
 \begin{algorithmic}
 \State Choose $\vect u_1$ with unit norm.
-\State $\beta_1 \gets 0$
+\State $\beta_1 \gets 0$, $\vect u_0 \gets \vect 0 \in \complex^n$
 \For{$j \in \{1, \dotsc p\}$}
     \State $\vect u_{j+1} \gets \mat A \vect u_{j} - \beta_j \vect u_{j-1}$
-    \State $\alpha_j \gets \vect u_{i}^* \vect u_{j+1}$
-    \State $\vect u_{j+1} \gets \vect u_{j+1} - \alpha_j \vect u_{i}$
+    \State $\alpha_j \gets \vect u_{j}^* \vect u_{j+1}$
+    \State $\vect u_{j+1} \gets \vect u_{j+1} - \alpha_j \vect u_{j}$
     \State $\beta_{j+1} \gets \norm{\vect u_{j+1}}$
     \State $\vect u_{j+1} \gets \vect u_{j+1} / \beta_{j+1}$
 \EndFor
