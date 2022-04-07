@@ -819,15 +819,51 @@ In other words,
 \end{align}
 We have thus shown that the Arnoldi algorithm enables to construct both an orthonormal basis of a Krylov subspace and
 the associated reduced matrix.
+In fact, we have the following equation
+\begin{equation}
+    \label{eq:arnoldi_equation}
+    \mat A \mat U = \mat U \mat H + h_{p+1,p} (\vect v_{p+1} \vect e_p^*),
+    \qquad \vect e_p = \begin{pmatrix} 0 \\ \vdots \\ 1 \end{pmatrix} \in \complex^p.
+\end{equation}
 The Arnoldi algorithm, coupled with the Rayleigh--Ritz method,
 has very good convergence properties in the limit as $p \to \infty$,
 in particular for eigenvalues with a large modulus.
+The following result shows that the residual $\vect r = \mat A \widehat{\vect v} - \widehat \lambda \vect v$
+associated with a Ritz vector can be estimated inexpensively.
+Specifically, the norm of the residual is equal to the last component of the associated eigenvector of~$\mat H$ multiplied by $h_{p+1,p}$.
+\begin{proposition}
+    [Formula for the residual]
+    Let $\vect y_i$ be an eigenvector of $\mat H$ associated with the eigenvalues~$\widehat \lambda_i$,
+    and let $\widehat {\vect v}_i = \mat U \vect y_i$ denote the corresponding eigenvector.
+    Then
+    \[
+        \mat A \widehat {\vect v}_i - \widehat \lambda \vect v_i = h_{p+1,p} (\vect y_i)_p \vect v_{p+1}.
+    \]
+    Consequently, it holds that
+    \[
+        \norm{\mat A \widehat {\vect v}_i - \widehat \lambda \vect v_i} = \abs{h_{p+1,p} (\vect y_i)_p}.
+    \]
+\end{proposition}
+\begin{proof}
+    Multiplying both sides of~\eqref{eq:arnoldi_equation} by $\vect y_i$,
+    we obtain
+    \[
+        \mat A \mat U \vect y_i = \mat U \mat H \vect y_i + h_{p+1,p} (\vect v_{p+1} \vect e_p^*) \vect y_i.
+    \]
+    Using the definition of $\widehat {\vect v}_i$ and rearranging the equation,
+    we have
+    \[
+        \mat A \widehat {\vect v_i} - \widehat \lambda_i \vect y_i  = h_{p+1,p} (\vect v_{p+1} \vect e_p^*) \vect y_i,
+    \]
+    which immediately gives the result.
+\end{proof}
 
 In practice, the large the dimension~$p$ of the subspace~$\mathcal U$ employed in the Rayleigh--Ritz method,
 the more memory is required for storing an orthonormal basis of~$\mathcal U$.
 In addition, for large values of~$p$,
-computing the eigenpairs of the reduced matrix~\eqref{eq:reduced_matrix_arnoldi} becomes computationally expensive.
-To remedy this potential issue,
+computing the reduced matrix~\eqref{eq:reduced_matrix_arnoldi} and its eigenpairs becomes computationally expensive;
+the computational cost of computing the matrix~$\mat H$ scales as $\mathcal O(p^2)$.
+To remedy these potential issues,
 the algorithm can be restarted periodically.
 For example, \cref{algo:arnoldi_power} can be employed as an alternative to the power iteration
 in order to find the eigenvector associated with the eigenvalue with largest modulus.
@@ -840,7 +876,7 @@ in order to find the eigenvector associated with the eigenvalue with largest mod
 \For{$i \in \{1, 2, \dotsc\}$}
     \State Perform $p$ iterations of the Arnoldi iteration and construct~$\mathcal U$;
     \State Calculate the Ritz vector $\widehat {\vect v}_1$ associated with the largest Ritz value relative to~$\mathcal U$;
-    \State If is sufficiently accurate, then stop. Otherwise, restart with $\vect u_1 = \widehat {\vect v}_1$.
+    \State If this vector is sufficiently accurate, then stop. Otherwise, restart with $\vect u_1 = \widehat {\vect v}_1$.
 \EndFor
 \end{algorithmic}
 \end{algorithm}
@@ -1020,7 +1056,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 \end{exercise}
 
 \begin{exercise}
-    Show the following properties of the Krylov $\mathcal K_p(\mat A, \vect x)$.
+    Show the following properties of the Krylov subspace $\mathcal K_p(\mat A, \vect x)$.
     \begin{itemize}
         \item
             \(
@@ -1029,7 +1065,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 
         \item
             \(
-                \mat A K_p(\mat A, \vect x) \subset \mathcal K_{p+1}(\mat A, \vect x).
+                \mat A \mathcal K_p(\mat A, \vect x) \subset \mathcal K_{p+1}(\mat A, \vect x).
             \)
 
         \item
@@ -1047,7 +1083,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             \]
 
         \item
-            Similarity transformation: If $\mat T$ is nonsingular,
+            Similarity transformation: If $\mat T \in \complex^{n \times n}$ is nonsingular,
             then
             \[
                 \mathcal K_p(\mat T^{-1} \mat A \mat T, \mat T^{-1} \vect x) =
@@ -1123,10 +1159,10 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     \]
 
     \noindent{\textbf{Hint}:}
-    Notice that
+    Rewrite
     \[
         \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}
-        = \norm{\mat V \mat V^{-1} \mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}
+        = \norm{\mat V (\mat V^{-1} \mat A \mat V \widehat {\vect v} - \widehat \lambda \widehat {\vect v}) \mat V^{-1}}.
     \]
 \end{exercise}
 
@@ -1136,11 +1172,11 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     which guarantee the existence of an eigenvalue of~$\mat A$ within a certain distance of the approximation~$\widehat \lambda$.
     In this exercise,
     our aim is to provide an answer to the following different question:
-    given an approximate eigenpair $(\widehat \lambda, \widehat {\vect v})$
-    what is the size of the minimum perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
+    given an approximate eigenpair $(\widehat \lambda, \widehat {\vect v})$,
+    what is the smallest perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
     $(\widehat \lambda, \widehat {\vect v})$ is an exact eigenpair, i.e.\ that
     \[
-        (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v}
+        (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v}?
     \]
     Assume that $\widehat {\vect v}$ is normalized and
     let $\mathcal E = \Bigl\{\mat E \in \complex^{n \times n}: (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v} \Bigr\}$.
@@ -1170,7 +1206,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             Recall that any rank 1 matrix can be written in the form $\mat E_* = \vect u \vect w^*$,
             with norm $\norm{\vect u}_2 \norm{\vect w}_2$.
     \end{itemize}
-    Equation~\eqref{eq:kahan_parlett_jiang} is known as the Kahan--Parlett--Jiang theorem
+    Equation~\eqref{eq:kahan_parlett_jiang} is a simplified version of the Kahan--Parlett--Jiang theorem
     and is an example of a \emph{backward error estimate}.
     Whereas forward error estimates quantify the distance between an approximation and the exact solution,
     backward error estimates give the size of the perturbation that must be applied to a problem so that an approximation is exact.
@@ -1187,7 +1223,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 
 \begin{exercise}
     Assume that $\mat A \in \complex^{n \times n}$ is skew-Hermitian.
-    Derive a Lanczos-like algorithm for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect x)$ 
+    Derive a Lanczos-like algorithm for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect x)$
     and calculating the reduced matrix
     \[
         \mat U^* \mat A \mat U,
@@ -1199,4 +1235,28 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     A = rand(n, n) + im * randn(n, n)
     A = A - A'
     \end{minted}
+\end{exercise}
+
+\begin{exercise}
+    Assume that $\{\vect u_1, \dotsc, \vect u_p \}$ and $\{\vect w_1, \dotsc, \vect w_n\}$
+    are orthonormal bases of the same subspace $\mathcal U \subset \complex^n$.
+    Show that the projectors $\mat U \mat U^*$ and $\mat W \mat W^*$ are equal.
+\end{exercise}
+
+\begin{exercise}
+    Assume that $\mat A \in \complex^{n \times n}$ is a Hermitian matrix with distinct eigenvalues,
+    and suppose that we know the dominant eigenpair $(\lambda_1, \vect v_1)$,
+    with $\vect v_1$ normalized.
+    Let
+    \[
+        \mat B = \mat A - \lambda_1 \vect v_1 \vect v_1^*.
+    \]
+    If we apply the power iteration to this matrix,
+    what convergence can we expect?
+\end{exercise}
+
+\begin{exercise}
+    Assume that $\widehat{\vect v_1}$ and $\widehat{\vect v_2}$ are two Ritz vectors of a Hermitian matrix~$\mat A$ relative to a subspace~$\mathcal U \subset \complex^n$.
+    Show that, if the associated Ritz values are distinct,
+    then $\widehat{\vect v_1}^* \widehat{\vect v_2} = 0$.
 \end{exercise}
