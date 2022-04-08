@@ -529,11 +529,11 @@ see~\cite{MR3396212} for more information.
     \(
         \mat Q_k \mat Q_k^* = \widetilde{\mat Q_k} \widetilde {\mat Q_k}^*.
     \)
-    Now, we want to establish the convergence of $\mat Q_k$ to $\mat V_1$.
+    Now, we want to establish the essential convergence of $\mat Q_k$ to $\mat V_1$.
     To this end, we reason by induction,
     relying on the fact that the first $k$ columns of $\mat X_0$ undergo a simultaneous iteration independent of the other columns.
     For example, the first column simply undergoes a power iteration, and so it converges essentially to~$\vect v_1$.
-    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge to $\vect v_1, \dotsc, \vect v_{p-1}$.
+    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge essentially to $\vect v_1, \dotsc, \vect v_{p-1}$.
     Then the $p$-th column of $\mat Q_k$ at iteration $k$,
     which we denote by~$\vect q_p^{(k)}$,
     satisfies
@@ -569,7 +569,7 @@ the angle between two subspaces $\mathcal A$ and $\mathcal B$ of $\complex^n$ is
 \]
 
 \subsection{The $\mat Q \mat R$ algorithm}
-The $\mat Q \mat R$,
+The $\mat Q \mat R$ algorithm,
 which is based on the $\mat Q \mat R$ decomposition,
 is one of the most famous algorithms for calculating \emph{all} the eigenpairs of a matrix.
 We first present the algorithm and then relate it to the simultaneous iteration in~\cref{sub:simultaneous_iteration}.
@@ -619,7 +619,8 @@ in other words, the matrix $\mat X_k$ converges to a diagonal matrix with the ei
 \label{sec:projection_methods}
 In this section,
 we begin by presenting a general method for constructing an approximation of the eigenvectors of~$\mat A$ in a given subspace~$\mathcal U$ of~$\complex^{n}$.
-We then discuss a particular choice for the subspace $\mathcal U$ that is very useful in practice.
+We then discuss a particular choice for the subspace $\mathcal U$
+as a Krylov subspace, which is very useful in practice.
 
 Assume that $\{\vect u_1, \dotsc, \vect u_p\}$ is an orthonormal basis of $\mathcal U$.
 Then for any vector $\vect v \in \complex^{n}$,
@@ -633,7 +634,7 @@ and so it is impossible to calculate approximations using this formula.
 The Rayleigh--Ritz method,
 which we present hereafter,
 is an alternative and practical method for constructing approximations of the eigenvectors and eigenvalues.
-In general, the subspace $\mathcal U$ does not contain eigenvectors of $\mat A$,
+In general, the subspace $\mathcal U$ does not contain any eigenvector of $\mat A$,
 and so the problem
 \begin{equation}
     \label{eq:eigenproblem_subspace}
@@ -664,12 +665,13 @@ such that
     \vect u^* (\mat A \vect v - \lambda \vect v), \qquad \forall \vect u \in \mathcal U.
 \end{equation}
 The solutions to~\eqref{eq:rayleigh_ritz} and~\eqref{eq:equivalent_rayleigh_ritz} are related by the equation~$\vect v = \mat U \vect z$.
-Of course, the eigenvalues of problem~\eqref{eq:rayleigh_ritz} are in general different from those of~$\mat A$.
-The eigenvalues of~$\mat B$ are called the Ritz values of~$\mat A$ relative to $\mathcal U$.
+Of course, the eigenvalues of~$\mat B$ in problem~\eqref{eq:rayleigh_ritz},
+which are called the Ritz values of~$\mat A$ relative to $\mathcal U$,
+are in general different from those of~$\mat A$.
 Once an eigenvector $\vect y$ of~$\mat B$ has been calculated,
 an approximate eigenvector of~$\mat A$,
 called a \emph{Ritz vector} of~$\mat A$ relative to~$\mathcal U$,
-is obtained from the relation $\widehat {\vect v} = \mat U \vect y$.
+is obtained from the equation $\widehat {\vect v} = \mat U \vect y$.
 The Rayleigh--Ritz algorithm is presented in full in~\cref{algo:rayleigh_ritz}.
 \begin{algorithm}
 \caption{Rayleigh--Ritz}%
@@ -683,10 +685,11 @@ The Rayleigh--Ritz algorithm is presented in full in~\cref{algo:rayleigh_ritz}.
 \end{algorithm}
 
 It is clear that if $\vect v_i \in \mathcal U$,
-then~$\lambda_i$ is an eigenvalue of $B$ in~\eqref{eq:rayleigh_ritz}.
+then~$\lambda_i$ is an eigenvalue of $\mat B$ in~\eqref{eq:rayleigh_ritz}.
 In fact,
 we can show the following more general statement.
 \begin{proposition}
+    \label{proposition:invariant_subpsace_ritz}
     If $\mathcal U$ is an invariant subspace of~$\mat A$,
     meaning that $\mat A \mathcal U \subset \mathcal U$,
     then each Ritz vector of~$\mat A$ relative to~$\mathcal U$ is an eigenvector of~$\mat A$.
@@ -694,6 +697,7 @@ we can show the following more general statement.
 \begin{proof}
     Let $\mat U \in \complex^{n \times p}$ and $\mat W \in \complex^{n \times (n-p)}$ be matrices whose columns form orthonormal bases of~$\mathcal U$ and~$\mathcal U^\perp$,
     respectively.
+    Here~$\mathcal U^\perp$ denotes the orthogonal complement of~$\mathcal U$ with respect to the Euclidean inner product.
     Then, since~$\mat W^* \mat A \mat U = \mat 0$ by assumption,
     it holds that
     \[
@@ -740,7 +744,7 @@ we can show the following more general statement.
 If $\mathcal U$ is close to being an invariant subspace of~$\mat A$,
 then it is expected that the Ritz vectors and Ritz values of~$\mat A$ relative to~$\mathcal U$ will provide good approximations of some of the eigenpairs of~$\mat A$.
 Quantifying this approximation is difficult,
-so we only present without proof the following convergence result.
+so we only present without proof the following error bound.
 See~\cite{MR1990645} for more information.
 \begin{proposition}
     Let~$\mat A$ be a full rank Hermitian matrix and $\mathcal U$ a $p$-dimensional subspace of~$\complex^n$.
@@ -753,6 +757,8 @@ See~\cite{MR1990645} for more information.
 
 In the case where~$\mat A$ is Hermitian,
 it is possible to show that the Ritz values are bounded from above by the eigenvalues of~$\mat A$.
+The proof of this result relies on the Courant--Fisher theorem for characterizing the eigenvalues of a Hermitian matrix,
+which is recalled in~\cref{theorem:courant-fisher} in the appendix.
 \begin{proposition}
     If $\mat A \in \complex^{n \times n}$ is Hermitian,
     then
@@ -762,7 +768,7 @@ it is possible to show that the Ritz values are bounded from above by the eigenv
     \]
 \end{proposition}
 \begin{proof}
-Indeed, by the Courant--Fisher theorem recalled in~\cref{theorem:courant-fisher},
+By the Courant--Fisher theorem,
 it holds that
 \[
     \widehat \lambda_i
@@ -773,7 +779,7 @@ we deduce that
 \begin{align*}
     \widehat \lambda_i
     &= \max_{\mathcal S \subset \complex^p, {\rm dim}(\mathcal S) = i} \left( \min_{\vect y \in \mat U \mathcal S \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right) \\
-    &= \max_{\mathcal R \subset \mat U \complex^p, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right)
+    &= \max_{\mathcal R \subset \mathcal U, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right)
     \leq \max_{\mathcal R \subset \complex^n, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right) = \lambda_i,
 \end{align*}
 where we used the Courant--Fisher for the matrix~$\mat A$ in the last equality.
@@ -801,8 +807,7 @@ Applying this method requires to calculate an orthonormal basis of the Krylov su
 The \emph{Arnoldi method} enables to achieve these two goals simultaneously.
 
 \subsection{The Arnoldi iteration}
-This Arnoldi iteration, which is based on the Gram--Schmidt process,
-is presented in~\cref{algo:arnoldi_method}.
+This Arnoldi iteration is based on the Gram--Schmidt process and presented in~\cref{algo:arnoldi_method}.
 \begin{algorithm}
 \caption{Arnoldi iteration for constructing an orthonormal basis of $\mathcal K_p(\mat A, \vect u_1)$}%
 \label{algo:arnoldi_method}%
@@ -819,11 +824,21 @@ is presented in~\cref{algo:arnoldi_method}.
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-
-Let us assume that $\mathcal K_{p-1}(\vect u_1, \mat A) \subsetneq \mathcal K_p(\vect u_1, \mat A)$.
-Then, by construction,
-it is clear that the vectors $\{\vect u_1, \dotsc, \vect u_p\}$ at the end of the algorithm are orthonormal.
-It is also simple to show by induction that they form a basis of $\mathcal K_p(\mat A, \vect u_1)$.
+The iteration breaks down if $h_{j+1,j} = 0$,
+which indicates that $\mathcal A \vect u_j$ belongs to the Krylov subspace $\Span \{ \vect u_1, \dotsc, \vect u_j \} = \mathcal K_j(\mat A, \vect u_1)$,
+implying that $\mathcal K_{j+1}(\mat A, \vect u_1) = \mathcal K_j(\mat A, \vect u_1)$.
+In this case, the subspace $\mathcal K_j(\mat A, \vect u_1)$ is an invariant subspace of~$\mat A$ because, by~\cref{exercise:krylov},
+we have
+\[
+    \mat A \mathcal K_j(\mat A, \vect u_1)
+    \subset \mathcal K_{j+1}(\mat A, \vect u_1)
+    = \mathcal K_j(\mat A, \vect u_1).
+\]
+Therefore, applying the Rayleigh--Ritz with $\mathcal U = \Span \{ \vect u_1, \dotsc, \vect u_j \}$ yields exact eigenpairs~\cref{proposition:invariant_subpsace_ritz}.
+If the iteration does not break down then,
+by construction,
+the vectors $\{\vect u_1, \dotsc, \vect u_p\}$ at the end of the algorithm are orthonormal.
+It is also simple to show by induction that they form a basis of~$\mathcal K_p(\mat A, \vect u_1)$.
 The scalar coefficients $h_{i,j}$ can be collected in a matrix square $p \times p$ matrix
 \[
     \mat H
@@ -840,7 +855,7 @@ The scalar coefficients $h_{i,j}$ can be collected in a matrix square $p \times 
 This matrix contains only zeros under the first subdiagonal;
 such a matrix is called a~\emph{Hessenberg} matrix.
 Inspecting the algorithm,
-we notice that the $j$-th column contains the coefficients of the projection of the vector~$\mat A \vect u_i$ onto the basis $\{\vect u_1, \dotsc, \vect u_p\}$.
+we notice that the $j$-th column contains the coefficients of the projection of the vector~$\mat A \vect u_j$ onto the basis $\{\vect u_1, \dotsc, \vect u_p\}$.
 In other words,
 \begin{align}
     \label{eq:reduced_matrix_arnoldi}
@@ -861,7 +876,7 @@ The following result shows that the residual $\vect r = \mat A \widehat{\vect v}
 associated with a Ritz vector can be estimated inexpensively.
 Specifically, the norm of the residual is equal to the last component of the associated eigenvector of~$\mat H$ multiplied by $h_{p+1,p}$.
 \begin{proposition}
-    [Formula for the residual]
+    [Formula for the residual~\moreinfo]
     Let $\vect y_i$ be an eigenvector of $\mat H$ associated with the eigenvalues~$\widehat \lambda_i$,
     and let $\widehat {\vect v}_i = \mat U \vect y_i$ denote the corresponding eigenvector.
     Then
@@ -918,7 +933,7 @@ When~$\mat A$ is Hermitian, it holds that
     h_{i,j} = \vect u_{i}^* (\mat A \vect u_{j}) = (\mat A \vect u_i)^* \vect u_j = \overline{h_{j,i}}.
 \]
 Therefore, the matrix $\mat H$ is Hermitian.
-This is not surprising, since we showed that $\mat H = \mat U^* \mat A \mat U$.
+This is not surprising, since we showed that $\mat H = \mat U^* \mat A \mat U$ and the matrix $\mat A$ is Hermitian.
 Since~$\mat H$ is also of Hessenberg form,
 we deduce that~$\mat H$ is tridiagonal.
 An inspection of~\cref{algo:arnoldi_method} shows that the subdiagonal entries of~$\mat H$ are real.
@@ -1085,6 +1100,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:krylov}
     Show the following properties of the Krylov subspace $\mathcal K_p(\mat A, \vect x)$.
     \begin{itemize}
         \item
@@ -1191,7 +1207,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     Rewrite
     \[
         \norm{\vect r} = \norm{(\mat A - \widehat \lambda \mat I)^{-1} \widehat {\vect v}}
-        = \norm{\mat V (\mat V^{-1} \mat A \mat V \widehat {\vect v} - \widehat \lambda \widehat {\vect v}) \mat V^{-1}}.
+        = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1}\widehat {\vect v})}.
     \]
 \end{exercise}
 
@@ -1201,9 +1217,9 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     which guarantee the existence of an eigenvalue of~$\mat A$ within a certain distance of the approximation~$\widehat \lambda$.
     In this exercise,
     our aim is to provide an answer to the following different question:
-    given an approximate eigenpair $(\widehat \lambda, \widehat {\vect v})$,
+    given an approximate eigenpair $(\widehat {\vect v}, \widehat \lambda)$,
     what is the smallest perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
-    $(\widehat \lambda, \widehat {\vect v})$ is an exact eigenpair, i.e.\ that
+    $(\widehat {\vect v}, \widehat \lambda)$ is an exact eigenpair, i.e.\ that
     \[
         (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v}?
     \]
@@ -1274,7 +1290,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 
 \begin{exercise}
     Assume that $\mat A \in \complex^{n \times n}$ is a Hermitian matrix with distinct eigenvalues,
-    and suppose that we know the dominant eigenpair $(\lambda_1, \vect v_1)$,
+    and suppose that we know the dominant eigenpair $(\vect v_1, \lambda_1)$,
     with $\vect v_1$ normalized.
     Let
     \[
@@ -1289,3 +1305,10 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     Show that, if the associated Ritz values are distinct,
     then $\widehat{\vect v_1}^* \widehat{\vect v_2} = 0$.
 \end{exercise}
+
+\section{Discussion and bibliography}
+
+The content of this chapter is inspired mainly from~\cite{VanDooren} and also from~\cite{MR3396212}.
+The latter volume contains a detailed coverage of the standard methods for eigenvalue problems.
+Some of the exercises are taken from~\cite{Vuik},
+and others are inspired from~\cite{MR3396212}.
