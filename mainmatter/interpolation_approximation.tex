@@ -1,2 +1,185 @@
 \chapter{Interpolation and approximation}%
 \label{cha:interpolation_and_approximation}
+
+\minitoc
+
+\section*{Introduction}
+In this chapter,
+we study numerical methods for interpolating and approximating functions.
+The Cambridge dictionary defines interpolation as \emph{the addition of something different in the middle of a text, piece of music, etc.~or the thing that is added}.
+The concept of interpolation in mathematics is consistent with this definition;
+interpolation consists in finding, given a set of points~$(x_i, y_i)$,
+a function~$f$ in a finite-dimensional space that goes through these points.
+Throughout this course, you have used the~\julia{plot} function in Julia,
+which performs piecewise linear interpolation,
+but there are a number of other standard interpolation methods.
+Our first goal in this chapter is to present an overview of these methods and the associated error estimates.
+
+In the second part of this chapter,
+we focus of \emph{function approximation},
+which is closely related to the subject of mathematical interpolation.
+Indeed, a simple manner for approximating a general function by another one in a finite-dimensional space is to select a set of real numbers on the $x$ axis,
+called \emph{nodes}, and find the associated interpolant.
+As we shall demonstrate, not all sets of interpolation nodes are equal,
+and special care is required in order to avoid undesired oscillations.
+The field of function approximation is vast,
+so our aim in this chapter is to present only an introduction to the subject.
+In order to quantify the quality of an approximation,
+a metric on the space of functions,
+or a subset thereof, must be specified in order to measure errors.
+Without a metric, saying that two functions are close is almost meaningless!
+% Consider, for example, the function $f\colon [0, 1] \to \real; x \mapsto 0$ and the approximations $\widehat f_1(x) = x^{100}$ and $\widehat f_2(x) = 0.01$
+
+\section{Function interpolation}
+Assume that we are given $n+1$ nodes $x_1, \dotsc, x_n$ on the $x$ axis,
+together with the values $u_0, \dotsc, u_n$ taken by an unknown function~$u(x)$ when evaluated at these points,
+suppose that we are looking for an interpolation~$\widehat u(x)$ in a subspace~$\Span \{\varphi_0, \dotsc, \varphi_n\}$
+of the space of continuous functions, i.e.~an interpolating function of the form
+\[
+    \widehat u(x) = \alpha_0 \varphi_0(x) + \dotsb + \alpha_n \varphi_n(x),
+\]
+where $\alpha_0, \dotsc, \alpha_n$ are real coefficients.
+In order for~$\widehat u(x)$ to be an interpolating function,
+we must require that
+\[
+    \forall i \in \{0, \dotsc, n\}, \qquad
+    \widehat u(x_i) = u_i.
+\]
+This leads to a linear system of $n+1$ equations and $n+1$ unknowns,
+the latter being the coefficients~$\alpha_0, \dotsc, \alpha_n$.
+This system of equations in matrix form reads
+\begin{equation}
+    \label{eq:linear_system_interpolation}
+    \begin{pmatrix}
+        \varphi_0(x_0) & \varphi_1(x_0) & \hdots & \varphi_n(x_0) \\
+        \varphi_0(x_1) & \varphi_1(x_1) & \hdots & \varphi_n(x_1) \\
+        \vdots & \vdots & & \vdots \\
+        \varphi_0(x_n) & \varphi_1(x_n) & \hdots & \varphi_n(x_n)
+    \end{pmatrix}
+    \begin{pmatrix}
+        \alpha_0 \\
+        \alpha_1 \\
+        \vdots \\
+        \alpha_n
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        u_0 \\
+        u_1 \\
+        \vdots \\
+        u_n
+    \end{pmatrix}.
+\end{equation}
+
+\subsection{Vandermonde matrix}
+Since polynomials are very convenient for evaluation, integration, and differentiation,
+they are a natural choice for interpolation purposes.
+The simplest basis of the subspace of polynomials of degree less than or equal to $n$ is given by the monomials:
+\[
+    \varphi_0(x) = 1,
+    \qquad
+    \varphi_1(x) = x,
+    \qquad \dotsc, \qquad
+    \varphi_n(x) = x^n.
+\]
+In this case,
+the linear system~\eqref{eq:linear_system_interpolation} for determining the coefficient of the interpolant reads
+\begin{equation}
+    \label{eq:linear_system_interpolation_poly}
+    \begin{pmatrix}
+        1 & x_0 & \hdots & x_0^n \\
+        1 & x_1 & \hdots & x_1^n \\
+        \vdots & \vdots & & \vdots \\
+        1 & x_n & \hdots & x_n^n
+    \end{pmatrix}
+    \begin{pmatrix}
+        \alpha_0 \\
+        \alpha_1 \\
+        \vdots \\
+        \alpha_n
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        u_0 \\
+        u_1 \\
+        \vdots \\
+        u_n
+    \end{pmatrix}.
+\end{equation}
+The matrix on the left-hand side is called a \emph{Vandermonde} matrix.
+If the abcissae $x_0, \dotsc, x_n$ are distinct,
+then this is a full rank matrix,
+and so~\eqref{eq:linear_system_interpolation_poly} admits a unique solution,
+implying as a corollary that the interpolating polynomial exists and is unique.
+It is possible to show that the condition number of the Vandermonde increases dramatically with $n$,
+and so solving~\eqref{eq:linear_system_interpolation_poly} is not a viable method in practice for calculating the interpolating polynomial.
+
+\subsection{Lagrange interpolation formula}
+One may wonder whether polynomial basis functions $\varphi_0, \dotsc, \varphi_n$ can be defined in such a manner that
+the matrix in~\eqref{eq:linear_system_interpolation} is the identity matrix.
+The answer to this question is positive;
+it suffices to take as a basis the \emph{Lagrange polynomials},
+which are given by
+\[
+    \varphi_{i}(x)
+    = \frac{(x - x_0) (x - x_1) \dotsc (x - x_{i-1}) (x - x_{i+1}) \dotsc (x - x_n)}
+    {(x_i - x_0) (x_i - x_1) \dotsc (x_i - x_{i-1}) (x_i - x_{i+1}) \dotsc (x_i - x_n)}.
+\]
+It is simple to check that
+\[
+    \varphi_i(x_j) =
+    \delta_{i,j} =
+    \begin{cases}
+        1 & \text{if $i = j$}, \\
+        0 & \text{otherwise.}
+    \end{cases}
+\]
+Finding the interpolant in this basis is immediate:
+\[
+    \widehat u(x) = u_1 \varphi_1(x) + \dotsb + u_n \varphi_n(x).
+\]
+While simple, this approach to polynomial interpolation has a couple of disadvantages:
+first, evaluating $\widehat u(x)$ is computationally costly when $n$ is large and,
+second, all the basis functions change when adding new interpolation nodes.
+
+\subsection{Newton interpolation}
+By Taylor's formula,
+any polynomial~$p$ of degree $n$ may be expressed as
+\begin{equation}
+    \label{eq:taylor}
+    p(x) = p(0) + p'(0) x + \frac{p''(0)}{2} x^2 + \dotsc + \frac{p^{(n)}(0)}{n!} x^n.
+\end{equation}
+In other words, the constant coefficient can be obtained by evaluating the polynomial at 0,
+the linear coefficient can be identified by evaluating the first derivative at 0,
+and so on.
+Assume now that we are given the values taken by~$p$ when evaluated at the integer numbers $\{0, \dotsc, n\}$,
+which we denote by $p_0, \dotsc, p_n$.
+We ask the following question,
+can we find a formula similar to~\eqref{eq:taylor} where,
+instead of the derivatives, we have approximations of the derivatives?
+To this end, we introduce the difference operator $\Delta$,
+which is given by
+\[
+    \Delta: (p_0, p_1, \dotsc) \mapsto (p_1 - p_0, p_2 - p_1, \dotsc).
+\]
+The operator~$\Delta$ is a linear operator on the space of sequences.
+Like the differentiation operator,
+it maps the constant sequence to 0,
+and the linear sequence $(0, 1, 2, \dotsc)$ to the constant sequence~$(1, 1, 1, \dotsc)$.
+
+\begin{exercise}
+    using the Gregory--Newton formula,
+    Find an expression for
+    \[
+        \sum_{i=1}^{n} n^4.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Using the Gregory--Newton formula,
+    show that
+    \[
+        \forall n \in \nat,
+        \qquad 2^n = 1 + n + \frac{n(n-1)}{2!} + \frac{n(n-1)(n-2)}{3!} + \frac{n(n-1)(n-2)(n-3)}{4!} + \dotsb
+    \]
+\end{exercise}
