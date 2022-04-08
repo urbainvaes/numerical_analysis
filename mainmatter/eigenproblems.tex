@@ -342,7 +342,7 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
         \vdots \\
         \vect x_p &= \alpha^p_1 \vect q_1 + \alpha^p_2 \vect q_2 + \alpha^p_p \vect q_p.
     \end{align*}
-    Under the restriction that the diagonal elements of $\mat R$ is real and positive,
+    Under the restriction that the diagonal elements of $\mat R$ are real and positive,
     the first equation enables to uniquely determines $\vect x_1$ and $\alpha^1_1 = \norm{\vect x_1}$.
     Then, projecting both sides of the second equation onto $\Span \{ \vect q_1 \}$ and $\Span \{ \vect q_1 \}^\perp$,
     we obtain
@@ -363,10 +363,9 @@ In fact, the Gram--Schmidt process is one of several methods by which the $\mat 
 \label{algo:subspace_iteration}%
 \begin{algorithmic}
 \State $\mat X \gets \mat X_0$
-\For{$i \in \{1, 2, \dotsc\}$}
-    \State $\mat X \gets \mat A \mat X$
-    \State Factorize $\mat X = \mat Q \mat R$.
-    \State $\mat X \gets \mat Q$.
+\For{$k \in \{1, 2, \dotsc\}$}
+    \State $\mat Q_k \mat R_k = \mat A \mat X_{k-1}$ (QR decomposition).
+    \State $\mat X_k \gets \mat Q_k$.
 \EndFor
 \end{algorithmic}
 \end{algorithm}
@@ -381,15 +380,16 @@ Therefore, this subspace after~$k$ iterations
 coincides with that spanned by the columns of the matrix $\mat A^k \mat X_0$.
 In fact, in exact arithmetic, it would be equivalent to perform the $\mat Q \mat R$ decomposition only once as a final step,
 after the \julia{for} loop.
-Indeed, denoting by $\mat Q_k \mat R_k$ the decomposition at the $k$-th step,
-we have that $\mat X_k \mat R_k = \mat A \mat X_{k-1}$ and so
+Indeed, denoting by $\mat Q_k \mat R_k$ the $\mat Q \mat R$ decomposition of $\mat A \mat X_{k-1}$,
+we have
 \begin{align*}
     &\mat X_k = \mat A \mat X_{k-1} \mat R_k^{-1} = \mat A^2 \mat X_{k-2} \mat R_{k-1}^{-1} \mat R_k^{-1} = \dotsb
     = \mat A^k \mat X_0 \mat R_1^{-1} \dotsc \mat R_k^{-1} \\
     &\Leftrightarrow \quad \mat X_k (\mat R_k \dotsc \mat R_1) = \mat A^k \mat X_0.
 \end{align*}
-Since $\mat X_k$ has orthonormal columns and $\mat R_k \dotsc \mat R_1$ is an upper triangular matrix,
-it follows that~$\mat X_k$ can be obtained by $\mat Q \mat R$ factorization of $\mat A^k \mat X_0$.
+Since $\mat X_k$ has orthonormal columns and $\mat R_k \dotsc \mat R_1$ is an upper triangular matrix (see~\cref{exercise:linear_product_of_lower_triangular})
+with real positive elements on the diagonal (check this!),
+it follows that~$\mat X_k$ can be obtained by~$\mat Q \mat R$ factorization of $\mat A^k \mat X_0$.
 In order to show the convergence of the simultaneous iteration,
 we begin by proving the following preparatory lemma.
 \begin{lemma}
@@ -427,12 +427,12 @@ such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty
 We prove the convergence in the Hermitian case for simplicity.
 In the general case of~$\mat A \in \complex^{n \times n}$,
 it cannot be expected that~$\mat X_k$ converges essentially to $\mat V$,
-because the eigenvectors may not be orthogonal.
+because the columns of $\mat X_k$ are orthogonal but eigenvectors may not be orthogonal.
 In this case, the columns of $\mat X_k$ converge not to the eigenvectors
 but to the so-called Schur vectors of~$\mat A$;
 see~\cite{MR3396212} for more information.
 \begin{theorem}
-    [Convergence of the subspace iteration~\moreinfo]
+    [Convergence of the simultaneous iteration~\moreinfo]
     \label{theorem:convergence_subspace_iteration}
     Assume that $\mat A \in \complex^{n \times n}$ is Hermitian,
     and that~$\mat X \in \complex^{n \times p}$ has linearly independent columns.
@@ -593,7 +593,7 @@ Successive iterates of the QR algorithm are related by the equation
     = \mat Q_k^* \mat X_{k-1} \mat Q_k
     = \dots = (\mat Q_1 \dots \mat Q_k)^* \mat X_{0} (\mat Q_1 \dots \mat Q_k)
 \end{equation}
-Therefore, they are related by a unitary similarity transformation,
+Therefore, all the iterates are related by a unitary similarity transformation,
 and so they all have the same eigenvalues as $\mat X_0 = \mat A$.
 Rearranging~\eqref{eq:qr_iteration_equation},
 we have
@@ -659,9 +659,11 @@ This is standard eigenvalue problem for the matrix~$\mat U^* \mat A \mat U \in \
 which is much easier to solve than the original problem if $p \ll n$.
 Equivalently, equation~\eqref{eq:rayleigh_ritz} may be formulated as follows: find $\vect v \in \mathcal U$
 such that
-\[
+\begin{equation}
+    \label{eq:equivalent_rayleigh_ritz}
     \vect u^* (\mat A \vect v - \lambda \vect v), \qquad \forall \vect u \in \mathcal U.
-\]
+\end{equation}
+The solutions to~\eqref{eq:rayleigh_ritz} and~\eqref{eq:equivalent_rayleigh_ritz} are related by the equation~$\vect v = \mat U \vect z$.
 Of course, the eigenvalues of problem~\eqref{eq:rayleigh_ritz} are in general different from those of~$\mat A$.
 The eigenvalues of~$\mat B$ are called the Ritz values of~$\mat A$ relative to $\mathcal U$.
 Once an eigenvector $\vect y$ of~$\mat B$ has been calculated,
@@ -675,8 +677,8 @@ The Rayleigh--Ritz algorithm is presented in full in~\cref{algo:rayleigh_ritz}.
 \begin{algorithmic}
 \State Choose $\mathcal U \subset \complex^n$
 \State Construct a matrix~$\mat U$ whose columns are orthonormal and span $\mathcal U$
-\State Find the eigenvalues $\widehat \lambda_i$ and eigenvectors $\vect y_i$ of $\mat B:= \mat U^* \mat A \mat U$
-\State Calculate the corresponding vectors $\widehat {\vect v}_i = \mat U \vect y_i$.
+\State Find the eigenvalues $\widehat \lambda_i$ and eigenvectors $\vect y_i \in \complex^p$ of $\mat B:= \mat U^* \mat A \mat U$
+\State Calculate the corresponding Ritz vectors $\widehat {\vect v}_i = \mat U \vect y_i \in \complex^n$.
 \end{algorithmic}
 \end{algorithm}
 
@@ -753,7 +755,7 @@ In the case where~$\mat A$ is Hermitian,
 it is possible to show that the Ritz values are bounded from above by the eigenvalues of~$\mat A$.
 \begin{proposition}
     If $\mat A \in \complex^{n \times n}$ is Hermitian,
-    then 
+    then
     \[
         \forall i \in \{1, \dotsc, p\}, \qquad
         \widehat \lambda_i \leq \lambda_i
@@ -780,7 +782,6 @@ where we used the Courant--Fisher for the matrix~$\mat A$ in the last equality.
 This projection approach is sometimes combined with a simultaneous subspace iteration:
 an approximation $\mat X_k$ of the $p$ first eigenvector is first calculated using~\cref{algo:subspace_iteration},
 and then the matrix $\mat X_k$ is used in place of~$\mat U$ in~\cref{algo:rayleigh_ritz}.
-
 
 \subsection{Projection method in a Krylov subspace}
 The power iteration constructs at iteration $k$ an approximation of $\vect v_1$ in the one-dimensional subspace spanned by the vector $\mat A^k \vect x_0$,
@@ -1189,7 +1190,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     \noindent{\textbf{Hint}:}
     Rewrite
     \[
-        \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}}
+        \norm{\vect r} = \norm{(\mat A - \widehat \lambda \mat I)^{-1} \widehat {\vect v}}
         = \norm{\mat V (\mat V^{-1} \mat A \mat V \widehat {\vect v} - \widehat \lambda \widehat {\vect v}) \mat V^{-1}}.
     \]
 \end{exercise}
@@ -1222,7 +1223,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
         \item
             Deduce from the first item that
             \[
-                \min_{\mat E \in \mathcal E} \norm{\mat E}_2 \geq \norm{\vect r}_2.
+                \inf_{\mat E \in \mathcal E} \norm{\mat E}_2 \geq \norm{\vect r}_2.
             \]
 
         \item
@@ -1257,11 +1258,11 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
         \mat U^* \mat A \mat U,
     \]
     where $\mat U \in \complex^{n \times p}$ contains the vectors of the basis as columns.
-    Implement the algorithm with~$p = 20$ in order to approximate the dominant eigenvalue of the matrix~$\mat A$ constructed by the following piece of code:
+    Implement your algorithm with~$p = 20$ in order to approximate the dominant eigenvalue of the matrix~$\mat A$ constructed by the following piece of code:
     \begin{minted}{julia}
     n = 5000
     A = rand(n, n) + im * randn(n, n)
-    A = A - A'
+    A = A - A'  # A is now skew-Hermitian
     \end{minted}
 \end{exercise}
 
