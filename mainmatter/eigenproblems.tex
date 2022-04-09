@@ -1002,8 +1002,9 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
         % = \sum_{j=1}^{n} \frac{a_{ji}}{o_j} r_j
     \end{equation}
     where $o_j$ is the outdegree of vertex $j$,
-    i.e.\ the number of edges leaving from~$j$,
-    and the sum is over all the neighbors of $i$.
+    i.e.\ the number of edges leaving from~$j$.
+    The sum is over all the ``incoming'' neighbors of $i$,
+    which have an edge towards node $i$.
     \begin{itemize}
         \item
             Read the Wikipedia page on \emph{PageRank} to familiarize yourself with the algorithm.

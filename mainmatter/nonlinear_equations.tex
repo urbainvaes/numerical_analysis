@@ -59,7 +59,7 @@ the convergence is superlinear if the order of convergence is $q > 1$.
 
 The rest of chapter is organized as follows:
 \begin{itemize}
-    \item 
+    \item
         In \cref{sec:bisection_method},
         by way of introduction to the subject of numerical methods for nonlinear equations,
         we present and analyze the bisection method.
@@ -844,6 +844,41 @@ Implement the bisection method for finding the solution(s) to the equation
     The Jordan normal form is useful for constructing the matrix $\mat T$,
     and equation~\eqref{eq:preliminary_equation} is also useful.
 \end{exercise}
+
+\begin{solution}
+    Let $\mat J = \mat P^{-1} \mat A \mat P$ denote the Jordan normal form of~$\mat A$,
+    and let 
+    \[  
+        \mat E_{\varepsilon} = 
+        \begin{pmatrix}
+            \varepsilon \\
+        & \varepsilon^{2} &  \\
+        & & \ddots & \\
+        & & & \varepsilon^{n}
+        \end{pmatrix}
+    \]
+    By~\cref{eq:preliminary_equation},
+    the matrix $\mat J_{\varepsilon} := \mat E_{\varepsilon}^{-1} \mat J \mat E_{\varepsilon}$ coincides with~$\mat J$,
+    except that the first superdiagonal is multiplied by~$\varepsilon$.
+    Let $\mat D$ denote the diagonal part of $\mat J_{\varepsilon}$.
+    We have that
+    \[
+        \norm{\mat J_{\varepsilon} - \mat D}_2 = \sqrt{\lambda_{\max} (\mat E_{\varepsilon}^\t \mat E_{\varepsilon})}.
+    \]
+    The matrix $\mat E_{\varepsilon}^\t \mat E_{\varepsilon}$ is diagonal with entries equal to either 0 or $\varepsilon^2$,
+    and so $\norm{\mat J_{\varepsilon} - \mat D}_2 < \varepsilon$.
+    By the triangle inequality, we have
+    \begin{equation}
+        \label{eq:alternative_norm_spectral_radius}
+        \norm{\mat J_{\varepsilon}} \leq \norm{\mat D} + \norm{\mat J_{\varepsilon} - \mat D}_2 
+        \leq \rho(\mat A) + \varepsilon.
+    \end{equation}
+    Let $\norm{\mat A}_{\varepsilon} := \norm{\mat E_{\varepsilon}^{-1} \mat P^{-1} \mat A \mat P \mat E_{\varepsilon}}$.
+    By~\eqref{exercise:induced_matrix_norm} with~$\mat T = \mat P \mat E_{\varepsilon}$,
+    this is indeed a subordinate matrix norm.
+    By~\eqref{eq:alternative_norm_spectral_radius} and the assumption that~$\rho(\mat A) < 1$,
+    it is clear that $\norm{\mat A}_{\varepsilon} < 1$ provided that~$\varepsilon$ is sufficiently small.
+\end{solution}
 
 \begin{exercise}
     Calculate $x = \sqrt[3]{3 + \sqrt[3]{3 + \sqrt[3]{3 + \sqrt{\dots}}}}$ using the bisection method.
