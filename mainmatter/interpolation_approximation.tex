@@ -391,15 +391,16 @@ It is possible to find an expression for the coefficients of the interpolating p
 \end{example}
 
 \section{Interpolation error}
-Assume that~$u(x)$ is a smooth function and denote by $\widehat u(x)$ its interpolation through the points~$(x_i, u_i)$,
+Assume that~$u(x)$ is a continuous function and denote by $\widehat u(x)$ its interpolation through the points~$(x_i, u_i)$,
 for $i = 0, \dotsc, n$.
 In this section, we study the behavior of the error in the limit as $n \to \infty$.
 
 \begin{theorem}
     [Interpolation error]
-    Assume that~$u\colon [a, b] \to \real$ is a smooth function and let~$x_0, \dotsc, x_n$ denote $n+1$ distinct interpolation nodes.
+    \label{theorem:interpolation_error}
+    Assume that~$u\colon [a, b] \to \real$ is a function in $C^{n+1}([a, b])$ and let~$x_0, \dotsc, x_n$ denote $n+1$ distinct interpolation nodes.
     Then for all $x \in [a, b]$,
-    there exists $\xi = \xi(x)$ such that
+    there exists~$\xi = \xi(x)$ in the interval $[a, b]$ such that
     \[
         e(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
     \]
@@ -433,6 +434,17 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     \]
     which completes the proof.
 \end{proof}
+As a corollary to~\cref{theorem:interpolation_error},
+we deduce that if there exists a constant $C$ such that
+\[
+    \forall d \in \nat, \qquad
+    \sup_{x \in [a, b]} u^{(n)}(x) \leq C,
+\]
+then the following inequality holds:
+\[
+    \sup_{x \in [a,b]} \abs{e(x)}
+    \leq \frac{C h^n}{(n+1)!}
+\]
 
 
 \begin{exercise}
