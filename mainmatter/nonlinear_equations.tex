@@ -847,9 +847,9 @@ Implement the bisection method for finding the solution(s) to the equation
 
 \begin{solution}
     Let $\mat J = \mat P^{-1} \mat A \mat P$ denote the Jordan normal form of~$\mat A$,
-    and let 
-    \[  
-        \mat E_{\varepsilon} = 
+    and let
+    \[
+        \mat E_{\varepsilon} =
         \begin{pmatrix}
             \varepsilon \\
         & \varepsilon^{2} &  \\
@@ -870,7 +870,7 @@ Implement the bisection method for finding the solution(s) to the equation
     By the triangle inequality, we have
     \begin{equation}
         \label{eq:alternative_norm_spectral_radius}
-        \norm{\mat J_{\varepsilon}} \leq \norm{\mat D} + \norm{\mat J_{\varepsilon} - \mat D}_2 
+        \norm{\mat J_{\varepsilon}} \leq \norm{\mat D} + \norm{\mat J_{\varepsilon} - \mat D}_2
         \leq \rho(\mat A) + \varepsilon.
     \end{equation}
     Let $\norm{\mat A}_{\varepsilon} := \norm{\mat E_{\varepsilon}^{-1} \mat P^{-1} \mat A \mat P \mat E_{\varepsilon}}$.
