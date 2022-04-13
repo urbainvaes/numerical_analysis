@@ -535,7 +535,7 @@ as illustrated in~\cref{fig:interpolation_runge_function}.
     \label{fig:interpolation_runge_function}
 \end{figure}
 
-\section{Interpolation at Chebychev nodes}
+\section{Interpolation at Chebyshev nodes}
 Sometimes,
 interpolation is employed as a technique for approximating functions.
 The spectral collocation method, for example,
@@ -666,7 +666,7 @@ more often than not, employing these nodes for interpolation produces much bette
 both in the case where~$u$ is a polynomial of degree $n+1$,
 as we just proved,
 but also for general~$u$.
-As an example we plot in \cref{fig:cheb_runge} the interpolation of the Runge function using Chebychev nodes.
+As an example we plot in \cref{fig:cheb_runge} the interpolation of the Runge function using Chebyshev nodes.
 In this case, the interpolating polynomial converges uniformly to the Runge function as we increase the number of interpolation nodes!
 \begin{figure}[ht]
     \centering
@@ -676,6 +676,21 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_30.pdf}
     \label{fig:cheb_runge}
 \end{figure}
+
+\begin{exercise}
+    Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
+\end{exercise}
+
+\begin{exercise}
+    Find the polynomial $p(x) = ax^2 + b x + c$ (a parabola) that goes through the points $(0, 1)$, $(1, 3)$ and $(2, 7)$.
+\end{exercise}
+
+\begin{exercise}
+    Prove the following recurrence relation for Chebyshev polynomials:
+    \[
+        T_{i+1}(x) = 2 x T_i(x) - T_{i-1}(x), \qquad i = 1, 2, \dotsc.
+    \]
+\end{exercise}
 
 \begin{exercise}
     \label{exercise:divided_differences}
@@ -715,3 +730,27 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
         However, showing this more general statement is beyond the scope of this course.
     \end{remark}
 \end{exercise}
+
+\begin{compexercise}
+    Write a Julia code for interpolating the following function using a polynomial of degree 20.
+    \[
+        f(x) = \tanh\left(\frac{x+1/2}{\varepsilon}\right) + \tanh\left(\frac{x}{\varepsilon}\right) + \tanh\left(\frac{x+1/2}{\varepsilon}\right), 
+        \qquad \varepsilon = .01.
+    \]
+    Use equidistant and then Chebyshev nodes, 
+    and compare the two approaches in terms of accuracy.
+    Plot the function~$f$ together with the approximating polynomials.
+\end{compexercise}
+
+\begin{compexercise}
+    We wish to use interpolation to approximate the following parametric function:
+    \begin{align}
+      x (\theta) &= (R - r)\cos\theta + d\cos\left({R - r \over r}\theta\right) \\
+      y (\theta) &= (R - r)\sin\theta - d\sin\left({R - r \over r}\theta\right),
+    \end{align}
+    with $R = 3$, $r = 3$ and $d = 5$, and for $\theta \in [0, 6\pi]$.
+    Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 30 equidistant points in the interval $(0, 30)$.
+    After constructing the polynomial interpolations $\widehat x(\theta)$ and $\widehat y(\theta)$,
+    plot the curve $\theta \mapsto \bigl(\widehat x(\theta), \widehat y(\theta)\bigr)$.
+\end{compexercise}
+
