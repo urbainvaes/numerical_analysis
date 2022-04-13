@@ -195,26 +195,34 @@ The falling powers form a basis of the space of polynomials,
 and so any polynomial in~$\poly(n)$, i.e.\ of degree less than or equal to $n$, can be expressed as
 \begin{equation}
     \label{eq:gregory_newton}
-    p(x) = \alpha_0 + \alpha_1 x^{\underline{1}} + \alpha_2 x^{\underline{1}} + \dotsb \alpha_n x^{\underline{n}}.
+    p(x) = \alpha_0 + \alpha_1 x^{\underline{1}} + \alpha_2 x^{\underline{2}} + \dotsb + \alpha_n x^{\underline{n}}.
 \end{equation}
 It is immediate to show that $\alpha_i = \Delta^i p(0)$,
 where $\Delta^i p$ denotes the function obtained after~$i$ applications of the operator~$\Delta$.
+Therefore, any polynomial of degree less than or equal to~$n$ may be expressed as
+\begin{equation}
+    \label{eq:gregory_newton_actually}
+    p(x) = p(0) + \Delta p(0) x^{\underline{1}} + \frac{\Delta^2}{2} x^{\underline{2}} + \dotsb + \frac{\Delta^n p(0)}{n!} x^{\underline{n}}.
+\end{equation}
+An expansion of the form~\eqref{eq:gregory_newton_actually} is called a \emph{Newton series},
+which is the discrete analog of the continuous Taylor series.
 From the definition of~$\Delta$,
-it is clear that the coefficients depend only on~$p_0, \dotsc, p_n$.
+it is clear that the coefficients in~\eqref{eq:gregory_newton_actually} depend only on~$p(0), \dotsc, p(n)$.
 We conclude that, given points $n+1$ points $(i, p_i)$ for $i \in \{0, \dotsc, n\}$,
-equation~\eqref{eq:gregory_newton} gives the corresponding interpolating polynomial.
-An expansion of the form~\eqref{eq:gregory_newton} is called a \emph{Newton series},
-the discrete analog of the continuous Taylor series.
+the unique interpolating polynomial can be obtained from~\eqref{eq:gregory_newton_actually}.
 
 \begin{example}
     \label{example:gregory_newton}
-    Let us use~\eqref{eq:gregory_newton} to calculate the value of
+    Let us use~\eqref{eq:gregory_newton} in order to calculate the value of
     \[
         S(n) := \sum_{i=0}^{n} i^2.
     \]
     Since $\Delta S(n) = (n+1)^2$,
     which is a second degree polynomial in $n$,
     we deduce that $S(n)$ is a polynomial of degree 3.
+    % Notice the slight abuse of notation here:
+    % since $S(n)$ is well-defined only for $n \in \nat$,
+    % $\Delta S(n)$ is also well-defined
     Let us now determine its coefficients.
     \begin{center}
     \begin{tabular}{|c|c|c|c|c|}
@@ -242,20 +250,22 @@ However, this method has several advantages over Lagrange interpolation:
     \item
         If a point~$(n+1, p_{n+1})$ is added to the set of interpolation points,
         only one additional term, corresponding to the falling power~$x^{\underline{n+1}}$,
-        has to be calculated in~\eqref{eq:gregory_newton}.
+        has to be calculated in~\eqref{eq:gregory_newton_actually}.
         All the other coefficients are unchanged.
         Therefore, the Gregory--Newton approach is well-suited for incremental interpolation.
 
     \item
         The Gregory--Newton interpolation method method is more numerically stable than Lagrange interpolation,
         because none of the basis functions take very large values.
+
+    \item
+        A polynomial in the form of a Newton series can be evaluated efficiently using Horner's method,
+        which is based on rewriting the polynomial as
+        \[
+            p(x) = \alpha_0 + x \biggl( \alpha_1 + (x-1)  \Bigl( \alpha_2 + (x-2)\bigl(\alpha_3 + (x-3) \dotsc \bigr) \Bigr)  \biggr).
+        \]
+        Evaluating this expression starting from the innermost bracket leads to an algorithm with a cost scaling linearly with the degree of the polynomial.
 \end{itemize}
-A polynomial in the form of a Newton series can be evaluated efficiently using Horner's method,
-which is based on rewriting the polynomial as
-\[
-    p(x) = \alpha_0 + x \biggl( \alpha_1 + (x-1)  \Bigl( \alpha_2 + (x-2)\bigl(\alpha_3 + (x-3) \dotsc \bigr) \Bigr)  \biggr).
-\]
-Evaluating this expression starting from the innermost bracket leads to an algorithm with a cost scaling linearly with the degree of the polynomial.
 
 \subsubsection*{Non-equidistant nodes}%
 So far,
@@ -296,20 +306,20 @@ the coefficients of the interpolating polynomial in this basis solve the followi
 \end{equation}
 This system could be solved using, for example, forward substitution.
 Clearly $\alpha_0 = u_0$,
-and then from the second line we obtain
+and then from the second equation we obtain
 \[
     \alpha_1 = \frac{u_1 - u_0}{x_1 - x_0} =: [u_0, u_1],
 \]
 which may be viewed as an approximation of the slope of~$u$ at $x_0$.
 The right-hand side of this equation is an example of a \emph{divided difference}.
-In general, these are defined recursively as follows:
+In general, divided differences are defined recursively as follows:
 \[
     [u_{0}, u_{2}, \dotsc, u_{d}] := \frac{[u_{1}, \dotsc, u_{d}] - [u_{0}, \dotsc, u_{d-1}]}{x_{d}-x_{0}}, \qquad [u_i] = u_i.
 \]
 It is possible to find an expression for the coefficients of the interpolating polynomials in terms of these divided differences.
 \begin{proposition}
     Assume that $(x_0, u_0), \dotsc, (x_n, u_n)$ are $n+1$ points in the plane with distinct abcissae.
-    Then the interpolating polynomial may be expressed as
+    Then the interpolating polynomial of degree $n$ may be expressed as
     \[
         p(x) = \sum_{i=0}^{n} [u_0, \dotsc, u_n] \varphi_i(x),
     \]
@@ -318,7 +328,7 @@ It is possible to find an expression for the coefficients of the interpolating p
 \begin{proof}
     The statement is true for $n = 0$.
     Reasoning by induction, we assume that it holds true up to $n-1$.
-    Observing $p(x) - u_0$ has a root at $x_0$,
+    Observing that $p(x) - u_0$ has a root at $x_0$,
     we deduce that
     \begin{equation}
         \label{eq:equation_newton}
@@ -340,7 +350,7 @@ It is possible to find an expression for the coefficients of the interpolating p
     \[
         [v_1, \dotsc, v_n] = \sum_{j=1}^{n} \frac{v_{j}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
     \]
-    Employing the expression of~$v_j$ given in~\eqref{eq:newton_interpolation_vi},
+    Therefore, employing the expression of~$v_j$ given in~\eqref{eq:newton_interpolation_vi},
     we have
     \begin{align*}
         [v_1, \dotsc, v_n]
@@ -402,7 +412,7 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     Then for all $x \in [a, b]$,
     there exists~$\xi = \xi(x)$ in the interval $[a, b]$ such that
     \[
-        e(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
+        e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
     \]
 \end{theorem}
 \begin{proof}
@@ -411,7 +421,7 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     Let us use the compact notation $\omega_n = \prod_{i=0}^n (x - x_i)$ and introduce the function
     \begin{equation}
         \label{eq:interpolation_error}
-        g(t) = e(t) \omega(x) - e(x) \omega(t).
+        g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
     \end{equation}
     The function $g$ is smooth and takes the value~0 when evaluated at~$x_0, \dotsc, x_n, x$.
     Since $g$ has $n+2$ roots in the interval $[a, b]$,
@@ -421,31 +431,251 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     From~\eqref{eq:interpolation_error},
     we calculate that
     \begin{equation}
-        \label{eq:interpolation_error}
-        g^{(n+1)}(t) = e^{(n+1)}(t) \omega(x) - e(x) \omega^{(n+1)}(t)
-        = u^{(n+1)}(t) \omega(x) - e(x) (n+1)!.
+        \label{eq:interpolation_error_proof}
+        g^{(n+1)}(t) = e_n^{(n+1)}(t) \omega_n(x) - e_n(x) \omega_n^{(n+1)}(t)
+        = u^{(n+1)}(t) \omega_n(x) - e_n(x) (n+1)!.
     \end{equation}
     Here we employed the fact that $\widehat u^{(n+1)}(t) = 0$,
     because $\widehat u$ is a polynomial of degree at most $n$.
-    Evaluating~\eqref{eq:interpolation_error} at~$t_*$ and rearranging,
+    Evaluating~\eqref{eq:interpolation_error_proof} at~$t_*$ and rearranging,
     we obtain that
     \[
-        e(x) = \frac{u^{(n+1)}(t)}{(n+1)!} \omega(x),
+        e_n(x) = \frac{u^{(n+1)}(t_*)}{(n+1)!} \omega_n(x),
     \]
     which completes the proof.
 \end{proof}
 As a corollary to~\cref{theorem:interpolation_error},
-we deduce that if there exists a constant $C$ such that
+we deduce the following error bound.
+\begin{corollary}
+    [Upper bound on the interpolation error]
+    \label{corollary:interpolation_error}
+    Assume that $u$ is smooth in $[a, b]$ and that
+    \[
+        \sup_{x \in [a, b]} \abs{u^{(n+1)}(x)} \leq C_{n+1}.
+    \]
+    Then
+    \begin{equation}
+        \label{eq:upper_bound_interp_error}
+        \forall x \in [a, b], \qquad
+        \abs{e_n(x)} \leq \frac{C_{n+1}}{n+1} h^{n+1}
+    \end{equation}
+    where $h$ is the maximum spacing between two successive interpolation nodes.
+\end{corollary}
+\begin{proof}
+By~\cref{theorem:interpolation_error},
+we have
+\begin{equation}
+    \label{eq:bound_error_from_theorem}
+    \forall x \in [a, b], \qquad
+    \abs{e_n(x)} \leq \frac{C_{n+1}}{(n+1)!} \abs[Big]{(x-x_0) \dotsc (x-x_n)}.
+\end{equation}
+The product on the right-hand side is bounded from above by
+\begin{equation}
+    \label{eq:interpolation_bound_product}
+    \frac{h^2}{4} \times 2h \times 3h \times 4h \times \dotsb \times nh = \frac{n! h^{n+1}}{4}.
+\end{equation}
+The first factor comes from the fact that, if $x \in [x_i, x_{i+1}]$,
+then
 \[
-    \forall d \in \nat, \qquad
-    \sup_{x \in [a, b]} u^{(n)}(x) \leq C,
+    \abs{(x - x_i)(x - x_{i+1})} \leq \frac{(x_{i+1} - x_i)^2}{4},
 \]
-then the following inequality holds:
+because the left-hand side is maximized when $x$ is the midpoint of the interval~$[x_i, x_{i+1}]$.
+Substituting~\eqref{eq:interpolation_bound_product} into~\eqref{eq:bound_error_from_theorem},
+we deduce the statement.
+\end{proof}
+Let us now introduce the supremum norm of the error over the interval $[a, b]$:
 \[
-    \sup_{x \in [a,b]} \abs{e(x)}
-    \leq \frac{C h^n}{(n+1)!}
+    E_n = \sup_{x \in [a, b]} \abs{e_n(x)}.
 \]
+We ask the following natural question:
+does $E_n$ tend to zero as the maximum spacing between successive nodes tends to 0?
+By~\cref{corollary:interpolation_error},
+the answer to this question is positive when $C_{n}$ does not grow too quickly as $n \to \infty$.
+For example, as illustrated in \cref{fig:interpolation_sine},
+the interpolation error for the function $u(x) = \sin(x)$,
+when using equidistant interpolation nodes,
+decreases very quickly as $n \to \infty$.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_sine_3.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_sine_4.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_sine_6.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_sine_8.pdf}
+    \caption{Interpolation (in orange) of the function $u(x) = \sin(x)$ (in blue) using 3, 4, 6, and 8 equidistant nodes.}%
+    \label{fig:interpolation_sine}
+\end{figure}
 
+In some cases, however,
+the constant $C_n$ grows quickly with $n$,
+to the extent that $E_n$ may increase with $n$;
+in this case, the maximum interpolation error grows as we add nodes!
+The classic example,
+in order to illustrate this potential issue,
+is that of the Runge function:
+\begin{equation}
+    \label{eq:runge_function}
+    u(x) = \frac{1}{1 + 25 x^2}.
+\end{equation}
+It is possible to show that,
+for this function,
+the upper bound in~\cref{corollary:interpolation_error} tends to $\infty$ in the limit as the number of interpolation nodes increases.
+We emphasize that this does not prove that $E_n \to \infty$,
+because~\eqref{eq:upper_bound_interp_error} provides only an upper bound on the error.
+In fact, the interpolation error can either grow or decrease,
+depending on the choice of interpolation nodes.
+With equidistant nodes, it turns out that $E_n \to \infty$,
+as illustrated in~\cref{fig:interpolation_runge_function}.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_runge_6.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_runge_10.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_runge_14.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_runge_20.pdf}
+    \caption{Interpolation (in orange) of the Runge function~\eqref{eq:runge_function} (in blue) using 6, 10, 14, and 20 equidistant nodes.}%
+    \label{fig:interpolation_runge_function}
+\end{figure}
+
+\section{Interpolation at Chebychev nodes}
+Sometimes,
+interpolation is employed as a technique for approximating functions.
+The spectral collocation method, for example,
+is a technique for solving partial differential equations
+where a discrete solution is first calculated,
+and then a continuous solution is constructed using polynomial or Fourier interpolation.
+When the interpolation nodes are not given a priori as data,
+it is natural to wonder whether these can be picked in such a manner that the interpolation error,
+measured in the supremum norm, is minimized.
+More precisely, given a continuous function~$u(x)$ and a number of nodes~$n$,
+is it possible to chose nodes $x_0, \dotsc, x_n$ such that
+\[
+    E := \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)}
+\]
+is minimized?
+Here $\widehat u$ is the polynomial interpolating~$u$ at the nodes.
+Achieving this goal in general is a difficult task,
+essentially because $\xi = \xi(x)$ is unknown in the expression of the interpolation error from~\cref{theorem:interpolation_error}:
+\[
+    e_n(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
+\]
+In view of this difficulty,
+we will focus on the simpler problem of finding interpolation nodes
+such that the product $(x-x_0) \dotsc (x - x_n)$ is minimized in the supremum norm.
+This problem amounts to finding the optimal interpolation nodes,
+in the sense that~$E$ is minimized,
+in the particular case where $u$ is a polynomial of degree $n+1$,
+because in this case $u^{n+1}(\xi)$ is a constant factor.
+It turns out that this problem admits an explicit solution,
+which we will deduce from the following theorem.
+\begin{theorem}
+    [Minimum $\infty$ norm]
+    \label{theorem:minimum_infty_norm}
+    Assume that $p$ is a monic polynomial of degree $n$:
+    \[
+        p(x) = \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n-1} x^{n-1} + \mathbf{1} x^n.
+    \]
+    Then it holds that
+    \begin{equation}
+        \label{eq:chebychev_lower_bound}
+        \sup_{x \in [-1, 1]} \abs{p(x)} \geq \frac{1}{2^{n-1}}.
+    \end{equation}
+    In addition, the lower bound is achieved for~$p(x) = 2^{-(n-1)} T_n(x)$,
+    where $T_n$ is the Chebyshev polynomial of degree~$n$:
+    \begin{equation}
+        \label{eq:chebyshev_polynomial}
+        T_n(x) = \cos(n\arccos x) \qquad (-1 \leq x \leq 1).
+    \end{equation}
+\end{theorem}
+\begin{proof}
+    By~\cref{exercise:chebychev},
+    the polynomial $x \mapsto 2^{-(n-1)} T_n(x)$ is indeed monic,
+    and it is clear that it achieves the lower bound~\eqref{eq:chebychev_lower_bound}
+    since $\abs{T_n(x)} \leq 1$.
+
+    In order to prove~\eqref{eq:chebychev_lower_bound},
+    we assume by contradiction that there was a different monic polynomial~$\widetilde p$ of degree~$n$ such that
+    \begin{equation}
+        \label{eq:chebyshev_minimum}
+        \sup_{x \in [-1, 1]} \abs{\widetilde p(x)} < \frac{1}{2^{n-1}}.
+    \end{equation}
+    Let us introduce $x_i = \cos(i \pi/n)$, for $i = 0, \dotsc, n$,
+    and observe that
+    \[
+        p(x_i) = 2^{-(n-1)} T_n(x_i) = 2^{-(n-1)} (-1)^i.
+    \]
+    The function $q(x) := p(x) - \widetilde p(x)$ is a polynomial of degree at most $n-1$ which,
+    by the assumption~\eqref{eq:chebyshev_minimum},
+    is strictly positive at $x_0, x_2, x_4, \dotsc$ and strictly negative at $x_1, x_3, x_5, \dotsc$.
+    Therefore, the polynomial $q(x)$ changes sign at least $n$ times and so,
+    by the intermediate value theorem, it has at least $n$ roots.
+    But this is impossible, because $q(x) \neq 0$ and $q(x)$ is of degree at most $n-1$.
+\end{proof}
+
+From~\cref{theorem:minimum_infty_norm},
+we deduce the following corollary.
+\begin{corollary}
+    [Chebyshev nodes]
+    \label{corollary:chebyshev_nodes}
+    Assume that $x_0 < x_1 < \dotsc < x_n$ are in the interval $[a, b]$.
+    The supremum norm of the product $(x-x_0) \dotsb (x-x_n)$ over~$[a, b]$ is minimized when
+    \begin{equation}
+        x_i = a + (b-a) \frac{1 + \cos \left( (2i + 1) \frac{\pi}{2 n} \right)}{2}
+    \end{equation}
+        % \label{eq:optimal_product}
+        % (x-x_0) \dotsb (x-x_n) = \frac{(b-a)^n}{2^{2n-1}} T_n\left(\frac{a + b - 2x}{a - b}\right).
+    % \end{equation}
+    % In particular, if $a = -1$ and $b = 1$,
+    % then the nodes $x_0, \dotsc, x_n$ must coincide with the roots of the Chebyshev polynomial of degree~$n$:
+    % \[
+        % x_i = \cos \left( (2i + 1) \frac{\pi}{2} \right).
+    % \]
+\end{corollary}
+\begin{proof}
+    We consider the affine change of variable
+    \begin{align*}
+        \zeta\colon &[-1, 1] \to [a, b]; \\
+                    &y \mapsto \frac{a + b + y (b - a)}{2}.
+    \end{align*}
+    The function
+    \begin{align*}
+        p(y) &:= \frac{2^n}{(b-a)^n} \bigl(\zeta(y)-x_0\bigr) \dotsb \bigl(\zeta(y)-x_n\bigr) \\
+             &= \bigl(y-y_0\bigr) \dotsb \bigl(y-y_n\bigr), \qquad y_i = \zeta^{-1}(x_i),
+    \end{align*}
+    is a monic polynomial of degree~$n$ such that
+    \begin{equation}
+        \label{eq:change_of_variable}
+        \sup_{y \in [-1, 1]} \abs{p(y)} = \frac{2^n}{(b-a)^n} \sup_{x \in [a, b]} \abs{(x-x_0) \dotsc (x - x_n)}.
+    \end{equation}
+    By~\cref{theorem:minimum_infty_norm},
+    the left-hand side is minimized when $p$ is equal to $2^{-(n-1)} T_n(y)$,
+    i.e.\ when the roots of $p$ coincide with the roots of $T_n$.
+    This occurs when
+    \[
+        y_i = \zeta^{-1}(x_i) = \cos \left( (2i + 1) \frac{\pi}{2 n} \right).
+    \]
+    Applying the inverse change of variable $x_i = \zeta(y_i)$,
+    we deduce the result.
+\end{proof}
+
+\Cref{corollary:chebyshev_nodes} establishes a link with interpolation.
+The nodes
+\begin{equation}
+    x_i = a + (b-a) \frac{1 + \cos \left( (2i + 1) \frac{\pi}{2 n} \right)}{2}, \qquad i = 0, \dotsc, n,
+\end{equation}
+are known as Chebyshev nodes and,
+more often than not, employing these nodes for interpolation produces much better results than using equidistant rodes,
+both in the case where~$u$ is a polynomial of degree $n+1$,
+as we just proved,
+but also for general~$u$.
+As an example we plot in \cref{fig:cheb_runge} the interpolation of the Runge function using Chebychev nodes.
+In this case, the interpolating polynomial converges uniformly to the Runge function as we increase the number of interpolation nodes!
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_10.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_15.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_20.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_30.pdf}
+    \label{fig:cheb_runge}
+\end{figure}
 
 \begin{exercise}
     \label{exercise:divided_differences}
@@ -456,10 +686,19 @@ then the following inequality holds:
 \end{exercise}
 
 \begin{exercise}
-    using the Gregory--Newton formula,
-    Find an expression for
+    Using the Gregory--Newton formula,
+    find an expression for
     \[
         \sum_{i=1}^{n} i^4.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Let $(f_0, f_1, f_2, \dotsc) = (1, 1, 2, \dotsc)$ denote the Fibonacci sequence.
+    Prove that there does not exist a polynomial~$p$ such that
+    \[
+        \forall i \in \nat, \qquad
+        f_i = p(i).
     \]
 \end{exercise}
 
@@ -468,7 +707,7 @@ then the following inequality holds:
     show that
     \begin{equation}
         \label{eq:discrete_exponential}
-        \forall n \in \nat,
+        \forall n \in \nat_{>0},
         \qquad 2^n = 1 + n + \frac{n^{\underline{2}}}{2!} + \frac{n^{\underline 3}}{3!} + \frac{n^{\underline 4}}{4!} + \dotsb
     \end{equation}
     \begin{remark}
