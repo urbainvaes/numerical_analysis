@@ -327,50 +327,79 @@ It is possible to find an expression for the coefficients of the interpolating p
 \end{proposition}
 \begin{proof}
     The statement is true for $n = 0$.
-    Reasoning by induction, we assume that it holds true up to $n-1$.
-    Observing that $p(x) - u_0$ has a root at $x_0$,
-    we deduce that
+    Reasoning by induction, we assume that it holds true for polynomials of degree up to $n-1$.
+    Let $p_1(x)$ and $p_2(x)$ be the interpolating polynomials at the points
+    $x_0, x_1, \dotsc, x_{n-2}, x_{n-1}$ and $x_0, x_1, \dotsc, x_{n-2}, x_{n}$, respectively.
+    Then
     \begin{equation}
-        \label{eq:equation_newton}
-        q(x) :=
-        \frac{p(x) - u_0}{x - x_0}
+        \label{eq:interpolating_polynomial}
+        p(x) = p_1(x) + \frac{x - x_{n-1}}{x_n - x_{n-1}} \bigl(p_2(x) - p_1(x)\bigr)
     \end{equation}
-    is a polynomial of degree at most $n-1$ that interpolates the points
-    \begin{equation}
-        \label{eq:newton_interpolation_vi}
-        \left(x_i, v_i\right) := \left(x_i, \frac{u_i - u_0}{x_i - x_0}\right), \qquad i = 1, \dotsc, n.
-    \end{equation}
-    Using the induction hypothesis,
-    we deduce that $q(x)$ is given by
-    \[
-        q(x) = \sum_{i=1}^{n} [v_1, \dotsc, v_i] (x-x_1) \dotsc (x - x_{i-1})
-    \]
-    By~\cref{exercise:divided_differences},
+    is a polynomial of degree~$n$ that interpolates all the data points.
+    By the induction hypothesis,
     it holds that
-    \[
-        [v_1, \dotsc, v_n] = \sum_{j=1}^{n} \frac{v_{j}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
-    \]
-    Therefore, employing the expression of~$v_j$ given in~\eqref{eq:newton_interpolation_vi},
-    we have
     \begin{align*}
-        [v_1, \dotsc, v_n]
-        &= \sum_{j=1}^{n} \frac{\frac{u_{j}-u_0}{x_j - x_0}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}
-        = \sum_{j=1}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} \\
-        &= \sum_{j=0}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} = [w_0, \dotsc, w_n],
+        p_1(x) &= u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, u_1, \dotsc, u_{n-2}, \mathbf{u_{n-1}}] \prod_{i=0}^{n-2} (x - x_i), \\
+        p_2(x) &= u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, u_1, \dotsc, u_{n-2}, \mathbf{u_{n}}] \prod_{i=0}^{n-2} (x - x_i).
     \end{align*}
-    where we introduced $w_i = u_i - u_0$, for $i = 0, \dotsc, n$.
-    Now, since only differences appear in the divided difference $[w_0, \dotsc, w_n]$ and $w_i - w_j = u_i - u_j$ for all pairs $(i, j) \in \{0, \dotsc n\}^2$,
-    it is clear that
+    Here we used bold font to emphasize the difference between the two expressions.
+    Substituting these expressions in~\eqref{eq:interpolating_polynomial},
+    we obtain
+    \begin{align*}
+        p(x) =
+        &u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, \dotsc, u_{n-2}] \prod_{i=0}^{n-2} (x - x_i)  \\
+        & + \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} \prod_{i=0}^{n-1} (x - x_i).
+    \end{align*}
+    In \cref{exercise:divided_differences},
+    we show that divided differences are invariant under permutations of the data points,
+    and so we have that
     \[
-        [w_0, \dotsc, w_n] = [u_0, \dotsc, u_n].
+        \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} = [u_0, \dotsc, u_n],
     \]
-    Going back to~\eqref{eq:equation_newton} and rearranging,
-    we conclude that
-    \[
-        p(x) = u_0 + (x-x_0) \left( \sum_{i=1}^{n} [u_0, \dotsc, u_n] (x-x_1) \dotsc (x - x_{i-1}) \right)
-        =  \sum_{i=0}^{n} [u_0, \dotsc, u_{i}] \prod_{j=0}^{i-1} (x-x_j),
-    \]
-    which was the statement.
+    which enables to conclude.
+    % Observing that $p(x) - u_0$ has a root at $x_0$,
+    % we deduce that
+    % \begin{equation}
+    %     \label{eq:equation_newton}
+    %     q(x) :=
+    %     \frac{p(x) - u_0}{x - x_0}
+    % \end{equation}
+    % is a polynomial of degree at most $n-1$ that interpolates the points
+    % \begin{equation}
+    %     \label{eq:newton_interpolation_vi}
+    %     \left(x_i, v_i\right) := \left(x_i, \frac{u_i - u_0}{x_i - x_0}\right), \qquad i = 1, \dotsc, n.
+    % \end{equation}
+    % Using the induction hypothesis,
+    % we deduce that $q(x)$ is given by
+    % \[
+    %     q(x) = \sum_{i=1}^{n} [v_1, \dotsc, v_i] (x-x_1) \dotsc (x - x_{i-1})
+    % \]
+    % By~\cref{exercise:divided_differences},
+    % it holds that
+    % \[
+    %     [v_1, \dotsc, v_n] = \sum_{j=1}^{n} \frac{v_{j}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
+    % \]
+    % Therefore, employing the expression of~$v_j$ given in~\eqref{eq:newton_interpolation_vi},
+    % we have
+    % \begin{align*}
+    %     [v_1, \dotsc, v_n]
+    %     &= \sum_{j=1}^{n} \frac{\frac{u_{j}-u_0}{x_j - x_0}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}
+    %     = \sum_{j=1}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} \\
+    %     &= \sum_{j=0}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} = [w_0, \dotsc, w_n],
+    % \end{align*}
+    % where we introduced $w_i = u_i - u_0$, for $i = 0, \dotsc, n$.
+    % Now, since only differences appear in the divided difference $[w_0, \dotsc, w_n]$ and $w_i - w_j = u_i - u_j$ for all pairs $(i, j) \in \{0, \dotsc n\}^2$,
+    % it is clear that
+    % \[
+    %     [w_0, \dotsc, w_n] = [u_0, \dotsc, u_n].
+    % \]
+    % Going back to~\eqref{eq:equation_newton} and rearranging,
+    % we conclude that
+    % \[
+    %     p(x) = u_0 + (x-x_0) \left( \sum_{i=1}^{n} [u_0, \dotsc, u_n] (x-x_1) \dotsc (x - x_{i-1}) \right)
+    %     =  \sum_{i=0}^{n} [u_0, \dotsc, u_{i}] \prod_{j=0}^{i-1} (x-x_j),
+    % \]
+    % which was the statement.
 \end{proof}
 \begin{example}
     Assume that we are looking for the third degree polynomial going through the points
@@ -400,7 +429,7 @@ It is possible to find an expression for the coefficients of the interpolating p
     \]
 \end{example}
 
-\section{Interpolation error}
+\subsection{Interpolation error}
 Assume that~$u(x)$ is a continuous function and denote by $\widehat u(x)$ its interpolation through the points~$(x_i, u_i)$,
 for $i = 0, \dotsc, n$.
 In this section, we study the behavior of the error in the limit as $n \to \infty$.
@@ -535,7 +564,7 @@ as illustrated in~\cref{fig:interpolation_runge_function}.
     \label{fig:interpolation_runge_function}
 \end{figure}
 
-\section{Interpolation at Chebyshev nodes}
+\subsection{Interpolation at Chebyshev nodes}
 Sometimes,
 interpolation is employed as a technique for approximating functions.
 The spectral collocation method, for example,
@@ -677,6 +706,8 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \label{fig:cheb_runge}
 \end{figure}
 
+\section{Function approximation}
+
 \begin{exercise}
     Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
 \end{exercise}
@@ -694,10 +725,15 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
 
 \begin{exercise}
     \label{exercise:divided_differences}
-    Show that
+    Show by recursion that
     \[
         [u_{0}, u_{1}, \dotsc, u_{n}] = \sum_{j=0}^{n} \frac{u_{j}}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
     \]
+    Deduce from this identity that
+    \[
+        [u_{0}, u_{1}, \dotsc, u_{n}] = [u_{\sigma_1}, u_{\sigma_2}, \dotsc, u_{\sigma_n}],
+    \]
+    for any permutation~$\sigma$ of~$(0, 1, 2, \dotsc, n)$.
 \end{exercise}
 
 \begin{exercise}
@@ -734,10 +770,10 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
 \begin{compexercise}
     Write a Julia code for interpolating the following function using a polynomial of degree 20.
     \[
-        f(x) = \tanh\left(\frac{x+1/2}{\varepsilon}\right) + \tanh\left(\frac{x}{\varepsilon}\right) + \tanh\left(\frac{x+1/2}{\varepsilon}\right), 
+        f(x) = \tanh\left(\frac{x+1/2}{\varepsilon}\right) + \tanh\left(\frac{x}{\varepsilon}\right) + \tanh\left(\frac{x+1/2}{\varepsilon}\right),
         \qquad \varepsilon = .01.
     \]
-    Use equidistant and then Chebyshev nodes, 
+    Use equidistant and then Chebyshev nodes,
     and compare the two approaches in terms of accuracy.
     Plot the function~$f$ together with the approximating polynomials.
 \end{compexercise}
@@ -753,4 +789,3 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     After constructing the polynomial interpolations $\widehat x(\theta)$ and $\widehat y(\theta)$,
     plot the curve $\theta \mapsto \bigl(\widehat x(\theta), \widehat y(\theta)\bigr)$.
 \end{compexercise}
-
