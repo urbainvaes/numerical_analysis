@@ -548,10 +548,10 @@ we recall and prove the Courant--Fisher theorem.
     For the $\leq$ direction,
     let $\mathcal U_k = \Span \{ \vect v_{k}, \dots \vect v_n \}$.
     Using a well-known result from linear algebra,
-    we calculate that
+    we calculate that, for any subspace $\mathcal S \subset \complex^n$ of dimension~$k$,
     \begin{align*}
-        \dim(\mathcal S_k \cap \mathcal U_k)
-        &= \dim(\mathcal S_k) + \dim(\mathcal U_k) -\dim(\mathcal S_k + \mathcal U_k) \\
+        \dim(\mathcal S \cap \mathcal U_k)
+        &= \dim(\mathcal S) + \dim(\mathcal U_k) -\dim(\mathcal S + \mathcal U_k) \\
         &=  k + (n - k + 1) - n = 1.
     \end{align*}
     Therefore, any $\mathcal S \subset \complex^n$ of dimension $k$
