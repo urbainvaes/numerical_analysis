@@ -733,7 +733,7 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \[
         [u_{0}, u_{1}, \dotsc, u_{n}] = [u_{\sigma_1}, u_{\sigma_2}, \dotsc, u_{\sigma_n}],
     \]
-    for any permutation~$\sigma$ of~$(0, 1, 2, \dotsc, n)$.
+    for any permutation~$\vect \sigma$ of~$(0, 1, 2, \dotsc, n)$.
 \end{exercise}
 
 \begin{exercise}
@@ -770,7 +770,7 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
 \begin{compexercise}
     Write a Julia code for interpolating the following function using a polynomial of degree 20.
     \[
-        f(x) = \tanh\left(\frac{x+1/2}{\varepsilon}\right) + \tanh\left(\frac{x}{\varepsilon}\right) + \tanh\left(\frac{x+1/2}{\varepsilon}\right),
+        f(x) = \tanh\left(\frac{x+1/2}{\varepsilon}\right) + \tanh\left(\frac{x}{\varepsilon}\right) + \tanh\left(\frac{x-1/2}{\varepsilon}\right),
         \qquad \varepsilon = .01.
     \]
     Use equidistant and then Chebyshev nodes,
@@ -785,7 +785,7 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
       y (\theta) &= (R - r)\sin\theta - d\sin\left({R - r \over r}\theta\right),
     \end{align}
     with $R = 3$, $r = 3$ and $d = 5$, and for $\theta \in [0, 6\pi]$.
-    Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 30 equidistant points in the interval $(0, 30)$.
+    Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 30 equidistant points in the interval $[0, 30]$.
     After constructing the polynomial interpolations $\widehat x(\theta)$ and $\widehat y(\theta)$,
     plot the curve $\theta \mapsto \bigl(\widehat x(\theta), \widehat y(\theta)\bigr)$.
 \end{compexercise}

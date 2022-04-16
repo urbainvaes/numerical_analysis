@@ -819,7 +819,7 @@ This Arnoldi iteration is based on the Gram--Schmidt process and presented in~\c
     \State $\vect u_{j+1} \gets \mat A \vect u_{j}$
     \For{$i \in \{1, \dotsc, j\}$}
         \State $h_{i,j} \gets \vect u_{i}^* \vect u_{j+1}$
-        \State $\vect u_{j+1} \gets \vect u_{j+1} - h_{i,j-1} \vect u_{i}$
+        \State $\vect u_{j+1} \gets \vect u_{j+1} - h_{i,j} \vect u_{i}$
     \EndFor
     \State $h_{j+1,j} \gets \norm{\vect u_{j+1}}$
     \State $\vect u_{j+1} \gets \vect u_{j+1} / h_{j+1,j}$
