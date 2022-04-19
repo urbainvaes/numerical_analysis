@@ -573,8 +573,8 @@ where a discrete solution is first calculated,
 and then a continuous solution is constructed using polynomial or Fourier interpolation.
 When the interpolation nodes are not given a priori as data,
 it is natural to wonder whether these can be picked in such a manner that the interpolation error,
-measured in the supremum norm, is minimized.
-More precisely, given a continuous function~$u(x)$ and a number of nodes~$n$,
+measured in a function norm, is minimized.
+For example, given a continuous function~$u(x)$ and a number of nodes~$n$,
 is it possible to chose nodes $x_0, \dotsc, x_n$ such that
 \[
     E := \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)}
@@ -621,7 +621,7 @@ which we will deduce from the following theorem.
     since $\abs{T_n(x)} \leq 1$.
 
     In order to prove~\eqref{eq:chebychev_lower_bound},
-    we assume by contradiction that there was a different monic polynomial~$\widetilde p$ of degree~$n$ such that
+    we assume by contradiction that there is a different monic polynomial~$\widetilde p$ of degree~$n$ such that
     \begin{equation}
         \label{eq:chebyshev_minimum}
         \sup_{x \in [-1, 1]} \abs{\widetilde p(x)} < \frac{1}{2^{n-1}}.
@@ -638,6 +638,44 @@ which we will deduce from the following theorem.
     by the intermediate value theorem, it has at least $n$ roots.
     But this is impossible, because $q(x) \neq 0$ and $q(x)$ is of degree at most $n-1$.
 \end{proof}
+\begin{remark}
+    [Derivation of Chebyshev polynomials]
+    When multiplied by~$2^{n-1}$,
+    the polynomial achieving the lower bound in~\eqref{eq:chebychev_lower_bound},
+    oscillates between the values -1 and 1,
+    which are respectively its minimum and maximum values over the interval~$[-1, 1]$.
+    It attains the values 1 or -1 at $n+1$ points $x_0, \dotsc, x_n$,
+    with $x_0 = -1$ and $x_n = 1$.
+    It turns out that these properties,
+    which can shown to hold a priori using Chebyshev's \emph{equioscillation theorem},
+    is sufficient to derive an explicit expression of the polynomial~$T_n$,
+    as we formally demonstrate hereafter.
+
+    The points $x_2, \dotsc, x_{n-1}$
+    are local extrema of~$T_n$,
+    and so~$T_n'(x) = 0$ at these nodes.
+    We therefore deduce that $T_n$ satisfies the differential equation
+    \begin{equation}
+        \label{eq:differential_equation_chebyshev}
+        n^2\bigl(1 - T_n(x)^2\bigr) = T_n'(x)^2 (1 - x^2).
+    \end{equation}
+    Indeed, both sides are polynomials of degree $2n$ with single roots at -1 and 1,
+    with double roots at $x_2, \dotsc, x_{n+1}$,
+    and with the same coefficient of the leading power.
+    In order to solve~\eqref{eq:differential_equation_chebyshev},
+    we rearrange the equation and take the square root:
+    \[
+        \frac{T_n'(x)}{\sqrt{1 - T_n(x)^2}} = \pm \frac{n}{1 - x^2}
+        \qquad \Leftrightarrow \qquad
+        \frac{\d}{\d x} \arccos\bigl(T_n(x)\bigr) = \pm n \frac{\d}{\d x} \arccos(x).
+    \]
+    Integrating both sides and taking the cosine,
+    we obtain
+    \[
+        T_n(x) = \cos\bigl(C + n \arccos(x)\bigr).
+    \]
+    Requiring that $|T_n(-1)| = 1$, we deduce $C = 0$.
+\end{remark}
 
 From~\cref{theorem:minimum_infty_norm},
 we deduce the following corollary.
@@ -705,6 +743,50 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_30.pdf}
     \label{fig:cheb_runge}
 \end{figure}
+
+\section{Hermite interpolation}
+Hermite interpolation generalizes Lagrange interpolation to the case where
+the values of some of the derivatives are given at the interpolation nodes.
+For simplicity,
+we assume in this section that only data on the first derivative at the nodes is available.
+Given data~$(x_i, u_i, u_i')$ for~$i \in \{0, \dotsc, n\}$,
+Hermite interpolation consists in finding a polynomial~$\widehat u$ of degree at most $2n + 1$
+such that
+\[
+    \forall i \in \{0, \dotsc, n\}, \qquad
+    \widehat u(x_i) = u(x_i), \qquad
+    \widehat u'(x_i) = u'(x_i).
+\]
+In order to construct the interpolating polynomial,
+it is useful to square the usual Lagrange polynomials:
+\[
+    \varphi_{i}(x)
+    = \prod_{j=0, j\neq i} \left( \frac{x-x_j}{x_i-x_j} \right)^2
+\]
+The functions $\varphi_i$ thus defined satisfy
+\[
+    \varphi_i(x_j) = 1,
+    \qquad \varphi_i'(x_i) = \sum_{j=0,j\neq i}^{n} \frac{2}{x_i - x_j},
+    \qquad \forall j \neq i \qquad \varphi_i(x_j) = \varphi_i'(x_j) = 0.
+\]
+We consider the following ansatz for~$\widehat u$:
+\[
+    \widehat u(x) = \sum_{i=0}^{n} \varphi_i(x) q_i(x),
+\]
+where $q_i$ are polynomials to be determined of degree at most one,
+so that~$\widehat u$ is of degree at most~$2n+1$.
+We then have
+\[
+    \widehat u(x_i) = q_i(x_i), \qquad \widehat u'(x_i) = \varphi_i'(x_i) q(x_i) + q'(x_i).
+\]
+From the first equation, we deduce that $q_i(x_i) = u_i$,
+and from the second equation we then have~$q'(x_i) = \widehat u'(x_i) - \varphi_i'(x_i) u_i$.
+We conclude that the interpolating polynomial is given by
+\[
+    \widehat u(x) = \sum_{i=0}^{n} \varphi_i(x) \Bigl(u_i + \bigl(u_i' - \varphi_i'(x_i) u_i\bigr) (x - x_i)\Bigr).
+\]
+
+\section{Piecewise interpolation using cubic splines}
 
 \section{Function approximation}
 

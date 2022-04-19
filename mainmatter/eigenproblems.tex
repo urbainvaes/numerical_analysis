@@ -904,7 +904,7 @@ Specifically, the norm of the residual is equal to the last component of the ass
     which immediately gives the result.
 \end{proof}
 
-In practice, the large the dimension~$p$ of the subspace~$\mathcal U$ employed in the Rayleigh--Ritz method,
+In practice, the larger the dimension~$p$ of the subspace~$\mathcal U$ employed in the Rayleigh--Ritz method,
 the more memory is required for storing an orthonormal basis of~$\mathcal U$.
 In addition, for large values of~$p$,
 computing the reduced matrix~\eqref{eq:reduced_matrix_arnoldi} and its eigenpairs becomes computationally expensive;
@@ -1033,8 +1033,8 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             You may use the fact that $\det(\mat B) = \det(\mat B^\t)$.
 
         \item
-            Show that $\rho(\mat M) = 1$ and that 1 is an eigenvalue.
-            For the first part, find a subordinate matrix norm such that $\norm{\mat M}= 1$.
+            Show that 1 is an eigenvalue and that $\rho(\mat M) = 1$.
+            For the second part, find a subordinate matrix norm such that $\norm{\mat M}= 1$.
 
         \item
             Implement PageRank  in order to rank pages from a 2013 snapshot of English Wikipedia.
@@ -1042,10 +1042,10 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             In the former case,
             the following are both sensible stopping criteria:
             \[
-                \frac{\norm{\mat M \widehat{\vect v} - \widehat{\vect v}}_1}{\norm{\widehat{\vect v}}_1} < 10^{-15}
+                \frac{\norm{\mat M \widehat{\vect r} - \widehat{\vect r}}_1}{\norm{\widehat{\vect r}}_1} < 10^{-15}
                 \qquad \text{ or } \qquad
-                \frac{\norm{\mat M \widehat{\vect v} - \widehat \lambda \widehat{\vect v}}_1}{\norm{\vect v}_1} < 10^{-15},
-                \qquad \widehat \lambda = \frac{\widehat{\vect v}^\t \mat M \widehat{\vect v}}{\widehat{\vect v}^\t \widehat{\vect v}},
+                \frac{\norm{\mat M \widehat{\vect r} - \widehat \lambda \widehat{\vect r}}_1}{\norm{\vect r}_1} < 10^{-15},
+                \qquad \widehat \lambda = \frac{\widehat{\vect r}^\t \mat M \widehat{\vect r}}{\widehat{\vect r}^\t \widehat{\vect r}},
             \]
             where $\widehat{\vect v}$ is an approximation of the eigenvector corresponding to the dominant eigenvalue.
             A dataset is available on the course website to complete this part.
