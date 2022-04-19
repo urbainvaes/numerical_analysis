@@ -647,8 +647,8 @@ which we will deduce from the following theorem.
     It attains the values 1 or -1 at $n+1$ points $x_0, \dotsc, x_n$,
     with $x_0 = -1$ and $x_n = 1$.
     It turns out that these properties,
-    which can shown to hold a priori using Chebyshev's \emph{equioscillation theorem},
-    is sufficient to derive an explicit expression of the polynomial~$T_n$,
+    which can be shown to hold a priori using Chebyshev's \emph{equioscillation theorem},
+    is sufficient to derive an explicit expression for the polynomial~$T_n$,
     as we formally demonstrate hereafter.
 
     The points $x_2, \dotsc, x_{n-1}$
@@ -723,7 +723,7 @@ we deduce the following corollary.
     we deduce the result.
 \end{proof}
 
-\Cref{corollary:chebyshev_nodes} establishes a link with interpolation.
+\Cref{corollary:chebyshev_nodes} is useful for interpolation.
 The nodes
 \begin{equation}
     x_i = a + (b-a) \frac{1 + \cos \left( (2i + 1) \frac{\pi}{2 n} \right)}{2}, \qquad i = 0, \dotsc, n,
@@ -745,12 +745,15 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
 \end{figure}
 
 \section{Hermite interpolation}
-Hermite interpolation generalizes Lagrange interpolation to the case where
+Hermite interpolation,
+sometimes also called Hermite--Birkoff interpolation,
+generalizes Lagrange interpolation to the case where,
+in addition to the function values $u_0, \dotsc, u_n$,
 the values of some of the derivatives are given at the interpolation nodes.
 For simplicity,
-we assume in this section that only data on the first derivative at the nodes is available.
-Given data~$(x_i, u_i, u_i')$ for~$i \in \{0, \dotsc, n\}$,
-Hermite interpolation consists in finding a polynomial~$\widehat u$ of degree at most $2n + 1$
+we assume in this section that only the values of the first derivative are specified.
+Given data~$(x_i, u_i, u_i')$ for $i \in \{0, \dotsc, n\}$,
+Hermite interpolation consists of finding a polynomial~$\widehat u$ of degree at most~$2n + 1$
 such that
 \[
     \forall i \in \{0, \dotsc, n\}, \qquad
@@ -758,12 +761,13 @@ such that
     \widehat u'(x_i) = u'(x_i).
 \]
 In order to construct the interpolating polynomial,
-it is useful to square the usual Lagrange polynomials:
+it is useful to define the functions,
 \[
     \varphi_{i}(x)
-    = \prod_{j=0, j\neq i} \left( \frac{x-x_j}{x_i-x_j} \right)^2
+    = \prod_{j=0, j\neq i} \left( \frac{x-x_j}{x_i-x_j} \right)^2.
 \]
-The functions $\varphi_i$ thus defined satisfy
+The function $\varphi_i$ is the square of the usual Lagrange polynomials associated with~$x_i$,
+and it satisfies
 \[
     \varphi_i(x_j) = 1,
     \qquad \varphi_i'(x_i) = \sum_{j=0,j\neq i}^{n} \frac{2}{x_i - x_j},
@@ -775,7 +779,7 @@ We consider the following ansatz for~$\widehat u$:
 \]
 where $q_i$ are polynomials to be determined of degree at most one,
 so that~$\widehat u$ is of degree at most~$2n+1$.
-We then have
+We then require
 \[
     \widehat u(x_i) = q_i(x_i), \qquad \widehat u'(x_i) = \varphi_i'(x_i) q(x_i) + q'(x_i).
 \]
@@ -785,6 +789,21 @@ We conclude that the interpolating polynomial is given by
 \[
     \widehat u(x) = \sum_{i=0}^{n} \varphi_i(x) \Bigl(u_i + \bigl(u_i' - \varphi_i'(x_i) u_i\bigr) (x - x_i)\Bigr).
 \]
+The following theorem gives an expression of the error.
+\begin{theorem}
+    [Hermite interplotion error]
+    \label{exercise:proof_hermite}
+    Assume that~$u\colon [a, b] \to \real$ is a function in $C^{2n+1}([a, b])$ and let~$\widehat u$
+    denote the Hermite interpolation of~$u$ at the nodes~$x_0, \dotsc, x_n$.
+    Then for all $x \in [a, b]$,
+    there exists~$\xi = \xi(x)$ in the interval $[a, b]$ such that
+    \[
+        u(x) - \widehat u(x) = \frac{u^{(2n+1)}(\xi)}{n+1!} (x-x_0)^2 \dotsc (x - x_n)^2.
+    \]
+\end{theorem}
+\begin{proof}
+    See~\cref{exercise:proof_hermite}.
+\end{proof}
 
 \section{Piecewise interpolation using cubic splines}
 
@@ -847,6 +866,11 @@ We conclude that the interpolating polynomial is given by
         Remarkably, equation~\eqref{eq:discrete_exponential} holds in fact for \emph{any} $n \in \real_{> 0}$.
         However, showing this more general statement is beyond the scope of this course.
     \end{remark}
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:proof_hermite}
+    Prove~\cref{theorem:hermite_interpolation}.
 \end{exercise}
 
 \begin{compexercise}
