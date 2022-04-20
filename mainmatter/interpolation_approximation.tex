@@ -164,8 +164,7 @@ any polynomial~$p$ of degree $n$ may be expressed as
 In other words, the constant coefficient can be obtained by evaluating the polynomial at 0,
 the linear coefficient can be identified by evaluating the first derivative at 0,
 and so on.
-Assume now that we are given the values taken by~$p$ when evaluated at the integer numbers $\{0, \dotsc, n\}$,
-which we denote by $p_0, \dotsc, p_n$.
+Assume now that we are given the values taken by~$p$ when evaluated at the integer numbers $\{0, \dotsc, n\}$.
 We ask the following question:
 can we find a formula similar in spirit to~\eqref{eq:taylor},
 but including only evaluations of $p$ and not of its derivatives?
@@ -208,8 +207,9 @@ An expansion of the form~\eqref{eq:gregory_newton_actually} is called a \emph{Ne
 which is the discrete analog of the continuous Taylor series.
 From the definition of~$\Delta$,
 it is clear that the coefficients in~\eqref{eq:gregory_newton_actually} depend only on~$p(0), \dotsc, p(n)$.
-We conclude that, given points $n+1$ points $(i, p_i)$ for $i \in \{0, \dotsc, n\}$,
-the unique interpolating polynomial can be obtained from~\eqref{eq:gregory_newton_actually}.
+We conclude that, given points $n+1$ points $(i, u_i)$ for $i \in \{0, \dotsc, n\}$,
+the unique interpolating polynomial given by~\eqref{eq:gregory_newton_actually},
+after replacing $p(i)$ by $u_i$.
 
 \begin{example}
     \label{example:gregory_newton}
@@ -242,21 +242,21 @@ the unique interpolating polynomial can be obtained from~\eqref{eq:gregory_newto
 \end{example}
 Notice that when falling powers are employed as polynomial basis,
 the matrix in~\eqref{eq:linear_system_interpolation} is lower triangular,
-and the algorithm described in~\cref{example:gregory_newton} could be replaced by the forward substitution method.
+and so the algorithm described in~\cref{example:gregory_newton} could be replaced by the forward substitution method.
 Whereas the coefficients of the Lagrange interpolant can be obtained immediately from the values of~$u$ at the nodes,
 calculating the coefficients of the expansion in~\eqref{eq:gregory_newton} requires $\mathcal O(n^2)$ operations.
-However, this method has several advantages over Lagrange interpolation:
+However, Gregory--Newton interpolation has several advantages over Lagrange interpolation:
 \begin{itemize}
     \item
         If a point~$(n+1, p_{n+1})$ is added to the set of interpolation points,
         only one additional term, corresponding to the falling power~$x^{\underline{n+1}}$,
-        has to be calculated in~\eqref{eq:gregory_newton_actually}.
+        needs to be calculated in~\eqref{eq:gregory_newton_actually}.
         All the other coefficients are unchanged.
         Therefore, the Gregory--Newton approach is well-suited for incremental interpolation.
 
     \item
-        The Gregory--Newton interpolation method method is more numerically stable than Lagrange interpolation,
-        because none of the basis functions take very large values.
+        The Gregory--Newton interpolation method is more numerically stable than Lagrange interpolation,
+        because the basis functions do not take very large values.
 
     \item
         A polynomial in the form of a Newton series can be evaluated efficiently using Horner's method,
@@ -486,7 +486,7 @@ we deduce the following error bound.
     \begin{equation}
         \label{eq:upper_bound_interp_error}
         \forall x \in [a, b], \qquad
-        \abs{e_n(x)} \leq \frac{C_{n+1}}{n+1} h^{n+1}
+        \abs{e_n(x)} \leq \frac{C_{n+1}}{4(n+1)} h^{n+1}
     \end{equation}
     where $h$ is the maximum spacing between two successive interpolation nodes.
 \end{corollary}
@@ -548,9 +548,9 @@ is that of the Runge function:
 It is possible to show that,
 for this function,
 the upper bound in~\cref{corollary:interpolation_error} tends to $\infty$ in the limit as the number of interpolation nodes increases.
-We emphasize that this does not prove that $E_n \to \infty$,
-because~\eqref{eq:upper_bound_interp_error} provides only an upper bound on the error.
-In fact, the interpolation error can either grow or decrease,
+We emphasize that this does not prove that $E_n \to \infty$ in the limit as $n \to \infty$,
+because~\eqref{eq:upper_bound_interp_error} provides only an \emph{upper bound} on the error.
+In fact, the interpolation error for the Runge function can either grow or decrease,
 depending on the choice of interpolation nodes.
 With equidistant nodes, it turns out that $E_n \to \infty$,
 as illustrated in~\cref{fig:interpolation_runge_function}.
@@ -605,9 +605,9 @@ which we will deduce from the following theorem.
     Then it holds that
     \begin{equation}
         \label{eq:chebychev_lower_bound}
-        \sup_{x \in [-1, 1]} \abs{p(x)} \geq \frac{1}{2^{n-1}}.
+        \sup_{x \in [-1, 1]} \abs{p(x)} \geq \frac{1}{2^{n-1}} =: E.
     \end{equation}
-    In addition, the lower bound is achieved for~$p(x) = 2^{-(n-1)} T_n(x)$,
+    In addition, the lower bound is achieved for~$p_*(x) = 2^{-(n-1)} T_n(x)$,
     where $T_n$ is the Chebyshev polynomial of degree~$n$:
     \begin{equation}
         \label{eq:chebyshev_polynomial}
@@ -624,12 +624,12 @@ which we will deduce from the following theorem.
     we assume by contradiction that there is a different monic polynomial~$\widetilde p$ of degree~$n$ such that
     \begin{equation}
         \label{eq:chebyshev_minimum}
-        \sup_{x \in [-1, 1]} \abs{\widetilde p(x)} < \frac{1}{2^{n-1}}.
+        \sup_{x \in [-1, 1]} \abs{\widetilde p(x)} < E.
     \end{equation}
     Let us introduce $x_i = \cos(i \pi/n)$, for $i = 0, \dotsc, n$,
     and observe that
     \[
-        p(x_i) = 2^{-(n-1)} T_n(x_i) = 2^{-(n-1)} (-1)^i.
+        p(x_i) = 2^{-(n-1)} T_n(x_i) = (-1)^i E.
     \]
     The function $q(x) := p(x) - \widetilde p(x)$ is a polynomial of degree at most $n-1$ which,
     by the assumption~\eqref{eq:chebyshev_minimum},
@@ -640,24 +640,24 @@ which we will deduce from the following theorem.
 \end{proof}
 \begin{remark}
     [Derivation of Chebyshev polynomials]
-    When multiplied by~$2^{n-1}$,
-    the polynomial achieving the lower bound in~\eqref{eq:chebychev_lower_bound},
-    oscillates between the values -1 and 1,
+    \label{remark:cheb}
+    The polynomial~$p_*$ achieving the lower bound in~\eqref{eq:chebychev_lower_bound}
+    oscillates between the values $-E$ and $E$,
     which are respectively its minimum and maximum values over the interval~$[-1, 1]$.
-    It attains the values 1 or -1 at $n+1$ points $x_0, \dotsc, x_n$,
+    It attains the values $E$ or $-E$ at $n+1$ points $x_0, \dotsc, x_n$,
     with $x_0 = -1$ and $x_n = 1$.
     It turns out that these properties,
     which can be shown to hold a priori using Chebyshev's \emph{equioscillation theorem},
-    is sufficient to derive an explicit expression for the polynomial~$T_n$,
+    are sufficient to derive an explicit expression for the polynomial~$p_*$,
     as we formally demonstrate hereafter.
 
     The points $x_2, \dotsc, x_{n-1}$
-    are local extrema of~$T_n$,
-    and so~$T_n'(x) = 0$ at these nodes.
-    We therefore deduce that $T_n$ satisfies the differential equation
+    are local extrema of~$p_*$,
+    and so~$p_*'(x) = 0$ at these nodes.
+    We therefore deduce that $p_*$ satisfies the differential equation
     \begin{equation}
         \label{eq:differential_equation_chebyshev}
-        n^2\bigl(1 - T_n(x)^2\bigr) = T_n'(x)^2 (1 - x^2).
+        n^2\bigl(E^2 - p_*(x)^2\bigr) = p_*'(x)^2 (1 - x^2).
     \end{equation}
     Indeed, both sides are polynomials of degree $2n$ with single roots at -1 and 1,
     with double roots at $x_2, \dotsc, x_{n+1}$,
@@ -665,16 +665,16 @@ which we will deduce from the following theorem.
     In order to solve~\eqref{eq:differential_equation_chebyshev},
     we rearrange the equation and take the square root:
     \[
-        \frac{T_n'(x)}{\sqrt{1 - T_n(x)^2}} = \pm \frac{n}{1 - x^2}
+        \frac{\frac{p_*'(x)}{E}}{\sqrt{1 - \frac{p_*(x)^2}{E^2}}} = \pm \frac{n}{1 - x^2}
         \qquad \Leftrightarrow \qquad
-        \frac{\d}{\d x} \arccos\bigl(T_n(x)\bigr) = \pm n \frac{\d}{\d x} \arccos(x).
+        \frac{\d}{\d x} \arccos\left(\frac{p_*(x)}{E}\right) = \pm n \frac{\d}{\d x} \arccos(x).
     \]
     Integrating both sides and taking the cosine,
     we obtain
     \[
-        T_n(x) = \cos\bigl(C + n \arccos(x)\bigr).
+        p_*(x) = E \cos\bigl(C + n \arccos(x)\bigr).
     \]
-    Requiring that $|T_n(-1)| = 1$, we deduce $C = 0$.
+    Requiring that $|p_*(-1)| = E$, we deduce $C = 0$.
 \end{remark}
 
 From~\cref{theorem:minimum_infty_norm},
@@ -683,9 +683,9 @@ we deduce the following corollary.
     [Chebyshev nodes]
     \label{corollary:chebyshev_nodes}
     Assume that $x_0 < x_1 < \dotsc < x_n$ are in the interval $[a, b]$.
-    The supremum norm of the product $(x-x_0) \dotsb (x-x_n)$ over~$[a, b]$ is minimized when
+    The supremum norm of the product $\omega(x) := (x-x_0) \dotsb (x-x_n)$ over~$[a, b]$ is minimized when
     \begin{equation}
-        x_i = a + (b-a) \frac{1 + \cos \left( (2i + 1) \frac{\pi}{2 n} \right)}{2}
+        x_i = a + (b-a) \frac{1 + \cos \left( \frac{(2i + 1) \pi}{2(n+1)} \right)}{2}
     \end{equation}
         % \label{eq:optimal_product}
         % (x-x_0) \dotsb (x-x_n) = \frac{(b-a)^n}{2^{2n-1}} T_n\left(\frac{a + b - 2x}{a - b}\right).
@@ -704,20 +704,20 @@ we deduce the following corollary.
     \end{align*}
     The function
     \begin{align*}
-        p(y) &:= \frac{2^n}{(b-a)^n} \bigl(\zeta(y)-x_0\bigr) \dotsb \bigl(\zeta(y)-x_n\bigr) \\
+        p(y) &:= \frac{2^n}{(b-a)^n} \omega\bigl(\zeta(y)\bigr) = \frac{2^{n+1}}{(b-a)^{n+1}} \bigl(\zeta(y)-x_0\bigr) \dotsb \bigl(\zeta(y)-x_n\bigr) \\
              &= \bigl(y-y_0\bigr) \dotsb \bigl(y-y_n\bigr), \qquad y_i = \zeta^{-1}(x_i),
     \end{align*}
-    is a monic polynomial of degree~$n$ such that
+    is a monic polynomial of degree~$n+1$ such that
     \begin{equation}
         \label{eq:change_of_variable}
-        \sup_{y \in [-1, 1]} \abs{p(y)} = \frac{2^n}{(b-a)^n} \sup_{x \in [a, b]} \abs{(x-x_0) \dotsc (x - x_n)}.
+        \sup_{y \in [-1, 1]} \abs{p(y)} = \frac{2^{n+1}}{(b-a)^{n+1}} \sup_{x \in [a, b]} \abs{(x-x_0) \dotsc (x - x_n)}.
     \end{equation}
     By~\cref{theorem:minimum_infty_norm},
-    the left-hand side is minimized when $p$ is equal to $2^{-(n-1)} T_n(y)$,
-    i.e.\ when the roots of $p$ coincide with the roots of $T_n$.
+    the left-hand side is minimized when $p$ is equal to $2^{-n} T_{n+1}(y)$,
+    i.e.\ when the roots of $p$ coincide with the roots of $T_{n+1}$.
     This occurs when
     \[
-        y_i = \zeta^{-1}(x_i) = \cos \left( (2i + 1) \frac{\pi}{2 n} \right).
+        y_i = \zeta^{-1}(x_i) = \cos \left( \frac{(2i + 1)\pi}{2 (n+1)} \right).
     \]
     Applying the inverse change of variable $x_i = \zeta(y_i)$,
     we deduce the result.
@@ -744,27 +744,28 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \label{fig:cheb_runge}
 \end{figure}
 
-\section{Hermite interpolation}
+\subsection{Hermite interpolation}
 Hermite interpolation,
 sometimes also called Hermite--Birkoff interpolation,
 generalizes Lagrange interpolation to the case where,
 in addition to the function values $u_0, \dotsc, u_n$,
 the values of some of the derivatives are given at the interpolation nodes.
 For simplicity,
-we assume in this section that only the values of the first derivative are specified.
-Given data~$(x_i, u_i, u_i')$ for $i \in \{0, \dotsc, n\}$,
-Hermite interpolation consists of finding a polynomial~$\widehat u$ of degree at most~$2n + 1$
-such that
+we assume in this section that only the first derivative is specified.
+In this case, the aim of Hermite interpolation is to find,
+given data~$(x_i, u_i, u_i')$ for $i \in \{0, \dotsc, n\}$,
+a polynomial~$\widehat u$ of degree at most~$2n + 1$ such that
 \[
     \forall i \in \{0, \dotsc, n\}, \qquad
-    \widehat u(x_i) = u(x_i), \qquad
-    \widehat u'(x_i) = u'(x_i).
+    \widehat u(x_i) = u_i, \qquad
+    \widehat u'(x_i) = u'_i.
 \]
 In order to construct the interpolating polynomial,
-it is useful to define the functions,
+it is useful to define the functions
 \[
     \varphi_{i}(x)
-    = \prod_{j=0, j\neq i} \left( \frac{x-x_j}{x_i-x_j} \right)^2.
+    = \prod_{j=0, j\neq i}^{n} \left( \frac{x-x_j}{x_i-x_j} \right)^2,
+    \qquad i = 0, \dotsc, n.
 \]
 The function $\varphi_i$ is the square of the usual Lagrange polynomials associated with~$x_i$,
 and it satisfies
@@ -792,7 +793,7 @@ We conclude that the interpolating polynomial is given by
 The following theorem gives an expression of the error.
 \begin{theorem}
     [Hermite interplotion error]
-    \label{exercise:proof_hermite}
+    \label{theorem:hermite_interpolation}
     Assume that~$u\colon [a, b] \to \real$ is a function in $C^{2n+1}([a, b])$ and let~$\widehat u$
     denote the Hermite interpolation of~$u$ at the nodes~$x_0, \dotsc, x_n$.
     Then for all $x \in [a, b]$,
@@ -805,9 +806,78 @@ The following theorem gives an expression of the error.
     See~\cref{exercise:proof_hermite}.
 \end{proof}
 
-\section{Piecewise interpolation using cubic splines}
+\subsection{Piecewise interpolation}
+The interpolation methods we discussed so far are in some sense global;
+they aim to construct one polynomial that goes through all the data points.
+This approach is attractive because the interpolant is infinitely smooth but,
+as we showed, it is not always fruitful,
+in particular when equidistant interpolation nodes are employed.
+An alternative approach is to divide the domain in a number of small intervals,
+and to perform polynomial interpolation within each interval.
+Although the resulting interpolating function is usually not smooth over the full domain,
+this ``local'' approach to interpolation is in general more robust.
+
+Several methods belong in the category of piecewise interpolation.
+We mention, for instance, piecewise Lagrange interpolation and cubic splines interpolation.
+In this section,
+we briefly describe the former method,
+which is widely used in the context of the \emph{finite element method}.
+Information on the latter method is available in~\cite[Section 8.7.1.]{MR2265914}.
+
+For simplicity, we illustrate the method in dimension 1,
+but piecewise Lagrange interpolation can be extended to several dimensions.
+Assume that we wish to approximate a function~$u\colon [a, b] \to \real$.
+We consider a subdivision $a = x_0 < x_1 < \dotsc < x_n = b$ of the interval $[a, b]$
+and let~$h$ denote the maximum spacing:
+\[
+    h = \max_{i \in \{0, \dotsc, n-1\}} \abs{x_{i+1} - x_i}.
+\]
+Within each subinterval $I_i = [x_i, x_{i+1}]$,
+we consider a further subdivision
+\[
+    x_i = x_i^{(0)} < x_i^{(1)} < \dotsc < x_i^{(m)} = x_{i+1},
+\]
+where the nodes $x_i^{(0)}, \dotsc, x_i^{(m)}$ are equally spaced with distance $h/m$.
+The idea of piecewise Lagrange interpolation is to calculate,
+for each interval $I_i$ in the partition,
+the interpolating polynomial~$p_i$ at the nodes $x_i^{(0)}, \dotsc, x_i^{(m)}$.
+The interpolant is then defined as
+\begin{equation}
+    \label{eq:piecewise_interpolation}
+    \widehat u(x) = p_{\iota}(x),
+\end{equation}
+where $\iota = \iota(x)$ is the index of the interval to which $x$ belongs.
+Since $x_i^{(m)} = x_{i+1} = x_{i+1}^{(0)}$,
+the interpolant defined by~\eqref{eq:piecewise_interpolation} is continuous.
+If the function $u$ belongs to $C^{m+1}([a, b])$,
+then by~\cref{corollary:interpolation_error} the interpolation error within each subinterval may be bounded from above as follows:
+\[
+    \sup_{x \in I_i} \abs{u(x) - \widehat u(x)} \leq \frac{ C_{m+1} (h/m)^{m+1}}{4(m + 1)},
+    \qquad C_{m+1} := \sup_{x \in [a, b]} \abs{u^{(m+1)}(x)},
+\]
+and so we deduce
+\[
+    \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)} \leq C h^{m+1},
+\]
+for an appropriate constant~$C$ independent of $h$.
+This equation shows that the error is guaranteed to decrease to~0 in the limit as $h \to \infty$.
+In practice, the number $m$ of interpolation nodes within each interval can be small.
+Several integration methods presented~\cref{cha:quadrature} are related to piecewise interpolation.
 
 \section{Function approximation}
+In this section,
+we focus on the subject of \emph{approximation},
+both of discrete data points and of continuous functions.
+We begin, in \cref{sub:polynomial_regression} with a discussion of polynomial regression,
+and in \cref{sub:mean_square_approximation} we focus on function approximation in the mean square sense.
+
+\subsection{Polynomial regression}
+\label{sub:polynomial_regression}
+Consider $m + 1$ distinct $x$ values $x_0 < \dotsc < x_m$,
+and suppose that we know the values taken by an unknown function $u$ when evaluated at these points.
+
+\subsection{Mean square approximation}
+\label{sub:mean_square_approximation}
 
 \begin{exercise}
     Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
@@ -885,13 +955,30 @@ The following theorem gives an expression of the error.
 \end{compexercise}
 
 \begin{compexercise}
-    We wish to use interpolation to approximate the following parametric function:
+    \label{exercise:parametric_interpolation}
+    We wish to use interpolation to approximate the following parametric function,
+    called an \emph{epitrochoid}:
     \begin{align}
-      x (\theta) &= (R - r)\cos\theta + d\cos\left({R - r \over r}\theta\right) \\
-      y (\theta) &= (R - r)\sin\theta - d\sin\left({R - r \over r}\theta\right),
+      x (\theta) &= (R + r)\cos\theta + d\cos\left({R + r \over r}\theta\right) \\
+      y (\theta) &= (R + r)\sin\theta - d\sin\left({R + r \over r}\theta\right),
     \end{align}
-    with $R = 3$, $r = 3$ and $d = 5$, and for $\theta \in [0, 6\pi]$.
-    Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 30 equidistant points in the interval $[0, 30]$.
+    with $R = 5$, $r = 2$ and $d = 3$, and for $\theta \in [0, 4\pi]$.
+    Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 40 equidistant points.
+    Use the \julia{BigFloat} format in order to reduce the impact of round-off errors.
     After constructing the polynomial interpolations $\widehat x(\theta)$ and $\widehat y(\theta)$,
-    plot the curve $\theta \mapsto \bigl(\widehat x(\theta), \widehat y(\theta)\bigr)$.
+    plot the parametric curve $\theta \mapsto \bigl(\widehat x(\theta), \widehat y(\theta)\bigr)$.
+    Your plot should look similar to \cref{fig:parametric_interpolation}.
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.99\linewidth]{figures/interpolation.pdf}
+        \caption{Solution for \cref{exercise:parametric_interpolation}.}%
+        \label{fig:parametric_interpolation}
+    \end{figure}
 \end{compexercise}
+
+\section{Discussion and bibliography}
+A comprehensive study of approximation theory would require to cover the $L^{\infty}$ setting,
+in particular Chebyshev's equioscillation theorem, which we alluded to in~\cref{remark:cheb},
+as well as other functional settings.
+An excellent introductory reference on approximation theory is~\cite{magnus} (in French).
+See also~\cite{MR2265914}.
