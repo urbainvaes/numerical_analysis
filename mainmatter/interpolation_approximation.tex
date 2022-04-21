@@ -1153,7 +1153,7 @@ We begin by showing that orthogonal polynomials satisfy a three-term recurrence 
     we deduce that $\gamma_{n,i} = 0$ if~$i < n-1$.
     Consequently, we can rewrite the right-hand of~\eqref{eq:expansion_times_x} as a sum involving only three terms
     \begin{equation}
-        \label{eq:expansion_times_x}
+        \label{eq:expansion_times_x_good}
         x \varphi_n(x) =  \ip[big]{x \varphi_n, \varphi_{n-1}} \varphi_{n-1}(x) + \ip[big]{x \varphi_n, \varphi_{n}} \varphi_{n}(x) + \ip[big]{x \varphi_n, \varphi_{n+1}} \varphi_{n+1}(x).
     \end{equation}
     Since $\ip[big]{x \varphi_n, \varphi_{n+1}} = \ip[big]{x \varphi_{n+1}, \varphi_{n}}$,
@@ -1186,7 +1186,7 @@ we show that orthogonal polynomials have distinct real roots.
     and orthogonal to $\varphi_n$.
 \end{proof}
 
-Equation~\eqref{eq:expansion_times_x} may be rewritten in matrix form
+Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form
 \[
     \begin{pmatrix}
         x \varphi_0(x) \\
