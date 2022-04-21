@@ -30,7 +30,7 @@ or a subset thereof, must be specified in order to measure errors.
 Without a metric, saying that two functions are close is almost meaningless!
 % Consider, for example, the function $f\colon [0, 1] \to \real; x \mapsto 0$ and the approximations $\widehat f_1(x) = x^{100}$ and $\widehat f_2(x) = 0.01$
 
-\section{Function interpolation}
+\section{Interpolation}
 Assume that we are given $n+1$ nodes $x_0, \dotsc, x_n$ on the $x$ axis,
 together with the values $u_0, \dotsc, u_n$ taken by an unknown function~$u(x)$ when evaluated at these points,
 and suppose that we are looking for an interpolation~$\widehat u(x)$ in a subspace~$\Span \{\varphi_0, \dotsc, \varphi_n\}$
@@ -161,7 +161,7 @@ any polynomial~$p$ of degree $n$ may be expressed as
     \label{eq:taylor}
     p(x) = p(0) + p'(0) x + \frac{p''(0)}{2} x^2 + \dotsc + \frac{p^{(n)}(0)}{n!} x^n.
 \end{equation}
-In other words, the constant coefficient can be obtained by evaluating the polynomial at 0,
+The constant coefficient can be obtained by evaluating the polynomial at 0,
 the linear coefficient can be identified by evaluating the first derivative at 0,
 and so on.
 Assume now that we are given the values taken by~$p$ when evaluated at the integer numbers $\{0, \dotsc, n\}$.
@@ -862,22 +862,370 @@ and so we deduce
 for an appropriate constant~$C$ independent of $h$.
 This equation shows that the error is guaranteed to decrease to~0 in the limit as $h \to \infty$.
 In practice, the number $m$ of interpolation nodes within each interval can be small.
-Several integration methods presented~\cref{cha:quadrature} are related to piecewise interpolation.
+% Several integration methods presented~\cref{cha:quadrature} are related to piecewise interpolation.
 
-\section{Function approximation}
+\section{Approximation}
 In this section,
 we focus on the subject of \emph{approximation},
 both of discrete data points and of continuous functions.
-We begin, in \cref{sub:polynomial_regression} with a discussion of polynomial regression,
+We begin, in \cref{sub:polynomial_regression} with a discussion of least squares approximation for data points,
 and in \cref{sub:mean_square_approximation} we focus on function approximation in the mean square sense.
 
-\subsection{Polynomial regression}
+\subsection{Least squares approximation of data points}
 \label{sub:polynomial_regression}
-Consider $m + 1$ distinct $x$ values $x_0 < \dotsc < x_m$,
-and suppose that we know the values taken by an unknown function $u$ when evaluated at these points.
+Consider $n + 1$ distinct $x$ values $x_0 < \dotsc < x_n$,
+and suppose that we know the values $u_0, \dotsc, u_n$ taken by an unknown function $u$ when evaluated at these points.
+We wish to approximate the function~$u$ by a function of the form
+\begin{equation}
+    \label{eq:expansion_approx}
+    \widehat u(x) = \sum_{i=0}^{m} \alpha_i \varphi_i(x) \in \Span \{ \varphi_0, \dotsc, \varphi_m \},
+\end{equation}
+for some $m < n$.
+In many cases of practical interest,
+the basis functions $\varphi_0, \dotsc, \varphi_m$ are polynomials.
+In contrast with interpolation,
+here we seek a function $\widehat u$ in a finite-dimensional function space of dimension~$m$ strictly lower than the number of data points.
+In order for~$\widehat u$ to be a good approximation,
+we wish to find coefficients $\alpha_0, \dotsc, \alpha_m$ such that
+the following linear system is approximately satisfied.
+\[
+    \mat A \vect \alpha :=
+    \begin{pmatrix}
+        \varphi_0(x_0) & \varphi_1(x_0) & \hdots & \varphi_m(x_0) \\
+        \varphi_0(x_1) & \varphi_1(x_1) & \hdots & \varphi_m(x_1) \\
+        \varphi_0(x_2) & \varphi_1(x_2) & \hdots & \varphi_m(x_2) \\
+        \vdots & \vdots & & \vdots \\
+        \varphi_0(x_{n-2}) & \varphi_1(x_{n-2}) & \hdots & \varphi_m(x_{n-2}) \\
+        \varphi_0(x_{n-1}) & \varphi_1(x_{n-1}) & \hdots & \varphi_m(x_{n-1}) \\
+        \varphi_0(x_n) & \varphi_1(x_n) & \hdots & \varphi_m(x_n)
+    \end{pmatrix}
+    \begin{pmatrix}
+        \alpha_0 \\
+        \alpha_1 \\
+        \vdots \\
+        \alpha_m
+    \end{pmatrix}
+    \approx
+    \begin{pmatrix}
+        u_0 \\
+        u_1 \\
+        u_2 \\
+        \vdots \\
+        u_{n-2} \\
+        u_{n-1} \\
+        u_n
+    \end{pmatrix} =: \vect b.
+\]
+In general,
+since the matrix on the left-hand side has more lines than columns,
+there does not exist an exact solution to this equation.
+In order to find an approximate solution,
+a natural approach is to find coefficients $\alpha_0, \dotsc, \alpha_m$ such that
+the residual vector $\vect r = \mat A \vect \alpha - \vect b$ is small in some vector norm.
+A particularly popular approach,
+known as least squares approximation,
+is to minimize the Euclidean norm of~$\vect r$ or,
+equivalently, the square of the Euclidean norm:
+\[
+    \norm{\vect r}^2 = \sum_{i=0}^{n} \abs[big]{u_i - \widehat u(x_i)}^2 = \sum_{i=0}^{n} \left( u_i - \sum_{j=0}^{m} \alpha_j \varphi_j(x_i) \right)^2.
+\]
+Let us denote the right-hand side of this equation by~$J(\vect \alpha)$,
+which we view as a function of the vector of coefficients $\vect a$.
+A necessary condition for~$\vect a_*$ to be a minimizer is that $\nabla J(\vect \alpha_*) = 0$.
+The gradient of $J$,
+written as a column vector, is given by
+\begin{align*}
+    \nabla J(\vect \alpha)
+    &= \nabla \Bigl( (\mat A \vect \alpha - \vect b)^\t (\mat A \vect \alpha - \vect b) \Bigr) \\
+    &= \nabla \Bigl( \vect \alpha^\t (\mat A^\t \mat A) \vect \alpha - \vect b \mat A  \vect \alpha - \vect \alpha^\t \mat A^\t \vect b + \vect b^\t \vect b) \Bigr) \\
+    &= 2 (\mat A^\t \mat A) \vect \alpha - 2 \mat A^\t \vect b.
+\end{align*}
+We deduce that $\vect \alpha_*$ solves the linear system
+\begin{equation}
+    \label{eq:normal_equation}
+    \mat A^\t \mat A \vect \alpha_* = \mat A^\t \vect b,
+\end{equation}
+where the matrix on the left-hand side is given by:
+\[
+    \mat A^\t \mat A :=
+    \begin{pmatrix}
+        \sum_{i=0}^{n} \varphi_0(x_i) \varphi_0(x_i) & \sum_{i=0}^{n} \varphi_0(x_i) \varphi_1(x_i) & \hdots & \sum_{i=0}^{n} \varphi_0(x_i) \varphi_m(x_i) \\
+        \sum_{i=0}^{n} \varphi_1(x_i) \varphi_0(x_i) & \sum_{i=0}^{n} \varphi_1(x_i) \varphi_1(x_i) & \hdots & \sum_{i=0}^{n} \varphi_1(x_i) \varphi_m(x_i) \\
+        \vdots & \vdots & & \vdots \\
+        \sum_{i=0}^{n} \varphi_m(x_i) \varphi_0(x_i) & \sum_{i=0}^{n} \varphi_m(x_i) \varphi_1(x_i) & \hdots & \sum_{i=0}^{n} \varphi_m(x_i) \varphi_m(x_i)
+    \end{pmatrix}.
+\]
+Equation~\eqref{eq:normal_equation} is a system of~$m$ equations with $m$ unknowns,
+which admits a unique solution provided that $\mat A^\t \mat A$ is full rank or,
+equivalently, the columns of~$\mat A$ are linearly independent.
+The linear equations~\eqref{eq:normal_equation} are known as the \emph{normal equations}.
+As a side note,
+we mention that
+the solution $\vect \alpha_* = (\mat A^\t \mat A)^{-1} \mat A^\t \vect b$
+coincides with the maximum likelihood estimator for $\alpha$ under the assumption that the data is generated according to
+$u_i = u(x_i) + \varepsilon_i$, for some function $u \in \Span \{\varphi_0, \dotsc, \varphi_m\}$
+and random noise $\varepsilon_i \sim \mathcal N(0, 1)$.
 
-\subsection{Mean square approximation}
+\begin{remark}
+From equation~\eqref{eq:normal_equation} we deduce that
+\[
+    \mat A \vect \alpha_* = \mat A (\mat A^\t \mat A)^{-1} \mat A^\t \vect b.
+\]
+The matrix~$\Pi_{\mat A} := \mat A (\mat A^\t \mat A)^{-1} \mat A^\t$ on the right-hand side is the orthogonal projection operator onto $\col(\mat A) \subset \real^n$,
+the subspace spanned by the columns of~$\mat A$.
+Indeed, it holds that $\Pi_{\mat A}^2 = \Pi_{\mat A}$,
+which is the defining property of a projection operator.
+\end{remark}
+
+To conclude this section,
+we note that the matrix $\mat A^{+} = (\mat A^\t \mat A)^{-1} \mat A^\t$ is a left inverse of the matrix $\mat A$,
+because $\mat A^+ \mat A = \mat I$.
+It is also called the Moore--Penrose inverse or pseudoinverse of the matrix~$\mat A$,
+which generalizes the usual inverse matrix.
+In Julia, the backslash operator silently uses the Moore--Penrose inverse when employed with a rectangular matrix.
+Therefore, solving the normal equations~\eqref{eq:normal_equation} can be achieved by just writing \julia{α = A\b}.
+
+\subsection{Mean square approximation of functions}
 \label{sub:mean_square_approximation}
+The approach described in~\cref{sub:polynomial_regression} can be generalized to the setting where the actual function~$u$,
+rather than just discrete evaluations of it, is available.
+In this section, we seek an approximation of the form~\eqref{eq:expansion_approx}
+such that the error $\widehat u(x) - u(x)$, measured in some function norm,
+is minimized.
+Of course, the solution to this minimization problem depends in general on the norm employed,
+and may in some cases not even be unique.
+Rather than specifying a particular norm,
+as done in \cref{sub:polynomial_regression},
+in this section we retain some generality and assume only that the norm is induced by an inner product on the space of real-valued continuous functions:
+\begin{equation}
+    \label{eq:inner_product_approx}
+    \ip{f,g} \colon C([a,b]) \times C([a, b]) \to \real.
+\end{equation}
+In other words,
+we seek to minimize
+\[
+    J(\vect \alpha) := \norm{\widehat u - u}^2 = \ip{\widehat u - u, \widehat u - u}.
+\]
+This is again a function of the $m+1$ variables $\alpha_0, \dotsc, \alpha_m$.
+Before calculating its gradient,
+we rewrite the function $J(\vect \alpha)$ in a simpler form:
+\begin{align*}
+    J(\vect \alpha)
+    &= \ip*{u - \sum_{j=0}^{m} \alpha_j \varphi_j,u - \sum_{k=0}^{m} \alpha_k \varphi_k} \\
+    &= \sum_{j=0}^{m} \sum_{k=0}^{m} \alpha_j \alpha_k \ip{\varphi_j,\varphi_k}- 2 \sum_{j=0}^{m} \alpha_j \ip{u,\varphi_j} - \ip{u,u}
+    = \vect \alpha^\t \mat G \vect \alpha - 2 \vect b^\t \vect \alpha - \ip{u,u},
+\end{align*}
+where we introduced
+\begin{equation}
+    \label{eq:approx_matrix_m}
+    \mat G :=
+    \begin{pmatrix}
+        \ip{\varphi_0, \varphi_0} & \ip{\varphi_0, \varphi_1} & \hdots & \ip{\varphi_0, \varphi_m} \\
+        \ip{\varphi_1, \varphi_0} & \ip{\varphi_1, \varphi_1} & \hdots & \ip{\varphi_1, \varphi_m} \\
+        \vdots & \vdots & & \vdots \\
+        \ip{\varphi_m, \varphi_0} & \ip{\varphi_m, \varphi_1} & \hdots & \ip{\varphi_m, \varphi_m}
+    \end{pmatrix},
+    \qquad
+    \vect b :=
+    \begin{pmatrix}
+        \ip{u, \varphi_0} \\
+        \ip{u, \varphi_1} \\
+        \vdots \\
+        \ip{u, \varphi_m} \\
+    \end{pmatrix}.
+\end{equation}
+Employing the same approach as in the previous section,
+we then obtain $\nabla J(\vect \alpha) = \mat G \vect \alpha - \vect b$,
+and so the minimizer of $J(\vect \alpha)$ is the solution to the equation
+\begin{equation}
+    \label{eq:normaal_continuous}
+    \mat G \vect \alpha_* = \vect b.
+\end{equation}
+The matrix $\mat G$,
+known as the \emph{Gram matrix},
+is positive semi-definite and nonsingular provided that the basis functions are linearly independent,
+see~\cref{exercise:matrix_approx}.
+Therefore, the solution $\vect \alpha_*$ exists and is unique.
+In addition, since the Hessian of~$J$ is equal to~$\mat G$,
+the vector~$\vect \alpha_*$ is indeed a minimizer.
+Note that if~$\ip{\placeholder,\placeholder}$ is defined as a finite sum of the form
+\begin{equation}
+    \label{eq:inner_finite}
+    \ip{f, g} = \sum_{i=0}^{n} f(x_i) g(x_i),
+\end{equation}
+then~\eqref{eq:normaal_continuous} coincides with the normal equations~\eqref{eq:normal_equation} from the previous section.
+We remark that~\eqref{eq:inner_finite} is in fact not an inner product on the space of continuous functions,
+but it is an inner product on the space of polynomials of degree less than or equal to~$n$.
+
+In practice, the matrix and right-hand side of the linear system~\eqref{eq:normaal_continuous} can usually not be calculated exactly,
+because the inner product~$\ip{\placeholder,\placeholder}$ is defined through an integral; see~\eqref{eq:ip_weighted} in the next section.
+
+\begin{remark}
+    Rewriting the normal equations~\eqref{eq:normaal_continuous} in terms of~$\widehat u$
+    we obtain
+    \begin{align*}
+        \ip{\widehat u - u,\varphi_0} &= 0,
+        \qquad
+        \dots, \qquad
+        \ip{\widehat u - u,\varphi_m} &= 0.
+    \end{align*}
+    Therefore, the optimal approximation $\widehat u \in \Span \{ \varphi_0, \dotsc, \varphi_m \}$ satisfies
+    \[
+        \forall v \in \Span \{ \varphi_0, \dotsc, \varphi_m \}, \qquad \ip{\widehat u - u, v} = 0.
+    \]
+    This shows that the optimal approximation $\widehat u$,
+    in the sense of the norm~$\norm{\placeholder}$,
+    is the orthogonal projection of~$u$ onto $\Span \{ \varphi_0, \dotsc, \varphi_m \}$.
+\end{remark}
+\subsection{Mean square approximation using orthogonal polynomials}
+The Gram matrix~$\mat G$ in~\eqref{eq:normaal_continuous} is diagonal when the basis functions are orthogonal for the inner product considered.
+In this case, the solution to the linear system is
+\[
+    \alpha_i = \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}}, \qquad i = 0, \dotsc, m,
+\]
+and so the approximation~$\widehat u$ is given by
+\[
+    \widehat u = \sum_{i=0}^{m} \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}} \varphi_i.
+\]
+Given a finite dimensional subspace~$\mathcal S$ of the space of continuous functions,
+an orthogonal basis~$(\varphi_0, \varphi_1, \dotsc, \varphi_m)$ can be obtained via the Gram--Schmidt process.
+In this section, we focus on the particular case where $\mathcal S = \poly(n)$
+-- the subspace of polynomials of degree less than or equal to $n$.
+We also assume that the inner product~\eqref{eq:inner_product_approx} is of the form
+\begin{equation}
+    \label{eq:ip_weighted}
+    \ip{f,g}
+    = \int_{a}^{b} f(x) g(x) w(x) \, \d x,
+\end{equation}
+where $w(x)$ is a given nonnegative weight function such that
+\[
+    \int_{a}^{b} w(x) \, \d x > 0.
+\]
+Let $\varphi_0(x), \varphi_1(x), \varphi_2(x) \dotsc$ denote the orthonormal polynomials obtained by applying the Gram--Schmidt procedure to the monomials $1, x, x^2, \dotsc$.
+These depend in general on the weight~$w(x)$ and on the interval~$[a, b]$.
+A few of the popular classes of orthogonal polynomials are presented in the table below:
+\begin{center}
+    \def\arraystretch{1.5}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Name} & $w(x)$  & $[a, b]$ \\ \hline
+        Legendre & $1$  & $[0, 1]$ \\ \hline
+        Chebyshev & $\frac{1}{\sqrt{1 - x^2}}$  & $[-1, 1]$ \\ \hline
+        Hermite & $\exp \left( - \frac{x^2}{2} \right)$  & $[-\infty, \infty]$ \\ \hline
+        Laguerre & $\e^{-x}$  & $[0, \infty]$ \\ \hline
+    \end{tabular}
+\end{center}
+
+Orthogonal polynomials have a rich structure,
+and in the rest of this section we prove some of their properties,
+one of which will be very useful in the context of numerical integration in~\cref{cha:quadrature}.
+We begin by showing that orthogonal polynomials satisfy a three-term recurrence relation.
+\begin{proposition}
+    Assume that $\varphi_0, \varphi_1, \dotsc$ are orthonormal polynomials
+    for some inner product of the form~\eqref{eq:ip_weighted} such that $\varphi_i$ is of degree~$i$.
+    Then
+    \[
+        \forall n \in \{1, 2, \dotsc\}, \qquad
+        \alpha_{n+1} \varphi_{n+1} (x) = (x - \alpha_n) \varphi_n(x) - \beta_n \varphi_{n-1}(x),
+    \]
+    where
+    \[
+        \alpha_n = \ip[big]{x \varphi_n, \varphi_{n-1}},
+        \qquad \beta_n = \ip[big]{x \varphi_n, \varphi_{n}}.
+    \]
+\end{proposition}
+\begin{proof}
+    Since $x \varphi_n(x)$ is a polynomial of degree $n+1$,
+    it may be decomposed as
+    \begin{equation}
+        \label{eq:expansion_times_x}
+        x \varphi_n(x) = \sum_{i=0}^{n+1} \gamma_{n,i} \varphi_i(x).
+    \end{equation}
+    Taking the inner product of both sides of this equation with~$\varphi_i$
+    and employing the orthonormality assumption,
+    we obtain an expression for the coefficients:
+    \[
+        \gamma_{n,i} = \ip[big]{x \varphi_n, \varphi_i}.
+    \]
+    From the expression~\eqref{eq:ip_weighted} of the inner product,
+    it is clear that $\ip[big]{x \varphi_n, \varphi_i} = \ip[big]{\varphi_n, x\varphi_i}$.
+    Since~$x \varphi_i$ is a polynomial of degree $i+1$ and $\varphi_n$ is orthogonal to all polynomials of degree strictly less than~$n$,
+    we deduce that $\gamma_{n,i} = 0$ if~$i < n-1$.
+    Consequently, we can rewrite the right-hand of~\eqref{eq:expansion_times_x} as a sum involving only three terms
+    \begin{equation}
+        \label{eq:expansion_times_x}
+        x \varphi_n(x) =  \ip[big]{x \varphi_n, \varphi_{n-1}} \varphi_{n-1}(x) + \ip[big]{x \varphi_n, \varphi_{n}} \varphi_{n}(x) + \ip[big]{x \varphi_n, \varphi_{n+1}} \varphi_{n+1}(x).
+    \end{equation}
+    Since $\ip[big]{x \varphi_n, \varphi_{n+1}} = \ip[big]{x \varphi_{n+1}, \varphi_{n}}$,
+    we obtain the statement after rearranging.
+\end{proof}
+
+Next,
+we show that orthogonal polynomials have distinct real roots.
+\begin{proposition}
+    Assume for simplicity that $w(x) > 0$ for all $x \in [a, b]$,
+    and let $\varphi_0, \varphi_1, \dotsc$ denote orthonormal polynomials of increasing degree for~\eqref{eq:ip_weighted}.
+    Then for all $n \in \nat$,
+    the polynomial $\varphi_n$ has~$n$ distinct roots in the open interval $(a, b)$.
+\end{proposition}
+\begin{proof}
+    Reasoning by contradiction,
+    we assume that~$\varphi_n$ changes sign at only $k < n$ points of the open interval~$(a, b)$,
+    which we denote by $x_1, \dotsc, x_k$.
+    Then
+    \[
+        \varphi_n (x - x_0) (x - x_1) \dotsc (x - x_k)
+    \]
+    is either everywhere nonnegative or everywhere nonpositive over $[a, b]$
+    But then
+    \[
+        \int_{a}^{b} \varphi_n (x - x_1)  \dotsc (x - x_k) \, w(x) \, \d x
+    \]
+    is nonzero,
+    which is a contradiction because the product $(x-x_1) \dotsc (x-x_k)$ is a polynomial of degree~$k$
+    and orthogonal to $\varphi_n$.
+\end{proof}
+
+Equation~\eqref{eq:expansion_times_x} may be rewritten in matrix form
+\[
+    \begin{pmatrix}
+        x \varphi_0(x) \\
+        x \varphi_1(x) \\
+        x \varphi_2(x) \\
+        \vdots \\
+        x \varphi_{m-1}(x) \\
+        x \varphi_m(x)
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        \beta_0 & \alpha_1 \\
+        \alpha_1 & \beta_1 & \alpha_2 \\
+                 & \alpha_2 & \beta_2 & \alpha_3 \\
+                 & & \ddots & \ddots & \ddots \\
+                 & & & & \alpha_{m-1} & \beta_{m-1} & \alpha_m \\
+                 & & & & & \alpha_m & \beta_m
+    \end{pmatrix}
+    \begin{pmatrix}
+        \varphi_0(x) \\
+        \varphi_1(x) \\
+        \varphi_2(x) \\
+        \vdots \\
+        \varphi_{m-1}(x) \\
+        \varphi_m(x)
+    \end{pmatrix}
+    +
+    \begin{pmatrix}
+        0 \\
+        0 \\
+        0 \\
+        \vdots \\
+        0 \\
+        \alpha_{m+1} \varphi_{m+1}(x)
+    \end{pmatrix}.
+\]
+
+% The matrix on the right-hand side is symmetric and tridiagonal,
+% and so it has .
 
 \begin{exercise}
     Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
@@ -943,6 +1291,12 @@ and suppose that we know the values taken by an unknown function $u$ when evalua
     Prove~\cref{theorem:hermite_interpolation}.
 \end{exercise}
 
+\begin{exercise}
+    \label{exercise:matrix_approx}
+    Show that the matrix $M$ in \eqref{eq:approx_matrix_m} is positive definite
+    if the basis functions~$\varphi_0, \dotsc, \varphi_m$ are linearly independent.
+\end{exercise}
+
 \begin{compexercise}
     Write a Julia code for interpolating the following function using a polynomial of degree 20.
     \[
@@ -981,4 +1335,4 @@ A comprehensive study of approximation theory would require to cover the $L^{\in
 in particular Chebyshev's equioscillation theorem, which we alluded to in~\cref{remark:cheb},
 as well as other functional settings.
 An excellent introductory reference on approximation theory is~\cite{magnus} (in French).
-See also~\cite{MR2265914}.
+See also~\cite[Chapter 10]{MR2265914} and the references therein.
