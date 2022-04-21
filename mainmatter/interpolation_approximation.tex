@@ -792,14 +792,14 @@ We conclude that the interpolating polynomial is given by
 \]
 The following theorem gives an expression of the error.
 \begin{theorem}
-    [Hermite interplotion error]
+    [Hermite interpolation error]
     \label{theorem:hermite_interpolation}
-    Assume that~$u\colon [a, b] \to \real$ is a function in $C^{2n+1}([a, b])$ and let~$\widehat u$
+    Assume that~$u\colon [a, b] \to \real$ is a function in $C^{2n+2}([a, b])$ and let~$\widehat u$
     denote the Hermite interpolation of~$u$ at the nodes~$x_0, \dotsc, x_n$.
     Then for all $x \in [a, b]$,
     there exists~$\xi = \xi(x)$ in the interval $[a, b]$ such that
     \[
-        u(x) - \widehat u(x) = \frac{u^{(2n+1)}(\xi)}{(2n+1)!} (x-x_0)^2 \dotsc (x - x_n)^2.
+        u(x) - \widehat u(x) = \frac{u^{(2n+2)}(\xi)}{(2n+2)!} (x-x_0)^2 \dotsc (x - x_n)^2.
     \]
 \end{theorem}
 \begin{proof}
