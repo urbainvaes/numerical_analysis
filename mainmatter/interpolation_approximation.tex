@@ -441,7 +441,7 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     Then for all $x \in [a, b]$,
     there exists~$\xi = \xi(x)$ in the interval $[a, b]$ such that
     \[
-        e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
+        e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n).
     \]
 \end{theorem}
 \begin{proof}
@@ -1327,6 +1327,29 @@ Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form
         \includegraphics[width=0.99\linewidth]{figures/interpolation.pdf}
         \caption{Solution for \cref{exercise:parametric_interpolation}.}%
         \label{fig:parametric_interpolation}
+    \end{figure}
+\end{compexercise}
+
+\begin{compexercise}
+    [Modeling the vapor pressure of mercury]
+    \label{exercise:approx}
+    The dataset loaded through the following Julia commands contains data on the vapor pressure of mercury as a function of the temperature.
+    \begin{minted}{julia}
+    import RDatatets
+    data = RDatasets.dataset("datasets", "pressure")
+    \end{minted}
+    Find a low-dimensional mathematical model of the form
+    \begin{equation}
+        p(T) = \exp \bigl( \alpha_0 + \alpha_1 T + \alpha_2 T^2 + \alpha_3 T^3 \bigr)
+    \end{equation}
+    for the pressure as a function of the temperature.
+    Plot the approximation together with the data.
+    An example solution is given in~\cref{fig:pressure}.
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.75\linewidth]{figures/pressure_model.pdf}
+        \caption{Solution for \cref{exercise:approx}.}%
+        \label{fig:pressure}
     \end{figure}
 \end{compexercise}
 
