@@ -111,8 +111,8 @@ If the abcissae $x_0, \dotsc, x_n$ are distinct,
 then this is a full rank matrix,
 and so~\eqref{eq:linear_system_interpolation_poly} admits a unique solution,
 implying as a corollary that the interpolating polynomial exists and is unique.
-It is possible to show that the condition number of the Vandermonde increases dramatically with $n$,
-and so solving~\eqref{eq:linear_system_interpolation_poly} is not a viable method in practice for calculating the interpolating polynomial.
+It is possible to show that the condition number of the Vandermonde increases dramatically with $n$.
+Consequently, solving~\eqref{eq:linear_system_interpolation_poly} is not a viable method in practice for calculating the interpolating polynomial.
 
 \subsection{Lagrange interpolation formula}
 One may wonder whether polynomial basis functions $\varphi_0, \dotsc, \varphi_n$ can be defined in such a manner that
@@ -357,49 +357,6 @@ It is possible to find an expression for the coefficients of the interpolating p
         \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} = [u_0, \dotsc, u_n],
     \]
     which enables to conclude.
-    % Observing that $p(x) - u_0$ has a root at $x_0$,
-    % we deduce that
-    % \begin{equation}
-    %     \label{eq:equation_newton}
-    %     q(x) :=
-    %     \frac{p(x) - u_0}{x - x_0}
-    % \end{equation}
-    % is a polynomial of degree at most $n-1$ that interpolates the points
-    % \begin{equation}
-    %     \label{eq:newton_interpolation_vi}
-    %     \left(x_i, v_i\right) := \left(x_i, \frac{u_i - u_0}{x_i - x_0}\right), \qquad i = 1, \dotsc, n.
-    % \end{equation}
-    % Using the induction hypothesis,
-    % we deduce that $q(x)$ is given by
-    % \[
-    %     q(x) = \sum_{i=1}^{n} [v_1, \dotsc, v_i] (x-x_1) \dotsc (x - x_{i-1})
-    % \]
-    % By~\cref{exercise:divided_differences},
-    % it holds that
-    % \[
-    %     [v_1, \dotsc, v_n] = \sum_{j=1}^{n} \frac{v_{j}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
-    % \]
-    % Therefore, employing the expression of~$v_j$ given in~\eqref{eq:newton_interpolation_vi},
-    % we have
-    % \begin{align*}
-    %     [v_1, \dotsc, v_n]
-    %     &= \sum_{j=1}^{n} \frac{\frac{u_{j}-u_0}{x_j - x_0}}{\prod_{ k \in \{1, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}
-    %     = \sum_{j=1}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} \\
-    %     &= \sum_{j=0}^{n} \frac{u_{j}-u_0}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} = [w_0, \dotsc, w_n],
-    % \end{align*}
-    % where we introduced $w_i = u_i - u_0$, for $i = 0, \dotsc, n$.
-    % Now, since only differences appear in the divided difference $[w_0, \dotsc, w_n]$ and $w_i - w_j = u_i - u_j$ for all pairs $(i, j) \in \{0, \dotsc n\}^2$,
-    % it is clear that
-    % \[
-    %     [w_0, \dotsc, w_n] = [u_0, \dotsc, u_n].
-    % \]
-    % Going back to~\eqref{eq:equation_newton} and rearranging,
-    % we conclude that
-    % \[
-    %     p(x) = u_0 + (x-x_0) \left( \sum_{i=1}^{n} [u_0, \dotsc, u_n] (x-x_1) \dotsc (x - x_{i-1}) \right)
-    %     =  \sum_{i=0}^{n} [u_0, \dotsc, u_{i}] \prod_{j=0}^{i-1} (x-x_j),
-    % \]
-    % which was the statement.
 \end{proof}
 \begin{example}
     Assume that we are looking for the third degree polynomial going through the points
@@ -1083,14 +1040,18 @@ In this case, the solution to the linear system is
 \[
     \alpha_i = \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}}, \qquad i = 0, \dotsc, m,
 \]
-and so the approximation~$\widehat u$ is given by
+and so the best approximation~$\widehat u$ (for the norm induced by the inner product considered!) is simply given by
 \[
     \widehat u = \sum_{i=0}^{m} \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}} \varphi_i.
 \]
+The coefficients of the basis functions in this expansion are called \emph{Fourier coefficients}.
 Given a finite dimensional subspace~$\mathcal S$ of the space of continuous functions,
 an orthogonal basis~$(\varphi_0, \varphi_1, \dotsc, \varphi_m)$ can be obtained via the Gram--Schmidt process.
 In this section, we focus on the particular case where $\mathcal S = \poly(n)$
 -- the subspace of polynomials of degree less than or equal to $n$.
+Another widely used approach,
+which we do not explore in this course,
+in to use trigonometric basis functions.
 We also assume that the inner product~\eqref{eq:inner_product_approx} is of the form
 \begin{equation}
     \label{eq:ip_weighted}
@@ -1117,22 +1078,52 @@ A few of the popular classes of orthogonal polynomials are presented in the tabl
 \end{center}
 
 Orthogonal polynomials have a rich structure,
-and in the rest of this section we prove some of their properties,
+and in the rest of this section we prove some of their common properties,
 one of which will be very useful in the context of numerical integration in~\cref{cha:quadrature}.
-We begin by showing that orthogonal polynomials satisfy a three-term recurrence relation.
+We begin by showing that
+orthogonal polynomials have distinct real roots.
 \begin{proposition}
+    \label{proposition:distinct_roots}
+    Assume for simplicity that $w(x) > 0$ for all $x \in [a, b]$,
+    and let $\varphi_0, \varphi_1, \dotsc$ denote orthonormal polynomials of increasing degree for the inner product~\eqref{eq:ip_weighted}.
+    Then for all $n \in \nat$,
+    the polynomial $\varphi_n$ has~$n$ distinct roots in the open interval $(a, b)$.
+\end{proposition}
+\begin{proof}
+    Reasoning by contradiction,
+    we assume that~$\varphi_n$ changes sign at only $k < n$ points of the open interval~$(a, b)$,
+    which we denote by $x_1, \dotsc, x_k$.
+    Then
+    \[
+        \varphi_n (x - x_0) (x - x_1) \dotsc (x - x_k)
+    \]
+    is either everywhere nonnegative or everywhere nonpositive over $[a, b]$
+    But then
+    \[
+        \int_{a}^{b} \varphi_n (x - x_1)  \dotsc (x - x_k) \, w(x) \, \d x
+    \]
+    is nonzero,
+    which is a contradiction because the product $(x-x_1) \dotsc (x-x_k)$ is a polynomial of degree~$k$
+    and orthogonal to $\varphi_n$.
+\end{proof}
+
+Next, we show that orthogonal polynomials satisfy a three-term recurrence relation.
+\begin{proposition}
+    \label{proposition:three_term_recurrence}
     Assume that $\varphi_0, \varphi_1, \dotsc$ are orthonormal polynomials
     for some inner product of the form~\eqref{eq:ip_weighted} such that $\varphi_i$ is of degree~$i$.
     Then
-    \[
+    \begin{equation}
+        \label{eq:recurrence_ortho}
         \forall n \in \{1, 2, \dotsc\}, \qquad
-        \alpha_{n+1} \varphi_{n+1} (x) = (x - \alpha_n) \varphi_n(x) - \beta_n \varphi_{n-1}(x),
-    \]
+        \alpha_{n+1} \varphi_{n+1} (x) = (x - \beta_n) \varphi_n(x) - \alpha_{n} \varphi_{n-1}(x),
+    \end{equation}
     where
     \[
         \alpha_n = \ip[big]{x \varphi_n, \varphi_{n-1}},
         \qquad \beta_n = \ip[big]{x \varphi_n, \varphi_{n}}.
     \]
+    In addition, $\alpha_1 \varphi_{1} (x) = (x - \beta_0) \varphi_0(x)$.
 \end{proposition}
 \begin{proof}
     Since $x \varphi_n(x)$ is a polynomial of degree $n+1$,
@@ -1159,34 +1150,18 @@ We begin by showing that orthogonal polynomials satisfy a three-term recurrence 
     Since $\ip[big]{x \varphi_n, \varphi_{n+1}} = \ip[big]{x \varphi_{n+1}, \varphi_{n}}$,
     we obtain the statement after rearranging.
 \end{proof}
-
-Next,
-we show that orthogonal polynomials have distinct real roots.
-\begin{proposition}
-    Assume for simplicity that $w(x) > 0$ for all $x \in [a, b]$,
-    and let $\varphi_0, \varphi_1, \dotsc$ denote orthonormal polynomials of increasing degree for~\eqref{eq:ip_weighted}.
-    Then for all $n \in \nat$,
-    the polynomial $\varphi_n$ has~$n$ distinct roots in the open interval $(a, b)$.
-\end{proposition}
-\begin{proof}
-    Reasoning by contradiction,
-    we assume that~$\varphi_n$ changes sign at only $k < n$ points of the open interval~$(a, b)$,
-    which we denote by $x_1, \dotsc, x_k$.
-    Then
+\begin{remark}
+    Notice that the polynomials in~\eqref{proposition:three_term_recurrence} are orthonormal by assumption,
+    and so the coefficient~$\alpha_{n+1}$ is just a normalization constant.
+    We deduce that
     \[
-        \varphi_n (x - x_0) (x - x_1) \dotsc (x - x_k)
+        \varphi_{n+1} (x) = \frac{(x - \beta_n) \varphi_n(x) - \alpha_{n} \varphi_{n-1}(x)}{\norm{(x - \beta_n) \varphi_n(x) - \alpha_{n} \varphi_{n-1}(x)}},
     \]
-    is either everywhere nonnegative or everywhere nonpositive over $[a, b]$
-    But then
-    \[
-        \int_{a}^{b} \varphi_n (x - x_1)  \dotsc (x - x_k) \, w(x) \, \d x
-    \]
-    is nonzero,
-    which is a contradiction because the product $(x-x_1) \dotsc (x-x_k)$ is a polynomial of degree~$k$
-    and orthogonal to $\varphi_n$.
-\end{proof}
+    which enables to calculate the orthogonal polynomials recursively.
+\end{remark}
 
-Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form
+\subsection{Orthogonal polynomials and numerical integration: an introduction}
+Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form as follows:
 \[
     \begin{pmatrix}
         x \varphi_0(x) \\
@@ -1202,8 +1177,8 @@ Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form
         \alpha_1 & \beta_1 & \alpha_2 \\
                  & \alpha_2 & \beta_2 & \alpha_3 \\
                  & & \ddots & \ddots & \ddots \\
-                 & & & & \alpha_{m-1} & \beta_{m-1} & \alpha_m \\
-                 & & & & & \alpha_m & \beta_m
+                 & & & \alpha_{m-1} & \beta_{m-1} & \alpha_m \\
+                 & & & & \alpha_m & \beta_m
     \end{pmatrix}
     \begin{pmatrix}
         \varphi_0(x) \\
@@ -1223,9 +1198,141 @@ Equation~\eqref{eq:expansion_times_x_good} may be rewritten in matrix form
         \alpha_{m+1} \varphi_{m+1}(x)
     \end{pmatrix}.
 \]
-
-% The matrix on the right-hand side is symmetric and tridiagonal,
-% and so it has .
+Let $\mat T$ denote the matrix on the left-hand side of this equation,
+and let $r_0, \dotsc, r_{m}$ denote the roots of~$\varphi_{m+1}$.
+By~\cref{proposition:distinct_roots},
+these are distinct and all belong to the interval~$(a, b)$.
+But now notice that
+\[
+    \forall r \in \Bigl\{ r_0, \dotsc, r_m \Bigr\}, \qquad
+    \begin{pmatrix}
+        r \varphi_0(r) \\
+        r \varphi_1(r) \\
+        \vdots \\
+        r \varphi_{m-1}(r) \\
+        r \varphi_m(r)
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        \beta_0 & \alpha_1 \\
+        \alpha_1 & \beta_1 & \alpha_2 \\
+                 & \ddots & \ddots & \ddots \\
+                 & & \alpha_{m-1} & \beta_{m-1} & \alpha_m \\
+                 & & & \alpha_m & \beta_m
+    \end{pmatrix}
+    \begin{pmatrix}
+        \varphi_0(r) \\
+        \varphi_1(r) \\
+        \vdots \\
+        \varphi_{m-1}(r) \\
+        \varphi_m(r)
+    \end{pmatrix}.
+\]
+In other words,
+for any root $r$ of~$\varphi_{m+1}$,
+the vector $\begin{pmatrix} \varphi_0(r) & \hdots & \varphi_m(r) \end{pmatrix}^\t$
+is an eigenvector of the matrix~$\mat T$,
+with associated eigenvalue equal to~$r$.
+Since~$\mat T$ is a symmetric matrix,
+the eigenvectors associated to distinct eigenvalues are orthogonal for the Euclidean inner product of~$\real^{m+1}$,
+and since all the eigenvalues of~$\mat T$ are distinct,
+we deduce that
+\begin{equation}
+    \label{eq:orthogonality}
+    \forall i \neq j, \qquad
+    \sum_{i=0}^{m} \varphi_i(r_i) \varphi_i(r_j) = 0.
+\end{equation}
+Let us construct the matrix
+\[
+    \mat P =
+    \begin{pmatrix}
+        \varphi_0(r_0) & \varphi_1(r_0) & \hdots & \varphi_m(r_0) \\
+        \varphi_0(r_1) & \varphi_1(r_1) & \hdots & \varphi_m(r_1) \\
+        \varphi_0(r_2) & \varphi_1(r_2) & \hdots & \varphi_m(r_2) \\
+        \vdots & \vdots & \hdots & \vdots \\
+        \varphi_0(r_m) & \varphi_1(r_m) & \hdots & \varphi_m(r_m)
+    \end{pmatrix}.
+\]
+Equation~\eqref{eq:orthogonality} indicates that the lines of~$\mat P$ are orthogonal,
+and so the matrix~$\mat D = \mat P \mat P^\t$ is diagonal with elements given by
+\[
+    d_{ii} = \sum_{j=0}^{m} \abs{\varphi_j(r_i)}^2,
+    \qquad i = 0, \dotsc, m.
+\]
+(Here we start counting the lines from 0 for convenience,
+and the superscript~$m$ is used to emphasize that the diagonal elements of this matrix depend on~$m$.)
+Since $\mat P \mat P^\t \mat D^{-1} = \mat I$,
+we deduce that the inverse of~$\mat P$ is given by $\mat P^{-1} = \mat P^\t \mat D^{-1}$.
+Consequently,
+\[
+    \mat P^\t \mat D^{-1} \mat P = \mat P^{-1} \mat P = \mat I,
+\]
+which means that the columns of~$\mat P$ are orthonormal for the inner product
+\begin{align*}
+    \ip{\vect x,\vect y}_{m+1} \colon& \real^{m+1} \times \real^{m+1}  \to \real; \\
+                              &(\vect x, \vect y) \mapsto \vect x^\t \mat D^{-1} \vect y = \sum_{i=0}^{m} \frac{x_i y_i}{d_{ii}}.
+\end{align*}
+We have thus shown that,
+if~$\varphi_0, \varphi_1, \varphi_2$ are a family of orthonormal polynomials,
+then the finite-dimensional vectors
+\[
+    \vect \varphi_0 :=
+    \begin{pmatrix}
+        \varphi_0(r_0) \\
+        \varphi_0(r_1) \\
+        \vdots \\
+        \varphi_0(r_m)
+    \end{pmatrix},
+    \quad
+    \vect \varphi_1 :=
+    \begin{pmatrix}
+        \varphi_1(r_0) \\
+        \varphi_1(r_1) \\
+        \vdots \\
+        \varphi_1(r_m)
+    \end{pmatrix},
+    \quad
+    \vect \varphi_m :=
+    \begin{pmatrix}
+        \varphi_2(r_0) \\
+        \varphi_2(r_1) \\
+        \vdots \\
+        \varphi_2(r_m)
+    \end{pmatrix},
+    \dotsc
+\]
+are orthonormal vectors in~$\real^{m+1}$ for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$.
+Consequently, it holds that
+\begin{equation}
+    \label{eq:orthogonality}
+    \forall (p, q) \in \poly(m)^2, \qquad
+    \ip{p,q} = \ip{\vect p, \vect q}_{m+1},
+\end{equation}
+where $\vect p$ and $\vect q$ are the vectors in~$\real^{m+1}$ containing the evaluations of~$p$ and~$q$ at $r_0, \dotsc, r_m$.
+Indeed, denoting by $p = \alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m$ and $q = \beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m$ the expansions of the polynomials~$p$ and~$q$
+in the orthonormal basis,
+we have
+\begin{align*}
+    \ip{p, q}
+    &= \ip{\alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m,\beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m} \\
+    &= \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \beta_j \ip{\varphi_i, \varphi_j}
+    = \alpha_0 \beta_0 + \dotsb + \alpha_m \beta_m
+    = \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \alpha_j \ip{\vect \varphi_i, \vect \varphi_j}_{m+1} \\
+    & = \ip{\alpha_0 \vect \varphi_0 + \dotsb + \alpha_m \vect \varphi_m,\beta_0 \vect \varphi_0 + \dotsb + \beta_m \vect \varphi_m}_{m+1} = \ip{\vect p,\vect q}_{m+1}.
+\end{align*}
+Taking~$q = 1$ in~\eqref{eq:orthogonality} and employing the definitions of~$\ip{\placeholder, \placeholder}$ and $\ip{\placeholder, \placeholder}_{m+1}$,
+we have
+\[
+    \forall p \in \poly(m),
+    \qquad \int_{a}^{b} p(x) \, w(x) \, \d x
+    = \sum_{i=0}^{m} \frac{p(r_i)}{d_{ii}}.
+\]
+Since the left-hand side is an integral and the right-hand side is a sum,
+we have just designed our first integration formula,
+with the nice property that it is exact for polynomials of degree up to~$m$!
+The nodes $r_0, \dotsc, r_m$, together with the weights $1/d_{00}, \dotsc, 1/d_{mm}$,
+depend on the weight~$w(x)$ and on the degree~$m$.
+More on this subject in~\cref{cha:quadrature}.
 
 \begin{exercise}
     Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
