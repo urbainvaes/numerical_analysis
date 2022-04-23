@@ -951,12 +951,12 @@ such that the error $\widehat u(x) - u(x)$, measured in some function norm,
 is minimized.
 Of course, the solution to this minimization problem depends in general on the norm employed,
 and may in some cases not even be unique.
-Rather than specifying a particular norm,
+Instead of specifying a particular norm,
 as done in \cref{sub:polynomial_regression},
 in this section we retain some generality and assume only that the norm is induced by an inner product on the space of real-valued continuous functions:
 \begin{equation}
     \label{eq:inner_product_approx}
-    \ip{f,g} \colon C([a,b]) \times C([a, b]) \to \real.
+    \ip{\placeholder,\placeholder} \colon C([a,b]) \times C([a, b]) \to \real.
 \end{equation}
 In other words,
 we seek to minimize
@@ -1035,23 +1035,24 @@ because the inner product~$\ip{\placeholder,\placeholder}$ is defined through an
     is the orthogonal projection of~$u$ onto $\Span \{ \varphi_0, \dotsc, \varphi_m \}$.
 \end{remark}
 \subsection{Mean square approximation using orthogonal polynomials}
-The Gram matrix~$\mat G$ in~\eqref{eq:normaal_continuous} is diagonal when the basis functions are orthogonal for the inner product considered.
+The Gram matrix~$\mat G$ in~\eqref{eq:normaal_continuous} is equal to the identity matrix when the basis functions are orthonormal for the inner product considered.
 In this case, the solution to the linear system is
 \[
-    \alpha_i = \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}}, \qquad i = 0, \dotsc, m,
+    \alpha_i = \ip{u, \varphi_i}, \qquad i = 0, \dotsc, m,
 \]
 and so the best approximation~$\widehat u$ (for the norm induced by the inner product considered!) is simply given by
 \[
-    \widehat u = \sum_{i=0}^{m} \frac{\ip{u, \varphi_i}}{\ip{\varphi_i, \varphi_i}} \varphi_i.
+    \widehat u = \sum_{i=0}^{m} \ip{u, \varphi_i} \varphi_i.
 \]
 The coefficients of the basis functions in this expansion are called \emph{Fourier coefficients}.
+% and this equation shows that the best approximation is an orthogonal projection.
 Given a finite dimensional subspace~$\mathcal S$ of the space of continuous functions,
-an orthogonal basis~$(\varphi_0, \varphi_1, \dotsc, \varphi_m)$ can be obtained via the Gram--Schmidt process.
+an orthogonal basis can be constructed via the Gram--Schmidt process.
 In this section, we focus on the particular case where $\mathcal S = \poly(n)$
 -- the subspace of polynomials of degree less than or equal to $n$.
 Another widely used approach,
 which we do not explore in this course,
-in to use trigonometric basis functions.
+is to use trigonometric basis functions.
 We also assume that the inner product~\eqref{eq:inner_product_approx} is of the form
 \begin{equation}
     \label{eq:ip_weighted}
@@ -1071,7 +1072,7 @@ A few of the popular classes of orthogonal polynomials are presented in the tabl
         \hline
         \textbf{Name} & $w(x)$  & $[a, b]$ \\ \hline
         Legendre & $1$  & $[0, 1]$ \\ \hline
-        Chebyshev & $\frac{1}{\sqrt{1 - x^2}}$  & $[-1, 1]$ \\ \hline
+        Chebyshev & $\frac{1}{\sqrt{1 - x^2}}$  & $(-1, 1)$ \\ \hline
         Hermite & $\exp \left( - \frac{x^2}{2} \right)$  & $[-\infty, \infty]$ \\ \hline
         Laguerre & $\e^{-x}$  & $[0, \infty]$ \\ \hline
     \end{tabular}
@@ -1095,16 +1096,18 @@ orthogonal polynomials have distinct real roots.
     which we denote by $x_1, \dotsc, x_k$.
     Then
     \[
-        \varphi_n (x - x_0) (x - x_1) \dotsc (x - x_k)
+        \varphi_n(x) \times (x - x_0) (x - x_1) \dotsc (x - x_k)
     \]
     is either everywhere nonnegative or everywhere nonpositive over $[a, b]$
     But then
     \[
-        \int_{a}^{b} \varphi_n (x - x_1)  \dotsc (x - x_k) \, w(x) \, \d x
+        \int_{a}^{b} \varphi_n(x) \times (x - x_1)  \dotsc (x - x_k) \, w(x) \, \d x
     \]
     is nonzero,
-    which is a contradiction because the product $(x-x_1) \dotsc (x-x_k)$ is a polynomial of degree~$k$
-    and orthogonal to $\varphi_n$.
+    which is a contradiction because the product $(x-x_1) \dotsc (x-x_k)$ is a polynomial of degree~$k$,
+    which is orthogonal to $\varphi_n$ by assumption.
+    Indeed, being orthogonal to~$\varphi_0, \dotsc, \varphi_{n-1}$,
+    the polynomial $\varphi_n$ is also orthogonal to any linear combination of these polynomials.
 \end{proof}
 
 Next, we show that orthogonal polynomials satisfy a three-term recurrence relation.
@@ -1142,7 +1145,7 @@ Next, we show that orthogonal polynomials satisfy a three-term recurrence relati
     it is clear that $\ip[big]{x \varphi_n, \varphi_i} = \ip[big]{\varphi_n, x\varphi_i}$.
     Since~$x \varphi_i$ is a polynomial of degree $i+1$ and $\varphi_n$ is orthogonal to all polynomials of degree strictly less than~$n$,
     we deduce that $\gamma_{n,i} = 0$ if~$i < n-1$.
-    Consequently, we can rewrite the right-hand of~\eqref{eq:expansion_times_x} as a sum involving only three terms
+    Consequently, we can rewrite the right-hand side of~\eqref{eq:expansion_times_x} as a sum involving only three terms
     \begin{equation}
         \label{eq:expansion_times_x_good}
         x \varphi_n(x) =  \ip[big]{x \varphi_n, \varphi_{n-1}} \varphi_{n-1}(x) + \ip[big]{x \varphi_n, \varphi_{n}} \varphi_{n}(x) + \ip[big]{x \varphi_n, \varphi_{n+1}} \varphi_{n+1}(x).
@@ -1235,7 +1238,7 @@ is an eigenvector of the matrix~$\mat T$,
 with associated eigenvalue equal to~$r$.
 Since~$\mat T$ is a symmetric matrix,
 the eigenvectors associated to distinct eigenvalues are orthogonal for the Euclidean inner product of~$\real^{m+1}$,
-and since all the eigenvalues of~$\mat T$ are distinct,
+so given that the eigenvalues of~$\mat T$ are distinct,
 we deduce that
 \begin{equation}
     \label{eq:orthogonality}
@@ -1259,22 +1262,22 @@ and so the matrix~$\mat D = \mat P \mat P^\t$ is diagonal with elements given by
     d_{ii} = \sum_{j=0}^{m} \abs{\varphi_j(r_i)}^2,
     \qquad i = 0, \dotsc, m.
 \]
-(Here we start counting the lines from 0 for convenience,
-and the superscript~$m$ is used to emphasize that the diagonal elements of this matrix depend on~$m$.)
+(Here we start counting the lines from 0 for convenience.)
 Since $\mat P \mat P^\t \mat D^{-1} = \mat I$,
 we deduce that the inverse of~$\mat P$ is given by $\mat P^{-1} = \mat P^\t \mat D^{-1}$.
 Consequently,
 \[
     \mat P^\t \mat D^{-1} \mat P = \mat P^{-1} \mat P = \mat I,
 \]
-which means that the columns of~$\mat P$ are orthonormal for the inner product
+which means that the polynomials~$\varphi_1, \dotsc, \varphi_m$ are orthogonal for the inner product
 \begin{align*}
-    \ip{\vect x,\vect y}_{m+1} \colon& \real^{m+1} \times \real^{m+1}  \to \real; \\
-                              &(\vect x, \vect y) \mapsto \vect x^\t \mat D^{-1} \vect y = \sum_{i=0}^{m} \frac{x_i y_i}{d_{ii}}.
+    \ip{\placeholder, \placeholder}_{m+1} \colon& \poly(m) \times \poly(m) \to \real; \\
+                              &(p, q) \mapsto \vect \sum_{i=0}^{m} \frac{p(r_i) q(r_i)}{d_{ii}}.
 \end{align*}
 We have thus shown that,
-if~$\varphi_0, \varphi_1, \varphi_2$ are a family of orthonormal polynomials,
-then the finite-dimensional vectors
+if~$\varphi_0, \varphi_1, \varphi_2$ are a family of orthonormal polynomials for an inner product~$\ip{\placeholder,\placeholder}$,
+then they are also orthonormal for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$,
+In other words, the finite-dimensional vectors
 \[
     \vect \varphi_0 :=
     \begin{pmatrix}
@@ -1292,23 +1295,23 @@ then the finite-dimensional vectors
         \varphi_1(r_m)
     \end{pmatrix},
     \quad
+    \dotsc,
+    \qquad
     \vect \varphi_m :=
     \begin{pmatrix}
         \varphi_2(r_0) \\
         \varphi_2(r_1) \\
         \vdots \\
         \varphi_2(r_m)
-    \end{pmatrix},
-    \dotsc
+    \end{pmatrix}
 \]
 are orthonormal vectors in~$\real^{m+1}$ for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$.
 Consequently, it holds that
 \begin{equation}
     \label{eq:orthogonality}
     \forall (p, q) \in \poly(m)^2, \qquad
-    \ip{p,q} = \ip{\vect p, \vect q}_{m+1},
+    \ip{p,q} = \ip{p, q}_{m+1},
 \end{equation}
-where $\vect p$ and $\vect q$ are the vectors in~$\real^{m+1}$ containing the evaluations of~$p$ and~$q$ at $r_0, \dotsc, r_m$.
 Indeed, denoting by $p = \alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m$ and $q = \beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m$ the expansions of the polynomials~$p$ and~$q$
 in the orthonormal basis,
 we have
@@ -1317,22 +1320,69 @@ we have
     &= \ip{\alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m,\beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m} \\
     &= \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \beta_j \ip{\varphi_i, \varphi_j}
     = \alpha_0 \beta_0 + \dotsb + \alpha_m \beta_m
-    = \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \alpha_j \ip{\vect \varphi_i, \vect \varphi_j}_{m+1} \\
-    & = \ip{\alpha_0 \vect \varphi_0 + \dotsb + \alpha_m \vect \varphi_m,\beta_0 \vect \varphi_0 + \dotsb + \beta_m \vect \varphi_m}_{m+1} = \ip{\vect p,\vect q}_{m+1}.
+    = \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \alpha_j \ip{\varphi_i, \varphi_j}_{m+1} \\
+    & = \ip{\alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m,\beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m}_{m+1} = \ip{p,q}_{m+1}.
 \end{align*}
+We have thus shown the following result.
+Since~$m$ was arbitrary in the previous reasoning,
+we add a superscript to indicate when the quantities involved depend on~$m$.
+\begin{theorem}
+    Orthonormal polynomials~$\varphi_0, \dotsc, \varphi_{m}$ for the inner product
+    \[
+        \ip{f, g} = \int_{a}^{b} f(x) g(x) w(x) \, \d x
+    \]
+    are also orthonormal for the inner product
+    \[
+        \ip{f,g}_{m+1} = \sum_{i=0}^{m} f\left(r^{(m+1)}_i\right) g\left(r^{(m+1)}_i\right) w^{(m+1)}_i,
+    \]
+    where $r^{(m+1)}_0, \dotsc, r^{(m+1)}_m$ are the roots of~$\varphi_{m+1}$ and
+    the weights~$w^{(m+1)}_i$ are given by
+    \[
+        w^{(m+1)}_i = \frac{1}{\sum_{j=0}^{m} \left\lvert \varphi_j\left(r^{(m+1)}_i\right) \right\rvert^2}, \qquad i = 0, \dotsc, m.
+    \]
+\end{theorem}
 Taking~$q = 1$ in~\eqref{eq:orthogonality} and employing the definitions of~$\ip{\placeholder, \placeholder}$ and $\ip{\placeholder, \placeholder}_{m+1}$,
 we have
-\[
+\begin{equation}
+    \label{eq:integration_formula}
     \forall p \in \poly(m),
     \qquad \int_{a}^{b} p(x) \, w(x) \, \d x
-    = \sum_{i=0}^{m} \frac{p(r_i)}{d_{ii}}.
-\]
+    = \sum_{i=0}^{m} p\left(r_i^{(m+1)}\right) w^{(m+1)}_i.
+\end{equation}
 Since the left-hand side is an integral and the right-hand side is a sum,
-we have just designed our first integration formula,
-with the nice property that it is exact for polynomials of degree up to~$m$!
-The nodes $r_0, \dotsc, r_m$, together with the weights $1/d_{00}, \dotsc, 1/d_{mm}$,
-depend on the weight~$w(x)$ and on the degree~$m$.
-More on this subject in~\cref{cha:quadrature}.
+we have just constructed an integration formula,
+which enjoys a very nice property: it is exact for polynomials of degree up to~$m$!
+A formula of this type is called a \emph{quadrature formula},
+with~$m+1$ \emph{nodes}~$r^{(m+1)}_0, \dotsc, r^{(m+1)}_m$ and associated \emph{weights} $w^{(m+1)}_0, \dotsc, w^{(m+1)}_m$.
+Note that the nodes and weights of the quadrature depend on the weight~$w(x)$ and on the degree~$m$.
+
+In fact, equation~\eqref{eq:integration_formula} is valid more generally than for~$p \in \poly(n)$.
+Indeed, for every monomial~$x^p$ with $m \leq p \leq 2m$,
+we have that
+\begin{align*}
+    \int_{a}^{b} x^p w(x) \, \d x
+    &= \int_{a}^{b} x^{p-m} x^m  w(x) \, \d x \\
+    &= \ip{x^{p-m},x^m} = \ip{x^{p-m},x^m}_{m+1}
+    = \ip{x^{p},1}_{m+1} = \sum_{i=0}^{m} \left(r_i^{(m+1)}\right)^{p} w^{(m+1)}_i.
+\end{align*}
+Consequently, the formula~\eqref{eq:integration_formula} is exact for any monomial of degree up to $2m$,
+and we conclude that, by linearity, it is also valid for any polynomials of degree up to~$2m$.
+
+\begin{remark}
+    In fact, the formula~\eqref{eq:integration_formula} is valid for polynomials of degree up to~$2m+1$.
+    Indeed, using that $x^{2m+1} = \varphi_{m+1}(x) p(x) + q(x)$,
+    for some polynomial~$p$ of degree~$m$ (the quotient of the polynomial division of $x^{2m+1}$ by $\varphi_{m+1}$) and some polynomial~$q$ of degree less than~$m$ (the remainder of the polynomial division),
+    we have
+    \begin{align*}
+        \int_{a}^{b} x^{2m+1} w(x) \, \d x
+        &= \int_{a}^{b} \varphi_{m+1}(x) p(x) w(x) \, \d x + \int_{a}^{b} q(x) w(x) \, \d x = 0 + \int_{a}^{b} q(x) w(x) \, \d x \\
+        &= \sum_{i=0}^{m} \varphi_{m+1}\left(r_i^{(m+1)}\right) p\left(r_i^{(m+1)}\right)  w^{(m+1)}_i + \sum_{i=0}^{m} q\left(r_i^{(m+1)}\right) w^{(m+1)}_i \\
+        &= \sum_{i=0}^{m} \left(r_i^{(m+1)}\right)^{2m+1} w^{(m+1)}_i,
+    \end{align*}
+    where we used, in the penultimate inequality,
+    the fact that~$r_0^{(m+1)}, \dotsc, r_m^{(m+1)}$ are the roots of the polynomial~$\varphi_{m+1}$.
+\end{remark}
+We will revisit this subject in~\cref{cha:quadrature}.
 
 \begin{exercise}
     Find the polynomial $p(x) = ax + b$ (a straight line) that goes through the points $(x_0, u_0)$ and $(x_1, u_1)$.
