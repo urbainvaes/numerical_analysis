@@ -1308,7 +1308,7 @@ In other words, the finite-dimensional vectors
 are orthonormal vectors in~$\real^{m+1}$ for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$.
 Consequently, it holds that
 \begin{equation}
-    \label{eq:orthogonality}
+    \label{eq:orthogonality_equivalence}
     \forall (p, q) \in \poly(m)^2, \qquad
     \ip{p,q} = \ip{p, q}_{m+1},
 \end{equation}
@@ -1341,7 +1341,7 @@ we add a superscript to indicate when the quantities involved depend on~$m$.
         w^{(m+1)}_i = \frac{1}{\sum_{j=0}^{m} \left\lvert \varphi_j\left(r^{(m+1)}_i\right) \right\rvert^2}, \qquad i = 0, \dotsc, m.
     \]
 \end{theorem}
-Taking~$q = 1$ in~\eqref{eq:orthogonality} and employing the definitions of~$\ip{\placeholder, \placeholder}$ and $\ip{\placeholder, \placeholder}_{m+1}$,
+Taking~$q = 1$ in~\eqref{eq:orthogonality_equivalence} and employing the definitions of~$\ip{\placeholder, \placeholder}$ and $\ip{\placeholder, \placeholder}_{m+1}$,
 we have
 \begin{equation}
     \label{eq:integration_formula}
@@ -1470,8 +1470,8 @@ We will revisit this subject in~\cref{cha:quadrature}.
     We wish to use interpolation to approximate the following parametric function,
     called an \emph{epitrochoid}:
     \begin{align}
-      x (\theta) &= (R + r)\cos\theta + d\cos\left({R + r \over r}\theta\right) \\
-      y (\theta) &= (R + r)\sin\theta - d\sin\left({R + r \over r}\theta\right),
+        x (\theta) &= (R + r)\cos\theta + d\cos\left(\frac{R + r}{r}\theta\right) \\
+      y (\theta) &= (R + r)\sin\theta - d\sin\left(\frac{R + r}{r}\theta\right),
     \end{align}
     with $R = 5$, $r = 2$ and $d = 3$, and for $\theta \in [0, 4\pi]$.
     Write a Julia program to interpolate $x(\theta)$ and $y(\theta)$ using 40 equidistant points.
