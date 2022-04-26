@@ -1,5 +1,218 @@
 \chapter{Numerical integration}
 \label{cha:quadrature}
 
-Several integration methods presented in this chapter are related to piecewise interpolation.
+\minitoc
 
+\section*{Introduction}
+Integrals are ubiquitous in science and mathematics.
+In this chapter,
+we are concerned with the problem of calculating numerically integrals of the form
+\begin{equation}
+    \label{eq:integral}
+    I = \int_{\Omega} u(\vect x) \, \d \vect x,
+\end{equation}
+Perhaps somewhat surprisingly,
+the numerical calculation of such integrals when $n \gg 1$ is still a very active area of research today.
+In this chapter,
+we will focus for simplicity on the one-dimensional setting where $\Omega = [a, b] \subset \real$.
+We assume throughout this chapter that the function~$u$ is Riemann-integrable.
+This means that
+\[
+    I = \lim_{h \to 0}
+    \sum_{i=0}^{n-1} u(t_i) (z_{i+1} - z_i),
+\]
+where $a = z_0 < \dotsb < z_n = b$ is a partition of the interval~$[a, b]$ such that the maximum spacing between successive~$x$ values is equal to~$h$,
+and with $t_i \in [x_i, x_{i+1}]$ for all $i \in \{0, \dotsc, n-1\}$.
+
+All the numerical integration formulas that we present in this chapter are based on a deterministic approximation of the form
+\begin{equation}
+    \label{eq:deterministic_integration}
+    \widehat I = \sum_{i=0}^{m} w_i u(x_i),
+\end{equation}
+where~$x_0 < \dotsc < x_n$ are the \emph{integration nodes} and $w_0, \dotsc, w_n$ are the \emph{integration weights}.
+In many cases, integration formulas contain a small parameter that can be changed to improve the accuracy of the approximation.
+In methods based on equidistant interpolation nodes,
+for example, this parameter encodes the distance between nodes and is typically denoted by~$h$,
+and we often use the notation~$\widehat I_h$ to emphasize the dependence of the approximation on~$h$.
+The difference~$E_h = I - I_h$ is called the \emph{integration error} or \emph{discretization error},
+and the \emph{degree of precision} of an integration method is the smallest integer number~$d$ such that
+the integration error is zero for all the polynomials of degree less than or equal to~$d$.
+
+We observe that,
+without loss of generality,
+we can consider that the integration interval is equal to~$[-1, 1]$.
+Indeed, using the change of variable
+\begin{align}
+    \notag
+    \zeta\colon &[-1, 1] \to [a, b]; \\
+    \label{eq:change_of_variable_integration}
+                &y \mapsto \frac{b+a}{2} + \frac{(b-a)}{2} y,
+\end{align}
+we have
+\begin{equation}
+    \label{eq:change_of_variable_equivalence}
+    \int_{a}^{b} u(x) \, \d x
+    = \int_{-1}^{1} u\bigl(\zeta(y)\bigr) \, \zeta'(y) \, \d y
+    = \frac{b-a}{2}\int_{-1}^{1} u \circ \zeta (y) \, \d y,
+\end{equation}
+and the right-hand side is the integral of $u \circ \zeta$ over the interval~$[-1, 1]$.
+
+\section{The Newton--Cotes method}
+\label{sec:newton_cotes}
+
+Given a set of equidistant points $-1 = x_0 < \dotsb < x_m = 1$,
+a natural method for approximating the integral~\eqref{eq:integral} of a function~$u\colon [-1, 1] \to \real$
+is to first construct the interpolating polynomial~$\widehat u$ through the nodes,
+and then calculate the integral of this polynomial.
+By construction, this method is exact for polynomials of degree up to~$m$,
+and so the degree of precision is equal to \emph{at least}~$m$.
+Let $\varphi_0, \dotsc, \varphi_m$ denote the Lagrange polynomials associated with the integration nodes.
+Then we have
+\[
+    I \approx \int_{-1}^{1} \widehat u(x) \, \d x
+    = \int_{-1}^{1} \sum_{i=0}^{n} u(x_i) \varphi_i u(x) \, \d x
+    = \sum_{i=0}^{n} u(x_i) \underbrace{\int_{-1}^{1}  \varphi_i u(x)  \, \d x}_{w_i}.
+\]
+The weights are independent of the function~$u$,
+and so they can be calculated a priori.
+The class of integration methods obtained using this approach are known as \emph{Newton--Cotes methods}.
+We present a few particular cases:
+\begin{itemize}
+    \item
+        $m = 1$, $d = 1$ (trapezoidal rule):
+        \begin{equation}
+            \label{eq:trapezoidal_rule}
+            \int_{-1}^{1} u(x) \, dx
+            \approx u(-1) + u(1).
+        \end{equation}
+
+    \item
+        $m = 2$, $d = 3$ (Simpson's rule):
+        \begin{equation}
+            \label{eq:simpsons}
+            \int_{-1}^{1} u(x) \, dx
+            \approx \frac{1}{3} u(-1) + \frac{4}{3} u(0) + \frac{1}{3} u(1).
+        \end{equation}
+
+    \item
+        $m = 3$, $d = 3$ (Simpson's $\frac{3}{8}$ rule):
+        \[
+            \int_{-1}^{1} u(x) \, dx
+            \approx \frac{1}{4} u(-1) + \frac{3}{4} u(-1/3) + \frac{3}{4} u(1/3) + \frac{1}{4} u(1).
+        \]
+
+    \item
+        $m = 4$, $d = 5$ (Bode's rule):
+        \[
+            \int_{-1}^{1} u(x) \, dx
+            \approx \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{12}{45} u\left(0\right) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1).
+        \]
+\end{itemize}
+In theory,
+this approach can be employed in order to construct integration rules of arbitrary high degree of precision.
+In practice, however, the weights become more and more unbalanced,
+with some of them becoming negative.
+As a result, roundoff errors become increasingly detrimental to accuracy as the degree of precision increases.
+In addition, in cases where the interpolating polynomial does not converge to~$u(x)$,
+for example if~$u(x)$ is Runge's function,
+the approximate integral may not even converge to its exact in the limit as~$m \to \infty$ in exact arithmetic!
+
+Note that,
+although it is based on a quadratic polynomial interpolation,
+Simpson's rule~\eqref{eq:simpsons} has a degree of precision equal to~$3$.
+This is because any integration rule with symmetric nodes and weights on either side of $x=0$ is exact for odd functions,
+in particular $x^3$.
+Likewise, the degree of precision of Bode's rule is equal to 5.
+
+\section{Composite methods based on piecewise interpolation}
+A natural alternative to the approach presented in~\cref{sec:newton_cotes}
+is to construct an integration rule using piecewise polynomial interpolation,
+which we studied in~\cref{sub:piecewise_interpolation}.
+In essence, this consists of partitioning the integration interval in a number of subintervals,
+and using one of the rules presented in~\eqref{sec:newton_cotes} within each subinterval.
+
+Let us illustrate the composite approach with an example.
+To this end,
+we introduce a partition $a = x_0 < \dotsb < x_m = b$ of the interval $[a, b]$ and
+assume that $x_{i+1} - x_i = h$.
+Using~\eqref{eq:change_of_variable_equivalence},
+we first generalize~\eqref{eq:trapezoidal_rule} to an interval~$[x_i, x_{i+1}]$ as follows:
+\[
+    \int_{x_i}^{x_{i+1}} u(x) \, \d x
+    = \int_{-1}^{1} u \circ \zeta (y) \, \d y
+    \approx u \circ \zeta(-1)  + u \circ \zeta(1)
+    = \frac{h}{2} \bigl(u(x_i) + u(x_{i+1})\bigr),
+\]
+where $\approx$ in this equation indicates approximation using the trapezoidal rule.
+Applying this approximation to each subinterval of the partition,
+we obtain the composite trapezoidal rule:
+\begin{align}
+    \notag
+    \int_{a}^{b} u(x) \, \d x
+    &= \sum_{i=0}^{n-1} \int_{x_i}^{x_{i+1}} u(x) \, \d x
+    \approx
+    \frac{h}{2}\sum_{i=0}^{n-1} \bigl( u(x_i) + u(x_{i+1}) \bigr) \\
+    \label{eq:composite_trapezoidal_rule}
+    &= h \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr).
+\end{align}
+Like the trapezoidal rule~\eqref{eq:trapezoidal_rule},
+the composite trapezoidal rule~\eqref{eq:composite_trapezoidal_rule} has a degree of precision equal to 1.
+However,
+the accuracy of the method depends on the parameter~$h$,
+which represents the width of each subinterval:
+for very small~$h$,
+equation~\eqref{eq:composite_trapezoidal_rule} is expected to provide a good approximation of the integral.
+An error estimate can be obtained directly from the upper bound~\eqref{eq:error_estimate_piecewise_interpolation} on the piecewise interpolation error,
+provided that we assume that~$u \in C^2([a, b])$.
+Denoting by $\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
+and by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
+we have
+\[
+    \abs{I - \widehat I_h}
+    = \abs*{\int_{a}^{b} u(x) - \widehat u_h(x) \, \d x}
+    \leq \int_{a}^{b} \abs{u(x) - \widehat u_h(h)} \, \d x
+    \leq \frac{b-a}{8} \left(  \sup_{\xi \in [a, b]} \abs{u''(\xi)} \right) h^2.
+\]
+The integration error therefore scales as~$\mathcal O(h^2)$.
+(Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\mathcal O(h^2)$,
+but it turns out that the dependence on~$h$ of this bound is optimal).
+
+\section{Exercises}
+\begin{exercise}
+    Derive the Simpson's integration rule~\eqref{eq:simpsons}.
+\end{exercise}
+
+\begin{exercise}
+    Derive the composite Simpson integration rule.
+\end{exercise}
+
+\begin{exercise}
+    Show that the integration error for the composite Simpson rule satisfies the following bound:
+    \[
+        \abs{I - \widehat I_h}
+        \leq C (b-a) \left( \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)} \right) h^4,
+    \]
+    for an appropriate constant~$C$.
+\end{exercise}
+
+\section{Discussion and bibliography}
+In this chapter,
+we covered mainly \emph{deterministic} integration formulas.
+The presentation of part of the material follows that in~\cite{Legat}.
+Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
+These methods are based on the connection between integrals and expectations.
+For example, the integral
+\[
+    I = \int_{0}^{1} x^2 \, \d x
+\]
+may be expressed as the expectation $\expect [X^2]$,
+where~$\expect$ is the expectation operator and~$X \sim \mathcal U(0, 1)$ is a uniformly distributed random variable over the interval~$[0, 1]$.
+Therefore, in practice, $I$ may be approximated by generating a large number of samples $X_1, X_2,\dotsc$ from the distribution~$\mathcal U(0, 1)$
+and averaging $f(X_i)$ over all these samples.
+\begin{minted}{julia}
+    n = 1000
+    f(x) = x^2
+    X = rand(n)
+    I = (1/n) * sum(f.(X))
+\end{minted}
+The main advantage of this approach is that it generalizes very easily to high-dimensional and infinite-dimensional settings.

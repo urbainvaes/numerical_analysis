@@ -764,6 +764,7 @@ The following theorem gives an expression of the error.
 \end{proof}
 
 \subsection{Piecewise interpolation}
+\label{sub:piecewise_interpolation}
 The interpolation methods we discussed so far are in some sense global;
 they aim to construct one polynomial that goes through all the data points.
 This approach is attractive because the interpolant is infinitely smooth but,
@@ -808,14 +809,15 @@ Since $x_i^{(m)} = x_{i+1} = x_{i+1}^{(0)}$,
 the interpolant defined by~\eqref{eq:piecewise_interpolation} is continuous.
 If the function $u$ belongs to $C^{m+1}([a, b])$,
 then by~\cref{corollary:interpolation_error} the interpolation error within each subinterval may be bounded from above as follows:
-\[
+\begin{equation}
+    \label{eq:error_estimate_piecewise_interpolation}
     \sup_{x \in I_i} \abs{u(x) - \widehat u(x)} \leq \frac{ C_{m+1} (h/m)^{m+1}}{4(m + 1)},
     \qquad C_{m+1} := \sup_{x \in [a, b]} \abs{u^{(m+1)}(x)},
-\]
+\end{equation}
 and so we deduce
-\[
+\begin{equation*}
     \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)} \leq C h^{m+1},
-\]
+\end{equation*}
 for an appropriate constant~$C$ independent of $h$.
 This equation shows that the error is guaranteed to decrease to~0 in the limit as $h \to \infty$.
 In practice, the number $m$ of interpolation nodes within each interval can be small.
@@ -1071,7 +1073,7 @@ A few of the popular classes of orthogonal polynomials are presented in the tabl
     \begin{tabular}{|c|c|c|}
         \hline
         \textbf{Name} & $w(x)$  & $[a, b]$ \\ \hline
-        Legendre & $1$  & $[0, 1]$ \\ \hline
+        Legendre & $1$  & $[-1, 1]$ \\ \hline
         Chebyshev & $\frac{1}{\sqrt{1 - x^2}}$  & $(-1, 1)$ \\ \hline
         Hermite & $\exp \left( - \frac{x^2}{2} \right)$  & $[-\infty, \infty]$ \\ \hline
         Laguerre & $\e^{-x}$  & $[0, \infty]$ \\ \hline
@@ -1511,8 +1513,8 @@ We will revisit this subject in~\cref{cha:quadrature}.
 \end{compexercise}
 
 \section{Discussion and bibliography}
-A comprehensive study of approximation theory would require to cover the $L^{\infty}$ setting,
-in particular Chebyshev's equioscillation theorem, which we alluded to in~\cref{remark:cheb},
+A comprehensive study of approximation theory would require to cover the $L^{\infty}$ setting
 as well as other functional settings.
+A pillar of $L^{\infty}$ approximation theorem is Chebyshev's equioscillation theorem, which we alluded to in~\cref{remark:cheb}.
 An excellent introductory reference on approximation theory is~\cite{magnus} (in French).
 See also~\cite[Chapter 10]{MR2265914} and the references therein.
