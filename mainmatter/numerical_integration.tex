@@ -108,14 +108,14 @@ We present a few particular cases:
             \approx \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{12}{45} u\left(0\right) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1).
         \]
 \end{itemize}
-In theory,
-this approach can be employed in order to construct integration rules of arbitrary high degree of precision.
-In practice, however, the weights become more and more unbalanced,
+In principle,
+this approach could be employed in order to construct integration rules of arbitrary high degree of precision.
+In practice, however, the weights become more and more imbalanced as the number of interpolation points increases,
 with some of them becoming negative.
 As a result, roundoff errors become increasingly detrimental to accuracy as the degree of precision increases.
-In addition, in cases where the interpolating polynomial does not converge to~$u(x)$,
-for example if~$u(x)$ is Runge's function,
-the approximate integral may not even converge to its exact in the limit as~$m \to \infty$ in exact arithmetic!
+In addition, in cases where the interpolating polynomial does not converge to~$u$,
+for example if~$u$ is Runge's function,
+the approximate integral may not even converge to the correct value in the limit as~$m \to \infty$ in exact arithmetic!
 
 Note that,
 although it is based on a quadratic polynomial interpolation,
@@ -128,13 +128,13 @@ Likewise, the degree of precision of Bode's rule is equal to 5.
 A natural alternative to the approach presented in~\cref{sec:newton_cotes}
 is to construct an integration rule using piecewise polynomial interpolation,
 which we studied in~\cref{sub:piecewise_interpolation}.
-In essence, this consists of partitioning the integration interval in a number of subintervals,
-and using one of the rules presented in~\eqref{sec:newton_cotes} within each subinterval.
+After partitioning the integration interval in a number of subintervals,
+the integral can be approximated by using one of the rules presented in~\eqref{sec:newton_cotes} within each subinterval.
 
 Let us illustrate the composite approach with an example.
 To this end,
 we introduce a partition $a = x_0 < \dotsb < x_m = b$ of the interval $[a, b]$ and
-assume that $x_{i+1} - x_i = h$.
+assume that the nodes are equidistant with $x_{i+1} - x_i = h$.
 Using~\eqref{eq:change_of_variable_equivalence},
 we first generalize~\eqref{eq:trapezoidal_rule} to an interval~$[x_i, x_{i+1}]$ as follows:
 \[
