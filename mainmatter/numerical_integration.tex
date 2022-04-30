@@ -131,6 +131,7 @@ which we studied in~\cref{sub:piecewise_interpolation}.
 After partitioning the integration interval in a number of subintervals,
 the integral can be approximated by using one of the rules presented in~\eqref{sec:newton_cotes} within each subinterval.
 
+\paragraph{Composite trapezoidal rule.}
 Let us illustrate the composite approach with an example.
 To this end,
 we introduce a partition $a = x_0 < \dotsb < x_m = b$ of the interval $[a, b]$ and
@@ -162,20 +163,93 @@ the accuracy of the method depends on the parameter~$h$,
 which represents the width of each subinterval:
 for very small~$h$,
 equation~\eqref{eq:composite_trapezoidal_rule} is expected to provide a good approximation of the integral.
-An error estimate can be obtained directly from the upper bound~\eqref{eq:error_estimate_piecewise_interpolation} on the piecewise interpolation error,
+An error estimate can be obtained directly from the formula in~\cref{theorem:interpolation_error} for interpolation error,
 provided that we assume that~$u \in C^2([a, b])$.
 Denoting by $\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
 and by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
 we have
 \[
-    \abs{I - \widehat I_h}
-    = \abs*{\int_{a}^{b} u(x) - \widehat u_h(x) \, \d x}
-    \leq \int_{a}^{b} \abs{u(x) - \widehat u_h(h)} \, \d x
-    \leq \frac{b-a}{8} \left(  \sup_{\xi \in [a, b]} \abs{u''(\xi)} \right) h^2.
+    \int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x
+    = \frac{1}{2} \int_{x_{i}}^{x_{i+1}} u''\bigl(\xi(x)\bigr) (x - x_{i}) (x - x_{i+1}) \, \d x.
+\]
+Since $(x - x_i) (x - x_{i+1})$ is nonnegative over the interval $[x_i, x_{i+1}]$,
+we deduce that
+\[
+    \abs*{\int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x}
+    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x - x_{i+1}) \, \d x 
+    = C_2 \frac{h^3}{12},
+\]
+where we introduced
+\[
+    C_2 =  \sup_{\xi \in [a, b]} \abs*{u''(\xi)} .
+\]
+Summing the contributions of all the intervals,
+we obtain
+\[
+    \abs{I - \widehat I}
+    \leq \sum_{i=0}^{n-1} \abs*{\int_{x_i}^{x_{i+1}} u(x) - \widehat u(x) \, \d x } 
+    \leq n \times C_2 \frac{h^3}{12} = \frac{b-a}{12} C_2 h^2.
 \]
 The integration error therefore scales as~$\mathcal O(h^2)$.
 (Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\mathcal O(h^2)$,
 but it turns out that the dependence on~$h$ of this bound is optimal).
+
+\paragraph{Composite Simpson rule.}
+The composite Simpson rule is derived in~\cref{exercise:composite_simpson}.
+Given an odd number $n+1$ of equidistant points $a = x_0 < x_1 < \dotsb < x_n = b$,
+it is given by
+\begin{equation}
+    \label{eq:composite_simpson}
+    \widehat I_h = \frac{h}{3} \Bigl( u(x_0) + 4 u(x_1) + 2 u(x_2) + 4 u(x_3) + 2 u_(x_4) + \dotsb + 2 u(x_{n-2}) + 4 u(x_{n-1}) + u(x_n)\Bigr).
+\end{equation}
+This approximation is obtained by integrating the piecewise quadratic interpolant
+over a partition of the integration interval into $n/2$ subintervals of equal width.
+Obtaining an optimal error estimate,
+in terms of the dependence on~$h$,
+for this integration formula is slightly more involved.
+% because it requires to employ the fact that the degree of precision for Simpson's rule is 4.
+For a given subinterval~$[x_{2i}, x_{2i+2}]$,
+let us denote by~$\widehat u_2(x)$ the quadratic interpolating polynomial at $x_{2i}, x_{2i+1}, x_{2i+2}$,
+and by $\widehat u_3(x)$ a cubic interpolating polynomial relative to the nodes $x_{2i}, x_{2i+1}, x_{2i+2}, x_{\alpha}$,
+for some $\alpha \in [x_{2i}, x_{2i+1}]$.
+We have
+\begin{align}
+    \label{eq:composite_simpson_error}
+    \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x) \, \d x
+    &= \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x + \int_{x_{2i}}^{x_{2i+1}} \widehat u_3(x) - \widehat u_2(x)  \, \d x.
+\end{align}
+The second term is zero,
+because the integrand is a cubic polynomial with zeros at $x_{2i}$, $x_{2i+1}$ and $x_{2i+2}$,
+and because
+\[
+    \int_{x_{2i}}^{x_{2i+2}} (x - x_{2i}) (x - x_{2i+1}) (x - x_{2i+2}) = 0.
+\]
+(Notice that the integrand is even around $x_{2i+1}$.)
+The cancellation of the second term in~\eqref{eq:composite_simpson_error} also follows from the fact that
+the degree of precision of the Simpson rule~\eqref{eq:simpsons} is equal to~3.
+Using~\cref{theorem:interpolation_error},
+we rewrite first term in~\eqref{eq:composite_simpson_error} from above as follows:
+\[
+    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x}
+    \leq \int_{x_{2i}}^{x_{2i+2}} \frac{u^{(4)} \bigl(\xi(x)\bigr)}{24} (x-x_{2i})(x- x_{2i+1}) (x-x_{2i+2}) (x - x_{\alpha})\, \d x.
+\]
+Since this formula is valid for all $\alpha \in [2i, 2i+2]$,
+we are allowed to take $\alpha = x_{2i+1}$.
+Given that
+\[
+    \int_{x_{2i}}^{x_{2i+2}} (x-x_{2i})(x- x_{2i+1})^2 (x-x_{2i+2}) \, \d x = \frac{4}{15} h^5,
+\]
+with an integrand everywhere positive in the interval $[x_{2i}, x_{2i+2}]$,
+we conclude that
+\[
+    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x} \leq \frac{C_4}{90} h^5,
+    \qquad C_4 = \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)}.
+\]
+Summing the contributions of all the subintervals, 
+we finally obtain
+\begin{equation}
+    \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{8} = (b-a)\frac{C_4 h^4}{180}.
+\end{equation}
 
 \section{Exercises}
 \begin{exercise}
@@ -183,7 +257,8 @@ but it turns out that the dependence on~$h$ of this bound is optimal).
 \end{exercise}
 
 \begin{exercise}
-    Derive the composite Simpson integration rule.
+    \label{exercise:composite_simpson}
+    Derive the composite Simpson integration rule~\eqref{eq:composite_simpson}.
 \end{exercise}
 
 \begin{exercise}
