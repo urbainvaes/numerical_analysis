@@ -124,7 +124,8 @@ This is because any integration rule with symmetric nodes and weights on either 
 in particular $x^3$.
 Likewise, the degree of precision of Bode's rule is equal to 5.
 
-\section{Composite methods based on piecewise interpolation}
+\section{Composite methods with equidistant nodes}
+\label{sec:composite_methods}
 A natural alternative to the approach presented in~\cref{sec:newton_cotes}
 is to construct an integration rule using piecewise polynomial interpolation,
 which we studied in~\cref{sub:piecewise_interpolation}.
@@ -176,7 +177,7 @@ Since $(x - x_i) (x - x_{i+1})$ is nonnegative over the interval $[x_i, x_{i+1}]
 we deduce that
 \[
     \abs*{\int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x}
-    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x - x_{i+1}) \, \d x 
+    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x - x_{i+1}) \, \d x
     = C_2 \frac{h^3}{12},
 \]
 where we introduced
@@ -187,7 +188,7 @@ Summing the contributions of all the intervals,
 we obtain
 \[
     \abs{I - \widehat I}
-    \leq \sum_{i=0}^{n-1} \abs*{\int_{x_i}^{x_{i+1}} u(x) - \widehat u(x) \, \d x } 
+    \leq \sum_{i=0}^{n-1} \abs*{\int_{x_i}^{x_{i+1}} u(x) - \widehat u(x) \, \d x }
     \leq n \times C_2 \frac{h^3}{12} = \frac{b-a}{12} C_2 h^2.
 \]
 The integration error therefore scales as~$\mathcal O(h^2)$.
@@ -245,11 +246,54 @@ we conclude that
     \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x} \leq \frac{C_4}{90} h^5,
     \qquad C_4 = \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)}.
 \]
-Summing the contributions of all the subintervals, 
+Summing the contributions of all the subintervals,
 we finally obtain
 \begin{equation}
     \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{8} = (b-a)\frac{C_4 h^4}{180}.
 \end{equation}
+
+\section{Methods with non-equidistant nodes}
+The Newton--Cotes method relies on equidistant integration nodes,
+and the only degrees of freedom are the integration weights.
+If the nodes are not fixed,
+then additional degrees of freedom are available,
+and these can be leveraged in order to construct a better integration formula.
+The total number of degrees of freedom for a general integration rule of the form~\eqref{eq:deterministic_integration} is $2n + 2$,
+which enable to construct an integration rule with degree of precision equal to~$2n+1$.
+
+A necessary and sufficient condition for an integration rule of the form~\eqref{eq:deterministic_integration} to have a degree of precision
+equal to $2n +1$ is that it integrates exactly all the monomials of degree $0$ to $2n+1$.
+Indeed, since $\widehat I$ is a linear function of~$u$,
+we have
+\begin{align*}
+    \widehat I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1})
+    &= \alpha_0 \widehat I(1) + \alpha_1 \widehat I(x) + \dotsb + \alpha_{2n+1} \widehat I(x^{2n+1}) \\
+    &= \alpha_0 I(1) + \alpha_1 I(x) + \dotsb + \alpha_{2n+1} I(x^{2n+1}) \\
+    &= I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1} x^{2n+1}),
+\end{align*}
+where $I(u)$ and $\widehat I(u)$ denote respectively the exact integral of~$u$ and the approximate integral using a rule of the form~\eqref{eq:deterministic_integration}.
+Finding the nodes and weights of the integration rule,
+we can therefore solve the nonlinear system of equations:
+\begin{align}
+    \label{eq:system_gauss_legendre}
+    \sum_{i=0}^{m} w_i x_i^{j} &= \int_{-1}^{1} x^j \, \d x, \qquad j = 0, \dotsc, 2n+1.
+\end{align}
+The quadrature rule obtained by solving this system of equations is called the \emph{Gauss--Legendre quadrature}.
+Let us derive the Gauss--Legendre quadrature with $n + 1 = 2$ nodes.
+The system of equation that we need to solve in this case is the following:
+\begin{align*}
+    w_0 + w_1 = 2,
+    \qquad w_0 x_0 + w_1 x_1 = 0,
+    \qquad w_0 x_0^2 + w_1 x_1^2 = \frac{2}{3},
+    \qquad w_0 x_0^3 + w_1 x_1^3 = 0.
+\end{align*}
+The solution to these equations is given by
+\[
+    - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_1 = - w_2 = 1.
+\]
+
+Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
+in particular the \emph{finite element method}.
 
 \section{Exercises}
 \begin{exercise}
