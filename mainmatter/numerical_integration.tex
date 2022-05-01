@@ -294,6 +294,14 @@ The solution to these equations is given by
 
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
 in particular the \emph{finite element method}.
+Its generalization to higher dimensions is immediate:
+for a function $u\colon [-1, 1] \times [-1, 1] \to \real$,
+we have
+\[
+    \int_{0}^{1} \int_{0}^{1} u(x, y) \, \d y \d x \approx \sum_{i=0}^{n} \sum_{j=0}^{n} w_i w_j u(x_i, y_i).
+\]
+The degree of precision of this integration rule is the same as
+that of the corresponding one-dimensional rule.
 
 \section{Exercises}
 \begin{exercise}
@@ -312,6 +320,15 @@ in particular the \emph{finite element method}.
         \leq C (b-a) \left( \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)} \right) h^4,
     \]
     for an appropriate constant~$C$.
+\end{exercise}
+
+\begin{exercise}
+    The Gauss--Hermite quadrature rule with~$n$ nodes is an approximation of the form
+    \[
+        \int_{-\infty}^{\infty} u(x) \, \e^{- \frac{x^2}{2}} \, \d x = \sum_{i=0}^{n} w_i u(x_i),
+    \]
+    such that the rule is exact for all polynomials of degree less than or equal to $2n+1$.
+    Find the Gauss--Hermite rule with two nodes.
 \end{exercise}
 
 \section{Discussion and bibliography}
