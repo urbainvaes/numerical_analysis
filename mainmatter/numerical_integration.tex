@@ -155,7 +155,7 @@ we obtain the composite trapezoidal rule:
     \approx
     \frac{h}{2}\sum_{i=0}^{n-1} \bigl( u(x_i) + u(x_{i+1}) \bigr) \\
     \label{eq:composite_trapezoidal_rule}
-    &= h \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr).
+    &= \frac{h}{2} \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr).
 \end{align}
 Like the trapezoidal rule~\eqref{eq:trapezoidal_rule},
 the composite trapezoidal rule~\eqref{eq:composite_trapezoidal_rule} has a degree of precision equal to 1.
@@ -173,7 +173,7 @@ we have
     \int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x
     = \frac{1}{2} \int_{x_{i}}^{x_{i+1}} u''\bigl(\xi(x)\bigr) (x - x_{i}) (x - x_{i+1}) \, \d x.
 \]
-Since $(x - x_i) (x - x_{i+1})$ is nonnegative over the interval $[x_i, x_{i+1}]$,
+Since $(x - x_i) (x - x_{i+1})$ is nonpositive over the interval $[x_i, x_{i+1}]$,
 we deduce that
 \[
     \abs*{\int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x}
@@ -186,11 +186,12 @@ where we introduced
 \]
 Summing the contributions of all the intervals,
 we obtain
-\[
+\begin{equation}
+    \label{eq:error_bound_trapezoidal}
     \abs{I - \widehat I}
     \leq \sum_{i=0}^{n-1} \abs*{\int_{x_i}^{x_{i+1}} u(x) - \widehat u(x) \, \d x }
     \leq n \times C_2 \frac{h^3}{12} = \frac{b-a}{12} C_2 h^2.
-\]
+\end{equation}
 The integration error therefore scales as~$\mathcal O(h^2)$.
 (Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\mathcal O(h^2)$,
 but it turns out that the dependence on~$h$ of this bound is optimal).
@@ -240,7 +241,7 @@ Given that
 \[
     \int_{x_{2i}}^{x_{2i+2}} (x-x_{2i})(x- x_{2i+1})^2 (x-x_{2i+2}) \, \d x = \frac{4}{15} h^5,
 \]
-with an integrand everywhere positive in the interval $[x_{2i}, x_{2i+2}]$,
+with an integrand everywhere nonpositive in the interval $[x_{2i}, x_{2i+2}]$,
 we conclude that
 \[
     \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x} \leq \frac{C_4}{90} h^5,
@@ -441,8 +442,65 @@ for example, the calculation of an approximation $J_3(h/8) = J(0) + \mathcal O(h
         \mathcal O(h) & \mathcal O(h^2) & \mathcal O(h^3) & \mathcal O(h^4).
     \end{tikzcd}
 \]
+The linear combination in order to calculate $J_{i} (h/2^i)$ is always of the form
+\[
+    J_i(h/2^i) = \frac{2^i J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^i - 1}, \qquad J_0 = J.
+\]
+Although in practice we calculate the values taken $J, J_1, J_2, \dotsc$ at specific values,
+these are in fact functions of~$h$.
+In \cref{fig:richardson},
+we plot these functions in the case where~$J(h) = 1 + \sin(h)$.
+It appears clearly from the figure that,
+for sufficiently small~$h$,
+$J_3(h)$ provides the most precise approximation of $J(0) = 1$.
+Constructing the functions in Julia can be achieved in just a few lines.
+\begin{minted}{julia}
+J(h) = 1 + sin(h)
+J₁(h) = 2J(h) - J(2h)
+J₂(h) = (4J₁(h) - J₁(2h))/3
+J₃(h) = (8J₂(h) - J₂(2h))/7
+\end{minted}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/richardson.pdf}
+    \caption{Illustration of the functions $J_1$, $J_2$ and $J_3$ constructed by Richardson interpolation.}%
+    \label{fig:richardson}.
+\end{figure}
 
-\paragraph{Generalization}
+\paragraph{Generalization.}
+Sometimes,
+it is known a priori that the Taylor development of the function~$J$ around zero contains only even powers of~$h$.
+In this case, the Richardson extrapolation procedure can be slightly modified to produce successively approximations with errors scaling as~$\mathcal O(h^4)$,
+then $\mathcal O(h^6)$, then $\mathcal O(h^8)$.
+This procedure is illustrated below:
+\[
+    \begin{tikzcd}[cramped, sep=small]
+        J(h) \arrow[dr]  \\
+        J(h/2) \arrow[r] \arrow[dr] & J_1(h/2) \arrow[dr]  \\
+        J(h/4) \arrow[r] \arrow[dr] & J_1(h/4) \arrow[r] \arrow[dr] & J_2(h/4) \arrow[dr]  \\
+        J(h/8) \arrow[r] & J_1(h/8) \arrow[r] & J_2(h/8) \arrow[r] & J_3(h/8) \\
+        \mathcal O(h^2) & \mathcal O(h^4) & \mathcal O(h^6) & \mathcal O(h^8).
+    \end{tikzcd}
+\]
+This time, the linear combinations required for populating this table are given by:
+\begin{equation}
+    \label{eq:generalized_richardson}
+    J_i(h/2^i) = \frac{2^{2i} J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^{2i} - 1}.
+\end{equation}
+
+\paragraph{Application to integration: Romberg's method}
+Romberg's integration method simply consists of applying Richardson's extrapolation to the function
+\[
+    J(h) = \widehat I_h = u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-1}) + 2 u(x_n), \qquad h \in \left\{ \frac{b-a}{n}; n \in \nat\right\}.
+\]
+where $a = x_0 < x_1 < \dotsb < x_n = b$ are equidistant nodes.
+The right-hand side of this equation is simply the composite trapezoidal rule with step size~$h$.
+It is possible to show, see~\cite{MR2265914},
+that~$J(h)$ admits an expansion of the form
+\[
+    J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^k + \mathcal O(h^{k+1}).
+\]
+Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of increasing accuracy.
 
 \section{Methods with non-equidistant nodes}
 The Newton--Cotes method relies on equidistant integration nodes,
@@ -471,6 +529,15 @@ we can therefore solve the nonlinear system of equations:
     \sum_{i=0}^{m} w_i x_i^{j} &= \int_{-1}^{1} x^j \, \d x, \qquad j = 0, \dotsc, 2n+1.
 \end{align}
 The quadrature rule obtained by solving this system of equations is called the \emph{Gauss--Legendre quadrature}.
+This quadrature rule can be obtained more constructively from orthogonal polynomials,
+an approach we presented in~\cref{sub:orthogonal_integration}.
+In particular, the integration nodes are related the roots of a Legendre polynomial,
+which opens the door to another computational approach for computing them.
+It is possible to prove,
+and this should be clear after reading~\cref{sub:orthogonal_integration},
+that the integration weights are all positive,
+and so roundoff errors are much less bothersome than with the Newton--Cotes method.
+
 Let us derive the Gauss--Legendre quadrature with $n + 1 = 2$ nodes.
 The system of equation that we need to solve in this case is the following:
 \begin{align*}
@@ -481,7 +548,7 @@ The system of equation that we need to solve in this case is the following:
 \end{align*}
 The solution to these equations is given by
 \[
-    - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_1 = - w_2 = 1.
+    - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_1 = w_2 = 1.
 \]
 
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
@@ -522,6 +589,66 @@ that of the corresponding one-dimensional rule.
     such that the rule is exact for all polynomials of degree less than or equal to $2n+1$.
     Find the Gauss--Hermite rule with two nodes.
 \end{exercise}
+
+\begin{exercise}
+    Use Romberg's method to construct an integration rule with an error term scaling as~$\mathcal O(h^4)$.
+    Is there a link between the method you obtained and another integration rule seen in class?
+\end{exercise}
+
+\begin{exercise}
+    [Improving the error bound for the composite trapezoidal rule]
+    The notation used in this exercise is the same as in \cref{sec:composite_methods}.
+    In particular, $\widehat I_h$ denotes the approximate integral obtained by using the composite trapezoidal rule~\eqref{eq:composite_trapezoidal_rule},
+    and $\widehat u_h$ is the corresponding piecewise linear interpolant.
+
+    A version of the mean value theorem states that,
+    if $g\colon [a, b] \to \real$ is non-negative integrable function
+    and $f\colon [a, b] \to \real$,
+    then there exists $\xi \in (a, b)$ such that
+    \begin{equation}
+        \label{eq:mean_value}
+        \int_{a}^{b} f(x) g(x) \, \d x = f(c) \int_{a}^{b} g(x) \, \d x.
+    \end{equation}
+    \begin{itemize}
+        \item
+            Using~\eqref{eq:mean_value},
+            show that for all $i \in \{0, \dotsc, n-1\}$,
+            there exists $\xi_i \in (x_i, x_{i+1})$ such that
+            \[
+                \int_{x_i}^{x_{i+1}} u(x) - \widehat u_h(x) \, \d x = 
+                - u''(\xi_i) \frac{h^3}{12}.
+            \]
+
+        \item 
+            Prove, by using the mean value theorem,
+            that if $f\colon [a, b] \to \real$ is a continuous function,
+            then for any set $\xi_0, \dotsc, \xi_{n-1}$ of points within the interval $(a, b)$,
+            there exists $c \in (a, b)$ such that
+            \[
+                \frac{1}{n} \sum_{i=0}^{n-1} f (\xi_i)  = f(c).
+            \]
+
+        \item
+            Combining the previous items,
+            conclude that there exists $\xi \in (a, b)$ such that
+            \[
+                I - \widehat I_h = - u''(\xi) (a-b) \frac{h^2}{12},
+            \]
+            which is a more precise expression of the error than that obtained in~\eqref{eq:error_bound_trapezoidal}.
+    \end{itemize}
+\end{exercise}
+\begin{remark}
+    One may convince oneself of~\eqref{eq:mean_value} is to rewrite this equation as
+    \[
+        \frac{\int_{a}^{b} f(x) g(x) \, \d x}{\int_{a}^{b} g(x) \, \d x} = f(c).
+    \]
+    The left-hand side is simply the average of $f(x)$ with respect to the probability measure 
+    with density given by
+    \[
+        x \mapsto 
+        \frac{g(x)}{\int_{a}^{b} g(x) \, \d x}.
+    \]
+\end{remark}
 
 \section{Discussion and bibliography}
 In this chapter,
