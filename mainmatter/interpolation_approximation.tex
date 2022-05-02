@@ -1036,7 +1036,7 @@ because the inner product~$\ip{\placeholder,\placeholder}$ is defined through an
     in the sense of the norm~$\norm{\placeholder}$,
     is the orthogonal projection of~$u$ onto $\Span \{ \varphi_0, \dotsc, \varphi_m \}$.
 \end{remark}
-\subsection{Mean square approximation using orthogonal polynomials}
+\subsection{Orthogonal polynomials}
 The Gram matrix~$\mat G$ in~\eqref{eq:normaal_continuous} is equal to the identity matrix when the basis functions are orthonormal for the inner product considered.
 In this case, the solution to the linear system is
 \[
@@ -1046,10 +1046,10 @@ and so the best approximation~$\widehat u$ (for the norm induced by the inner pr
 \[
     \widehat u = \sum_{i=0}^{m} \ip{u, \varphi_i} \varphi_i.
 \]
-The coefficients of the basis functions in this expansion are called \emph{Fourier coefficients}.
+The coefficients $\ip{u, \varphi_i}$ of the basis functions in this expansion are called \emph{Fourier coefficients}.
 % and this equation shows that the best approximation is an orthogonal projection.
 Given a finite dimensional subspace~$\mathcal S$ of the space of continuous functions,
-an orthogonal basis can be constructed via the Gram--Schmidt process.
+an orthonormal basis can be constructed via the Gram--Schmidt process.
 In this section, we focus on the particular case where $\mathcal S = \poly(n)$
 -- the subspace of polynomials of degree less than or equal to $n$.
 Another widely used approach,

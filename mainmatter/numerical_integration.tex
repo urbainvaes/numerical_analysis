@@ -249,8 +249,200 @@ we conclude that
 Summing the contributions of all the subintervals,
 we finally obtain
 \begin{equation}
+    \label{eq:scaling_error}
     \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{8} = (b-a)\frac{C_4 h^4}{180}.
 \end{equation}
+
+\paragraph{Estimating the error.}
+In practice,
+it is useful to have an estimate the integration error so that,
+if the error is deemed too large,
+a better approximation of the integral can then be calculated by using a smaller value for the step size~$h$.
+Calculating the exact error $I - \widehat I_h$ is impossible in general,
+because this would require to know the exact value of the integral,
+but it is possible to calculate a rough approximation of the error based on two numerical approximations of the integral,
+as we illustrate formally hereafter for the composite Simpson rule.
+
+Assume that $\widehat I_{2h}$ and $\widehat I_{h}$ are two approximations of the integral,
+calculated using the composite Simpson rule with step size $2h$ and $h$, respectively.
+If we assume that the error scales as~$\mathcal O(h^4)$ as~\eqref{eq:scaling_error} suggests,
+then it holds approximately that
+\begin{equation}
+    \label{eq:relation_errors}
+    I - \widehat I_{h} \approx \frac{1}{2^4} (I - \widehat I_{2h}).
+\end{equation}
+This implies that
+\[
+    I - \widehat I_{2h} = (I - I_h) + (I_h - I_{2h}) \approx \frac{1}{16}(I - \widehat I_{2h}) + (I_h - \widehat I_{2h}).
+\]
+Rearranging this equation gives an approximate error estimate for $\widehat I_{2h}$:
+\[
+    I - \widehat I_{2h} \approx \frac{16}{15} (\widehat I_h - \widehat I_{2h}).
+\]
+Using~\eqref{eq:relation_errors},
+we can then derive an approximate error estimate for $\widehat I_h$:
+\begin{equation}
+    \label{eq:integration_error_approximation}
+    \abs{I - \widehat I_{h}} \approx \frac{1}{15} \abs{\widehat I_h - \widehat I_{2h}}.
+\end{equation}
+The right-hand side can be calculated numerically,
+because it does not depend on the exact value of the integral.
+In practice,
+this approach works very well,
+and the two sides of~\eqref{eq:integration_error_approximation} are very close for small~$h$.
+In the code example below,
+we approximate the integral
+\[
+    I = \int_{0}^{1} \cos(x) \, \d x = 1
+\]
+for different step sizes
+and compare the exact error with the approximate error obtained using~\eqref{eq:integration_error_approximation}.
+The results obtained are summarized in~\cref{tab:discretization_error},
+which shows a good match between the two quantities.
+\begin{table}[ht!]
+    \def\arraystretch{1.5}
+    \centering
+    \caption{Comparison between the exact integration error and the approximate integration error calculated using~\eqref{eq:integration_error_approximation}.}
+    \label{tab:discretization_error}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $h$ & Exact error $\abs{I - \widehat I_h}$ & Approximate error $\frac{1}{15}\abs{\widehat I_h - \widehat I_{2h}}$
+        \\ \hline
+        $2^{-4}$ & $5.166847063531321 \times 10^{-7}$ & $5.185892840930961 \times 10^{-7}$
+        \\ \hline
+            $2^{-5}$ & $3.226500089326123 \times 10^{-8}$ & $3.229464703065806 \times 10^{-8}$
+        \\ \hline
+                $2^{-6}$ & $2.0161285974040766 \times 10^{-9}$ & $2.016591486390477 \times 10^{-9}$
+        \\ \hline
+                    $2^{-7}$ & $1.2600120946615334 \times 10^{-10}$ & $1.260084925291949 \times 10^{-10}$
+        \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{minted}[fontsize=\footnotesize]{julia}
+# Composite Simpson's rule
+function composite_simpson(u, a, b, n)
+    # Integration nodes
+    x = LinRange(a, b, n + 1)
+    # Evaluation of u at the nodes
+    ux = u.(x)
+    # Step size
+    h = x[2] - x[1]
+    # Approximation of the integral
+    return (h/3) * sum([ux[1]; ux[end]; 4ux[2:2:end-1]; 2ux[3:2:end-2]])
+end
+# Function to integrate
+u(x) = cos(x)
+# Integration bounds
+a, b = 0, π/2
+# Exact integral
+I = 1.0
+# Number of subintervals
+ns = [8; 16; 32; 64; 128]
+# Approximate integrals
+Î = zeros(length(ns))
+# Approximation with n = 8
+Î[1] = composite_simpson(u, a, b, ns[1])
+for i in 2:length(ns)
+    Î[i] = composite_simpson(u, a, b, ns[i])
+    println("Exact error: $(I - Î[i]), ",
+            "Approx error: $((Î[i] - Î[i-1])/15)")
+end
+\end{minted}
+
+\section{Richardson extrapolation and Romberg's method}
+In the previous section,
+we showed how the integration error could be approximated based on two approximations of an integral with different step sizes.
+The aim of this section is to show that,
+by cleverly combining two approximations $\widehat I_h$ and $\widehat I_{2h}$ of an integral,
+an approximation even better than $\widehat I_h$ can be constructed.
+
+This approach is based on \emph{Richardson's extrapolation},
+which is a general method for accelerating the convergence of sequences,
+with applications beyond numerical integration.
+The idea is the following:
+assume that $J(h)$ is an approximation with step size~$h$ of some unknown quantity~$J_* = \lim_{h\to 0} J(h)$,
+and that we have access to evaluations of $J$ at $h, h/2, h/4, h/8 \dotsc$.
+Assuming that $J$ extends to a smooth function over $[0, H]$,
+we have by Taylor expansion that
+\[
+    J(\eta) = J(0) + J'(0) \eta + J''(0) \frac{\eta^2}{2} + J^{(3)}(0) \frac{\eta^3}{3!} + \dotsb + J^{(k)}(0) \frac{\eta^k}{k!} + \mathcal O(\eta^{k+1}).
+\]
+
+\paragraph{Elimination of the linear error term.}
+Let us assume that $J'(0) \neq 0$,
+so that the leading order term after the constant $J(0)$ scales as~$\eta$.
+Then we have
+\begin{align*}
+    J(h) &= J(0) + J'(0) h + \mathcal O(h^2) \\
+    J(h/2) &= J(0) + J'(0) \frac{h}{2} + \mathcal O(h^2).
+\end{align*}
+We now ask the following question:
+can we combine linearly $J(h)$ and $J(h/2)$ in order to approximate~$J(0)$ with an error scaling as $\mathcal O(h^2)$.
+Using the ansatz
+\(
+    J_1(h/2) = \alpha J(h) + \beta J(h/2),
+\)
+we calculate
+\begin{equation}
+    \label{eq:expansion_richardson}
+    J_1(h/2) = (\alpha + \beta) J(0) + J'(0) h \left(\alpha + \frac{1 - \alpha}{2}\right) + \mathcal O(h^2).
+\end{equation}
+Since we want this expression to approximate $J(0)$ for small~$h$,
+we need to impose that $\alpha + \beta = 1$.
+Then, in order for the term multiplying~$h$ to cancel out,
+we require that
+\[
+    \alpha + \frac{1 - \alpha}{2} = 0
+    \qquad \Leftrightarrow \qquad
+    \alpha = - 1.
+\]
+This yields the formula
+\begin{equation}
+    \label{eq:richardson}
+    J_1(h/2) = 2J(h/2) - J(h).
+\end{equation}
+Notice that, in the case where $J$ is a linear function,
+$J_1(h/2)$ is exactly equal to~$J(0)$.
+This reveals a geometric interpretation of~\eqref{eq:richardson}:
+the approximation $J_1(h/2)$ is simply the $y$ intercept of the straight line passing through the points $\bigl(h/2, J(h/2)\bigr)$ and $\bigl(h, J(h)\bigr)$.
+
+\paragraph{Elimination of the quadratic error term.}
+If we had tracked the coefficient of $h^2$ in the previous paragraph,
+we would have obtained instead of~\eqref{eq:expansion_richardson} the following equation:
+\[
+    J_1(h/2) = J(0) - J^{(3)}(0) \frac{h^2}{4} + \mathcal O(h^3).
+\]
+If we have access also to $J(h/4)$,
+then we can also construct
+\[
+   J_1(h/4) = \frac{2J(h/4) - J(h/2)}{2} = J(0) - J^{(3)}(0) \frac{h^2}{16} + \mathcal O(h^3).
+\]
+At this point,
+it is natural to wonder whether we can combine $J_1(h)$ and $J_1(h/2)$ in order to produce an even better approximation of $J(0)$.
+Applying the same reasoning as in the previous section leads to
+\[
+    J_2(h/4) = \frac{4 J_1(h/2) - J_2(h/4)}{4 - 1} = J(0) + \mathcal O(h^3).
+\]
+This is an exact approximation of $J(0)$ if $J$ is a quadratic polynomial,
+implying that $J_2(h/4)$ is simply the $y$ intercept of the quadratic polynomial interpolation through the points
+$\bigl(h/4, J(h/4)\bigr)$, $\bigl(h/2, J(h/2)\bigr)$ and $\bigl(h, J(h)\bigr)$.
+
+\paragraph{Elimination of higher order terms.}
+The procedure above can be repeated in order to eliminate terms of higher and higher order.
+The following schematic illustrates,
+for example, the calculation of an approximation $J_3(h/8) = J(0) + \mathcal O(h^4)$.
+\[
+    \begin{tikzcd}[cramped, sep=small]
+        J(h) \arrow[dr]  \\
+        J(h/2) \arrow[r] \arrow[dr] & J_1(h/2) \arrow[dr]  \\
+        J(h/4) \arrow[r] \arrow[dr] & J_1(h/4) \arrow[r] \arrow[dr] & J_2(h/4) \arrow[dr]  \\
+        J(h/8) \arrow[r] & J_1(h/8) \arrow[r] & J_2(h/8) \arrow[r] & J_3(h/8) \\
+        \mathcal O(h) & \mathcal O(h^2) & \mathcal O(h^3) & \mathcal O(h^4).
+    \end{tikzcd}
+\]
+
+\paragraph{Generalization}
 
 \section{Methods with non-equidistant nodes}
 The Newton--Cotes method relies on equidistant integration nodes,
