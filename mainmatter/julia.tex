@@ -358,7 +358,7 @@ For example,
         \]
 \end{itemize}
 Let us also mention the following shorthand notation,
-called \emph{array comprehension} for creating vectors and matrices:
+called \emph{array comprehension}, for creating vectors and matrices:
 \begin{itemize}
     \item \julia{[i^2 for i in 1:5]} creates the vector \julia{[1, 4, 9, 16, 25]}.
     \item \julia{[i + 10*j for i in 1:4, j in 1:4]} creates the matrix
@@ -406,7 +406,7 @@ we illustrate the concept using examples.
 Consider first the following code block:
 \begin{minted}{julia}
     function welcome(name)
-        println("Hello, " * name * "!")
+        return "Hello, " * name * "!"
     end
     result = broadcast(welcome, ["Alice", "Bob"])
 \end{minted}

@@ -1278,40 +1278,11 @@ which means that the polynomials~$\varphi_1, \dotsc, \varphi_m$ are orthogonal f
 \end{align*}
 We have thus shown that,
 if~$\varphi_0, \varphi_1, \varphi_2$ are a family of orthonormal polynomials for an inner product~$\ip{\placeholder,\placeholder}$,
-then they are also orthonormal for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$,
-In other words, the finite-dimensional vectors
-\[
-    \vect \varphi_0 :=
-    \begin{pmatrix}
-        \varphi_0(r_0) \\
-        \varphi_0(r_1) \\
-        \vdots \\
-        \varphi_0(r_m)
-    \end{pmatrix},
-    \quad
-    \vect \varphi_1 :=
-    \begin{pmatrix}
-        \varphi_1(r_0) \\
-        \varphi_1(r_1) \\
-        \vdots \\
-        \varphi_1(r_m)
-    \end{pmatrix},
-    \quad
-    \dotsc,
-    \qquad
-    \vect \varphi_m :=
-    \begin{pmatrix}
-        \varphi_2(r_0) \\
-        \varphi_2(r_1) \\
-        \vdots \\
-        \varphi_2(r_m)
-    \end{pmatrix}
-\]
-are orthonormal vectors in~$\real^{m+1}$ for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$.
+then they are also orthonormal for the inner product~$\ip{\placeholder,\placeholder}_{m+1}$.
 Consequently, it holds that
 \begin{equation}
     \label{eq:orthogonality_equivalence}
-    \forall (p, q) \in \poly(m)^2, \qquad
+    \forall (p, q) \in \poly(m) \times \poly(m), \qquad
     \ip{p,q} = \ip{p, q}_{m+1},
 \end{equation}
 Indeed, denoting by $p = \alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m$ and $q = \beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m$ the expansions of the polynomials~$p$ and~$q$
@@ -1322,7 +1293,7 @@ we have
     &= \ip{\alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m,\beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m} \\
     &= \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \beta_j \ip{\varphi_i, \varphi_j}
     = \alpha_0 \beta_0 + \dotsb + \alpha_m \beta_m
-    = \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \alpha_j \ip{\varphi_i, \varphi_j}_{m+1} \\
+    = \sum_{i=0}^{m} \sum_{j=0}^{m} \alpha_i \beta_j \ip{\varphi_i, \varphi_j}_{m+1} \\
     & = \ip{\alpha_0 \varphi_0 + \dotsb + \alpha_m \varphi_m,\beta_0 \varphi_0 + \dotsb + \beta_m \varphi_m}_{m+1} = \ip{p,q}_{m+1}.
 \end{align*}
 We have thus shown the following result.
@@ -1358,7 +1329,7 @@ A formula of this type is called a \emph{quadrature formula},
 with~$m+1$ \emph{nodes}~$r^{(m+1)}_0, \dotsc, r^{(m+1)}_m$ and associated \emph{weights} $w^{(m+1)}_0, \dotsc, w^{(m+1)}_m$.
 Note that the nodes and weights of the quadrature depend on the weight~$w(x)$ and on the degree~$m$.
 
-In fact, equation~\eqref{eq:integration_formula} is valid more generally than for~$p \in \poly(n)$.
+In fact, equation~\eqref{eq:integration_formula} is valid more generally than for~$p \in \poly(m)$.
 Indeed, for every monomial~$x^p$ with $m \leq p \leq 2m$,
 we have that
 \begin{align*}
