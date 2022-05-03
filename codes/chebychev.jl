@@ -17,9 +17,10 @@ Plots.default(fontfamily="Computer Modern",
 # For information on any of these, type
 # Plots.plotattr("framestyle")
 
-n = 20
+n = 35
 k = 0:(n-1)
 x = cos.(π*(k.+1/2)/n) |> sort
+# x = LinRange(-1, 1, n)
 
 ε = .01
 f(x) = tanh((x+1/2)/ε) + tanh(x/ε) + tanh((x-1/2)/ε)

@@ -120,7 +120,7 @@ the approximate integral may not even converge to the correct value in the limit
 Note that,
 although it is based on a quadratic polynomial interpolation,
 Simpson's rule~\eqref{eq:simpsons} has a degree of precision equal to~$3$.
-This is because any integration rule with symmetric nodes and weights on either side of $x=0$ is exact for odd functions,
+This is because any integration rule with nodes and weights symmetric around $x=0$ is exact for odd functions,
 in particular $x^3$.
 Likewise, the degree of precision of Bode's rule is equal to 5.
 
@@ -166,7 +166,7 @@ for very small~$h$,
 equation~\eqref{eq:composite_trapezoidal_rule} is expected to provide a good approximation of the integral.
 An error estimate can be obtained directly from the formula in~\cref{theorem:interpolation_error} for interpolation error,
 provided that we assume that~$u \in C^2([a, b])$.
-Denoting by $\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
+Denoting by~$\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
 and by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
 we have
 \[
@@ -217,8 +217,8 @@ for some $\alpha \in [x_{2i}, x_{2i+1}]$.
 We have
 \begin{align}
     \label{eq:composite_simpson_error}
-    \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x) \, \d x
-    &= \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x + \int_{x_{2i}}^{x_{2i+1}} \widehat u_3(x) - \widehat u_2(x)  \, \d x.
+    \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_2(x) \, \d x
+    &= \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x + \int_{x_{2i}}^{x_{2i+2}} \widehat u_3(x) - \widehat u_2(x)  \, \d x.
 \end{align}
 The second term is zero,
 because the integrand is a cubic polynomial with zeros at $x_{2i}$, $x_{2i+1}$ and $x_{2i+2}$,
@@ -228,7 +228,11 @@ and because
 \]
 (Notice that the integrand is even around $x_{2i+1}$.)
 The cancellation of the second term in~\eqref{eq:composite_simpson_error} also follows from the fact that
-the degree of precision of the Simpson rule~\eqref{eq:simpsons} is equal to~3.
+the degree of precision of the Simpson rule~\eqref{eq:simpsons} is equal to~3,
+and so
+\[
+    \int_{x_{2i}}^{x_{2i+2}} \widehat u_3(x) - \widehat u_2(x)  \, \d x = \frac{1}{3} (\widehat u_3 - \widehat u_2)(x_{2i}) + \frac{4}{3} (\widehat u_3 - \widehat u_2)(x_{2i+1}) + \frac{1}{3} (\widehat u_3 - \widehat u_2)(x_{2i+2}) = 0.
+\]
 Using~\cref{theorem:interpolation_error},
 we rewrite first term in~\eqref{eq:composite_simpson_error} from above as follows:
 \[
@@ -245,7 +249,7 @@ with an integrand everywhere nonpositive in the interval $[x_{2i}, x_{2i+2}]$,
 we conclude that
 \[
     \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x} \leq \frac{C_4}{90} h^5,
-    \qquad C_4 = \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)}.
+    \qquad C_4 = \sup_{\xi \in [a, b]} \abs[big]{u^{(4)}(\xi)}.
 \]
 Summing the contributions of all the subintervals,
 we finally obtain
@@ -256,7 +260,7 @@ we finally obtain
 
 \paragraph{Estimating the error.}
 In practice,
-it is useful to have an estimate the integration error so that,
+it is useful to be able to estimate the integration error so that,
 if the error is deemed too large,
 a better approximation of the integral can then be calculated by using a smaller value for the step size~$h$.
 Calculating the exact error $I - \widehat I_h$ is impossible in general,
@@ -264,7 +268,7 @@ because this would require to know the exact value of the integral,
 but it is possible to calculate a rough approximation of the error based on two numerical approximations of the integral,
 as we illustrate formally hereafter for the composite Simpson rule.
 
-Assume that $\widehat I_{2h}$ and $\widehat I_{h}$ are two approximations of the integral,
+Suppose that $\widehat I_{2h}$ and $\widehat I_{h}$ are two approximations of the integral,
 calculated using the composite Simpson rule with step size $2h$ and $h$, respectively.
 If we assume that the error scales as~$\mathcal O(h^4)$ as~\eqref{eq:scaling_error} suggests,
 then it holds approximately that
@@ -274,14 +278,14 @@ then it holds approximately that
 \end{equation}
 This implies that
 \[
-    I - \widehat I_{2h} = (I - I_h) + (I_h - I_{2h}) \approx \frac{1}{16}(I - \widehat I_{2h}) + (I_h - \widehat I_{2h}).
+    I - \widehat I_{2h} = (I - \widehat I_h) + (I_h - \widehat I_{2h}) \approx \frac{1}{16}(I - \widehat I_{2h}) + (I_h - \widehat I_{2h}).
 \]
-Rearranging this equation gives an approximate error estimate for $\widehat I_{2h}$:
+Rearranging this equation gives an approximation of the error for $\widehat I_{2h}$:
 \[
     I - \widehat I_{2h} \approx \frac{16}{15} (\widehat I_h - \widehat I_{2h}).
 \]
 Using~\eqref{eq:relation_errors},
-we can then derive an approximate error estimate for $\widehat I_h$:
+we can then derive an error estimate for $\widehat I_h$:
 \begin{equation}
     \label{eq:integration_error_approximation}
     \abs{I - \widehat I_{h}} \approx \frac{1}{15} \abs{\widehat I_h - \widehat I_{2h}}.
@@ -289,13 +293,13 @@ we can then derive an approximate error estimate for $\widehat I_h$:
 The right-hand side can be calculated numerically,
 because it does not depend on the exact value of the integral.
 In practice,
-this approach works very well,
-and the two sides of~\eqref{eq:integration_error_approximation} are very close for small~$h$.
+the two sides of~\eqref{eq:integration_error_approximation} are often very close for small~$h$.
 In the code example below,
 we approximate the integral
-\[
-    I = \int_{0}^{1} \cos(x) \, \d x = 1
-\]
+\begin{equation}
+    \label{eq:integral_example}
+    I = \int_{0}^{\frac{\pi}{2}} \cos(x) \, \d x = 1
+\end{equation}
 for different step sizes
 and compare the exact error with the approximate error obtained using~\eqref{eq:integration_error_approximation}.
 The results obtained are summarized in~\cref{tab:discretization_error},
@@ -341,11 +345,9 @@ I = 1.0
 # Number of subintervals
 ns = [8; 16; 32; 64; 128]
 # Approximate integrals
-Î = zeros(length(ns))
-# Approximation with n = 8
-Î[1] = composite_simpson(u, a, b, ns[1])
+Î = composite_simpson.(u, a, b, ns)
+# Calculate exact and approximate errors
 for i in 2:length(ns)
-    Î[i] = composite_simpson(u, a, b, ns[i])
     println("Exact error: $(I - Î[i]), ",
             "Approx error: $((Î[i] - Î[i-1])/15)")
 end
@@ -353,7 +355,7 @@ end
 
 \section{Richardson extrapolation and Romberg's method}
 In the previous section,
-we showed how the integration error could be approximated based on two approximations of an integral with different step sizes.
+we showed how the integration error could be approximated based on two approximations of the integral with different step sizes.
 The aim of this section is to show that,
 by cleverly combining two approximations $\widehat I_h$ and $\widehat I_{2h}$ of an integral,
 an approximation even better than $\widehat I_h$ can be constructed.
@@ -379,7 +381,7 @@ Then we have
     J(h/2) &= J(0) + J'(0) \frac{h}{2} + \mathcal O(h^2).
 \end{align*}
 We now ask the following question:
-can we combine linearly $J(h)$ and $J(h/2)$ in order to approximate~$J(0)$ with an error scaling as $\mathcal O(h^2)$.
+can we combine linearly $J(h)$ and $J(h/2)$ in order to approximate~$J(0)$ with an error scaling as $\mathcal O(h^2)$?
 Using the ansatz
 \(
     J_1(h/2) = \alpha J(h) + \beta J(h/2),
@@ -414,14 +416,14 @@ we would have obtained instead of~\eqref{eq:expansion_richardson} the following 
 \[
     J_1(h/2) = J(0) - J^{(3)}(0) \frac{h^2}{4} + \mathcal O(h^3).
 \]
-If we have access also to $J(h/4)$,
-then we can also construct
+Provided that we have access also to $J(h/4)$,
+we can also calculate
 \[
    J_1(h/4) = \frac{2J(h/4) - J(h/2)}{2} = J(0) - J^{(3)}(0) \frac{h^2}{16} + \mathcal O(h^3).
 \]
 At this point,
-it is natural to wonder whether we can combine $J_1(h)$ and $J_1(h/2)$ in order to produce an even better approximation of $J(0)$.
-Applying the same reasoning as in the previous section leads to
+it is natural to wonder whether we can combine $J_1(h/2)$ and $J_1(h/4)$ in order to produce an even better approximation of $J(0)$.
+Applying the same reasoning as in the previous section leads us to introduce
 \[
     J_2(h/4) = \frac{4 J_1(h/2) - J_2(h/4)}{4 - 1} = J(0) + \mathcal O(h^3).
 \]
@@ -430,7 +432,7 @@ implying that $J_2(h/4)$ is simply the $y$ intercept of the quadratic polynomial
 $\bigl(h/4, J(h/4)\bigr)$, $\bigl(h/2, J(h/2)\bigr)$ and $\bigl(h, J(h)\bigr)$.
 
 \paragraph{Elimination of higher order terms.}
-The procedure above can be repeated in order to eliminate terms of higher and higher order.
+The procedure above can be repeated in order to eliminate terms of higher and higher orders.
 The following schematic illustrates,
 for example, the calculation of an approximation $J_3(h/8) = J(0) + \mathcal O(h^4)$.
 \[
@@ -446,19 +448,19 @@ The linear combination in order to calculate $J_{i} (h/2^i)$ is always of the fo
 \[
     J_i(h/2^i) = \frac{2^i J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^i - 1}, \qquad J_0 = J.
 \]
-Although in practice we calculate the values taken $J, J_1, J_2, \dotsc$ at specific values,
-these are in fact functions of~$h$.
-In \cref{fig:richardson},
-we plot these functions in the case where~$J(h) = 1 + \sin(h)$.
+In practice we calculate the values taken by $J, J_1, J_2, \dotsc$ at specific values of~$h$,
+but these are in fact functions of~$h$.
+In~\cref{fig:richardson},
+we plot these functions when~$J(h) = 1 + \sin(h)$.
 It appears clearly from the figure that,
 for sufficiently small~$h$,
 $J_3(h)$ provides the most precise approximation of $J(0) = 1$.
-Constructing the functions in Julia can be achieved in just a few lines.
-\begin{minted}{julia}
-J(h) = 1 + sin(h)
-J₁(h) = 2J(h) - J(2h)
-J₂(h) = (4J₁(h) - J₁(2h))/3
-J₃(h) = (8J₂(h) - J₂(2h))/7
+Constructing the functions in Julia can be achieved in just a few lines of code.
+\begin{minted}[fontsize=\footnotesize]{julia}
+    J(h) = 1 + sin(h)
+    J_1(h) = 2J(h) - J(2h)
+    J_2(h) = (4J_1(h) - J_1(2h))/3
+    J_3(h) = (8J_2(h) - J_2(2h))/7
 \end{minted}
 \begin{figure}[ht]
     \centering
@@ -470,8 +472,8 @@ J₃(h) = (8J₂(h) - J₂(2h))/7
 \paragraph{Generalization.}
 Sometimes,
 it is known a priori that the Taylor development of the function~$J$ around zero contains only even powers of~$h$.
-In this case, the Richardson extrapolation procedure can be slightly modified to produce successively approximations with errors scaling as~$\mathcal O(h^4)$,
-then $\mathcal O(h^6)$, then $\mathcal O(h^8)$.
+In this case, the Richardson extrapolation procedure can be slightly modified to produce approximations with errors scaling as~$\mathcal O(h^4)$,
+then $\mathcal O(h^6)$, then $\mathcal O(h^8)$, etc.
 This procedure is illustrated below:
 \[
     \begin{tikzcd}[cramped, sep=small]
@@ -489,18 +491,28 @@ This time, the linear combinations required for populating this table are given 
 \end{equation}
 
 \paragraph{Application to integration: Romberg's method}
-Romberg's integration method simply consists of applying Richardson's extrapolation to the function
+Romberg's integration method consists of applying Richardson's extrapolation to the function
 \[
     J(h) = \widehat I_h = u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-1}) + 2 u(x_n), \qquad h \in \left\{ \frac{b-a}{n}; n \in \nat\right\}.
 \]
 where $a = x_0 < x_1 < \dotsb < x_n = b$ are equidistant nodes.
 The right-hand side of this equation is simply the composite trapezoidal rule with step size~$h$.
 It is possible to show, see~\cite{MR2265914},
-that~$J(h)$ admits an expansion of the form
+that~$J(h)$ may be expanded as follows:
 \[
-    J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^k + \mathcal O(h^{k+1}).
+    \forall k \in \nat, \qquad
+    J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^{2k} + \mathcal O(h^{2k+2}).
 \]
-Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of increasing accuracy.
+Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of the integral increasing accuracy.
+The convergence of Romberg's method for calculating the integral~\eqref{eq:integral_example} is illustrated in~\cref{fig:romberg}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/romberg.pdf}
+    \caption{Convergence of Romberg's method. The straight lines correspond to the monomial functions $f(h) = C_i h^i$,
+    with $i = 2, 4, 6, 8$ and for appropriate constants $C_i$.
+    We observe a good agreement between the observed and theoretical convergence rates.}%
+    \label{fig:romberg}
+\end{figure}
 
 \section{Methods with non-equidistant nodes}
 The Newton--Cotes method relies on equidistant integration nodes,
@@ -511,17 +523,18 @@ and these can be leveraged in order to construct a better integration formula.
 The total number of degrees of freedom for a general integration rule of the form~\eqref{eq:deterministic_integration} is $2n + 2$,
 which enable to construct an integration rule with degree of precision equal to~$2n+1$.
 
-A necessary and sufficient condition for an integration rule of the form~\eqref{eq:deterministic_integration} to have a degree of precision
-equal to $2n +1$ is that it integrates exactly all the monomials of degree $0$ to $2n+1$.
-Indeed, since $\widehat I$ is a linear function of~$u$,
-we have
+A necessary condition for an integration rule of the form~\eqref{eq:deterministic_integration} to have a degree of precision
+equal to $2n +1$ is that it integrates exactly all the monomials of degree $0$ to~$2n+1$.
+This condition is also sufficient because,
+assuming that it is satisfied,
+we have by linearity of the functionals~$I$ and $\widehat I$ that
 \begin{align*}
-    \widehat I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1})
+    \widehat I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1} x^{2n+1})
     &= \alpha_0 \widehat I(1) + \alpha_1 \widehat I(x) + \dotsb + \alpha_{2n+1} \widehat I(x^{2n+1}) \\
     &= \alpha_0 I(1) + \alpha_1 I(x) + \dotsb + \alpha_{2n+1} I(x^{2n+1}) \\
     &= I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1} x^{2n+1}),
 \end{align*}
-where $I(u)$ and $\widehat I(u)$ denote respectively the exact integral of~$u$ and the approximate integral using a rule of the form~\eqref{eq:deterministic_integration}.
+Here $I(u)$ and $\widehat I(u)$ denote respectively the exact integral of~$u$ and its approximate integral using~\eqref{eq:deterministic_integration}.
 Finding the nodes and weights of the integration rule,
 we can therefore solve the nonlinear system of equations:
 \begin{align}
@@ -539,7 +552,7 @@ that the integration weights are all positive,
 and so roundoff errors are much less bothersome than with the Newton--Cotes method.
 
 Let us derive the Gauss--Legendre quadrature with $n + 1 = 2$ nodes.
-The system of equation that we need to solve in this case is the following:
+The system of equations that we need to solve in this case is the following:
 \begin{align*}
     w_0 + w_1 = 2,
     \qquad w_0 x_0 + w_1 x_1 = 0,
@@ -548,7 +561,7 @@ The system of equation that we need to solve in this case is the following:
 \end{align*}
 The solution to these equations is given by
 \[
-    - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_1 = w_2 = 1.
+    - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_0 = w_1 = 1.
 \]
 
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
@@ -615,11 +628,11 @@ that of the corresponding one-dimensional rule.
             show that for all $i \in \{0, \dotsc, n-1\}$,
             there exists $\xi_i \in (x_i, x_{i+1})$ such that
             \[
-                \int_{x_i}^{x_{i+1}} u(x) - \widehat u_h(x) \, \d x = 
+                \int_{x_i}^{x_{i+1}} u(x) - \widehat u_h(x) \, \d x =
                 - u''(\xi_i) \frac{h^3}{12}.
             \]
 
-        \item 
+        \item
             Prove, by using the mean value theorem,
             that if $f\colon [a, b] \to \real$ is a continuous function,
             then for any set $\xi_0, \dotsc, \xi_{n-1}$ of points within the interval $(a, b)$,
@@ -642,10 +655,10 @@ that of the corresponding one-dimensional rule.
     \[
         \frac{\int_{a}^{b} f(x) g(x) \, \d x}{\int_{a}^{b} g(x) \, \d x} = f(c).
     \]
-    The left-hand side is simply the average of $f(x)$ with respect to the probability measure 
+    The left-hand side is simply the average of $f(x)$ with respect to the probability measure
     with density given by
     \[
-        x \mapsto 
+        x \mapsto
         \frac{g(x)}{\int_{a}^{b} g(x) \, \d x}.
     \]
 \end{remark}
@@ -668,6 +681,6 @@ and averaging $f(X_i)$ over all these samples.
     n = 1000
     f(x) = x^2
     X = rand(n)
-    I = (1/n) * sum(f.(X))
+    Î = (1/n) * sum(f.(X))
 \end{minted}
 The main advantage of this approach is that it generalizes very easily to high-dimensional and infinite-dimensional settings.
