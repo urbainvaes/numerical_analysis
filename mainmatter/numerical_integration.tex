@@ -628,18 +628,32 @@ that of the corresponding one-dimensional rule.
 \end{exercise}
 
 \begin{exercise}
-    Show that the integration error for the composite Simpson rule satisfies the following bound:
+    Consider the integration rule
     \[
-        \abs{I - \widehat I_h}
-        \leq C (b-a) \left( \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)} \right) h^4,
+        \int_{0}^{1} u(x) \, \d x \approx w_1 u(0) + w_2 u(1) + w_3 u'(0).
     \]
-    for an appropriate constant~$C$.
+    Find $w_1$, $w_2$ and $w_3$ so that this integration rule has the highest possible degree of precision.
+\end{exercise}
+
+\begin{exercise}
+    Consider the integration rule
+    \[
+        \int_{-1}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u'(x_1).
+    \]
+    Find $w_1$, $w_2$ and $x_1$ so that this integration rule has the highest possible degree of precision.
+\end{exercise}
+
+\begin{exercise}
+    What is the degree of precision of the following quadrature rule?
+    \[
+        \int_{-1}^{1} u(x) \, \d x \approx \frac{2}{3}  \left( 2 f\left(-\frac{1}{2}\right) - f(0) + 2 f\left(\frac{1}{2}\right) \right).
+    \]
 \end{exercise}
 
 \begin{exercise}
     The Gauss--Hermite quadrature rule with~$n$ nodes is an approximation of the form
     \[
-        \int_{-\infty}^{\infty} u(x) \, \e^{- \frac{x^2}{2}} \, \d x = \sum_{i=0}^{n} w_i u(x_i),
+        \int_{-\infty}^{\infty} u(x) \, \e^{- \frac{x^2}{2}} \, \d x \approx \sum_{i=0}^{n} w_i u(x_i),
     \]
     such that the rule is exact for all polynomials of degree less than or equal to $2n+1$.
     Find the Gauss--Hermite rule with two nodes.
@@ -657,8 +671,8 @@ that of the corresponding one-dimensional rule.
     and $\widehat u_h$ is the corresponding piecewise linear interpolant.
 
     A version of the mean value theorem states that,
-    if $g\colon [a, b] \to \real$ is non-negative integrable function
-    and $f\colon [a, b] \to \real$,
+    if $g\colon [a, b] \to \real$ is a non-negative integrable function
+    and $f\colon [a, b] \to \real$ is continuous,
     then there exists $\xi \in (a, b)$ such that
     \begin{equation}
         \label{eq:mean_value}
@@ -667,7 +681,7 @@ that of the corresponding one-dimensional rule.
     \begin{itemize}
         \item
             Using~\eqref{eq:mean_value},
-            show that for all $i \in \{0, \dotsc, n-1\}$,
+            show that, for all $i \in \{0, \dotsc, n-1\}$,
             there exists $\xi_i \in (x_i, x_{i+1})$ such that
             \[
                 \int_{x_i}^{x_{i+1}} u(x) - \widehat u_h(x) \, \d x =
@@ -675,7 +689,7 @@ that of the corresponding one-dimensional rule.
             \]
 
         \item
-            Prove, by using the mean value theorem,
+            Prove, by using the intermediate value theorem,
             that if $f\colon [a, b] \to \real$ is a continuous function,
             then for any set $\xi_0, \dotsc, \xi_{n-1}$ of points within the interval $(a, b)$,
             there exists $c \in (a, b)$ such that
@@ -693,11 +707,11 @@ that of the corresponding one-dimensional rule.
     \end{itemize}
 \end{exercise}
 \begin{remark}
-    One may convince oneself of~\eqref{eq:mean_value} is to rewrite this equation as
+    One may convince oneself of~\eqref{eq:mean_value} by rewriting this equation as
     \[
         \frac{\int_{a}^{b} f(x) g(x) \, \d x}{\int_{a}^{b} g(x) \, \d x} = f(c).
     \]
-    The left-hand side is simply the average of $f(x)$ with respect to the probability measure
+    The left-hand side is the average of $f(x)$ with respect to the probability measure
     with density given by
     \[
         x \mapsto
@@ -708,7 +722,8 @@ that of the corresponding one-dimensional rule.
 \section{Discussion and bibliography}
 In this chapter,
 we covered mainly \emph{deterministic} integration formulas.
-The presentation of part of the material follows that in~\cite{Legat}.
+The presentation of part of the material follows that in~\cite{Legat},
+and some exercises come from~\cite[Chapter 9]{MR2265914}.
 Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
 These methods are based on the connection between integrals and expectations.
 For example, the integral
