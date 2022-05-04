@@ -12,8 +12,10 @@
 \input{../macros.tex}
 \begin{document}
 
-\title{Numerical Analysis: Final exam (60 marks)}
+\title{Numerical Analysis: Final exam \\
+\small{(\textbf{50 marks}, only 5 best questions count)}}
 \author{Urbain Vaes}
+\date{12 May 2022}
 \maketitle
 
 \begin{question}
@@ -242,12 +244,12 @@
     \]
     \begin{itemize}
         \item
-            (4 marks)
+            (3 marks)
             Using a method of your choice,
             calculate $p_n$ when $n = 2$.
 
         \item
-            (5 marks)
+            (6 marks)
             Prove that
             \[
                 E_n := \sup_{x \in [0, 1]} \abs{u(x) - p_n(x)}
@@ -257,7 +259,7 @@
             \[
                 \omega_n(x) = \prod_{i=0}^{n} (x - x_i).
             \]
-            
+
             \textbf{Hint:} You may find it useful to introduce the function
             \[
                 g(t) = e(t) \omega_n(x) - e(x) \omega_n(t).
@@ -275,6 +277,28 @@
 \newpage
 \begin{question}
     [Numerical integration, \textbf{10 marks}]
+    The third exercise below is independent of the first two.
+    \begin{itemize}
+        \item (5 marks)
+            Construct an integration rule of the form
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w(2) u(0) +  w_2 u\left(\frac{1}{2} \right)
+            \]
+            with a degree of precision equal to at least 2.
+
+        \item
+            (1 mark)
+            What is the degree of precision of the rule constructed?
+            Prove.
+
+        \item (4 marks)
+            The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
+            \[
+                \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
+            \]
+            such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+            Find the Gauss--Laguerre rule with one node $(n = 1)$.
+    \end{itemize}
 \end{question}
 
 \end{document}
