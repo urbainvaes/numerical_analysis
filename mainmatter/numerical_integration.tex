@@ -255,7 +255,7 @@ Summing the contributions of all the subintervals,
 we finally obtain
 \begin{equation}
     \label{eq:scaling_error}
-    \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{8} = (b-a)\frac{C_4 h^4}{180}.
+    \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{90} = (b-a)\frac{C_4 h^4}{180}.
 \end{equation}
 
 \paragraph{Estimating the error.}
@@ -536,21 +536,13 @@ we have by linearity of the functionals~$I$ and $\widehat I$ that
 \end{align*}
 Here $I(u)$ and $\widehat I(u)$ denote respectively the exact integral of~$u$ and its approximate integral using~\eqref{eq:deterministic_integration}.
 Finding the nodes and weights of the integration rule,
-we can therefore solve the nonlinear system of equations:
+we can therefore solve the nonlinear system of $2n+2$ equations with $2n+2$ unknowns:
 \begin{align}
     \label{eq:system_gauss_legendre}
-    \sum_{i=0}^{m} w_i x_i^{j} &= \int_{-1}^{1} x^j \, \d x, \qquad j = 0, \dotsc, 2n+1.
+    \sum_{i=0}^{n} w_i x_i^{d} &= \int_{-1}^{1} x^d \, \d x, \qquad d = 0, \dotsc, 2n+1.
 \end{align}
 The quadrature rule obtained by solving this system of equations is called the \emph{Gauss--Legendre quadrature}.
-This quadrature rule can be obtained more constructively from orthogonal polynomials,
-an approach we presented in~\cref{sub:orthogonal_integration}.
-In particular, the integration nodes are related the roots of a Legendre polynomial,
-which opens the door to another computational approach for computing them.
-It is possible to prove,
-and this should be clear after reading~\cref{sub:orthogonal_integration},
-that the integration weights are all positive,
-and so roundoff errors are much less bothersome than with the Newton--Cotes method.
-
+\begin{example}
 Let us derive the Gauss--Legendre quadrature with $n + 1 = 2$ nodes.
 The system of equations that we need to solve in this case is the following:
 \begin{align*}
@@ -563,7 +555,57 @@ The solution to these equations is given by
 \[
     - x_0 = x_1 = \frac{\sqrt{3}}{3}, \qquad w_0 = w_1 = 1.
 \]
+\end{example}
 
+\paragraph{Connection with orthogonal polynomials.\moreinfo}
+The Gauss--Legendre quadrature rules can be obtained more constructively from orthogonal polynomials,
+an approach we presented in~\cref{sub:orthogonal_integration}.
+In particular, the integration nodes are related the roots of a Legendre polynomial,
+which opens the door to another computational approach for computing them.
+It is possible to prove,
+and this should be clear after reading~\cref{sub:orthogonal_integration},
+that the integration weights are all positive,
+and so Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
+
+In this section, we prove,
+starting from the system of nonlinear equations~\eqref{eq:system_gauss_legendre},
+that the roots of the integration formula are necessarily the roots of a Legendre polynomial.
+This will imply, as a corollary, that the set of integration nodes satisfying~\eqref{eq:system_gauss_legendre} is unique,
+because the orthogonal polynomials are unique.
+To this end, let us denote by
+\[
+    p(x) = (x - x_0) \dotsc (x - x_n) =: \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n+1} x^{n+1}
+\]
+the polynomial whose roots coincide with the unknown integration nodes.
+Multiplying the first equation of~\eqref{eq:system_gauss_legendre} ($d=0$) by $\alpha_0$,
+the second ($d=1$) by $\alpha_1$, and so forth until the equation corresponding to $d=n+1$,
+we obtain after summing these equations
+\[
+    \sum_{i=0}^{n} w_i \sum_{d=0}^{n+1} \alpha_d x_i^d = \int_{-1}^{1} \sum_{d=0}^{n+1} \alpha_d x^d \, \d x
+    \qquad \Leftrightarrow \qquad
+    \sum_{i=0}^{n} w_i p(x_i) = \int_{-1}^{1} p(x) \, \d x.
+\]
+Since the left-hand side of this equation is equal to 0 by definition of~$p$,
+we deduce that $p$ is orthogonal to the constant polynomial for the inner product
+\begin{equation}
+    \label{eq:l2_inner_product}
+    \ip{f, g} =
+    \int_{-1}^{1} f(x) \, g(x) \, \d x.
+\end{equation}
+Now if we multiply the \emph{second} equation of~\eqref{eq:system_gauss_legendre} ($d=1$) by $\alpha_0$,
+the third ($d=2$) by $\alpha_1$, and so forth until until the equation corresponding to $d=n+2$,
+we obtain after summation of these equations that
+\[
+    \sum_{i=0}^{n} w_i x_i \sum_{d=0}^{n+1} \alpha_d x_i^d = \int_{-1}^{1} \sum_{d=0}^{n+1} \alpha_d x^{d+1} \, \d x
+    \qquad \Leftrightarrow \qquad
+    \sum_{i=0}^{n} w_i x_i p(x_i) = \int_{-1}^{1} p(x) \, x \d x.
+\]
+Since the left-hand side of this equation is again 0 because the nodes $x_i$ are the roots of $p$,
+we deduce that $p$ is orthogonal to the linear polynomial $x \mapsto x$ for the inner product~\eqref{eq:l2_inner_product}.
+This reasoning can be repeated in order to deduce that $p$ is in fact orthogonal to all the monomials of degree 0 to $n$,
+implying that $p$ is a multiple of the Legendre polynomial of degree $n+1$.
+
+\paragraph{Generalization to higher dimensions.}
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
 in particular the \emph{finite element method}.
 Its generalization to higher dimensions is immediate:
