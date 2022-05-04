@@ -13,7 +13,7 @@
 \begin{document}
 
 \title{Numerical Analysis: Final exam \\
-\small{(\textbf{50 marks}, only 5 best questions count)}}
+\small{(\textbf{50 marks}, only the 5 best questions count)}}
 \author{Urbain Vaes}
 \date{12 May 2022}
 \maketitle
@@ -116,7 +116,7 @@
                 \forall i \in \{1, \dotsc, n\}, \qquad
                 \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
             \]
-            Show that, in this case, it holds that $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ for the Jacobi method,
+            Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
             i.e.\ when $\mat M$ is the diagonal of~$\mat A$.
             You may take for granted the following expression for the $\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
             \[
@@ -207,26 +207,52 @@
             Describe a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest magnitude,
             as well as the corresponding eigenvector.
 
+        \item
+            (\textbf{Bonus +1})
+            Let $\mat M \in \complex^{n \times n}$ denote a nonsingular Hermitian matrix.
+            Prove that
+            \begin{equation}
+                \label{eq:intermediate_eigen}
+                \forall \vect x \in \complex^n, \qquad
+                \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
+            \end{equation}
+            Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
+            % What is the connection between $\norm{\mat M^{-1}}$ and $\lambda_{\min}(\mat M)$?
+            % \footnote{Remember that the 2-norm of a Hermitian matrix coincides with its spectral radius.}
+            Deduce from~\eqref{eq:intermediate_eigen} that
+            \begin{equation}
+                \label{eq:bound_eigen}
+                \forall \vect x \in \complex^n, \qquad
+                \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
+            \end{equation}
 
         \item
             (6 marks)
             Assume that $\widehat \lambda \in \complex$ and $\widehat{\vect v} \in \complex^n$ are such that
             \begin{equation}
                 \label{eq:bound}
-                \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon \norm{\widehat {\vect v}}.
+                \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
+                \qquad \norm{\widehat {\vect v}} = 1.
             \end{equation}
-            Prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
+            Using~\eqref{eq:bound_eigen},
+            prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
             \[
                 \abs{\lambda - \widehat \lambda} \leq \varepsilon.
             \]
+
+        \item
+            (\textbf{Bonus +1}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
+            equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
+            \[
+                \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
+            \]
+            \noindent{\textbf{Hint}:}
+            Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
+            \[
+                \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
+                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r})}.
+            \]
     \end{itemize}
-
-    \noindent (\textbf{Bonus +2}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
-    equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
-    \[
-        \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
-    \]
-
 \end{question}
 
 \newpage
@@ -282,14 +308,13 @@
         \item (5 marks)
             Construct an integration rule of the form
             \[
-                \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w(2) u(0) +  w_2 u\left(\frac{1}{2} \right)
+                \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
             \]
             with a degree of precision equal to at least 2.
 
         \item
             (1 mark)
             What is the degree of precision of the rule constructed?
-            Prove.
 
         \item (4 marks)
             The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
