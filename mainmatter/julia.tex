@@ -111,7 +111,8 @@ the \julia{display} function is very useful.
 \subsection*{Defining functions {\footnotesize \href{https://docs.julialang.org/en/v1/manual/functions/} {[link to relevant manual section]}}}%
 \label{sub:defining_functions}
 Functions can be defined using a \julia{function} block.
-For example, the following code block defines a function that prints ``Hello, NAME!''.
+For example, the following code block defines a function that prints ``Hello, NAME!'',
+where NAME is the string passed as argument.
 
 \begin{minted}{julia}
     function hello(name)
@@ -131,7 +132,7 @@ it is convenient to use the following more compact syntax:
 
 Sometimes, it is useful to define a function without giving it a name, called an \emph{anonymous function}.
 This can be achieved in Julia using the arrow notation \julia{->}.
-For example, the following lines calculates the squares and cubes of the first 5 natural numbers.
+For example, the following expressions calculate the squares and cubes of the first 5 natural numbers.
 Here, the function \julia{map} enables to transform a collection by applying a function to each element.
 \begin{minted}{julia}
     squares = map(x -> x^2, [1, 2, 3, 4, 5])
@@ -160,7 +161,7 @@ values passed as arguments to a function are not copied,
 and the arguments act as new bindings within the function body.
 It is possible, therefore, to modify a value passed as argument,
 provided this value is of mutable type.
-Functions that overwrite some of their arguments usually end with an exclamation mark \julia{!}.
+Functions that modify some of their arguments usually end with an exclamation mark \julia{!}.
 For example, the following code prints first \texttt{[4, 3, 2, 1]},
 because the function \julia{sort} does not modify its argument,
 and then it prints \texttt{[1, 2, 3, 4]},
@@ -309,7 +310,7 @@ creates the matrix
 More generally,
 the semicolon enables vertical concatenation
 while space concatenates horizontally.
-For example, \julia{[M M]} defines is the matrix
+For example, \julia{[M M]} defines the matrix
 \[
     \begin{pmatrix}
         1 & 2 & 3 & 1 & 2 & 3 \\ 4 & 5 & 6 & 4 & 5 & 6
