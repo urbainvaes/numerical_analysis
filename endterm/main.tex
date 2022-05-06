@@ -118,7 +118,7 @@
             \]
             Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
             i.e.\ when $\mat M$ is the diagonal of~$\mat A$.
-            You may take for granted the following expression for the $\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
+            You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
             \[
                 \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
             \]
@@ -152,7 +152,7 @@
 \newpage
 \begin{question}
     [Nonlinear equations, \textbf{10 marks}]
-    Assume that $\vect x_*$ is a solution to the equation
+    Assume that $\vect x_* \in \real^n$ is a solution to the equation
     \[
         \vect F(\vect x) = \vect x
     \]
@@ -163,7 +163,7 @@
         \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
     \end{equation}
     with $0 \leq L < 1$ and $\delta > 0$.
-    Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ around $\vect x_*$.
+    Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
     We consider the following fixed-point iterative method for approximating~$\vect x_*$:
     \begin{equation}
         \label{eq:fixed_point}
@@ -278,19 +278,22 @@
             (6 marks)
             Prove that
             \[
-                E_n := \sup_{x \in [0, 1]} \abs{u(x) - p_n(x)}
+                \forall n \in \nat_{>0}, \qquad
+                E_n := \sup_{x \in [0, 2\pi]} \abs{u(x) - p_n(x)}
                 \leq \frac{1}{(n+1)!} \prod_{i=0}^{n} (x - x_i).
             \]
             Use the notation $e(x) = u(x) - p_n(x)$ and
             \[
-                \omega_n(x) = \prod_{i=0}^{n} (x - x_i).
+                \omega(x) = \prod_{i=0}^{n} (x - x_i).
             \]
 
             \textbf{Hint:} You may find it useful to introduce the function
             \[
-                g(t) = e(t) \omega_n(x) - e(x) \omega_n(t).
+                g(t) = e(t) \omega(x) - e(x) \omega(t).
             \]
-        \item (1 mark) Does the error $E_n$ tend to zero in the limit as $n \to \infty$?
+
+        \item
+            (1 mark) Does the error $E_n$ tend to zero in the limit as $n \to \infty$?
     \end{itemize}
 
     \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
@@ -322,7 +325,11 @@
                 \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
             \]
             such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
-            Find the Gauss--Laguerre rule with one node $(n = 1)$.
+            Find the Gauss--Laguerre rule with one node ($n = 1$).
+
+        \item (\textbf{Bonus +1})
+            Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
+            You may find it useful to first calculate the Laguerre polynomial of degree 2.
     \end{itemize}
 \end{question}
 
