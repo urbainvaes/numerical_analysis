@@ -105,12 +105,12 @@
             \]
 
         \item
-            (2 marks)
+            (1 marks)
             Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
             for convergence when $\vect x_0 \neq \vect x_*$?
 
         \item
-            (2 marks)
+            (3 marks)
             Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
             \[
                 \forall i \in \{1, \dotsc, n\}, \qquad
@@ -154,33 +154,53 @@
     [Nonlinear equations, \textbf{10 marks}]
     Assume that $\vect x_* \in \real^n$ is a solution to the equation
     \[
-        \vect F(\vect x) = \vect x
+        \vect F(\vect x) = \vect x,
     \]
-    and that $\vect F\colon \real^n \to \real^n$ satisfies the local Lipschitz condition
-    \begin{equation}
-        \label{eq:local_lipschitz}
-        \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-        \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
-    \end{equation}
-    with $0 \leq L < 1$ and $\delta > 0$.
-    Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
+    where $\vect F\colon \real^n \to \real^n$ is a smooth nonlinear function.
     We consider the following fixed-point iterative method for approximating~$\vect x_*$:
     \begin{equation}
         \label{eq:fixed_point}
         \vect x_{k+1} = \vect F(\vect x_k).
     \end{equation}
-    Show that if $\vect x_0 \in B_{\delta}(\vect x_*)$,
-    then the following statements hold:
-    \begin{itemize}
-        \item (3 marks) All the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
-        \item (3 marks) The sequence $(\vect x_k)_{k \in \nat}$ converges exponentially to $\vect x_*$.
-        \item (2 marks) There is no other fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$.
-    \end{itemize}
-    (\textbf{3 marks})
-    Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
-    \[
-        \vect f(\vect x) = \vect 0.
-    \]
+    \begin{enumerate}
+        \item
+            (\textbf{8 marks})
+            Assume in this part that $\vect F$ satisfies the local Lipschitz condition
+            \begin{equation}
+                \label{eq:local_lipschitz}
+                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+                \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+            \end{equation}
+            with $0 \leq L < 1$ and $\delta > 0$.
+            Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
+            Show that the following statements hold:
+            \begin{itemize}
+                \item (2 marks) There is no fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
+                \item (2 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
+                \item (3 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
+                    \[
+                        \forall k \in \nat, \qquad
+                        \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+                    \]
+            \end{itemize}
+
+        \item
+            (\textbf{3 marks})
+            Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
+            \[
+                \vect f(\vect x) = \vect 0.
+            \]
+
+        \item
+            (\textbf{Bonus +2})
+            Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
+            Show that if
+            \begin{equation*}
+                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+                \norm[big]{\mat J_F(\vect x)} \leq L,
+            \end{equation*}
+            then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
+    \end{enumerate}
 \end{question}
 
 % \newpage
@@ -199,21 +219,21 @@
 \begin{question}
     [Error estimate for eigenvalue problems, \textbf{10 marks}]
     Let $\norm{\placeholder}$ denote the Euclidean norm,
-    and assume that~$\mat A \in \complex^{n \times n}$ is Hermitian and nonsingular.
+    and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
 
     \begin{itemize}
         \item
-            (4 marks)
-            Describe a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest magnitude,
+            (5 marks)
+            Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
             as well as the corresponding eigenvector.
 
         \item
             (\textbf{Bonus +1})
-            Let $\mat M \in \complex^{n \times n}$ denote a nonsingular Hermitian matrix.
+            Let $\mat M \in \real^{n \times n}$ denote a nonsingular symmetric matrix.
             Prove that
             \begin{equation}
                 \label{eq:intermediate_eigen}
-                \forall \vect x \in \complex^n, \qquad
+                \forall \vect x \in \real^n, \qquad
                 \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
             \end{equation}
             Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
@@ -222,13 +242,13 @@
             Deduce from~\eqref{eq:intermediate_eigen} that
             \begin{equation}
                 \label{eq:bound_eigen}
-                \forall \vect x \in \complex^n, \qquad
+                \forall \vect x \in \real^n, \qquad
                 \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
             \end{equation}
 
         \item
-            (6 marks)
-            Assume that $\widehat \lambda \in \complex$ and $\widehat{\vect v} \in \complex^n$ are such that
+            (5 marks)
+            Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
             \begin{equation}
                 \label{eq:bound}
                 \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
@@ -250,7 +270,7 @@
             Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
             \[
                 \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
-                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r})}.
+                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
             \]
     \end{itemize}
 \end{question}
@@ -264,7 +284,7 @@
         &[0, 2\pi] \to \real; \\
         &x \mapsto \cos(x).
     \end{align*}
-    Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through the nodes
+    Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through at the nodes
     \[
         x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
     \]
@@ -272,28 +292,32 @@
         \item
             (3 marks)
             Using a method of your choice,
-            calculate $p_n$ when $n = 2$.
+            calculate $p_n$ for $n = 2$.
 
         \item
             (6 marks)
+            Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
             Prove that
             \[
-                \forall n \in \nat_{>0}, \qquad
-                E_n := \sup_{x \in [0, 2\pi]} \abs{u(x) - p_n(x)}
-                \leq \frac{1}{(n+1)!} \prod_{i=0}^{n} (x - x_i).
+                \forall x \in [0, 2\pi], \qquad
+                \abs{e_n(x)}
+                \leq \frac{\lvert \omega(x) \rvert}{(n+1)!},
             \]
-            Use the notation $e(x) = u(x) - p_n(x)$ and
+            where we introduced
             \[
-                \omega(x) = \prod_{i=0}^{n} (x - x_i).
+                \omega_n(x) := \prod_{i=0}^{n} (x - x_i).
             \]
-
             \textbf{Hint:} You may find it useful to introduce the function
             \[
-                g(t) = e(t) \omega(x) - e(x) \omega(t).
+                g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
             \]
 
         \item
-            (1 mark) Does the error $E_n$ tend to zero in the limit as $n \to \infty$?
+            (1 mark) Does the maximum absolute error
+            \[
+                E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
+            \]
+            tend to zero in the limit as $n \to \infty$?
     \end{itemize}
 
     \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
@@ -327,10 +351,10 @@
             such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
             Find the Gauss--Laguerre rule with one node ($n = 1$).
 
-        \item (\textbf{Bonus +1})
+        \item (\textbf{Bonus +2})
             Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
             You may find it useful to first calculate the Laguerre polynomial of degree 2.
-    \end{itemize}
+    \end{enumerate}
 \end{question}
 
 \end{document}

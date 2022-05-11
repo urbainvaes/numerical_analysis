@@ -505,10 +505,10 @@ the above approach generalizes to
     \vect F(\vect x) = \vect x - \mat A^{-1} \vect f(\vect x),
 \]
 where $\mat A$ is an invertible matrix.
-The method admits a similar geometric interpretation in this case:
+The geometric interpretation of the method in this case is the following:
 at each step, the function $\vect f$ is approximated by the affine function
 $\vect x \mapsto \vect x_k + \mat A(\vect x - \vect x_k)$,
-and the next iterate is given by the unique zero of latter function.
+and the next iterate is given by the unique zero of the latter function.
 Superlinear convergence is achieved when~$\mat A = \mat J_f(\vect x_*)$.
 Notice that each iteration requires to calculate $\vect y := \mat A^{-1} \vect f(\vect x_k)$,
 which is generally achieved by solving the linear system $\mat A \vect y = \vect f(\vect x_k)$.
