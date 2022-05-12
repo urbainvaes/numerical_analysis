@@ -20,343 +20,343 @@
 \date{12 May 2022}
 \maketitle
 
-\begin{question}
-    [Floating point arithmetic, \textbf{10 marks}]
-    True or false? +1/-1
-    \begin{enumerate}
-        \item
-            Let $(\placeholder)_3$ denote base 3 representation.
-            It holds that
-            \[
-                (120)_3 + (111)_3 = (1001)_3.
-            \]
-        \item
-            Let $(\placeholder)_2$ denote binary representation.
-            It holds that
-            \[
-                (1000)_2 \times (0.1\overline{01})_2 = (101.\overline{01})_2.
-            \]
-
-        \item In Julia, \julia{Float64(.25) == Float32(.25)} evaluates to \julia{true}.
-
-        \item The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
-
-        \item
-            The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
-
-        \item
-            Let $\floating_{64} \subset \real$ denote the set of double-precision floating point numbers.
-            If $x \in \floating_{64}$, then~$x$ admits a finite decimal representation.
-
-        \item
-            Let $x$ be a real number. If $x \in \floating_{64}$, then $2x \in \floating_{64}$.
-
-        \item
-            The following equality holds
-            \[
-                (0.\overline{101})_2 = \frac{7}{3}.
-            \]
-
-        \item
-            In Julia, \julia{256.0 + 2.0*eps(Float64) == 256.0} evaluates to \julia{true}.
-
-        \item
-            The set~$\floating_{64}$ of double-precision floating point numbers contains twice as many real numbers
-            as the set~$\floating_{32}$ of single-precision floating point numbers.
-
-        \item
-            Let $x$ and $y$ be two numbers in $\floating_{64}$.
-            The result of the machine addition $x \madd y$ is sometimes exact and sometimes not,
-            depending on the values of $x$ and $y$.
-    \end{enumerate}
-\end{question}
-
-\newpage
-\begin{question}
-    [Iterative method for linear systems, \textbf{10 marks}]
-    Assume that $\mat A \in \real^{n \times n}$ is a nonsingular matrix and that $\vect b \in \real^n$.
-    We wish to solve the linear system
-    \begin{equation}
-        \label{eq:linear_system}
-        \mat A \vect x = \vect b
-    \end{equation}
-    using an iterative method where each iteration is of the form
-    \[
-        \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
-    \]
-    Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
-    and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
-
-    \begin{enumerate}
-        \item
-            (3 marks)
-            Let $\vect e_k := \vect x_k - \vect x_*$,
-            where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
-            Prove that
-            \[
-                \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
-            \]
-
-        \item
-            (3 marks)
-            Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
-            Prove that
-            \[
-                \forall k \in \nat, \qquad
-                \norm{\vect e_k}_{\infty} \leq L^k \norm{\vect e_0}_{\infty}.
-            \]
-
-        \item
-            (1 marks)
-            Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
-            for convergence when $\vect x_0 \neq \vect x_*$?
-
-        \item
-            (3 marks)
-            Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
-            \[
-                \forall i \in \{1, \dotsc, n\}, \qquad
-                \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
-            \]
-            Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
-            i.e.\ when $\mat M$ is the diagonal of~$\mat A$.
-            You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
-            \[
-                \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
-            \]
-
-        \item
-            (\textbf{Bonus +2})
-            Write down a few iterations of the Jacobi method when
-            \[
-                \mat A =
-                \begin{pmatrix}
-                    1 & 2 \\
-                    0 & 1
-                \end{pmatrix},
-                \qquad
-                \vect b
-                \begin{pmatrix}
-                    1 \\
-                    1
-                \end{pmatrix},
-                \qquad
-                \vect x_0 =
-                \begin{pmatrix}
-                    0 \\
-                    0
-                \end{pmatrix}.
-            \]
-            Is the method convergent?
-    \end{enumerate}
-\end{question}
-
-\newpage
-\begin{question}
-    [Nonlinear equations, \textbf{10 marks}]
-    Assume that $\vect x_* \in \real^n$ is a solution to the equation
-    \[
-        \vect F(\vect x) = \vect x,
-    \]
-    where $\vect F\colon \real^n \to \real^n$ is a smooth nonlinear function.
-    We consider the following fixed-point iterative method for approximating~$\vect x_*$:
-    \begin{equation}
-        \label{eq:fixed_point}
-        \vect x_{k+1} = \vect F(\vect x_k).
-    \end{equation}
-    \begin{enumerate}
-        \item
-            (\textbf{8 marks})
-            Assume in this part that $\vect F$ satisfies the local Lipschitz condition
-            \begin{equation}
-                \label{eq:local_lipschitz}
-                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-                \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
-            \end{equation}
-            with $0 \leq L < 1$ and $\delta > 0$.
-            Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
-            Show that the following statements hold:
-            \begin{itemize}
-                \item (2 marks) There is no fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
-                \item (2 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
-                \item (3 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
-                    \[
-                        \forall k \in \nat, \qquad
-                        \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
-                    \]
-            \end{itemize}
-
-        \item
-            (\textbf{3 marks})
-            Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
-            \[
-                \vect f(\vect x) = \vect 0.
-            \]
-
-        \item
-            (\textbf{Bonus +2})
-            Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
-            Show that if
-            \begin{equation*}
-                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-                \norm[big]{\mat J_F(\vect x)} \leq L,
-            \end{equation*}
-            then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
-    \end{enumerate}
-\end{question}
-
+% \begin{question}
+%     [Floating point arithmetic, \textbf{10 marks}]
+%     True or false? +1/-1
+%     \begin{enumerate}
+%         \item
+%             Let $(\placeholder)_3$ denote base 3 representation.
+%             It holds that
+%             \[
+%                 (120)_3 + (111)_3 = (1001)_3.
+%             \]
+%         \item
+%             Let $(\placeholder)_2$ denote binary representation.
+%             It holds that
+%             \[
+%                 (1000)_2 \times (0.1\overline{01})_2 = (101.\overline{01})_2.
+%             \]
+% 
+%         \item In Julia, \julia{Float64(.25) == Float32(.25)} evaluates to \julia{true}.
+% 
+%         \item The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
+% 
+%         \item
+%             The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
+% 
+%         \item
+%             Let $\floating_{64} \subset \real$ denote the set of double-precision floating point numbers.
+%             If $x \in \floating_{64}$, then~$x$ admits a finite decimal representation.
+% 
+%         \item
+%             Let $x$ be a real number. If $x \in \floating_{64}$, then $2x \in \floating_{64}$.
+% 
+%         \item
+%             The following equality holds
+%             \[
+%                 (0.\overline{101})_2 = \frac{7}{3}.
+%             \]
+% 
+%         \item
+%             In Julia, \julia{256.0 + 2.0*eps(Float64) == 256.0} evaluates to \julia{true}.
+% 
+%         \item
+%             The set~$\floating_{64}$ of double-precision floating point numbers contains twice as many real numbers
+%             as the set~$\floating_{32}$ of single-precision floating point numbers.
+% 
+%         \item
+%             Let $x$ and $y$ be two numbers in $\floating_{64}$.
+%             The result of the machine addition $x \madd y$ is sometimes exact and sometimes not,
+%             depending on the values of $x$ and $y$.
+%     \end{enumerate}
+% \end{question}
+% 
 % \newpage
 % \begin{question}
-%     Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
-%     then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
+%     [Iterative method for linear systems, \textbf{10 marks}]
+%     Assume that $\mat A \in \real^{n \times n}$ is a nonsingular matrix and that $\vect b \in \real^n$.
+%     We wish to solve the linear system
+%     \begin{equation}
+%         \label{eq:linear_system}
+%         \mat A \vect x = \vect b
+%     \end{equation}
+%     using an iterative method where each iteration is of the form
 %     \[
-%         \mathcal K_n(\mat A, \vect b)
-%         = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
+%         \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
 %     \]
-%     You can take for granted that $\mathcal K_n(\mat A, \vect b)$ is an invariant subspace of~$\mat A$.
+%     Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
+%     and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
+% 
+%     \begin{enumerate}
+%         \item
+%             (3 marks)
+%             Let $\vect e_k := \vect x_k - \vect x_*$,
+%             where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
+%             Prove that
+%             \[
+%                 \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
+%             \]
+% 
+%         \item
+%             (3 marks)
+%             Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
+%             Prove that
+%             \[
+%                 \forall k \in \nat, \qquad
+%                 \norm{\vect e_k}_{\infty} \leq L^k \norm{\vect e_0}_{\infty}.
+%             \]
+% 
+%         \item
+%             (1 marks)
+%             Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
+%             for convergence when $\vect x_0 \neq \vect x_*$?
+% 
+%         \item
+%             (3 marks)
+%             Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
+%             \[
+%                 \forall i \in \{1, \dotsc, n\}, \qquad
+%                 \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
+%             \]
+%             Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
+%             i.e.\ when $\mat M$ is the diagonal of~$\mat A$.
+%             You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
+%             \[
+%                 \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
+%             \]
+% 
+%         \item
+%             (\textbf{Bonus +2})
+%             Write down a few iterations of the Jacobi method when
+%             \[
+%                 \mat A =
+%                 \begin{pmatrix}
+%                     1 & 2 \\
+%                     0 & 1
+%                 \end{pmatrix},
+%                 \qquad
+%                 \vect b
+%                 \begin{pmatrix}
+%                     1 \\
+%                     1
+%                 \end{pmatrix},
+%                 \qquad
+%                 \vect x_0 =
+%                 \begin{pmatrix}
+%                     0 \\
+%                     0
+%                 \end{pmatrix}.
+%             \]
+%             Is the method convergent?
+%     \end{enumerate}
 % \end{question}
-
-
-\newpage
-\begin{question}
-    [Error estimate for eigenvalue problems, \textbf{10 marks}]
-    Let $\norm{\placeholder}$ denote the Euclidean norm,
-    and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
-
-    \begin{enumerate}
-        \item
-            (5 marks)
-            Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
-            as well as the corresponding eigenvector.
-
-        \item
-            (\textbf{Bonus +1})
-            Let $\mat M \in \real^{n \times n}$ denote a nonsingular symmetric matrix.
-            Prove that
-            \begin{equation}
-                \label{eq:intermediate_eigen}
-                \forall \vect x \in \real^n, \qquad
-                \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
-            \end{equation}
-            Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
-            % What is the connection between $\norm{\mat M^{-1}}$ and $\lambda_{\min}(\mat M)$?
-            % \footnote{Remember that the 2-norm of a Hermitian matrix coincides with its spectral radius.}
-            Deduce from~\eqref{eq:intermediate_eigen} that
-            \begin{equation}
-                \label{eq:bound_eigen}
-                \forall \vect x \in \real^n, \qquad
-                \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
-            \end{equation}
-
-        \item
-            (5 marks)
-            Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
-            \begin{equation}
-                \label{eq:bound}
-                \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
-                \qquad \norm{\widehat {\vect v}} = 1.
-            \end{equation}
-            Using~\eqref{eq:bound_eigen},
-            prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
-            \[
-                \abs{\lambda - \widehat \lambda} \leq \varepsilon.
-            \]
-
-        \item
-            (\textbf{Bonus +1}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
-            equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
-            \[
-                \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
-            \]
-            \noindent{\textbf{Hint}:}
-            Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
-            \[
-                \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
-                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
-            \]
-    \end{enumerate}
-\end{question}
-
-\newpage
-\begin{question}
-    [Interpolation error, \textbf{10 marks}]
-    Let~$u$ denote the function
-    \begin{align*}
-        u\colon
-        &[0, 2\pi] \to \real; \\
-        &x \mapsto \cos(x).
-    \end{align*}
-    Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through at the nodes
-    \[
-        x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
-    \]
-    \begin{enumerate}
-        \item
-            (3 marks)
-            Using a method of your choice,
-            calculate $p_n$ for $n = 2$.
-
-        \item
-            (6 marks)
-            Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
-            Prove that
-            \[
-                \forall x \in [0, 2\pi], \qquad
-                \abs{e_n(x)}
-                \leq \frac{\lvert \omega(x) \rvert}{(n+1)!},
-            \]
-            where we introduced
-            \[
-                \omega_n(x) := \prod_{i=0}^{n} (x - x_i).
-            \]
-            \textbf{Hint:} You may find it useful to introduce the function
-            \[
-                g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
-            \]
-
-        \item
-            (1 mark) Does the maximum absolute error
-            \[
-                E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
-            \]
-            tend to zero in the limit as $n \to \infty$?
-    \end{enumerate}
-
-    \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
-    find a closed expression for the sum
-    \[
-        S(n) = \sum_{k=1}^{n} k^2.
-    \]
-\end{question}
-
-\newpage
-\begin{question}
-    [Numerical integration, \textbf{10 marks}]
-    The third exercise below is independent of the first two.
-    \begin{enumerate}
-        \item (5 marks)
-            Construct an integration rule of the form
-            \[
-                \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
-            \]
-            with a degree of precision equal to at least 2.
-
-        \item
-            (1 mark)
-            What is the degree of precision of the rule constructed?
-
-        \item (4 marks)
-            The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
-            \[
-                \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
-            \]
-            such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
-            Find the Gauss--Laguerre rule with one node ($n = 1$).
-
-        \item (\textbf{Bonus +2})
-            Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
-            You may find it useful to first calculate the Laguerre polynomial of degree 2.
-    \end{enumerate}
-\end{question}
+% 
+% \newpage
+% \begin{question}
+%     [Nonlinear equations, \textbf{10 marks}]
+%     Assume that $\vect x_* \in \real^n$ is a solution to the equation
+%     \[
+%         \vect F(\vect x) = \vect x,
+%     \]
+%     where $\vect F\colon \real^n \to \real^n$ is a smooth nonlinear function.
+%     We consider the following fixed-point iterative method for approximating~$\vect x_*$:
+%     \begin{equation}
+%         \label{eq:fixed_point}
+%         \vect x_{k+1} = \vect F(\vect x_k).
+%     \end{equation}
+%     \begin{enumerate}
+%         \item
+%             (\textbf{8 marks})
+%             Assume in this part that $\vect F$ satisfies the local Lipschitz condition
+%             \begin{equation}
+%                 \label{eq:local_lipschitz}
+%                 \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+%                 \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+%             \end{equation}
+%             with $0 \leq L < 1$ and $\delta > 0$.
+%             Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
+%             Show that the following statements hold:
+%             \begin{itemize}
+%                 \item (2 marks) There is no fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
+%                 \item (2 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
+%                 \item (3 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
+%                     \[
+%                         \forall k \in \nat, \qquad
+%                         \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+%                     \]
+%             \end{itemize}
+% 
+%         \item
+%             (\textbf{3 marks})
+%             Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
+%             \[
+%                 \vect f(\vect x) = \vect 0.
+%             \]
+% 
+%         \item
+%             (\textbf{Bonus +2})
+%             Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
+%             Show that if
+%             \begin{equation*}
+%                 \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+%                 \norm[big]{\mat J_F(\vect x)} \leq L,
+%             \end{equation*}
+%             then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
+%     \end{enumerate}
+% \end{question}
+% 
+% % \newpage
+% % \begin{question}
+% %     Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
+% %     then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
+% %     \[
+% %         \mathcal K_n(\mat A, \vect b)
+% %         = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
+% %     \]
+% %     You can take for granted that $\mathcal K_n(\mat A, \vect b)$ is an invariant subspace of~$\mat A$.
+% % \end{question}
+% 
+% 
+% \newpage
+% \begin{question}
+%     [Error estimate for eigenvalue problems, \textbf{10 marks}]
+%     Let $\norm{\placeholder}$ denote the Euclidean norm,
+%     and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
+% 
+%     \begin{enumerate}
+%         \item
+%             (5 marks)
+%             Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
+%             as well as the corresponding eigenvector.
+% 
+%         \item
+%             (\textbf{Bonus +1})
+%             Let $\mat M \in \real^{n \times n}$ denote a nonsingular symmetric matrix.
+%             Prove that
+%             \begin{equation}
+%                 \label{eq:intermediate_eigen}
+%                 \forall \vect x \in \real^n, \qquad
+%                 \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
+%             \end{equation}
+%             Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
+%             % What is the connection between $\norm{\mat M^{-1}}$ and $\lambda_{\min}(\mat M)$?
+%             % \footnote{Remember that the 2-norm of a Hermitian matrix coincides with its spectral radius.}
+%             Deduce from~\eqref{eq:intermediate_eigen} that
+%             \begin{equation}
+%                 \label{eq:bound_eigen}
+%                 \forall \vect x \in \real^n, \qquad
+%                 \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
+%             \end{equation}
+% 
+%         \item
+%             (5 marks)
+%             Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
+%             \begin{equation}
+%                 \label{eq:bound}
+%                 \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
+%                 \qquad \norm{\widehat {\vect v}} = 1.
+%             \end{equation}
+%             Using~\eqref{eq:bound_eigen},
+%             prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
+%             \[
+%                 \abs{\lambda - \widehat \lambda} \leq \varepsilon.
+%             \]
+% 
+%         \item
+%             (\textbf{Bonus +1}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
+%             equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
+%             \[
+%                 \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
+%             \]
+%             \noindent{\textbf{Hint}:}
+%             Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
+%             \[
+%                 \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
+%                 = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
+%             \]
+%     \end{enumerate}
+% \end{question}
+% 
+% \newpage
+% \begin{question}
+%     [Interpolation error, \textbf{10 marks}]
+%     Let~$u$ denote the function
+%     \begin{align*}
+%         u\colon
+%         &[0, 2\pi] \to \real; \\
+%         &x \mapsto \cos(x).
+%     \end{align*}
+%     Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through at the nodes
+%     \[
+%         x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
+%     \]
+%     \begin{enumerate}
+%         \item
+%             (3 marks)
+%             Using a method of your choice,
+%             calculate $p_n$ for $n = 2$.
+% 
+%         \item
+%             (6 marks)
+%             Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
+%             Prove that
+%             \[
+%                 \forall x \in [0, 2\pi], \qquad
+%                 \abs{e_n(x)}
+%                 \leq \frac{\lvert \omega(x) \rvert}{(n+1)!},
+%             \]
+%             where we introduced
+%             \[
+%                 \omega_n(x) := \prod_{i=0}^{n} (x - x_i).
+%             \]
+%             \textbf{Hint:} You may find it useful to introduce the function
+%             \[
+%                 g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
+%             \]
+% 
+%         \item
+%             (1 mark) Does the maximum absolute error
+%             \[
+%                 E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
+%             \]
+%             tend to zero in the limit as $n \to \infty$?
+%     \end{enumerate}
+% 
+%     \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
+%     find a closed expression for the sum
+%     \[
+%         S(n) = \sum_{k=1}^{n} k^2.
+%     \]
+% \end{question}
+% 
+% \newpage
+% \begin{question}
+%     [Numerical integration, \textbf{10 marks}]
+%     The third exercise below is independent of the first two.
+%     \begin{enumerate}
+%         \item (5 marks)
+%             Construct an integration rule of the form
+%             \[
+%                 \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
+%             \]
+%             with a degree of precision equal to at least 2.
+% 
+%         \item
+%             (1 mark)
+%             What is the degree of precision of the rule constructed?
+% 
+%         \item (4 marks)
+%             The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
+%             \[
+%                 \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
+%             \]
+%             such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+%             Find the Gauss--Laguerre rule with one node ($n = 1$).
+% 
+%         \item (\textbf{Bonus +2})
+%             Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
+%             You may find it useful to first calculate the Laguerre polynomial of degree 2.
+%     \end{enumerate}
+% \end{question}
 
 \end{document}
