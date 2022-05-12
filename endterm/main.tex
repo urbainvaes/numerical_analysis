@@ -89,7 +89,7 @@
 
     \begin{enumerate}
         \item
-            (3 marks)
+            (\textbf{3 marks})
             Let $\vect e_k := \vect x_k - \vect x_*$,
             where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
             Prove that
@@ -98,7 +98,7 @@
             \]
 
         \item
-            (3 marks)
+            (\textbf{3 marks})
             Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
             Prove that
             \[
@@ -107,26 +107,26 @@
             \]
 
         \item
-            (1 marks)
+            (\textbf{1 mark})
             Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
             for convergence when $\vect x_0 \neq \vect x_*$?
 
         \item
-            (3 marks)
+            (\textbf{3 marks})
             Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
             \[
                 \forall i \in \{1, \dotsc, n\}, \qquad
                 \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
             \]
             Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
-            i.e.\ when $\mat M$ is the diagonal of~$\mat A$.
+            i.e.\ when $\mat M$ contains just the diagonal of~$\mat A$.
             You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
             \[
                 \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
             \]
 
         \item
-            (\textbf{Bonus +2})
+            (\textbf{Bonus +1})
             Write down a few iterations of the Jacobi method when
             \[
                 \mat A =
@@ -177,9 +177,9 @@
             Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
             Show that the following statements hold:
             \begin{itemize}
-                \item (2 marks) There is no fixed point of $\vect F$ inside $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
-                \item (2 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
-                \item (3 marks) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
+                \item (\textbf{2 marks}) There is no fixed point of $\vect F$ in $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
+                \item (\textbf{2 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
+                \item (\textbf{3 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
                     \[
                         \forall k \in \nat, \qquad
                         \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
@@ -194,7 +194,7 @@
             \]
 
         \item
-            (\textbf{Bonus +2})
+            (\textbf{Bonus +1})
             Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
             Show that if
             \begin{equation*}
@@ -219,13 +219,13 @@
 
 \newpage
 \begin{question}
-    [Error estimate for eigenvalue problems, \textbf{10 marks}]
+    [Error estimate for eigenvalue problem, \textbf{10 marks}]
     Let $\norm{\placeholder}$ denote the Euclidean norm,
     and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
 
     \begin{enumerate}
         \item
-            (5 marks)
+            (\textbf{5 marks})
             Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
             as well as the corresponding eigenvector.
 
@@ -249,7 +249,7 @@
             \end{equation}
 
         \item
-            (5 marks)
+            (\textbf{5 marks})
             Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
             \begin{equation}
                 \label{eq:bound}
@@ -292,12 +292,12 @@
     \]
     \begin{enumerate}
         \item
-            (3 marks)
+            (\textbf{3 marks})
             Using a method of your choice,
             calculate $p_n$ for $n = 2$.
 
         \item
-            (6 marks)
+            (\textbf{6 marks})
             Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
             Prove that
             \[
@@ -315,14 +315,14 @@
             \]
 
         \item
-            (1 mark) Does the maximum absolute error
+            (\textbf{1 mark}) Does the maximum absolute error
             \[
                 E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
             \]
             tend to zero in the limit as $n \to \infty$?
     \end{enumerate}
 
-    \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
+    \noindent (\textbf{Bonus +1}) Using the Gregory--Newton formula,
     find a closed expression for the sum
     \[
         S(n) = \sum_{k=1}^{n} k^2.
@@ -334,7 +334,7 @@
     [Numerical integration, \textbf{10 marks}]
     The third exercise below is independent of the first two.
     \begin{enumerate}
-        \item (5 marks)
+        \item (\textbf{5 marks})
             Construct an integration rule of the form
             \[
                 \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
@@ -342,10 +342,11 @@
             with a degree of precision equal to at least 2.
 
         \item
-            (1 mark)
+            (\textbf{1 mark})
             What is the degree of precision of the rule constructed?
 
-        \item (4 marks)
+        \item
+            (\textbf{4 marks})
             The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
             \[
                 \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
@@ -353,7 +354,7 @@
             such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
             Find the Gauss--Laguerre rule with one node ($n = 1$).
 
-        \item (\textbf{Bonus +2})
+        \item (\textbf{Bonus +1})
             Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
             You may find it useful to first calculate the Laguerre polynomial of degree 2.
     \end{enumerate}
