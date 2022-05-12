@@ -7,6 +7,8 @@
 \usepackage[margin=1.2in]{geometry}
 \usepackage{amsmath,amsthm}
 \usepackage{mathtools}
+\usepackage{enumitem}
+\setlist[enumerate]{font=\bfseries}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
 \input{../macros.tex}
@@ -221,7 +223,7 @@
     Let $\norm{\placeholder}$ denote the Euclidean norm,
     and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
 
-    \begin{itemize}
+    \begin{enumerate}
         \item
             (5 marks)
             Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
@@ -272,7 +274,7 @@
                 \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
                 = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
             \]
-    \end{itemize}
+    \end{enumerate}
 \end{question}
 
 \newpage
@@ -288,7 +290,7 @@
     \[
         x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
     \]
-    \begin{itemize}
+    \begin{enumerate}
         \item
             (3 marks)
             Using a method of your choice,
@@ -318,7 +320,7 @@
                 E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
             \]
             tend to zero in the limit as $n \to \infty$?
-    \end{itemize}
+    \end{enumerate}
 
     \noindent (\textbf{Bonus +2}) Using the Gregory--Newton formula,
     find a closed expression for the sum
@@ -331,7 +333,7 @@
 \begin{question}
     [Numerical integration, \textbf{10 marks}]
     The third exercise below is independent of the first two.
-    \begin{itemize}
+    \begin{enumerate}
         \item (5 marks)
             Construct an integration rule of the form
             \[
