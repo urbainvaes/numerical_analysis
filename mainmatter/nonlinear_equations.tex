@@ -299,14 +299,14 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
     \end{equation}
     proving the statement.
     To show the uniqueness of the fixed point,
-    assume there was another fixed point $\vect y_*$.
+    assume $\vect y_*$ is another fixed point.
     Then,
     \begin{equation*}
         \norm[big]{\vect y_* - \vect x_{*}}
-        = \norm[big]{\vect F(\vect y_*) - \vect F(\vect x_{*})},
-        \leq L \norm{\vect y_* - \vect x_*}.
+        = \norm[big]{\vect F(\vect y_*) - \vect F(\vect x_{*})}
+        \leq L \norm{\vect y_* - \vect x_*},
     \end{equation*}
-    which is impossible since $L < 1$.
+    which implies that $\vect y_* = \vect x_*$ since $L < 1$.
 \end{proof}
 
 It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$\vect F$.
