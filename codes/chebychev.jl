@@ -22,7 +22,7 @@ k = 0:(n-1)
 x = cos.(π*(k.+1/2)/n) |> sort
 # x = LinRange(-1, 1, n)
 
-ε = .01
+ε = .02
 f(x) = tanh((x+1/2)/ε) + tanh(x/ε) + tanh((x-1/2)/ε)
 # f(x) = x^(n)
 y = f.(x)
