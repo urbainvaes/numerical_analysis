@@ -11,6 +11,8 @@
 \setlist[enumerate]{font=\bfseries}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
+\theoremstyle{remark}
+\newtheorem*{solution}{Solution}
 \input{../macros.tex}
 \begin{document}
 
@@ -37,9 +39,11 @@
                 (1000)_2 \times (0.1\overline{01})_2 = (101.\overline{01})_2.
             \]
 
-        \item In Julia, \julia{Float64(.25) == Float32(.25)} evaluates to \julia{true}.
+        \item
+            In Julia, \julia{Float64(.25) == Float32(.25)} evaluates to \julia{true}.
 
-        \item The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
+        \item
+            The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
 
         \item
             The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
@@ -70,6 +74,51 @@
             depending on the values of $x$ and $y$.
     \end{enumerate}
 \end{question}
+\begin{solution}
+    The correct answers are the following:
+    \begin{enumerate}
+        \item
+            True.
+            The equality can be checked by converting the numbers to base 10 and then adding them,
+            or by performing a long addition in base 3 directly.
+
+        \item
+            True.
+            Multiplication by $(1000)_2$ shifts the binary expansion 3 positions to the left.
+
+        \item
+            True, because $0.25 = (0.01)_2$ in binary,
+            which belongs to $\floating_{32} \cap \floating_{64}$.
+
+        \item
+            False. This is why they are called \emph{floating point} numbers.
+
+        \item
+            False. The machine epsilon is related to the \emph{relative} accuracy.
+
+        \item
+            True, because all the powers of 2 admit a decimal representation with finitely many digits.
+            Here we employ the word ``admit'' because the decimal expansion is not unique;
+            for example, $(0.1)_2 = (0.5)_10 = (0.4\overline{9})_10$.
+
+        \item
+            False. If the statement were true,
+            then there would be an infinite amount of floating point numbers.
+
+        \item
+            False. The left-hand side is $< 1$, and the right-hand side is $> 1$.
+
+
+        \item
+            True. The next floating point number after $256$ is $256 (1 + \varepsilon)$.
+
+        \item
+            False. It would take just one additional bit to store twice as many numbers.
+
+        \item
+            True. It depends on whether $x + y$ belongs to $\floating_{64}$ or not.
+    \end{enumerate}
+\end{solution}
 
 \newpage
 \begin{question}
@@ -81,9 +130,10 @@
         \mat A \vect x = \vect b
     \end{equation}
     using an iterative method where each iteration is of the form
-    \[
+    \begin{equation}
+        \label{eq:iterative_scheme}
         \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
-    \]
+    \end{equation}
     Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
     and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
 
@@ -151,6 +201,81 @@
     \end{enumerate}
 \end{question}
 
+\begin{solution}
+    \begin{enumerate}
+        \item
+            We have
+            \[
+                \left\{
+                    \begin{aligned}
+                        \mat M \vect x_{k+1} &= \mat N \vect x_{k} + \vect b \\
+                        \mat M \vect x_{*} &= \mat N \vect x_{*} + \vect b.
+                    \end{aligned}
+                \right.
+            \]
+            The second equation holds because $\vect x_*$ is a solution to~\eqref{eq:linear_system}.
+            Subtracting the second equation from the first,
+            and multiplying both sides by $\mat M^{-1}$,
+            we obtain the required result.
+
+        \item
+            By induction we have
+            \[
+                \vect e_k = (\mat M^{-1} \mat N)^k \vect e_0.
+            \]
+            By definition of the $\norm{\placeholder}_{\infty}$ operator norm,
+            we deduce that
+            \[
+                \norm{\vect e_k}_{\infty} \leq \norm{(\mat M^{-1} \mat N)^k}_{\infty} \norm{\vect e_0}_{\infty}.
+            \]
+            Since the norm $\norm{\placeholder}_{\infty}$ is submultiplicative,
+            we conclude that
+            \[
+                \norm{\vect e_k}_{\infty} \leq \norm{\mat M^{-1} \mat N}_{\infty}^k \norm{\vect e_0}_{\infty}
+                = L^k \norm{\vect e_0}_{\infty}.
+            \]
+
+        \item
+            No. The condition is sufficient, because $\rho(\mat M^{-1} \mat N) \leq \norm{\mat M^{-1} \mat N}_{\infty}$,
+            but not necessary.
+            See the bonus question for an example where convergence occurs but $\norm{\mat M^{-1} \mat N}_{\infty} > 1$.
+
+        \item
+            We have that
+            \[
+                (\mat M^{-1} \mat N)_{ij} =
+                \begin{cases}
+                    0 & \text{if $i = j$} \\
+                    \frac{a_{ij}}{a_{ii}} & \text{if $i \neq j$}.
+                \end{cases}.
+            \]
+            By strict diagonal dominance, we deduce
+            \[
+                \forall  i \in \{1, \dotsc, n\},
+                \qquad
+                \sum_{j=1}^{n} \abs*{(\mat M^{-1} \mat N)_{ij}}
+                = \sum_{j=1, j\neq i}^{n} \abs*{\frac{a_{ij}}{a_{ii}}}
+                = \frac{1}{\abs{a_{ii}}}\sum_{j=1, j\neq i}^{n} \abs*{a_{ij}} < 1.
+            \]
+            Therefore, we conclude that
+            \[
+                \norm{\mat M^{-1} \mat N}_{\infty}
+                = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs*{(\mat M^{-1} \mat N)_{ij}}  < 1.
+            \]
+
+        \item
+            In this case
+            \[
+                \mat M^{-1} \mat N =
+                \begin{pmatrix}
+                    0 & 2 \\ 0 & 0
+                \end{pmatrix},
+            \]
+            which is a nilpotent matrix and so $\vect e_2 = (\mat M^{-1} \mat N)^2 \vect e_0 = \vect 0$;
+            the method converges in two iterations.
+    \end{enumerate}
+\end{solution}
+
 \newpage
 \begin{question}
     [Nonlinear equations, \textbf{10 marks}]
@@ -204,6 +329,51 @@
             then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
     \end{enumerate}
 \end{question}
+
+\newpage
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item {}
+            \begin{itemize}
+
+                \item
+                    Assume by contradiction that there was another fixed point $\vect y_*$.
+                    Then, using the Lipschitz continuity, it would hold
+                    \[
+                        \norm{\vect y_* - \vect x_*} = \norm{\vect F(\vect y_*) - \vect F(\vect x_*)} \leq L \norm{\vect y_* - \vect x_*},
+                    \]
+                    which is a contradiction because $L < 1$.
+
+                \item
+                    The first iterate $\vect x_0$ is in $B_{\delta}(\vect x_*)$ by assumption.
+                    Reasoning by induction we assume that all the iterates up to $\vect x_k$ belong to $B_{\delta}(\vect x_*)$.
+                    Then, since $\vect F(\vect x_*) = \vect x_*$ by definition of $\vect x_*$,
+                    we have
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} = \norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)} \leq L \norm{\vect x_{k} - \vect x_*} < L \delta < \delta,
+                    \]
+                    implying that $\vect x_{k+1}$ is also in $B_{\delta}(\vect x_*)$.
+                    Note that we used the induction hypothesis twice: in the first inequality,
+                    because we need to know that $\vect x_k \in B_{\delta}(\vect x_*)$ in order to apply the local Lipschitz continuity~\eqref{eq:local_lipschitz},
+                    and then in the second inequality for the bound $\norm{\vect x_{k} - \vect x_*} < \delta$.
+
+                \item
+                    In the previous item, we showed that
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*}.
+                    \]
+                    Iterating this inequality, 
+                    we deduce that
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*} \leq \dotsc \leq L^{k+1} \norm{\vect x_{0} - \vect x_*}.
+                    \]
+            \end{itemize}
+
+        \item
+            A possible approach is to use the Newton--Raphson method.
+    \end{enumerate}
+\end{solution}
 
 % \newpage
 % \begin{question}
