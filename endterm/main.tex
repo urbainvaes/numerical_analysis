@@ -633,7 +633,7 @@
     \end{enumerate}
 
 
-    \noindent (\textbf{Bonus +1}) 
+    \noindent (\textbf{Bonus +1})
     Since $\Delta S(n) = (n+1)^2$,
     which is a second degree polynomial in $n$,
     we deduce that $S(n)$ is a polynomial of degree 3.
@@ -685,5 +685,102 @@
             You may find it useful to first calculate the Laguerre polynomial of degree 2.
     \end{enumerate}
 \end{question}
+
+\begin{solution}
+    \begin{enumerate}
+        $~$
+        \item
+            The Lagrange polynomials associated with $-1/2$, $0$ and $1/2$ are respectively
+            \begin{align*}
+                p_{1}(x) &= 2x \left(x - \frac{1}{2}\right), \\
+                p_{2}(x)    &= - 4\left(x + \frac{1}{2}\right) \left(x - \frac{1}{2}\right), \\
+                p_{3}(x)  &= 2\left(x + \frac{1}{2}\right) x.
+            \end{align*}
+            We deduce that
+            \begin{align*}
+                w_1 &= \int_{-1}^1 p_{1}(x) = \frac{4}{3}, \\
+                w_2 &= \int_{-1}^1 p_{2}(x) = - \frac{2}{3}, \\
+                w_3 &= \int_{-1}^1 p_{3}(x) = \frac{4}{3}.
+            \end{align*}
+
+        \item
+            By construction,
+            the degree of precision is at least 2.
+            However, the integration rule is exact also when $u(x) = x^3$.
+            Since it is not exact for $u(x) = x^4$,
+            we conclude that the degree of precision is 3.
+
+        \item
+            We are looking for $w_1$ and $x_1$ such that
+            \[
+                \forall (a,b) \in \real^2, \qquad
+                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x = w_1 (a + b x_1).
+            \]
+            The left-hand side is equal to
+            \[
+                a \int_{0}^{\infty} \e^{-x} \, \d x + b \int_{0}^{\infty} x \e^{-x} \, \d x = 0
+                = a + b \int_{0}^{\infty} x \e^{-x} \, \d x.
+            \]
+            Using integration by parts,
+            we can find the value of the remaining integral on the right-hand side:
+            \begin{align*}
+                \int_{0}^{\infty} x \e^{-x}
+                &= \int_{0}^{\infty} - (x \e^{-x})' + \e^{-x} \, \d x \\
+                &= - (x \e^{-x}) \Big\vert_{x={\infty}} + (x \e^{-x}) \Big\vert_{x={0}} + \int_{0}^{\infty} \e^{-x} \, \d x \\
+                &= 1.
+            \end{align*}
+            (To be rigorous, we would need to write the first term on the second line as a limit.)
+            Therefore, we obtain
+            \[
+                a + b = w_1(a + b x_1),
+            \]
+            which implies that $w_1 = x_1 = 1$.
+
+        \item
+            The integration nodes are given by the roots of the Laguerre polynomials,
+            which are the orthogonal polynomials for the inner product
+            \[
+                \ip{f, g} :=
+                \int_{0}^{\infty} f(x) g(x) \, \e^{-x} \, \d x.
+            \]
+            The first polynomial is $\ell_0(x) = 1$.
+            It is simple to check that the only linear monomial orthogonal to $\ell_0$ is given by $\ell_1(x) = x - 1$.
+            Next, by integration by parts we calculate that
+            \[
+                \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x 
+                = \int_{0}^{\infty} - (x^2 \e^{-x})' + 2 x \e^{-x} \, \d x = 2.
+            \]
+            and, similarly,
+            \[
+                \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x 
+                = \int_{0}^{\infty} - (x^3 \e^{-x})' + 3 x^2 \e^{-x} \, \d x = 6.
+            \]
+            Consider the ansatz $\ell_2(x) = x^2 + a \ell_1(x) + b$.
+            In order for $\ell_2$ to be orthogonal to $\ell_0$ and~$\ell_1$,
+            it is necessary that
+            \begin{align*}
+                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_0(x) \, \e^{-x} \, \d x = 2 + b, \\
+                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x 
+                = 4 + a \int_{0}^{\infty} \ell_1(x) \ell_1(x) \, \ d x = 4 + a.
+            \end{align*}
+            Therefore, we conclude that $a = -4$ and $b=-2$,
+            which gives
+            \[
+                \ell_2(x) = x^2 - 4 x + 2.
+            \]
+            The roots are given by $2 \pm \sqrt{2}$,
+            so we have $x_1 = 2 - \sqrt{2}$ and $x_2 = 2 + \sqrt{2}$.
+            It remains to find the weights.
+            To this end, we need only two additional equations,
+            it is sufficient to require that, for any $(a,b) \in \real^2$,
+            \begin{align*}
+                a + b = 
+                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x 
+                &= w_1 (a + b x_1) + w_2 (a + b x_2) \\
+                &= a (w_1 + w_2) + 2 b (w_1 + w_2) + \sqrt{2} b (w_2 - w_1),
+            \end{align*}
+            which enables to find $w_1$ and $w_2$.
+    \end{enumerate}
+\end{solution}
 
 \end{document}
