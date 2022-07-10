@@ -8,6 +8,8 @@
 \usepackage{amsmath,amsthm}
 \usepackage{mathtools}
 \usepackage{enumitem}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{cleveref}
 \setlist[enumerate]{font=\bfseries}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
@@ -151,10 +153,11 @@
             (\textbf{3 marks})
             Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
             Prove that
-            \[
+            \begin{equation}
+                \label{eq:inequality_interpolation}
                 \forall k \in \nat, \qquad
                 \norm{\vect e_k}_{\infty} \leq L^k \norm{\vect e_0}_{\infty}.
-            \]
+            \end{equation}
 
         \item
             (\textbf{1 mark})
@@ -339,7 +342,7 @@
 
                 \item
                     Assume by contradiction that there was another fixed point $\vect y_*$.
-                    Then, using the Lipschitz continuity, it would hold
+                    Then, using the Lipschitz continuity, it would hold that
                     \[
                         \norm{\vect y_* - \vect x_*} = \norm{\vect F(\vect y_*) - \vect F(\vect x_*)} \leq L \norm{\vect y_* - \vect x_*},
                     \]
@@ -363,7 +366,7 @@
                     \[
                         \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*}.
                     \]
-                    Iterating this inequality, 
+                    Iterating this inequality,
                     we deduce that
                     \[
                         \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*} \leq \dotsc \leq L^{k+1} \norm{\vect x_{0} - \vect x_*}.
@@ -372,20 +375,34 @@
 
         \item
             A possible approach is to use the Newton--Raphson method.
+            Letting
+            \[
+                \vect F(\vect x) = \vect x - \mat J_{f}(\vect x)^{-1} \vect f(\vect x),
+            \]
+            we observe that if~$\vect x_*$ is a solution to $\vect f(\vect x) = \vect 0$,
+            then $\vect x_*$ is also a fixed point of $\vect F(\vect x)$,
+            provided that $\vect J_{f}(\vect x_*)$ is nonsingular.
+            We can then use the iterative scheme~\eqref{eq:linear_system} in order to estimate $\vect x_*$.
+
+        \item
+            This is from the lecture notes.
+            By the fundamental theorem of calculus and the chain rule,
+            we have
+            \begin{align*}
+                \vect F(\vect x) - \vect F(\vect x_*)
+                &= \int_{0}^{1} \frac{\d}{\d t} \Bigl( \vect F\bigl(\vect x_* + t(\vect x - \vect x_*) \bigr) \Bigr) \d t
+                = \int_{0}^{1} \mat J_F\bigl(\vect x_* + t(\vect x - \vect x_*)\bigr) \left(\vect x - \vect x_* \right) \d t.
+            \end{align*}
+            Therefore,
+            it holds that
+            \begin{align*}
+                \norm{\vect F(\vect x) - \vect F(\vect x_*)}
+                &\leq \int_{0}^{1} \norm*{\mat J_F\bigl(\vect x + t(\vect x - \vect x_*)\bigr)}  \, \d t \, \norm{\vect x - \vect x_*} \\
+                &\leq \int_{0}^{1} L \, \d t \, \norm{\vect x - \vect x_*} = L \norm{\vect x - \vect x_*},
+            \end{align*}
+            which is the statement.
     \end{enumerate}
 \end{solution}
-
-% \newpage
-% \begin{question}
-%     Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
-%     then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
-%     \[
-%         \mathcal K_n(\mat A, \vect b)
-%         = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
-%     \]
-%     You can take for granted that $\mathcal K_n(\mat A, \vect b)$ is an invariant subspace of~$\mat A$.
-% \end{question}
-
 
 \newpage
 \begin{question}
@@ -398,6 +415,7 @@
             (\textbf{5 marks})
             Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
             as well as the corresponding eigenvector.
+            Assume for simplicity that this eigenvalue and the corresponding eigenvector are unique.
 
         \item
             (\textbf{1 mark})
@@ -447,6 +465,77 @@
     \end{enumerate}
 \end{question}
 
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item
+            Since our aim is to approximate the eigenvalue of smallest modulus,
+            a possible approach is to use the inverse power iteration with shift $\mu = 0$.
+            After an approximation of the eigenvector has been calculated,
+            an approximation of the eigenvalue may be calculated from the Rayleigh quotient.
+            A pseudocode for this approach is given in~\cref{algo:inverse_iteration}.
+            \begin{algorithm}
+                \caption{Inverse iteration}%
+                \label{algo:inverse_iteration}%
+                \begin{algorithmic}
+                    \State $\vect x \gets \vect x_0$
+                    \For{$i \in \{1, 2, \dotsc\}$}
+                    \State Solve $\mat A \vect y = \vect x$
+                    \State $\vect x \gets \vect y / \norm{\vect y}$
+                    \EndFor
+                    \State $\lambda \gets \vect x^* \mat A \vect x / \vect x^* \vect x$
+                    \State \Return $\vect x, \lambda$
+                \end{algorithmic}
+            \end{algorithm}
+
+        \item
+            The inequality~\eqref{eq:intermediate_eigen} follows from
+            \[
+                \norm{\vect x} = \norm{\mat M^{-1} \mat M \vect x} \leq \norm{\mat M^{-1}} \norm{\mat M \vect x}.
+            \]
+            Equation~\eqref{eq:bound_eigen} then follows from the fact that
+            \begin{equation}
+                \label{eq:norm_inverse}
+                \norm{\mat M^{-1}} = \abs{\lambda_{\max}(\mat M^{-1})} = \frac{1}{\abs{\lambda_{\min}(\mat M)}}.
+            \end{equation}
+
+        \item
+            Using~\eqref{eq:bound_eigen},
+            we deduce that
+            \[
+                \abs{\lambda_{\min}(\mat A - \widehat \lambda \mat I)} =
+                \abs{\lambda_{\min}(\mat A - \widehat \lambda \mat I)} \norm{\widehat {\vect v}}
+                \leq \norm{(\mat A - \widehat \lambda \mat I) \widehat {\vect v}} = \varepsilon.
+            \]
+            The eigenvalues of $\mat A - \widehat \lambda \mat I$ are given by $\{\lambda - \widehat \lambda : \lambda \in \sigma(\mat A)\}$,
+            where $\sigma(A)$ is the set of eigenvalues of~$\mat A$.
+            The statement then follows immediately.
+
+        \item
+            Following the hint and using the submultiplicative property of the norm,
+            we have
+            \[
+                1 = \norm{\widehat {\vect v}}
+                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}
+                \leq \norm{\mat V} \norm{(\mat D - \widehat \lambda \mat I)^{-1}} \norm{\mat V^{-1}} \norm{\vect r}
+                = \norm{\mat V} \norm{(\mat D - \widehat \lambda \mat I)^{-1}} \norm{\mat V^{-1}} \varepsilon.
+            \]
+            Rearranging this equation and using~\eqref{eq:norm_inverse},
+            we deduce that
+            \[
+                \abs{\lambda_{\min} (\mat D - \widehat \lambda \mat I)}
+                = \frac{1}{\norm{(\mat D - \widehat \lambda \mat I)^{-1}}}
+                \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon,
+            \]
+            and the statement follows easily.
+            % Rearranging this equation,
+            % we obtain
+            % \[
+
+            % \]
+    \end{enumerate}
+\end{solution}
+
 \newpage
 \begin{question}
     [Interpolation error, \textbf{10 marks}]
@@ -473,7 +562,7 @@
             \[
                 \forall x \in [0, 2\pi], \qquad
                 \abs{e_n(x)}
-                \leq \frac{\lvert \omega(x) \rvert}{(n+1)!},
+                \leq \frac{\lvert \omega_n(x) \rvert}{(n+1)!},
             \]
             where we introduced
             \[
@@ -495,9 +584,76 @@
     \noindent (\textbf{Bonus +1}) Using the Gregory--Newton formula,
     find a closed expression for the sum
     \[
-        S(n) = \sum_{k=1}^{n} k^2.
+        S(n) = \sum_{k=0}^{n} k^2.
     \]
 \end{question}
+\begin{solution}
+    $~$
+    \begin{enumerate}
+
+        \item
+            The parabola $p_n$ is required to pass through the points $(0, 1)$, $(\pi, -1)$ and $(2\pi, 0)$.
+            It is clear, therefore, that the axis of symmetry of $p_n$ is at $x = \pi$,
+            which suggests the ansatz
+            \[
+                p_n(x) = A + B (x - \pi)^2.
+            \]
+            The equations $p_n(\pi) = -1$ and $p_n(0) = 1$ imply that
+            $A = -1$ and then $B = 2\pi^{-2}$.
+            Therefore, it holds that
+            \[
+                p_n(x) = -1 + 2 \left(\frac{x}{\pi} - 1\right)^2.
+            \]
+
+        \item
+            This is a proof from the lecture notes.
+            The statement is obvious if $x \in \{x_0, \dotsc, x_n\}$,
+            so we assume that $x$ does not coincide with an interpolation node.
+            The function $g$ is smooth and takes the value~0 when evaluated at~$x_0, \dotsc, x_n, x$.
+            Therefore, by Rolle's theorem, the function~$g'$ has at least $n+1$ distinct roots in~$(0, 2\pi)$.
+            Repeating this reasoning, we deduce that $g^{(n+1)}$ has at least one root~$t_*$ in $(0, 2\pi)$.
+            We calculate that
+            \begin{equation}
+                \label{eq:interpolation_error_proof}
+                g^{(n+1)}(t) = e_n^{(n+1)}(t) \omega_n(x) - e_n(x) \omega_n^{(n+1)}(t)
+                = u^{(n+1)}(t) \omega_n(x) - e_n(x) (n+1)!,
+            \end{equation}
+            Because $p_n^{(n+1)} = 0$.
+            Evaluating~\eqref{eq:interpolation_error_proof} at~$t_*$ and rearranging,
+            we obtain that
+            \[
+                e_n(x) = \frac{u^{(n+1)}(t_*)}{(n+1)!} \omega_n(x).
+            \]
+            Finally, noticing that $\abs{u^{n+1}}$ is bounded from above uniformly by 1,
+            we deduce~\eqref{eq:inequality_interpolation}.
+
+            \item
+                Yes. In the limit as $n \to \infty$,
+                it holds that $\sup_{x \in [0, 2\pi]} \abs{\omega_n(x)} \to 0$ and $1/(n+1)! \to 0$.
+    \end{enumerate}
+
+
+    \noindent (\textbf{Bonus +1}) 
+    Since $\Delta S(n) = (n+1)^2$,
+    which is a second degree polynomial in $n$,
+    we deduce that $S(n)$ is a polynomial of degree 3.
+    Let us now determine its coefficients.
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        $n$    & $0$ & $1$ & $2$ & $3$ \\ \hline
+        $\Delta^0 S(n)$ & $\mathbf{0}$ & $1$ & $5$ & $14$ \\ \hline
+        $\Delta^1 S(n)$ & $\mathbf{1}$ & $4$ & $9$ &  \\ \hline
+        $\Delta^2 S(n)$ & $\mathbf{3}$ & $5$ & & \\ \hline
+        $\Delta^3 S(n)$ & $\mathbf{2}$ & & & \\ \hline
+    \end{tabular}
+    \end{center}
+    We conclude that
+    \[
+        S(n) = \mathbf{1} n + \frac{\mathbf{3}}{2!} n(n-1) + \frac{\mathbf{2}}{3!} n(n-1)(n-2)
+        = \frac{n (2n+1) (n+1)}{6}.
+    \]
+\end{solution}
 
 \newpage
 \begin{question}
