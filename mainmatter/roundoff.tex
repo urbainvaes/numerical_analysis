@@ -305,7 +305,7 @@ Note that $\floating_{16} \subset \floating_{32} \subset \floating_{64}$.
     For example, the number $2.0 \in \floating_{64}$ may be expressed as $(-1)^0 2^1 (1.00\dots00)_2$ or, equivalently, as $(-1)^0 2^{2} (0.100\dots00)_2$.
 \end{remark}
 
-In \texttt{Julia}, non-integer numbers are interpreted as \julia{Float64} by default,
+In \texttt{Julia}, non-integer number literals are interpreted as \julia{Float64} by default,
 which can be verified by using the \julia{typeof} function.
 For example, the instruction ``\julia{a = 0.1}'' is equivalent to~``\julia{a = Float64(0.1)}''.
 In order to define a number of type \julia{Float32},
@@ -836,7 +836,7 @@ Once a number format is specified through parameters $(p, E_{\min}, E_{\max})$,
 the choice of encoding,
 i.e.\ the machine representation of numbers in this format,
 has no bearing on the magnitude and propagation of round-off errors.
-Studying encodings is, therefore, not essential for our purposes in this course,
+Studying encoding is, therefore, not essential for our purposes in this course,
 but we opted to cover the topic anyway in the hope that it will help the students build intuition on floating point numbers.
 We focus mainly on the single precision format,
 but the following discussion applies \emph{mutatis mutandis} to the double and half-precision formats.
@@ -876,9 +876,9 @@ The following result proves that these rules define the exponent and significand
     which contradicts the equality $x = \widetilde x$.
 \end{proof}
 
-Now that we explained how
+Now that we have explained how
 a unique set of parameters (sign, exponent, significand) can be assigned to any floating point number,
-we describe how these parameters are stored on the computer in practice?
+we describe how these parameters are stored on the computer in practice.
 As their names suggest, the \julia{Float16}, \julia{Float32} and \julia{Float64} formats use 16, 32 and 64 bits of memory, respectively.
 A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
 
@@ -898,8 +898,9 @@ we begin with two observations:
         then necessarily $b_0 = 1$ in the unique representation of the significand.
         Consequently, the leading bit need not be explicitly specified in the case;
         it is said to be \emph{implicit}.
-        As a consequence,
-        we will see that $p-1$ instead of $p$ bits are in fact sufficient for the significand.
+        We will see,
+        as a consequence,
+        that $p-1$ instead of $p$ bits are in fact sufficient for the significand.
     \item
         In the $\floating_{32}$ format,
         8 bits at minimum need to be reserved for the exponent,
@@ -923,6 +924,9 @@ According to the IEEE 754 standard,
 the first bit is the sign $s$,
 the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
 and the last 23 bits $b_1 b_2 \dots b_{p-2} b_{p-1}$ encode the significand.
+Let us emphasize that when we say ``encode the exponent'' here,
+we just mean that the bits contain information from which the exponent can be uniquely determined,
+but we have not yet described how this is achieved.
 Let us introduce the integer number $e = (e_0 e_1 \dots e_6 e_7)_2$;
 that is to say, $0 \leq e \leq 2^8 -1$ is the integer number whose binary representation
 is given by $e_0 e_1 \dots e_6 e_7$.
@@ -948,7 +952,7 @@ One may determine the exponent and significand of a floating point number from t
         where the exponent bias for the single and double precision formats are given in~\cref{table:floating_point_formats_encoding}.
         In this case $x = (-1)^s 2^{e - \mathrm{bias}} 1.b_1b_2 \dots b_{p-2} b_{p-1}$.
         Notice that $E = E_{\min}$ if $e = 1$,
-        as in the case of subnormal numbers.
+        as in the case of denormalized numbers.
     \item
         \textbf{Infinities}:
         If $e = 255$ and $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
@@ -992,7 +996,7 @@ One may determine the exponent and significand of a floating point number from t
         \approx 99.6 \% \times 2^{32},
     \]
     different real numbers,
-    which is a very good efficiency.
+    indicating a very good encoding efficiency.
 \end{remark}
 
 \begin{remark}
@@ -1038,7 +1042,7 @@ the latter being the default for integer literals.
 
 The most common encoding for integer numbers,
 which is used in Julia, is known as \emph{two's complement}:
-a number encoded with $p$ bits as $b_{p-1} b_{p-2} \dots b_{0}$ corresponds to
+a number encoded with $p$ bits given by $b_{p-1} b_{p-2} \dots b_{0}$ corresponds to
 \[
     x = - b_{p-1} 2^{p-1} + \sum_{i=0}^{p-2} b_i 2^i.
 \]
