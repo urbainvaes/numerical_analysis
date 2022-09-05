@@ -96,15 +96,16 @@ for example the following:
 
     \item
         Base 16 (hexadecimal) is sometimes convenient to represent numbers in a compact manner.
-        In order to represent the values 0-15 by a single digit,
+        In order to represent the values 0-15 with a single digit,
         16 different symbols are required, which are conventionally denoted by $\{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F\}$.
         With this notation, we have $(FF)_{16} = (255)_{10}$, for example.
 
         The hexadecimal notation is often used in programming languages for describing colors specified by a triplet $(r,g,b)$ of values between 0 and 255,
         corresponding to the primary colors \emph{red}, \emph{blue} and \emph{green}.
-        Since the number of possible values for the components is $256 = 16^2$,
-        only 2 digits are required to represent these in the hexadecimal notation.
-        Hexadecimal numbers are also employed in IPv6 addresses.
+        The number of possible values for each component is~$256 = 16^2$,
+        and so only 2 digits are required to represent these in the hexadecimal notation.
+        Hexadecimal numbers are also employed in IPv6 addresses,
+        which are used to identify computers connected to a network.
 \end{itemize}
 
 \subsection{Conversion between binary and decimal formats}%
@@ -258,7 +259,7 @@ $b_0. b_1 b_2 \dots b_{p-1}$ is the \emph{significand}.
 The latter can be divided into a \emph{leading bit} $b_0$ and the \emph{fraction} $b_1 b_2 \dots b_{p-1}$,
 to the right of the binary point.
 The most widely used floating point formats are the \emph{single} and \emph{double precision} formats,
-which are called respectively \texttt{Float32} and \texttt{Float64} in Julia.
+which are called respectively \julia{Float32} and \julia{Float64} in Julia.
 Their parameters,
 together with those of the lesser-known half-precision format,
 are summarized in~\cref{table:floating_point_formats}.
@@ -353,20 +354,19 @@ the relative error between a real number and the closest member of a floating po
     \end{equation}
 \end{proposition}
 \begin{proof}
-    For simplicity, we also assume that $x > 0$.
-    Let us introduce $n = \lfloor \log_2(x) \rfloor$ and $y := 2^{-n} x$.
+    For simplicity, we assume that $x > 0$.
+    Let $n = \lfloor \log_2(x) \rfloor$ and $y := 2^{-n} x$.
     Since $y \in [1, 2)$,
-    it has a binary representation of the form
+    it admits a binary representation of the form
     \(
-        (1.b_1 b_2\dots)_2,
+        (1.b_1 b_2\dots)_2 \neq (1.\overline 1)_2
     \)
-    where the bits after the binary point are not all equal to 1 ad infinitum.
     Thus
     \(
         x = 2^{n} (1.b_1 b_2\dots)_2,
     \)
     and from the assumption that $x_{\min} \leq x \leq x_{\max}$
-    we deduce hat $E_{\min} \leq n \leq E_{\max}$.
+    we deduce that $E_{\min} \leq n \leq E_{\max}$.
     % \footnote{%
     %     The inequality here is strict,
     %     because $2^{E_{\min} - 1} (1.\overline{1})_2 = 2^{E_{\min}} = x_{\min}$.
@@ -428,7 +428,7 @@ The picture of the relative spacing between successive floating point numbers lo
 This is illustrated in \cref{fig:float64_spacing_denormalized},
 which shows that the relative spacing increases beyond the machine epsilon in the denormalized range.
 Fortunately, in the usual $\floating_{32}$ and $\floating_{64}$ formats,
-the transition between non-denormalized and denormalized numbers occurs at such a small value that
+the transition between denormalized and non-denormalized numbers occurs at such a small value that
 it rarely needs worrying about.
 
 \begin{figure}[ht]
@@ -442,13 +442,18 @@ it rarely needs worrying about.
     \label{fig:float64_spacing_denormalized}
 \end{figure}
 
-\begin{remark}
+\begin{example}
     In Julia,
     the machine epsilon can be obtained using the \texttt{eps} function.
     For example, the instruction \julia{eps(Float16)} returns $\varepsilon_M$ for the half-precision format.
-\end{remark}
+\end{example}
 
 \subsection{Exercises}%
+
+\begin{exercise}
+    Show that the successor of $1$ in $\floating_{64}$ is $1 + \varepsilon_M$,
+    where $\varepsilon_M$ is the machine epsilon for the double-precision format.
+\end{exercise}
 
 \begin{exercise}
     Write down the values of the smallest and largest, in absolute value,
