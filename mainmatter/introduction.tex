@@ -8,7 +8,7 @@ ranging from physics to biology and economics,
 the phenomena under consideration are well-described by mathematical equations.
 More often than not,
 it is too difficult to solve these equations analytically,
-and so one has to recur to \emph{computer calculations} in order to obtain approximate solutions.
+and so one has to recur to \emph{computer simulation} in order to obtain approximate solutions.
 Computer simulation enables to gain understanding of the phenomena examined,
 to explain observations and to make predictions.
 It plays a crucial role in a number of practical applications including
@@ -33,6 +33,18 @@ Relying on ``computer experiments'' is attractive in this context because
 these enable to perform accurate measurements without disturbing the system being observed.
 Numerical simulation is also very useful to understand and build simplified models for physical phenomena at very small scales,
 if direct observation is beyond the capabilities of experimental physics.
+
+\section*{The definition of numerical analysis}
+Numerical analysis sits at the interface between mathematics and computer science.
+Nick Trefethen,
+author of several influential works in mathematics,
+defines numerical analysis as \emph{the study of algorithms for the problems of continuous mathematics}~\cite{trefethen1992definition}.
+Devising and studying algorithms to solve mathematical problems is the central concern of numerical analysis
+and our main focus in of this course.
+The word \emph{continuous} in the definition is used to indicate that 
+the problems in the realm of numerical analysis involve real or complex variables.
+Discrete problems, which involve variables that take finitely or countably many values,
+are usually studied in other fields of computer science.
 
 \section*{Sources of error in computational science}%
 \label{sec:sources_of_error}
@@ -170,6 +182,6 @@ such as \texttt{Matlab} or~\texttt{Python}.
     \item
         Its main advantages over \texttt{Python} are significantly better performance and a more concise syntax for mathematical operations,
         especially those involving vectors and matrices.
-        It should be recognized, however, that although use of \texttt{Julia} is rapidly increasing,
+        It should be recognized, however, that although adoption of \texttt{Julia} is rapidly increasing,
         \texttt{Python} still enjoys a more mature ecosystem and is much more widely used.
 \end{itemize}
