@@ -835,13 +835,13 @@ is smaller than the smallest representable number in a floating point format.
         \geq 2^{-21} \bigl(1 - (0.11001101)_2 \bigr) =
         2^{-21} \left(0.00110011\right)_2.
     \end{align*}
-    We deduce that $x - x^- \leq x^+ - x$,
+    We deduce that $x - x^- < x^+ - x$,
     and so ${\rm fl}(x) = x^-$.
     To conclude the exercise,
     we need to show that ${\rm fl}\bigl((x^-)^2\bigr)$ is not equal to 2.
     The exact binary expansion of $(x^-)^2$ is
     \[
-        (x^-)^2 = (\underbrace{1.11111111111111111111111}_{\text{24 bits}}011011)_2.
+        (x^-)^2 = (\underbrace{1.11111111111111111111111}_{\text{24 bits}}01101100111111010101001)_2.
     \]
     The member of $\floating_{32}$ nearest this number is
     \[

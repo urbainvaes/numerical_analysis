@@ -133,7 +133,7 @@ it is convenient to use the following more compact syntax:
 Sometimes, it is useful to define a function without giving it a name, called an \emph{anonymous function}.
 This can be achieved in Julia using the arrow notation \julia{->}.
 For example, the following expressions calculate the squares and cubes of the first 5 natural numbers.
-Here, the function \julia{map} enables to transform a collection by applying a function to each element.
+Here, the function \julia{map} enables to transform the collection passed as second argument by applying the function passed as first argument to each element.
 \begin{minted}{julia}
     squares = map(x -> x^2, [1, 2, 3, 4, 5])
     cubes = map(x -> x^3, [1, 2, 3, 4, 5])
@@ -215,6 +215,16 @@ Therefore, the code prints \texttt{[0, 2, 3]} and \texttt{3}.
     function euler_constant(N)
         # Your code comes here
     end
+    \end{minted}
+\end{task}
+
+\begin{task}
+    Write a Julia function that returns the greatest common divisors between two integers.
+    Your function should be of the form
+    \begin{minted}{julia}
+        function my_gcd(a, b)
+            # Your code comes here
+        end
     \end{minted}
 \end{task}
 
@@ -316,7 +326,8 @@ For example, \julia{[M M]} defines the matrix
         1 & 2 & 3 & 1 & 2 & 3 \\ 4 & 5 & 6 & 4 & 5 & 6
     \end{pmatrix}
 \]
-The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$.
+The expression \julia{M[r, c]} gives the $(r, c)$ matrix element of $M$,
+located at row~$r$ and column~$c$.
 The special entry \julia{end} can be used to access the last row or column.
 For instance, \julia{M[end-1, end]} gives the matrix entry in the second to last row and the last column.
 From the matrix $M$ above,
