@@ -638,25 +638,27 @@ is smaller than the smallest representable number in a floating point format.
 
 \begin{exercise}
     Calculate the machine epsilon $\varepsilon_{16}$ for the $\floating_{16}$ format.
-    Write the results of the arithmetic operations $1 \madd \varepsilon_{16}$ and $1 \msub \varepsilon_{16}$ in $\floating_{16}$ normalized representation.
+    Write the results of the arithmetic operations $1 \madd \varepsilon_{16}$ and $1 \msub \varepsilon_{16}$ in the form
+    \[
+        2^E (1.b_1 \dotsc b_{p-1})_2.
+    \]
 \end{exercise}
 
 \begin{exercise}
-    [Catastrophic cancellation]
     Let $\varepsilon_{16}$ be the machine epsilon for the $\floating_{16}$ format,
     and define $y = \frac{4}{3} \varepsilon_{16}$.
     What is the relative error between $\Delta = (1 + y) - 1$,
     and the machine approximation $\widehat \Delta = (1 \madd y) \msub 1$?
 \end{exercise}
 
-\begin{exercise}
+\begin{compexercise}
     [Numerical differentiation]
     Let $f(x) = \exp(x)$.
     By definition, the derivative of~$f$ at~$0$ is
     \[
         f'(0) = \lim_{\delta \to 0} \left( \frac{f(\delta) - f(0)}{\delta} \right).
     \]
-    It is natural to use the expression within brackets on the right-hand side
+    The expression within brackets on the right-hand side may be used
     with a small but nonzero~$\delta$ as an approximation for $f'(0)$.
     Implement this approach using double-precision numbers and the same values for $\delta$ as in the table below.
     Explain the results you obtain.
@@ -666,11 +668,21 @@ is smaller than the smallest representable number in a floating point format.
             \hline
             $\delta$ & $\frac{\varepsilon_{64}}{4} $ & $\frac{\varepsilon_{64}}{2}$ & $\varepsilon_{64}$ \\
             \hline
-            $f'(0)$ & 0 & 2 & 1 \\
+            Approximation of $f'(0)$ & 0 & 2 & 1 \\
             \hline
         \end{tabular}
     \end{center}
-\end{exercise}
+\end{compexercise}
+
+\begin{compexercise}
+    [Numerical differentiation]
+    Let $f(x) = \exp(x)$ and let \julia{d(δ)} be the approximation of $f'(0)$ given by
+    \begin{minted}{julia}
+        f(x) = exp(x)
+        d(δ) = (f(0+δ) - f(0))/δ
+    \end{minted}
+    Plot \julia{d(δ)} as a function of~\julia{δ} in logarithmic scale and explain the result.
+\end{compexercise}
 
 \begin{compexercise}
     [Avoiding overflow]
@@ -682,6 +694,11 @@ is smaller than the smallest representable number in a floating point format.
         \qquad w_j = \exp(j),
         \qquad J = 1000.
     \]
+    You may need to first rewrite~$S$ differently.
+\end{compexercise}
+
+\begin{compexercise}
+    Plot the function $x \mapsto \log\left(\e^{\e^x} - 1\right)$ over the interval $[0, 10]$.
 \end{compexercise}
 
 \begin{compexercise}
