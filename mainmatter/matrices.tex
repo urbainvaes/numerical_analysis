@@ -95,6 +95,8 @@ It is also useful for showing that the functional defined in~\eqref{eq:induced_n
     \end{equation}
 \end{proposition}
 \begin{proof}
+    The statement is obvious if $\vect y = \vect 0$,
+    so we assume in the rest of the proof that $\vect y \neq \vect 0$.
     Let us define $p(t) = \norm{\vect x + t \vect y}^2$.
     Using the bilinearity of the inner product,
     we have
@@ -135,7 +137,7 @@ The proof is provided for information purposes.
     where $n$ is the dimension of the vector space.
     % Assume for contradiction that there exists a sequence $(x_i)_{i \in \nat}$ in the limit as $i \to \infty$ such that $\norm{x_i}_{\alpha} \to 0$ but $\norm{x_n}_{\beta} > \varepsilon > 0$.
     % Upon replacing $x_i$ by $x_i/\norm{x_i}_{\beta}$, we may assume without loss of generality that $\norm{x_n}_{\beta} = 1$.
-    Any $\vect x \in \mathcal X$ can be represented as $x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
+    Any $\vect x \in \mathcal X$ can be represented as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
     By the triangle inequality,
     it holds that
     \begin{equation}
@@ -161,7 +163,7 @@ The proof is provided for information purposes.
     We now prove~\eqref{eq:bound2} by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
-    that~$\norm{\vect x^{(i)}}_{\beta} \to 0$ as $i \to \infty$ but $\abs{\lambda_1^{(i)}} + \dotsb + \abs{\lambda_n^{(i)}} = 1$ for all $i \in \nat$.
+    that~$\norm{\vect x^{(i)}}_{\beta} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all $i \in \nat$.
     Since $\lambda_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
     we can extract a subsequence, still denoted by $(\vect x^{(i)})_{i \in \nat}$ for simplicity,
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
@@ -169,15 +171,19 @@ The proof is provided for information purposes.
     Repeating this procedure for $\lambda_2, \lambda_3, \dots$,
     taking a new subsequence every time,
     we obtain a subsequence $(\vect x^{(i)})_{i \in \nat}$ such that $\lambda^{(i)}_j \to \lambda_j^*$ in the limit as~$i \to \infty$, for all $j \in \{1, \dotsc, n\}$.
-    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the $\norm{\placeholder}_{\beta}$ norm.
-    Since $\vect x^{(i)} \to 0$ by assumption and the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
-    this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
+    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the~$\norm{\placeholder}_{\beta}$ norm.
+    Since $\vect x^{(i)} \to \vect 0$ in this norm by assumption,
+    we deduce that $\vect x^* = \vect 0$.
+    But the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
+    and so this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
     which is a contradiction because we also have that
     \[
-        \abs{\lambda_1^*} + \dotsb + \abs{\lambda_n^*} = \lim_{i \to \infty} \abs{\lambda_1^{(i)}} + \dotsb + \abs{\lambda_n^{(i)}} = 1.
+        \abs{\lambda_1^*} + \dotsb + \abs{\lambda_n^*} 
+        = \lim_{i \to \infty} \bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1.
     \]
     This concludes the proof of~\eqref{eq:bound2}.
 \end{proof}
+
 
 \begin{exercise}
     Using~\cref{proposition:cauchy_shwartz},
@@ -231,7 +237,7 @@ we define the \emph{operator norm} induced by $\norm{\placeholder}_{\alpha}$ and
 \end{equation}
 The term \emph{operator norm} is motivated by the fact that,
 to any matrix $\mat A \in \complex^{m \times n}$, there naturally corresponds the linear operator from $\complex^n$ to $\complex^m$ with action~$\vect x \mapsto \mat A \vect x$.
-\Cref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
+% Equation~\eqref{eq:subordinate_norm} comes from the general definition of the norm of a bounded linear operator between normed spaces.
 Matrix norms of the type~\eqref{eq:subordinate_norm} are also called \emph{subordinate} matrix norms.
 An immediate corollary of the definition~\eqref{eq:subordinate_norm} is that,
 for all $\vect x \in \complex^n$,
@@ -243,10 +249,11 @@ for all $\vect x \in \complex^n$,
     = \norm{\mat A}_{\alpha,\beta} \norm{\vect x}_{\beta},
     \qquad \widehat {\vect x} = \frac{\vect x}{\norm{\vect x}_{\beta}}.
 \end{equation}
-\begin{proposition}
-    Equation~\eqref{eq:subordinate_norm} defines a norm on $\complex^{m \times n}$.
-\end{proposition}
-\begin{proof}
+
+\begin{exercise}
+    Show that equation~\eqref{eq:subordinate_norm} defines a norm on $\complex^{m \times n}$.
+\end{exercise}
+\begin{solution}
     We need to verify that~\eqref{eq:subordinate_norm} satisfies the properties of positivity and homogeneity,
     together with the triangle inequality.
     \begin{itemize}
@@ -281,7 +288,7 @@ for all $\vect x \in \complex^n$,
             we obtain $\norm{\mat A + \mat B}_{\alpha,\beta} \leq \norm{\mat A}_{\alpha,\beta} + \norm{\mat B}_{\alpha,\beta}$.
     \end{itemize}
     Since the three properties are satisfied, $\norm{\placeholder}_{\alpha,\beta}$ is indeed a norm.
-\end{proof}
+\end{solution}
 
 The matrix $p$-norm is defined as the operator norm~\eqref{eq:subordinate_norm} in the particular case
 where $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ are both H\"older norms with the same value of $p$.
@@ -342,7 +349,7 @@ Denoting by $\vect e_i$ the $i$-th column of $\mat P$ and by $\lambda_i$ the $i$
 we have by~\eqref{eq:eigen_decomposition} that $\mat A \vect e_i = \lambda_i \vect e_i$ or,
 equivalently, $(\mat A - \lambda_i \mat I_n) \vect e_i = \vect 0$.
 Here $\mat I_n$ is the~$\complex^{n \times n}$ identity matrix.
-Therefore, $\lambda$ is an eigenvalue of $\mat A$ if and only if $\det(\mat A - \lambda \mat I_n) = 0$.
+Therefore, a complex number $\lambda$ is an eigenvalue of $\mat A$ if and only if $\det(\mat A - \lambda \mat I_n) = 0$.
 In other words, the eigenvalues of $\mat A$ are the roots of $\det(\mat A - \lambda \mat I_n)$,
 which is called the \emph{characteristic polynomial}.
 
@@ -354,8 +361,8 @@ A real matrix equal to its transpose is necessarily square and called \emph{symm
 and a complex matrix equal to its conjugate transpose is called \emph{Hermitian}.
 Hermitian matrices, of which real symmetric matrices are a subset,
 enjoy many nice properties,
-the main one being that they are diagonalizable with a matrix $\mat P$ that is unitary,
-i.e. such that $\mat P^{-1} = \mat P^*$.
+the main one being that they are diagonalizable with a matrix $\mat Q$ that is unitary,
+i.e. such that $\mat Q^{-1} = \mat Q^*$.
 This is the content of the \emph{spectral theorem},
 a pillar of linear algebra with important generalizations to infinite-dimensional operators.
 
@@ -381,7 +388,7 @@ a pillar of linear algebra with important generalizations to infinite-dimensiona
             \textbf{Step 1. Existence of a real eigenvalue}.
             By the fundamental theorem of algebra,
             there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(\mat A - \lambda \mat I_n) = 0$,
-            to which there corresponds a solution $\vect q_1 \in \complex^n$ of norm 1 to the equation $(\mat A - \lambda_1 \mat I_n) \vect q_{1} = 0$.
+            to which there corresponds a solution $\vect q_1 \in \complex^n$ of norm 1 to the equation $(\mat A - \lambda_1 \mat I_n) \vect q_{1} = \vect 0$.
             The eigenvalue $\lambda_1$ is necessarily real because
             \[
                 \lambda_1 \ip{\vect e_1, \vect e_1}
@@ -552,7 +559,7 @@ we recall and prove the Courant--Fisher theorem.
     \begin{align*}
         \dim(\mathcal S \cap \mathcal U_k)
         &= \dim(\mathcal S) + \dim(\mathcal U_k) -\dim(\mathcal S + \mathcal U_k) \\
-        &=  k + (n - k + 1) - n = 1.
+        &\geq  k + (n - k + 1) - n = 1.
     \end{align*}
     Therefore, any $\mathcal S \subset \complex^n$ of dimension $k$
     has a nonzero intersection with $\mathcal U_k$.
@@ -566,7 +573,7 @@ we recall and prove the Courant--Fisher theorem.
     \]
     This shows that
     \[
-        \forall \mathcal S \subset \complex^n, \quad \dim(\mathcal S) = k,
+        \forall \mathcal S \subset \complex^n \text{ with } \dim(\mathcal S) = k,
         \qquad
          \min_{\vect x \in \mathcal S \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}  \leq \lambda_k,
     \]
@@ -584,7 +591,8 @@ In this section, we work with matrices in $\complex^{n \times n}$.
 A \emph{similarity transformation} is a mapping of the type~$\complex^{n \times n} \ni \mat A \mapsto \mat P^{-1} \mat A \mat P \in \complex^{n \times n}$,
 where $\mat P \in \complex^{n \times n}$ is a nonsingular matrix.
 If two matrices are related by a similarity transformation,
-they are called \emph{similar}.
+they are called \emph{similar},
+because they may be viewed as two representations of the same linear mapping in different bases.
 
 \begin{definition}
     [Jordan block]
@@ -690,9 +698,8 @@ We state without proof the following important result.
 % \end{proof}
 
 \section{Oldenburger's theorem and Gelfand's formula}
-The following result establishes a necessary and sufficient condition,
-in terms of the spectral radius of $\mat A$ for the convergence of $\norm{\mat A^k}$ to 0,
-for any matrix norm $\norm{\placeholder}$.
+The following result establishes a necessary and sufficient condition for the convergence of $\norm{\mat A^k}$ to 0 in terms of the spectral radius of $\mat A$,
+and for any matrix norm $\norm{\placeholder}$.
 \begin{proposition}
     [Oldenburger]
     \label{proposition:matrices_convergence_power_of_matrix}
