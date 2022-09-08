@@ -219,13 +219,60 @@ Therefore, the code prints \texttt{[0, 2, 3]} and \texttt{3}.
 \end{task}
 
 \begin{task}
-    Write a Julia function that returns the greatest common divisors between two integers.
-    Your function should be of the form
+    [Ancient algorithms]
+    The goal of this exercise is to implement three of the oldest algorithms ever invented.
+    \begin{itemize}
+        \item
+            Circa 1600 BC, the Babylonians invented an iterative method for calculating the square root of a number.
+            Read the relevant information on the associated \href{https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method}{Wikipedia page} and write a Julia function that
+            calculates the square root of the argument using this algorithm.
     \begin{minted}{julia}
-        function my_gcd(a, b)
-            # Your code comes here
-        end
+    function babylonian_square_root(N)
+        # Your code comes here
+    end
+    # The function should return the square root of N
     \end{minted}
+
+        \item Circa 300 BC,
+            the Greek mathematician Euclid of Alexandria published the \emph{Elements},
+            his famous mathematical treatise.
+            In one of the books,
+            he proposes an algorithm to calculate the greatest common divisor of two numbers.
+            This algorithm,
+            which is still in common use today,
+            is based on the observation that if $a > b \geq 0$ are natural numbers,
+            then 
+            \begin{equation}
+                \label{eq:gcd}
+                {\rm gcd} (a, b) = {\rm gcd}(b, r),
+            \end{equation}
+            where $r$ is the remainder of the division of $a$ by $b$.
+            Indeed, in view of the equation
+            \[
+                a = q b + r,
+            \]
+            the common divisors of $\{a,b\}$ coincide with those of $\{b, r\}$.
+            Using~\eqref{eq:gcd},
+            write a function to calculate the greatest common divisor of two numbers.
+    \begin{minted}{julia}
+    function euclid_gcd(a, b)
+        # Your code comes here
+    end
+    \end{minted}
+
+        \item Circa 200 BC,
+            the Greek mathematician Eratosthenes of Cyrene invented a method for efficiently calculating the prime numbers,
+            which is now known as the \emph{sieve of Eratosthenes}.
+            Read the associated \href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Wikipedia page}
+            and write a function implementing this algorithm.
+    \begin{minted}{julia}
+    function sieve_eratosthenes(N)
+        # Your code comes here
+    end
+    # The function should return an array containing all the prime
+    # numbers less than or equal to N.
+    \end{minted}
+    \end{itemize}
 \end{task}
 
 \begin{task}
