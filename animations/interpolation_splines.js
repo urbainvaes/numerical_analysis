@@ -18,8 +18,6 @@ for (; ipoint<npoints; ipoint++) {
 }
 
 let f = JXG.Math.Numerics.lagrangePolynomial(p);
-var f_txt = JXG.Math.Numerics.lagrangePolynomialTerm(p, 2, 'x', ' * ');
-let fspline = JXG.Math.Numerics.CardinalSpline(p, .5, "uniform");
 let interp = board.create('functiongraph', [f,xmin, xmax], {highlight:false, strokeColor:'blue', strokeOpacity:0.5, strokeWidth:5, label:"Lagrange interpolant"});
 let interp_spline = board.create('spline', p, {highlight:false, strokeColor:'green', strokeOpacity:0.3, strokeWidth:5});
 
