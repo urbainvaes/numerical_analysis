@@ -182,54 +182,7 @@ the bits~$(b_1, b_2, \dots)$ in the binary representation of $x = (0.b_1b_2b_2 \
     as we saw in~\cref{example:converting_binary_to_decimal}.
 \end{example}
 
-\subsection{Exercises}%
 
-\begin{exercise}
-    \label{exercise:non_unique_representation}
-    Show that if a number $x \in \real$ admits a finite representation~\eqref{eq:base_representation} in base~$\beta$,
-    then it also admits an infinite representation in the same base.
-    \textbf{Hint:} You may have learned before that $(0.\overline 9)_{10} = 1$.
-\end{exercise}
-
-\begin{exercise}
-    How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
-    What about the hexadecimal format?
-\end{exercise}
-
-\begin{exercise}
-    Find the decimal representation of $(0.000\overline{1100})_2$.
-\end{exercise}
-
-\begin{exercise}
-    \label{exercise:binary_zero_point_one}
-    Find the binary representation of $(0.1)_{10}$.
-\end{exercise}
-
-\begin{compexercise}
-    Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
-    Your function should take as argument an array of integers containing the digits after the decimal point;
-    that is, an array of the form \verb?[a_1, ..., a_n]?.
-\end{compexercise}
-
-\begin{compexercise}
-    As mentioned above, \cref{algo:conversion_to_binary} works only for decimal numbers of the specific form~$x = (0.a_1\dots a_n)_{10}$.
-    Find and implement a similar algorithm for integer numbers.
-    More precisely, write a function that takes an integer $n$ as argument and
-    returns an array containing the bits of the binary expansion $(b_m \dots b_0)_2$ of $n$,
-    from the least significant $b_0$ to the most significant $b_m$.
-    That is to say, your code should return \mintinline{julia}{[b_0, b_1, ...]}.
-    \begin{minted}{julia}
-    function to_binary(n)
-        # Your code comes here
-    end
-
-    # Check that it works
-    number = 123456789
-    bits = to_binary(number)
-    pows2 = 2 .^ range(0, length(bits) - 1)
-    @assert sum(bits'pows2) == number
-    \end{minted}
-\end{compexercise}
 
 \section{Set of values representable in floating point formats}%
 \label{sec:set_of_values}
@@ -448,36 +401,6 @@ it rarely needs worrying about.
     For example, the instruction \julia{eps(Float16)} returns $\varepsilon_M$ for the half-precision format.
 \end{example}
 
-\subsection{Exercises}%
-
-\begin{exercise}
-    Show that the successor of $1$ in $\floating_{64}$ is $1 + \varepsilon_M$,
-    where $\varepsilon_M$ is the machine epsilon for the double-precision format.
-\end{exercise}
-
-\begin{exercise}
-    Write down the values of the smallest and largest, in absolute value,
-    positive real numbers representable in the $\floating_{32}$ and $\floating_{64}$ formats.
-\end{exercise}
-
-\begin{exercise}
-    [Relative error and machine epsilon]
-    \label{exercise:machine_epsilon}
-    Prove that the inequality~\eqref{eq:bound_epsilon_machine} is sharp.
-    To this end, find $x \in \real$ such that the inequality is an equality.
-\end{exercise}
-
-\begin{exercise}
-    [Cardinality of the set of floating point numbers]
-    \label{exercise:cardinality_floating}
-    Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly
-    \[
-        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
-    \]
-    \emph{distinct real numbers}.
-    (In particular, the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN} are not counted.)
-    \textbf{Hint:} Count first the numbers with $E > E_{\min}$ and then those with $E = E_{\min}$.
-\end{exercise}
 
 \section{Arithmetic operations between floating point formats}%
 \label{sec:arithmetic_operations_between_floating_point_formats}
@@ -621,20 +544,313 @@ we say that an \emph{overflow error} occurred.
 Similarly, \emph{underflow} occurs when a number
 is smaller than the smallest representable number in a floating point format.
 
-\subsection{Exercises}%
 
-% \begin{exercise}
-%     [Tie to even]
-%     Explain why,
-%     in the $\floating_{16}$ format,
-%     \[
-%         1 \madd 2^{-10} \madd 2^{-11} = 1 \madd 2^{-10}
-%     \]
-%     but
-%     \[
-%         1 \madd 2^{-11} = 1 \madd 2^{-10}.
-%     \]
-% \end{exercise}
+\section{Encoding of floating point numbers~\moreinfo}%
+\label{sec:encoding_of_floating_point_numbers}
+
+Once a number format is specified through parameters $(p, E_{\min}, E_{\max})$,
+the choice of encoding,
+i.e.\ the machine representation of numbers in this format,
+has no bearing on the magnitude and propagation of round-off errors.
+Studying encoding is, therefore, not essential for our purposes in this course,
+but we opted to cover the topic anyway in the hope that it will help the students build intuition on floating point numbers.
+We focus mainly on the single precision format,
+but the following discussion applies \emph{mutatis mutandis} to the double and half-precision formats.
+The material in this section is for information purposes only.
+
+We already mentioned  in~\cref{remark:roundoff_non_uniqueness} that
+a number in a floating point format may have several representations.
+On a computer, however, a floating point number is always stored in the same manner
+(except for the number 0, see \cref{remak:non_uniqueness_0}).
+The values of the exponent and significand which are selected by the computer,
+in the case where there are several possible choices,
+are determined from the following rules:
+\begin{itemize}
+    \item Either $E > E_{\min}$ and $b_0 = 1$;
+    \item Or $E = E_{\min}$, in which case the leading bit may be 0.
+\end{itemize}
+The following result proves that these rules define the exponent and significand uniquely.
+\begin{proposition}
+    \label{prop:uniqueness_standard_representation}
+    Assume that
+    \begin{equation}
+        \label{eq:equality_floating_point}
+        (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
+    \end{equation}
+    where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
+    Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
+\end{proposition}
+\begin{proof}
+    We show that $E = \widetilde E$,
+    after which the equality of significands follows trivially.
+    Let us assume for contradiction that $E > \widetilde E$
+    and denote the left and right-hand sides of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
+    Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
+    On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
+    Since $E \geq \widetilde E + 1$ by assumption,
+    we deduce that $|\widetilde x| < 2^E \leq |x|$,
+    which contradicts the equality $x = \widetilde x$.
+\end{proof}
+
+Now that we have explained how
+a unique set of parameters (sign, exponent, significand) can be assigned to any floating point number,
+we describe how these parameters are stored on the computer in practice.
+As their names suggest, the \julia{Float16}, \julia{Float32} and \julia{Float64} formats use 16, 32 and 64 bits of memory, respectively.
+A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
+
+For the \julia{Float32} format,
+this approach would requires 1 bit for the sign,
+8 bits to cover the 254 possible values of the exponent, and 24 bits for the significand,
+i.e.\ for storing $b_0, \dots, b_{p-1}$.
+This leads to a total number of 33 bits,
+which is one more than is available,
+and this is without the special values \julia{NaN}, \julia{Inf} and \julia{-Inf}.
+So how are numbers in the $\floating_{32}$ format actually stored?
+To answer this question,
+we begin with two observations:
+\begin{itemize}
+    \item
+        If $E > E_{\min}$,
+        then necessarily $b_0 = 1$ in the unique representation of the significand.
+        Consequently, the leading bit need not be explicitly specified in the case;
+        it is said to be \emph{implicit}.
+        We will see,
+        as a consequence,
+        that $p-1$ instead of $p$ bits are in fact sufficient for the significand.
+    \item
+        In the $\floating_{32}$ format,
+        8 bits at minimum need to be reserved for the exponent,
+        which enables the representation of $2^8 = 256$ different values,
+        but there are only 254 possible values for the exponent.
+        This suggests that $256 - 254 = 2$ combinations of the 8 bits can be exploited in order to
+        represent the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
+\end{itemize}
+
+Simplifying a little,
+we may view single precision floating point number as an array of 32 bits as illustrated below:
+\begin{alignat*}{3}
+    &\fcolorbox{black}{lightcyan}{\text{Sign}}
+    \hspace{.1cm}
+    &&\fcolorbox{black}{lightgreen}{\quad\text{Encoded exponent}\quad}
+    \hspace{.1cm}
+    &&\fcolorbox{black}{lightred}{\qquad\qquad\text{Encoded significand}\qquad\qquad}\\[-.1cm]
+    &\text{\small 1 bit} &&\text{\small 8 bits} &&\text{\small 23 bits}
+\end{alignat*}
+According to the IEEE 754 standard,
+the first bit is the sign $s$,
+the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
+and the last 23 bits $b_1 b_2 \dots b_{p-2} b_{p-1}$ encode the significand.
+Let us emphasize that when we say ``encode the exponent'' here,
+we just mean that the bits contain information from which the exponent can be uniquely determined,
+but we have not yet described how this is achieved.
+Let us introduce the integer number $e = (e_0 e_1 \dots e_6 e_7)_2$;
+that is to say, $0 \leq e \leq 2^8 -1$ is the integer number whose binary representation
+is given by $e_0 e_1 \dots e_6 e_7$.
+One may determine the exponent and significand of a floating point number from the following rules.
+\begin{itemize}
+    \item
+        \textbf{Denormalized numbers}:
+        If $e = 0$, then the implicit leading bit $b_0$ is zero,
+        the fraction is $b_1 b_2 \dots b_{p-2} b_{p-1}$, and the exponent is $E = E_{\min}$.
+        In other words, using the notation of~\cref{sec:set_of_values},
+        we have $x = (-1)^s 2^{E_{\min}} (0.b_1b_2 \dots b_{p-2} b_{p-1})_2$.
+        In particular, if $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
+        then it holds that $x = 0$.
+    \item
+        \textbf{Non-denormalized numbers}:
+        If $0 < e < 255$,
+        then the implicit leading bit $b_0$ of the significand is $1$
+        and the fraction is given by $b_1 b_2 \dots b_{p-2} b_{p-1}$.
+        The exponent is given by
+        \[
+            E = e - \mathrm{bias} = E_{\min} + e - 1.
+        \]
+        where the exponent bias for the single and double precision formats are given in~\cref{table:floating_point_formats_encoding}.
+        In this case $x = (-1)^s 2^{e - \mathrm{bias}} 1.b_1b_2 \dots b_{p-2} b_{p-1}$.
+        Notice that $E = E_{\min}$ if $e = 1$,
+        as in the case of denormalized numbers.
+    \item
+        \textbf{Infinities}:
+        If $e = 255$ and $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
+        then $x = \texttt{Inf}$ if $s = 0$ and \texttt{-Inf} otherwise.
+    \item
+        \textbf{Not a Number}:
+        If $e = 255$ and  $b_1 b_2 \dots b_{p-2} b_{p-1} \neq 00\dots00$,
+        then $x = \texttt{NaN}$.
+        Notice that the special value \texttt{NaN} can be encoded in many different manners.
+        These extra degrees of freedom were reserved for passing information on the reason for the occurrence of $\texttt{NaN}$,
+        which is usually an indication that something has gone wrong in the calculation.
+\end{itemize}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        & Half precision & Single precision & Double precision
+        \\ \hline
+        Exponent bias ($-E_{\min} + 1$) & $15$ & $127$ & $1023$
+        \\ \hline
+        Exponent encoding (bits) & 5 & 8 & 11
+        \\ \hline
+        Significand encoding (bits) & 10 & 23 & 52
+        \\ \hline
+    \end{tabular}
+    \caption{Encoding parameters for floating point formats}%
+    \label{table:floating_point_formats_encoding}
+\end{table}
+
+\begin{remark}
+    [Encoding efficiency]
+    With 32 bits,
+    at most $2^{32}$ different numbers could in principle be represented.
+    In practice, as we saw in \cref{exercise:cardinality_floating},
+    the \julia{Float32} format enables to represent
+    \[
+        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
+        = 253 \times 2^{23} + 2^{25} - 1
+        = 2^{32} - 2^{24} - 1
+        \approx 99.6 \% \times 2^{32},
+    \]
+    different real numbers,
+    indicating a very good encoding efficiency.
+\end{remark}
+
+\begin{remark}
+    [Nonuniqueness of the floating point represention of 0.0]
+    \label{remak:non_uniqueness_0}
+    The sign $s$ is clearly unique for any number in a floating point format,
+    except for $0.0$,
+    which could in principle be represented as
+    \[
+        (-1)^0 2^{E_{\min}} (0.00\dots00)_2
+        \qquad \text{or} \qquad
+        (-1)^1 2^{E_{\min}} (0.00\dots00)_2.
+    \]
+    In practice, both representations of 0.0 are available on most machines,
+    and these behave slightly differently.
+    For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
+\end{remark}
+
+\section{Integer formats~\moreinfo}%
+\label{sec:what_about_integer_formats}
+
+The machine representation of integer formats is much simpler than that of floating point numbers.
+In this short section,
+we give a few orders of magnitude for common integer formats and briefly discuss overflow issues.
+Programming languages typically provide integer formats based on 16, 32 and 64 bits.
+In Julia, these correspond to the types \julia{Int16}, \julia{Int32} and \julia{Int64},
+the latter being the default for integer literals.
+
+The most common encoding for integer numbers,
+which is used in Julia, is known as \emph{two's complement}:
+a number encoded with $p$ bits given by $b_{p-1} b_{p-2} \dots b_{0}$ corresponds to
+\[
+    x = - b_{p-1} 2^{p-1} + \sum_{i=0}^{p-2} b_i 2^i.
+\]
+This encoding enables to represent uniquely all the integers from $N_{\min} = -2^{p-1}$ to $N_{\max} = 2^{p-1}-1$.
+% in particular, there is unique representation for 0.
+In contrast with floating point formats,
+integer formats do not provide special values like \julia{Inf} and \julia{NaN}.
+The number delivered by the machine when a calculation exceeds the maximum representable value in the format,
+called the \emph{overflow behavior}, generally depends on the programming language.
+
+Since overflow behavior of integer numbers is not universal across programming languages,
+a detailed discussion is of little interest.
+We only mention that Julia uses a \emph{wraparound} behavior,
+where $N_{\max} + 1$ silently returns $N_{\min}$ and,
+similarly, $-N_{\min} - 1$ gives $N_{\max}$;
+the numbers loop back.
+This can lead to unexpected results,
+such as \julia{2^64} evaluating to 0.
+
+\section{Discussion and bibliography}%
+\label{sec:discussion_and_bibliograhpy}
+This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
+A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
+adding for example specifications for the half precision and quad precision formats,
+and a minor revision was published in 2019~\cite{ieee2019}.
+The original IEEE standard and its revisions constitute the authoritative guide on floating point formats.
+It was intended to be widely disseminated and is written very clearly and concisely,
+but is not available for free online.
+Another excellent source for learning about floating point numbers and round-off errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
+freely available online.
+
+\section{Exercises}
+\begin{exercise}
+    \label{exercise:non_unique_representation}
+    Show that if a number $x \in \real$ admits a finite representation~\eqref{eq:base_representation} in base~$\beta$,
+    then it also admits an infinite representation in the same base.
+    \textbf{Hint:} You may have learned before that $(0.\overline 9)_{10} = 1$.
+\end{exercise}
+
+\begin{exercise}
+    How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
+    What about the hexadecimal format?
+\end{exercise}
+
+\begin{exercise}
+    Find the decimal representation of $(0.000\overline{1100})_2$.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:binary_zero_point_one}
+    Find the binary representation of $(0.1)_{10}$.
+\end{exercise}
+
+\begin{compexercise}
+    Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
+    Your function should take as argument an array of integers containing the digits after the decimal point;
+    that is, an array of the form \verb?[a_1, ..., a_n]?.
+\end{compexercise}
+
+\begin{compexercise}
+    As mentioned above, \cref{algo:conversion_to_binary} works only for decimal numbers of the specific form~$x = (0.a_1\dots a_n)_{10}$.
+    Find and implement a similar algorithm for integer numbers.
+    More precisely, write a function that takes an integer $n$ as argument and
+    returns an array containing the bits of the binary expansion $(b_m \dots b_0)_2$ of $n$,
+    from the least significant $b_0$ to the most significant $b_m$.
+    That is to say, your code should return \mintinline{julia}{[b_0, b_1, ...]}.
+    \begin{minted}{julia}
+    function to_binary(n)
+        # Your code comes here
+    end
+
+    # Check that it works
+    number = 123456789
+    bits = to_binary(number)
+    pows2 = 2 .^ range(0, length(bits) - 1)
+    @assert sum(bits'pows2) == number
+    \end{minted}
+\end{compexercise}
+
+\begin{exercise}
+    Show that the successor of $1$ in $\floating_{64}$ is $1 + \varepsilon_M$,
+    where $\varepsilon_M$ is the machine epsilon for the double-precision format.
+\end{exercise}
+
+\begin{exercise}
+    Write down the values of the smallest and largest, in absolute value,
+    positive real numbers representable in the $\floating_{32}$ and $\floating_{64}$ formats.
+\end{exercise}
+
+\begin{exercise}
+    [Relative error and machine epsilon]
+    \label{exercise:machine_epsilon}
+    Prove that the inequality~\eqref{eq:bound_epsilon_machine} is sharp.
+    To this end, find $x \in \real$ such that the inequality is an equality.
+\end{exercise}
+
+\begin{exercise}
+    [Cardinality of the set of floating point numbers]
+    \label{exercise:cardinality_floating}
+    Show that, if $E_{\max} \geq E_{\min}$, then $\floating(p, E_{\min}, E_{\max})$ contains exactly
+    \[
+        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
+    \]
+    \emph{distinct real numbers}.
+    (In particular, the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN} are not counted.)
+    \textbf{Hint:} Count first the numbers with $E > E_{\min}$ and then those with $E = E_{\min}$.
+\end{exercise}
 
 \begin{exercise}
     Calculate the machine epsilon $\varepsilon_{16}$ for the $\floating_{16}$ format.
@@ -850,193 +1066,6 @@ is smaller than the smallest representable number in a floating point format.
     which is precisely the result returned by Julia.
 \end{solution}
 
-
-\section{Encoding of floating point numbers~\moreinfo}%
-\label{sec:encoding_of_floating_point_numbers}
-
-Once a number format is specified through parameters $(p, E_{\min}, E_{\max})$,
-the choice of encoding,
-i.e.\ the machine representation of numbers in this format,
-has no bearing on the magnitude and propagation of round-off errors.
-Studying encoding is, therefore, not essential for our purposes in this course,
-but we opted to cover the topic anyway in the hope that it will help the students build intuition on floating point numbers.
-We focus mainly on the single precision format,
-but the following discussion applies \emph{mutatis mutandis} to the double and half-precision formats.
-The material in this section is for information purposes only.
-
-We already mentioned  in~\cref{remark:roundoff_non_uniqueness} that
-a number in a floating point format may have several representations.
-On a computer, however, a floating point number is always stored in the same manner
-(except for the number 0, see \cref{remak:non_uniqueness_0}).
-The values of the exponent and significand which are selected by the computer,
-in the case where there are several possible choices,
-are determined from the following rules:
-\begin{itemize}
-    \item Either $E > E_{\min}$ and $b_0 = 1$;
-    \item Or $E = E_{\min}$, in which case the leading bit may be 0.
-\end{itemize}
-The following result proves that these rules define the exponent and significand uniquely.
-\begin{proposition}
-    \label{prop:uniqueness_standard_representation}
-    Assume that
-    \begin{equation}
-        \label{eq:equality_floating_point}
-        (-1)^s (2^{E} b_0.b_1\dots b_{p-1})_2 = (-1)^{\widetilde s} (2^{\widetilde E} \widetilde b_0. \widetilde b_1\dots \widetilde b_{p-1})_2,
-    \end{equation}
-    where the parameter sets $(s, E, b_0, \dots b_{p-1})$ and $(\widetilde s, \widetilde E, \widetilde b_0, \dots, \widetilde b_{p-1})$ both satisfy the above rule.
-    Then $E = \widetilde E$ and $b_i = \widetilde b_i$ for $i \in \{0, \dots, p-1\}$.
-\end{proposition}
-\begin{proof}
-    We show that $E = \widetilde E$,
-    after which the equality of significands follows trivially.
-    Let us assume for contradiction that $E > \widetilde E$
-    and denote the left and right-hand sides of~\eqref{eq:equality_floating_point} by~$x$ and~$\widetilde x$, respectively.
-    Then~$E > E_{\min}$, implying that $b_0 = 1$ and so $2^{E} \leq |x| < 2^{E+1}$.
-    On the other hand, it holds that $|\widetilde x| < 2^{\widetilde E+1}$ regardless of whether $\widetilde E = E_{\min}$ or not.
-    Since $E \geq \widetilde E + 1$ by assumption,
-    we deduce that $|\widetilde x| < 2^E \leq |x|$,
-    which contradicts the equality $x = \widetilde x$.
-\end{proof}
-
-Now that we have explained how
-a unique set of parameters (sign, exponent, significand) can be assigned to any floating point number,
-we describe how these parameters are stored on the computer in practice.
-As their names suggest, the \julia{Float16}, \julia{Float32} and \julia{Float64} formats use 16, 32 and 64 bits of memory, respectively.
-A naive approach for encoding these number formats would be to store the full binary representations of the sign, exponent and significand.
-
-For the \julia{Float32} format,
-this approach would requires 1 bit for the sign,
-8 bits to cover the 254 possible values of the exponent, and 24 bits for the significand,
-i.e.\ for storing $b_0, \dots, b_{p-1}$.
-This leads to a total number of 33 bits,
-which is one more than is available,
-and this is without the special values \julia{NaN}, \julia{Inf} and \julia{-Inf}.
-So how are numbers in the $\floating_{32}$ format actually stored?
-To answer this question,
-we begin with two observations:
-\begin{itemize}
-    \item
-        If $E > E_{\min}$,
-        then necessarily $b_0 = 1$ in the unique representation of the significand.
-        Consequently, the leading bit need not be explicitly specified in the case;
-        it is said to be \emph{implicit}.
-        We will see,
-        as a consequence,
-        that $p-1$ instead of $p$ bits are in fact sufficient for the significand.
-    \item
-        In the $\floating_{32}$ format,
-        8 bits at minimum need to be reserved for the exponent,
-        which enables the representation of $2^8 = 256$ different values,
-        but there are only 254 possible values for the exponent.
-        This suggests that $256 - 254 = 2$ combinations of the 8 bits can be exploited in order to
-        represent the special values \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
-\end{itemize}
-
-Simplifying a little,
-we may view single precision floating point number as an array of 32 bits as illustrated below:
-\begin{alignat*}{3}
-    &\fcolorbox{black}{lightcyan}{\text{Sign}}
-    \hspace{.1cm}
-    &&\fcolorbox{black}{lightgreen}{\quad\text{Encoded exponent}\quad}
-    \hspace{.1cm}
-    &&\fcolorbox{black}{lightred}{\qquad\qquad\text{Encoded significand}\qquad\qquad}\\[-.1cm]
-    &\text{\small 1 bit} &&\text{\small 8 bits} &&\text{\small 23 bits}
-\end{alignat*}
-According to the IEEE 754 standard,
-the first bit is the sign $s$,
-the next 8 bits $e_0 e_1 \dots e_6 e_7$ encode the exponent,
-and the last 23 bits $b_1 b_2 \dots b_{p-2} b_{p-1}$ encode the significand.
-Let us emphasize that when we say ``encode the exponent'' here,
-we just mean that the bits contain information from which the exponent can be uniquely determined,
-but we have not yet described how this is achieved.
-Let us introduce the integer number $e = (e_0 e_1 \dots e_6 e_7)_2$;
-that is to say, $0 \leq e \leq 2^8 -1$ is the integer number whose binary representation
-is given by $e_0 e_1 \dots e_6 e_7$.
-One may determine the exponent and significand of a floating point number from the following rules.
-\begin{itemize}
-    \item
-        \textbf{Denormalized numbers}:
-        If $e = 0$, then the implicit leading bit $b_0$ is zero,
-        the fraction is $b_1 b_2 \dots b_{p-2} b_{p-1}$, and the exponent is $E = E_{\min}$.
-        In other words, using the notation of~\cref{sec:set_of_values},
-        we have $x = (-1)^s 2^{E_{\min}} (0.b_1b_2 \dots b_{p-2} b_{p-1})_2$.
-        In particular, if $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
-        then it holds that $x = 0$.
-    \item
-        \textbf{Non-denormalized numbers}:
-        If $0 < e < 255$,
-        then the implicit leading bit $b_0$ of the significand is $1$
-        and the fraction is given by $b_1 b_2 \dots b_{p-2} b_{p-1}$.
-        The exponent is given by
-        \[
-            E = e - \mathrm{bias} = E_{\min} + e - 1.
-        \]
-        where the exponent bias for the single and double precision formats are given in~\cref{table:floating_point_formats_encoding}.
-        In this case $x = (-1)^s 2^{e - \mathrm{bias}} 1.b_1b_2 \dots b_{p-2} b_{p-1}$.
-        Notice that $E = E_{\min}$ if $e = 1$,
-        as in the case of denormalized numbers.
-    \item
-        \textbf{Infinities}:
-        If $e = 255$ and $b_1 b_2 \dots b_{p-2} b_{p-1} = 00\dots00$,
-        then $x = \texttt{Inf}$ if $s = 0$ and \texttt{-Inf} otherwise.
-    \item
-        \textbf{Not a Number}:
-        If $e = 255$ and  $b_1 b_2 \dots b_{p-2} b_{p-1} \neq 00\dots00$,
-        then $x = \texttt{NaN}$.
-        Notice that the special value \texttt{NaN} can be encoded in many different manners.
-        These extra degrees of freedom were reserved for passing information on the reason for the occurrence of $\texttt{NaN}$,
-        which is usually an indication that something has gone wrong in the calculation.
-\end{itemize}
-
-\begin{table}[ht]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        & Half precision & Single precision & Double precision
-        \\ \hline
-        Exponent bias ($-E_{\min} + 1$) & $15$ & $127$ & $1023$
-        \\ \hline
-        Exponent encoding (bits) & 5 & 8 & 11
-        \\ \hline
-        Significand encoding (bits) & 10 & 23 & 52
-        \\ \hline
-    \end{tabular}
-    \caption{Encoding parameters for floating point formats}%
-    \label{table:floating_point_formats_encoding}
-\end{table}
-
-\begin{remark}
-    [Encoding efficiency]
-    With 32 bits,
-    at most $2^{32}$ different numbers could in principle be represented.
-    In practice, as we saw in \cref{exercise:cardinality_floating},
-    the \julia{Float32} format enables to represent
-    \[
-        (E_{\max} - E_{\min}) 2^{p} + 2^{p+1} - 1
-        = 253 \times 2^{23} + 2^{25} - 1
-        = 2^{32} - 2^{24} - 1
-        \approx 99.6 \% \times 2^{32},
-    \]
-    different real numbers,
-    indicating a very good encoding efficiency.
-\end{remark}
-
-\begin{remark}
-    [Nonuniqueness of the floating point represention of 0.0]
-    \label{remak:non_uniqueness_0}
-    The sign $s$ is clearly unique for any number in a floating point format,
-    except for $0.0$,
-    which could in principle be represented as
-    \[
-        (-1)^0 2^{E_{\min}} (0.00\dots00)_2
-        \qquad \text{or} \qquad
-        (-1)^1 2^{E_{\min}} (0.00\dots00)_2.
-    \]
-    In practice, both representations of 0.0 are available on most machines,
-    and these behave slightly differently.
-    For example $\texttt{1/(0.0) = Inf}$ but $\texttt{1/(-0.0) = -Inf}$.
-\end{remark}
-
 \begin{exercise}
     Determine the encoding of the following \julia{Float32} numbers:
     \begin{itemize}
@@ -1051,50 +1080,6 @@ One may determine the exponent and significand of a floating point number from t
     % \]
     Check your results using the Julia function \julia{bitstring}.
 \end{exercise}
-
-\section{Integer formats~\moreinfo}%
-\label{sec:what_about_integer_formats}
-
-The machine representation of integer formats is much simpler than that of floating point numbers.
-In this short section,
-we give a few orders of magnitude for common integer formats and briefly discuss overflow issues.
-Programming languages typically provide integer formats based on 16, 32 and 64 bits.
-In Julia, these correspond to the types \julia{Int16}, \julia{Int32} and \julia{Int64},
-the latter being the default for integer literals.
-
-The most common encoding for integer numbers,
-which is used in Julia, is known as \emph{two's complement}:
-a number encoded with $p$ bits given by $b_{p-1} b_{p-2} \dots b_{0}$ corresponds to
-\[
-    x = - b_{p-1} 2^{p-1} + \sum_{i=0}^{p-2} b_i 2^i.
-\]
-This encoding enables to represent uniquely all the integers from $N_{\min} = -2^{p-1}$ to $N_{\max} = 2^{p-1}-1$.
-% in particular, there is unique representation for 0.
-In contrast with floating point formats,
-integer formats do not provide special values like \julia{Inf} and \julia{NaN}.
-The number delivered by the machine when a calculation exceeds the maximum representable value in the format,
-called the \emph{overflow behavior}, generally depends on the programming language.
-
-Since overflow behavior of integer numbers is not universal across programming languages,
-a detailed discussion is of little interest.
-We only mention that Julia uses a \emph{wraparound} behavior,
-where $N_{\max} + 1$ silently returns $N_{\min}$ and,
-similarly, $-N_{\min} - 1$ gives $N_{\max}$;
-the numbers loop back.
-This can lead to unexpected results,
-such as \julia{2^64} evaluating to 0.
-
-\section{Discussion and bibliography}%
-\label{sec:discussion_and_bibliograhpy}
-This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
-A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
-adding for example specifications for the half precision and quad precision formats,
-and a minor revision was published in 2019~\cite{ieee2019}.
-The original IEEE standard and its revisions constitute the authoritative guide on floating point formats.
-It was intended to be widely disseminated and is written very clearly and concisely,
-but is not available for free online.
-Another excellent source for learning about floating point numbers and round-off errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
-freely available online.
 
 \begin{exercise}
     True or false?
