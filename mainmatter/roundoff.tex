@@ -1095,3 +1095,45 @@ It was intended to be widely disseminated and is written very clearly and concis
 but is not available for free online.
 Another excellent source for learning about floating point numbers and round-off errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
 freely available online.
+
+\begin{exercise}
+    True or false?
+    \begin{enumerate}
+        \item Let $(\placeholder)_2$ denote binary representation.
+            It holds that
+            \(
+                (0.1111)_2 + (0.0001)_2 = 1.
+            \)
+        \item It holds that
+            \(
+                (1000)_2 \times (0.001)_2 = 1.
+            \)
+        \item It holds that
+            \[
+                (0.\overline{1})_3 = \frac{1}{2}.
+            \]
+        \item In base 16, all the natural numbers from 1 to 200 can be represented using 2 digits.
+        \item In Julia, \julia{Float64(.1) == Float32(.1)} evaluates to \julia{true}.
+        \item The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
+        \item It holds that $(0.\overline{10101})_2 = (1.2345)_{10}$.
+        \item Machine addition~$\madd$ is an associative operation.
+            More precisely, given any three double-precision floating point numbers $x$, $y$ and $z$,
+            the following equality holds:
+            \[
+                (x \madd y) \madd z = x \madd (y \madd z).
+            \]
+        \item
+            The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
+
+        \item
+            Let $\varepsilon$ denote the machine epsilon for the double-precision format.
+            Let also~$\madd$ and~$\mdiv$ denote respectively the machine addition and the machine division operators for the double-precision format.
+            It holds that $1 \madd (\varepsilon \mdiv 64) = 1$ and that $\varepsilon \mdiv 64 \neq 0$.
+
+        \item
+            Assume that $x \in \real$ belongs to the double-precision floating point format (that is,
+            assume that $x \in \floating_{64}$).
+            Then $-x \in \floating_{64}$.
+    \end{enumerate}
+    A correct (resp.~incorrect) answer leads to +1 mark (resp. -1 mark).
+\end{exercise}
