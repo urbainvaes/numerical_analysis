@@ -892,12 +892,12 @@ freely available online.
 
 \begin{compexercise}
     [Numerical differentiation]
-    Let $f(x) = \exp(x)$ and let \julia{d(δ)} be the approximation of $f'(0)$ given by
+    Let $f(x) = \exp(x)$ and let \julia{d(δ)} be the approximation of $f'(1)$ given by
     \begin{minted}{julia}
         f(x) = exp(x)
-        d(δ) = (f(0+δ) - f(0))/δ
+        d(δ) = (f(1+δ) - f(1))/δ
     \end{minted}
-    Plot \julia{d(δ)} as a function of~\julia{δ} in logarithmic scale and explain the result.
+    Plot \julia{abs(d(δ) - exp(1))} as a function of~\julia{δ} in logarithmic scale and explain the result.
 \end{compexercise}
 
 \begin{compexercise}
@@ -1028,6 +1028,11 @@ freely available online.
     For example \julia{Float32(1/41) * 41} does not evaluate to \julia{1},
     and neither do \julia{Float16(1/11) * 11} and \julia{Float64(1/49) * 49}.
 \end{remark}
+
+\begin{exercise}
+    Does \julia{0.1 + 0.2 == 0.3} evaluate to \julia{true} or \julia{false}.
+    Explain.
+\end{exercise}
 
 \begin{exercise}
     Explain why \julia{Float32(sqrt(2))^2 - 2} is not zero in Julia.
