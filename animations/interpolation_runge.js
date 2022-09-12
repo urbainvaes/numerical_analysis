@@ -3,12 +3,12 @@ let xmax = 1;
 let ymax = 1.2;
 let ymin = -.5;
 let board = JXG.JSXGraph.initBoard('mybox', {boundingbox:[xmin,ymax,xmax,ymin], axis:false,
-    showCopyright:false, grid:true, showFullscreen:false, ShowNavigation:false, pan: {enabled:false}, zoom:{enabled:true}});
+    showCopyright:false, grid:false, showFullscreen:false, ShowNavigation:false, pan: {enabled:false}, zoom:{enabled:true}});
 
 let p = [];
 let runge = function(x) {return 1 / (1 + 25*x*x);}
 let cos = function(x) {return (Math.cos(2*Math.PI*x) + 1)/2;}
-let currentf = cos;
+let currentf = runge;
 let ipoint = 0;
 let npoints = 6;
 for (; ipoint<npoints; ipoint++) {
@@ -18,11 +18,11 @@ for (; ipoint<npoints; ipoint++) {
 }
 
 let f = JXG.Math.Numerics.lagrangePolynomial(p);
-var f_txt = JXG.Math.Numerics.lagrangePolynomialTerm(p, 2, 'x', ' * ');
 // let fspline = JXG.Math.Numerics.CardinalSpline(p, .5, "uniform");
 let interp = board.create('functiongraph', [f,xmin, xmax], {highlight:false, strokeColor:'blue', strokeOpacity:0.5, strokeWidth:5, label:"Lagrange interpolant"});
+let graph = board.create('functiongraph', [currentf, xmin, xmax]);
 // let interp_spline = board.create('spline', p, {highlight:false, strokeColor:'green', strokeOpacity:0.3, strokeWidth:5});
-var txt = board.create('text', [xmin + .1, ymin + .1, f_txt], {fontSize: 16, color: 'blue'});
+// var txt = board.create('text', [xmin + .1, ymin + .1, f_txt], {fontSize: 16, color: 'blue'});
 
 let getMouseCoords = function(e, i) {
     var cPos = board.getCoordsTopLeftCorner(e, i),
@@ -50,7 +50,7 @@ let getMouseCoords = function(e, i) {
 
         if (canCreate) {
             x = coords.usrCoords[1];
-            y = coords.usrCoords[2];
+            y = currentf(x);
             p[ipoint] = board.create('point', [x, y], {size: 4, face: 'o', withLabel:false, showInfobox:false, highlightFillColor:'black', highlightStrokeColor:'black'});
             ipoint = ipoint+1;
         }
