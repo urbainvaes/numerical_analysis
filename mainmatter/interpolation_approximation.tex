@@ -10,7 +10,7 @@ The Cambridge dictionary defines interpolation as \emph{the addition of somethin
 The concept of interpolation in mathematics is consistent with this definition;
 interpolation consists in finding, given a set of points~$(x_i, y_i)$,
 a function~$f$ in a finite-dimensional space that goes through these points.
-Throughout this course, you have used the~\julia{plot} function in Julia,
+Throughout this course, you use the~\julia{plot} function in Julia,
 which performs piecewise linear interpolation for drawing functions,
 but there are a number of other standard interpolation methods.
 Our first goal in this chapter is to present an overview of these methods and the associated error estimates.
@@ -32,9 +32,10 @@ Without a metric, saying that two functions are close is almost meaningless!
 
 \section{Interpolation}
 Assume that we are given $n+1$ nodes $x_0, \dotsc, x_n$ on the $x$ axis,
-together with the values $u_0, \dotsc, u_n$ taken by an unknown function~$u(x)$ when evaluated at these points,
-and suppose that we are looking for an interpolation~$\widehat u(x)$ in a subspace~$\Span \{\varphi_0, \dotsc, \varphi_n\}$
-of the space of continuous functions, i.e.~an interpolating function of the form
+together with values $u_0, \dotsc, u_n$,
+which may be the values taken by an unknown function~$u(x)$ when evaluated at these points.
+Suppose that we are looking for an interpolation~$\widehat u(x)$ in a subspace~$\Span \{\varphi_0, \dotsc, \varphi_n\}$
+of the vector space of continuous functions, i.e.~an interpolating function of the form
 \[
     \widehat u(x) = \alpha_0 \varphi_0(x) + \dotsb + \alpha_n \varphi_n(x),
 \]
@@ -138,14 +139,21 @@ Finding the interpolant in this basis is immediate:
 \[
     \widehat u(x) = u_1 \varphi_1(x) + \dotsb + u_n \varphi_n(x).
 \]
-While simple, this approach to polynomial interpolation has a couple of disadvantages:
-first, evaluating $\widehat u(x)$ is computationally costly when $n$ is large and,
-second, all the basis functions change when adding new interpolation nodes.
-In addition, Lagrange interpolation is numerically unstable because of cancellations between large terms.
-Indeed, it is often the case that Lagrange polynomials take very large values over the interpolation intervals;
-this occurs, for example,
-when many equidistant interpolation nodes are employed,
-as illustrated in~\cref{fig:lagrange}.
+While simple, this approach to polynomial interpolation has a few disadvantages:
+\begin{itemize}
+    \item
+        First, evaluating $\widehat u(x)$ is computationally costly when $n$ is large.
+
+    \item
+        Second, all the basis functions change when adding new interpolation nodes.
+
+    \item
+        Finally, Lagrange interpolation is numerically unstable because of cancellations between large terms.
+        Indeed, it is often the case that Lagrange polynomials take very large values over the interpolation intervals;
+        this occurs, for example,
+        when many equidistant interpolation nodes are employed,
+        as illustrated in~\cref{fig:lagrange}.
+\end{itemize}
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/lagrange_10.pdf}
@@ -208,7 +216,7 @@ which is the discrete analog of the continuous Taylor series.
 From the definition of~$\Delta$,
 it is clear that the coefficients in~\eqref{eq:gregory_newton_actually} depend only on~$p(0), \dotsc, p(n)$.
 We conclude that, given points $n+1$ points $(i, u_i)$ for $i \in \{0, \dotsc, n\}$,
-the unique interpolating polynomial given by~\eqref{eq:gregory_newton_actually},
+the unique interpolating polynomial is given by~\eqref{eq:gregory_newton_actually},
 after replacing $p(i)$ by $u_i$.
 
 \begin{example}
@@ -305,7 +313,7 @@ the coefficients of the interpolating polynomial in this basis solve the followi
     \end{pmatrix}.
 \end{equation}
 This system could be solved using, for example, forward substitution.
-Clearly $\alpha_0 = u_0$,
+Clearly $\alpha_0 = u_0$ from the first equation,
 and then from the second equation we obtain
 \[
     \alpha_1 = \frac{u_1 - u_0}{x_1 - x_0} =: [u_0, u_1],
@@ -313,9 +321,10 @@ and then from the second equation we obtain
 which may be viewed as an approximation of the slope of~$u$ at $x_0$.
 The right-hand side of this equation is an example of a \emph{divided difference}.
 In general, divided differences are defined recursively as follows:
-\[
+\begin{equation}
+    \label{eq:definition_divided_difference}
     [u_{0}, u_{2}, \dotsc, u_{d}] := \frac{[u_{1}, \dotsc, u_{d}] - [u_{0}, \dotsc, u_{d-1}]}{x_{d}-x_{0}}, \qquad [u_i] = u_i.
-\]
+\end{equation}
 It is possible to find an expression for the coefficients of the interpolating polynomials in terms of these divided differences.
 \begin{proposition}
     Assume that $(x_0, u_0), \dotsc, (x_n, u_n)$ are $n+1$ points in the plane with distinct abcissae.
@@ -342,7 +351,7 @@ It is possible to find an expression for the coefficients of the interpolating p
         p_1(x) &= u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, u_1, \dotsc, u_{n-2}, \mathbf{u_{n-1}}] \prod_{i=0}^{n-2} (x - x_i), \\
         p_2(x) &= u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, u_1, \dotsc, u_{n-2}, \mathbf{u_{n}}] \prod_{i=0}^{n-2} (x - x_i).
     \end{align*}
-    Here we used bold font to emphasize the difference between the two expressions.
+    Here we used a bold font in order to emphasize the difference between the two expressions.
     Substituting these expressions in~\eqref{eq:interpolating_polynomial},
     we obtain
     \begin{align*}
@@ -359,12 +368,13 @@ It is possible to find an expression for the coefficients of the interpolating p
     which enables to conclude.
 \end{proof}
 \begin{example}
-    Assume that we are looking for the third degree polynomial going through the points
+    Assume that we are looking for the third degree polynomial going through the following points:
     \[
         (-1, 10), \qquad (0, 4), \qquad (2, -2), \qquad (4, -40).
     \]
-    We have to calculate $\alpha_i = [u_0, \dotsc, u_i]$ for $i \in \{0, 1, 2, 3\}$.
-    It is convenient to use a table in order to calculate the divided differences:
+    We have to calculate the divided difference $\alpha_i = [u_0, \dotsc, u_i]$ for $i \in \{0, 1, 2, 3\}$.
+    To this end,
+    it is convenient to use a table:
     \begin{center}
     \begin{tabular}{|c|c|c|c|c|}
         \hline
@@ -388,7 +398,7 @@ It is possible to find an expression for the coefficients of the interpolating p
 
 \subsection{Interpolation error}
 Assume that~$u(x)$ is a continuous function and denote by $\widehat u(x)$ its interpolation through the points~$(x_i, u_i)$,
-for $i = 0, \dotsc, n$.
+where $u_i = u(x_i)$ for $i = 0, \dotsc, n$.
 In this section, we study the behavior of the error in the limit as $n \to \infty$.
 
 \begin{theorem}
@@ -412,7 +422,7 @@ In this section, we study the behavior of the error in the limit as $n \to \inft
     The function $g$ is smooth and takes the value~0 when evaluated at~$x_0, \dotsc, x_n, x$.
     Since $g$ has $n+2$ roots in the interval $[a, b]$,
     Rolle's theorem implies that $g'$ has at least $n+1$ distinct roots in~$(a, b)$.
-    Another application of Rolle's theorem yields that $g''$ has at least $n$ distinct roots in~$(a, b)$.
+    Another application of Rolle's theorem then yields that $g''$ has at least $n$ distinct roots in~$(a, b)$.
     Iterating this reasoning, we deduce that $g^{(n+1)}$ has one root~$t_*$ in $(a, b)$.
     From~\eqref{eq:interpolation_error},
     we calculate that
@@ -435,25 +445,25 @@ we deduce the following error bound.
 \begin{corollary}
     [Upper bound on the interpolation error]
     \label{corollary:interpolation_error}
-    Assume that $u$ is smooth in $[a, b]$ and that
+    Assume that $u$ is smooth in the interval $[a, b]$ and let
     \[
-        \sup_{x \in [a, b]} \abs{u^{(n+1)}(x)} \leq C_{n+1}.
+        C_{n+1} =
+        \sup_{x \in [a, b]} \left\lvert u^{(n+1)}(x) \right\rvert.
     \]
     Then
     \begin{equation}
         \label{eq:upper_bound_interp_error}
-        \forall x \in [a, b], \qquad
-        \abs{e_n(x)} \leq \frac{C_{n+1}}{4(n+1)} h^{n+1}
+        E_n := \sup_{x \in [a, b]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{n+1}}{4(n+1)} h^{n+1}
     \end{equation}
     where $h$ is the maximum spacing between two successive interpolation nodes.
 \end{corollary}
 \begin{proof}
 By~\cref{theorem:interpolation_error},
-we have
+it holds that
 \begin{equation}
     \label{eq:bound_error_from_theorem}
     \forall x \in [a, b], \qquad
-    \abs{e_n(x)} \leq \frac{C_{n+1}}{(n+1)!} \abs[Big]{(x-x_0) \dotsc (x-x_n)}.
+    \abs{e_n(x)} \leq \frac{C_{n+1}}{(n+1)!} \Bigl\lvert (x-x_0) \dotsc (x-x_n) \Bigr\rvert.
 \end{equation}
 The product on the right-hand side is bounded from above by
 \begin{equation}
@@ -463,24 +473,21 @@ The product on the right-hand side is bounded from above by
 The first factor comes from the fact that, if $x \in [x_i, x_{i+1}]$,
 then
 \[
-    \abs{(x - x_i)(x - x_{i+1})} \leq \frac{(x_{i+1} - x_i)^2}{4},
+    \Bigl\lvert (x - x_i)(x - x_{i+1}) \Bigr\rvert \leq \frac{(x_{i+1} - x_i)^2}{4},
 \]
 because the left-hand side is maximized when $x$ is the midpoint of the interval~$[x_i, x_{i+1}]$.
 Substituting~\eqref{eq:interpolation_bound_product} into~\eqref{eq:bound_error_from_theorem},
 we deduce the statement.
 \end{proof}
-Let us now introduce the supremum norm of the error over the interval $[a, b]$:
-\[
-    E_n = \sup_{x \in [a, b]} \abs{e_n(x)}.
-\]
-We ask the following natural question:
-does $E_n$ tend to zero as the maximum spacing between successive nodes tends to 0?
+We now ask the following natural question:
+does $E_n$ given in~\eqref{eq:upper_bound_interp_error} tend to zero as the maximum spacing between successive nodes tends to 0?
 By~\cref{corollary:interpolation_error},
 the answer to this question is positive when $C_{n}$ does not grow too quickly as $n \to \infty$.
-For example, as illustrated in \cref{fig:interpolation_sine},
-the interpolation error for the function $u(x) = \sin(x)$,
-when using equidistant interpolation nodes,
-decreases very quickly as $n \to \infty$.
+For example
+the interpolation error for the function $u(x) = \sin(x)$
+decreases very quickly as $n \to \infty$
+when equidistant interpolation nodes are employed,
+as illustrated in \cref{fig:interpolation_sine}.
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=0.49\linewidth]{figures/interpolation_sine_3.pdf}
@@ -494,18 +501,16 @@ decreases very quickly as $n \to \infty$.
 In some cases, however,
 the constant $C_n$ grows quickly with $n$,
 to the extent that $E_n$ may increase with $n$;
-in this case, the maximum interpolation error grows as we add nodes!
-The classic example,
-in order to illustrate this potential issue,
-is that of the Runge function:
+in this case, the maximum interpolation error grows when nodes are added!
+The classic example illustrating this potential issue is that of the Runge function:
 \begin{equation}
     \label{eq:runge_function}
     u(x) = \frac{1}{1 + 25 x^2}.
 \end{equation}
 It is possible to show that,
 for this function,
-the upper bound in~\cref{corollary:interpolation_error} tends to $\infty$ in the limit as the number of interpolation nodes increases.
-We emphasize that this does not prove that $E_n \to \infty$ in the limit as $n \to \infty$,
+the upper bound in~\eqref{eq:upper_bound_interp_error} tends to $\infty$ in the limit as the number~$n$ of interpolation nodes increases.
+We emphasize that this does not prove that~$E_n \to \infty$ in the limit as $n \to \infty$,
 because~\eqref{eq:upper_bound_interp_error} provides only an \emph{upper bound} on the error.
 In fact, the interpolation error for the Runge function can either grow or decrease,
 depending on the choice of interpolation nodes.
@@ -534,12 +539,12 @@ measured in a function norm, is minimized.
 For example, given a continuous function~$u(x)$ and a number of nodes~$n$,
 is it possible to chose nodes $x_0, \dotsc, x_n$ such that
 \[
-    E := \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)}
+    E := \sup_{x \in [a, b]} \bigl\lvert u(x) - \widehat u(x) \bigr\rvert
 \]
 is minimized?
 Here $\widehat u$ is the polynomial interpolating~$u$ at the nodes.
 Achieving this goal in general is a difficult task,
-essentially because $\xi = \xi(x)$ is unknown in the expression of the interpolation error from~\cref{theorem:interpolation_error}:
+because $\xi = \xi(x)$ is unknown in the expression of the interpolation error from~\cref{theorem:interpolation_error}:
 \[
     e_n(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
 \]
@@ -549,20 +554,20 @@ such that the product $(x-x_0) \dotsc (x - x_n)$ is minimized in the supremum no
 This problem amounts to finding the optimal interpolation nodes,
 in the sense that~$E$ is minimized,
 in the particular case where $u$ is a polynomial of degree $n+1$,
-because in this case $u^{n+1}(\xi)$ is a constant factor.
+because in this case $u^{(n+1)}(\xi)$ is a constant factor.
 It turns out that this problem admits an explicit solution,
 which we will deduce from the following theorem.
 \begin{theorem}
     [Minimum $\infty$ norm]
     \label{theorem:minimum_infty_norm}
-    Assume that $p$ is a monic polynomial of degree $n$:
+    Assume that $p$ is a monic polynomial of degree $n \geq 1$:
     \[
-        p(x) = \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n-1} x^{n-1} + \mathbf{1} x^n.
+        p(x) = \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n-1} x^{n-1} +  x^n.
     \]
     Then it holds that
     \begin{equation}
         \label{eq:chebychev_lower_bound}
-        \sup_{x \in [-1, 1]} \abs{p(x)} \geq \frac{1}{2^{n-1}} =: E.
+        \sup_{x \in [-1, 1]} \bigl\lvert p(x) \bigr\rvert \geq \frac{1}{2^{n-1}} =: E.
     \end{equation}
     In addition, the lower bound is achieved for~$p_*(x) = 2^{-(n-1)} T_n(x)$,
     where $T_n$ is the Chebyshev polynomial of degree~$n$:
@@ -572,28 +577,28 @@ which we will deduce from the following theorem.
     \end{equation}
 \end{theorem}
 \begin{proof}
-    By~\cref{exercise:chebychev},
+    By~\cref{exercise:chebyshev_leading_coefficient},
     the polynomial $x \mapsto 2^{-(n-1)} T_n(x)$ is indeed monic,
     and it is clear that it achieves the lower bound~\eqref{eq:chebychev_lower_bound}
-    since $\abs{T_n(x)} \leq 1$.
+    since $\abs{T_n(x)} \leq 1$ for all $x \in [-1, 1]$.
 
     In order to prove~\eqref{eq:chebychev_lower_bound},
-    we assume by contradiction that there is a different monic polynomial~$\widetilde p$ of degree~$n$ such that
+    we assume by contradiction that there is a different monic polynomial~$q$ of degree~$n$ such that
     \begin{equation}
         \label{eq:chebyshev_minimum}
-        \sup_{x \in [-1, 1]} \abs{\widetilde p(x)} < E.
+        \sup_{x \in [-1, 1]} \bigl\lvert q(x) \bigr\rvert < E.
     \end{equation}
     Let us introduce $x_i = \cos(i \pi/n)$, for $i = 0, \dotsc, n$,
     and observe that
     \[
         p(x_i) = 2^{-(n-1)} T_n(x_i) = (-1)^i E.
     \]
-    The function $q(x) := p(x) - \widetilde p(x)$ is a polynomial of degree at most $n-1$ which,
+    The function $h(x) := p(x) - q(x)$ is a polynomial of degree at most $n-1$ which,
     by the assumption~\eqref{eq:chebyshev_minimum},
     is strictly positive at $x_0, x_2, x_4, \dotsc$ and strictly negative at $x_1, x_3, x_5, \dotsc$.
-    Therefore, the polynomial $q(x)$ changes sign at least $n$ times and so,
+    Therefore, the polynomial $h(x)$ changes sign at least $n$ times and so,
     by the intermediate value theorem, it has at least $n$ roots.
-    But this is impossible, because $q(x) \neq 0$ and $q(x)$ is of degree at most $n-1$.
+    But this is impossible, because $h(x) \neq 0$ and $h(x)$ is of degree at most $n-1$.
 \end{proof}
 \begin{remark}
     [Derivation of Chebyshev polynomials]
@@ -601,7 +606,7 @@ which we will deduce from the following theorem.
     The polynomial~$p_*$ achieving the lower bound in~\eqref{eq:chebychev_lower_bound}
     oscillates between the values $-E$ and $E$,
     which are respectively its minimum and maximum values over the interval~$[-1, 1]$.
-    It attains the values $E$ or $-E$ at $n+1$ points $x_0, \dotsc, x_n$,
+    It attains the values $E$ or $-E$ at $n+1$ distinct points $x_0 < \dotsc < x_n$,
     with $x_0 = -1$ and $x_n = 1$.
     It turns out that these properties,
     which can be shown to hold a priori using Chebyshev's \emph{equioscillation theorem},
@@ -614,7 +619,7 @@ which we will deduce from the following theorem.
     We therefore deduce that $p_*$ satisfies the differential equation
     \begin{equation}
         \label{eq:differential_equation_chebyshev}
-        n^2\bigl(E^2 - p_*(x)^2\bigr) = p_*'(x)^2 (1 - x^2).
+        n^2\left(E^2 - p_*(x)^2\right) = p_*'(x)^2 (1 - x^2).
     \end{equation}
     Indeed, both sides are polynomials of degree $2n$ with single roots at -1 and 1,
     with double roots at $x_2, \dotsc, x_{n+1}$,
@@ -624,7 +629,7 @@ which we will deduce from the following theorem.
     \[
         \frac{\frac{p_*'(x)}{E}}{\sqrt{1 - \frac{p_*(x)^2}{E^2}}} = \pm \frac{n}{1 - x^2}
         \qquad \Leftrightarrow \qquad
-        \frac{\d}{\d x} \arccos\left(\frac{p_*(x)}{E}\right) = \pm n \frac{\d}{\d x} \arccos(x).
+        \frac{\d}{\d x} \left( \arccos\left(\frac{p_*(x)}{E}\right) \right) = \pm n \frac{\d}{\d x} \arccos(x).
     \]
     Integrating both sides and taking the cosine,
     we obtain
@@ -1377,15 +1382,35 @@ We will revisit this subject in~\cref{cha:quadrature}.
 \begin{exercise}
     \label{exercise:divided_differences}
     Show by recursion that
-    \[
+    \begin{equation}
+        \label{eq:divided_differences}
         [u_{0}, u_{1}, \dotsc, u_{n}] = \sum_{j=0}^{n} \frac{u_{j}}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}.
-    \]
+    \end{equation}
     Deduce from this identity that
     \[
         [u_{0}, u_{1}, \dotsc, u_{n}] = [u_{\sigma_1}, u_{\sigma_2}, \dotsc, u_{\sigma_n}],
     \]
     for any permutation~$\vect \sigma$ of~$(0, 1, 2, \dotsc, n)$.
 \end{exercise}
+\begin{solution}
+    The first statement~\eqref{eq:divided_differences} is clear when $n = 0$.
+    Reasoning by induction, we assume that the statement is true up to $n-1$ and prove that it then also holds for $n$.
+    Using the definition~\eqref{eq:definition_divided_difference} and the induction hypothesis,
+    we obtain that
+    \begin{align*}
+        [u_{0}, u_{1}, \dotsc, u_{n}]
+        &= \frac{[u_{1}, \dotsc, u_{n}] - [u_{0}, \dotsc, u_{n-1}]}{x_{n}-x_{0}}  \\
+        &= \frac{1}{x_n - x_0} \left( \sum_{j=\mathbf{1}}^{n} \frac{u_{j}}{\prod_{ k \in \{\mathbf{1}, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})} -  \sum_{j=0}^{\mathbf{n-1}} \frac{u_{j}}{\prod_{ k \in \{0, \dotsc,\mathbf{n-1}\} \backslash \{ j\}} (x_{j} - x_{k})}  \right)
+    \end{align*}
+    Rewriting the fractions with a common denominator leads to
+    \begin{align*}
+        [u_{0}, u_{1}, \dotsc, u_{n}]
+        = \frac{1}{x_n - x_0}  \sum_{j=0}^{n} \frac{u_{j} \bigl((x_j - x_0) - (x_j - x_n)\bigr)}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})}
+        =  \sum_{j=0}^{n} \frac{u_j}{\prod_{ k \in \{0, \dotsc, n\} \backslash \{ j\}} (x_{j} - x_{k})},
+    \end{align*}
+    which concludes the proof of the first statement.
+    The second statement then follows immediately..
+\end{solution}
 
 \begin{exercise}
     Using the Gregory--Newton formula,
