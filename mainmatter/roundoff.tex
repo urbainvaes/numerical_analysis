@@ -763,18 +763,6 @@ the numbers loop back.
 This can lead to unexpected results,
 such as \julia{2^64} evaluating to 0.
 
-\section{Discussion and bibliography}%
-\label{sec:discussion_and_bibliograhpy}
-This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
-A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
-adding for example specifications for the half precision and quad precision formats,
-and a minor revision was published in 2019~\cite{ieee2019}.
-The original IEEE standard and its revisions constitute the authoritative guide on floating point formats.
-It was intended to be widely disseminated and is written very clearly and concisely,
-but is not available for free online.
-Another excellent source for learning about floating point numbers and round-off errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
-freely available online.
-
 \section{Exercises}
 \begin{exercise}
     \label{exercise:non_unique_representation}
@@ -1134,9 +1122,9 @@ freely available online.
         \label{eq:numerical_differentiation_big_triangle}
         &\qquad \quad + \left\lvert \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) / \delta - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{align}
-    Note that without absolute values, 
+    Note that without absolute values,
     both sides would be equal.
-    The first three terms on the right-hand side are together a bound from above for 
+    The first three terms on the right-hand side are together a bound from above for
     \begin{equation}
         \label{eq:bound_above_first_three_terms}
         \left\lvert \frac{f(x+\delta) - f(x) }{\delta} - \frac{ \widehat f(x\madd\delta) - \widehat f(x) }{\delta} \right\rvert,
@@ -1146,7 +1134,7 @@ freely available online.
     We will show that the dominant terms in this part of the error the first three;
     the latter two are negligible in comparison.
     Applying~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
-    $x = a \pm b$ and $x = a/b$, 
+    $x = a \pm b$ and $x = a/b$,
     we deduce that the following inequalities:
     \begin{align}
         \label{eq:inequalities_numerical_differentiation}
@@ -1161,7 +1149,7 @@ freely available online.
     \begin{align*}
         \nonumber
         \delta^{-1}\left\lvert f(x \madd \delta) - \widehat f(x \madd \delta) \right\rvert
-        + \delta^{-1} \left\lvert \widehat f(x) - f(x) \right\rvert 
+        + \delta^{-1} \left\lvert \widehat f(x) - f(x) \right\rvert
         &\leq \delta^{-1} \varepsilon \Bigl( \bigl\lvert f(x + \delta) \bigr\rvert + \bigl\lvert f(x) \bigr\rvert  \Bigr) \\
         &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \mathcal O(\varepsilon).
     \end{align*}
@@ -1182,14 +1170,14 @@ freely available online.
         - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
         = \mathcal O(\delta^{-1} \varepsilon).
     \end{equation}
-    Using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and 
+    Using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and
     then~\eqref{eq:numerical_differentiation_term1},
     we bound the fourth term in~\eqref{eq:numerical_differentiation_big_triangle}:
     \begin{align}
         \nonumber
         &\delta^{-1} \left\lvert \bigl( \widehat f(x \madd \delta) - \widehat f(x) \bigr)  - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr)  \right\rvert \\
         \label{eq:numerical_differentiation_term2}
-        &\qquad \leq \delta^{-1} \varepsilon \lvert\widehat f(x \madd \delta) - \widehat f(x)\rvert 
+        &\qquad \leq \delta^{-1} \varepsilon \lvert\widehat f(x \madd \delta) - \widehat f(x)\rvert
         = \delta^{-1} \varepsilon  \underbrace{\lvert f(x + \delta) - f(x)\rvert}_{= \mathcal O(\delta)} +  \mathcal O (\delta^{-1} \varepsilon^2)
         = \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \end{align}
@@ -1207,15 +1195,15 @@ freely available online.
         &\left\lvert \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) / \delta
         - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) \mdiv \delta \right\rvert \\
         &\qquad \leq \varepsilon \bigl\lvert  \widehat f(x \madd \delta) \msub \widehat f(x) \bigr \rvert / \delta
-        = \frac{\varepsilon}{\delta} \underbrace{ \bigl\lvert  f(x + \delta) - f(x) \bigr \rvert }_{\mathcal O(\delta)}  
-        +\, \mathcal O(\delta^{-1} \varepsilon^2) 
+        = \frac{\varepsilon}{\delta} \underbrace{ \bigl\lvert  f(x + \delta) - f(x) \bigr \rvert }_{\mathcal O(\delta)}
+        +\, \mathcal O(\delta^{-1} \varepsilon^2)
         = \mathcal O(\varepsilon + \delta^{-1} \varepsilon^2).
     \end{align*}
     This term is also negligible in front of the other dominant contributions to the roundoff error.
     Going back to~\eqref{eq:numerical_differentiation_big_triangle},
     we conclude that
     \[
-        \left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert 
+        \left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert
         \leq \delta^{-1} \varepsilon \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x)x \rvert \Bigr) + \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \]
     \paragraph{Concluding the proof.}
@@ -1279,3 +1267,16 @@ freely available online.
             Then $-x \in \floating_{64}$.
     \end{enumerate}
 \end{exercise}
+
+\section{Discussion and bibliography}%
+\label{sec:discussion_and_bibliograhpy}
+This chapter is mostly based on the original 1985 IEEE 754 standard~\cite{ieee754} and the reference book~\cite{MR2265914}.
+A~significant revision to the 1985 IEEE standard was published in 2008~\cite{ieee2008},
+adding for example specifications for the half precision and quad precision formats,
+and a minor revision was published in 2019~\cite{ieee2019}.
+The original IEEE standard and its revisions constitute the authoritative guide on floating point formats.
+It was intended to be widely disseminated and is written very clearly and concisely,
+but is not available for free online.
+Another excellent source for learning about floating point numbers and round-off errors is D.\ Goldberg's~paper ``\emph{What every computer scientist should know about floating-point arithmetic}''~\cite{goldberg1991every},
+freely available online.
+
