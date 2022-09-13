@@ -892,107 +892,150 @@ freely available online.
 
 \begin{compexercise}
     [Numerical differentiation]
-    Let $f(x) = \exp(x)$ and let $d(\delta)$ be the approximation of $f'(1)$ given by
+    Let $f(x) = \exp(x)$ and let $d(\delta)$ be the approximation of $f'(x)$ obtained from the following piece of code:
     \begin{minted}{julia}
-        f(x) = exp(x)
-        d(δ) = (f(1+δ) - f(1))/δ
+        f, x = exp, 1
+        d(δ) = (f(x+δ) - f(x))/δ
     \end{minted}
-    Plot \julia{abs(d(δ) - exp(1))} as a function of~\julia{δ} in logarithmic scale and explain the result.
+    Plot for fixed $x = 1$ the error \julia{abs(d(δ) - exp(x))} as a function of~\julia{δ} in logarithmic scale,
+    and explain the result.
 \end{compexercise}
 \begin{solution}
-    Let us assume that $\delta \in \floating_{64}$ and $1 + \delta \in \floating_{64}$ for simplicity,
-    so that $1 \madd \delta = 1 + \delta$.
+    We assume that $\delta \in \floating_{64}$ for simplicity
+    This is not a restrictive assumption
+    as~$\delta$ can only take floating point values in computer code.
     The proof is rather technical, and so it is given for information purposes only.
     We rewrite $d(\delta)$ mathematically as
     \[
-        d(\delta) = \Bigl(\widehat f(1 + \delta) \msub \widehat f(1)\Bigr) \mdiv \delta,
+        d(\delta) = \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta,
     \]
     where $\widehat f(x) = {\rm fl} \bigl(f(x)\bigr)$.
-    We wish to bound $\abs{f'(1) - d(\delta)}$.
+    We wish to bound $\abs{d(\delta) - f'(x)}$.
     By the triangle inequality,
-    it holds that
     \begin{equation}
         \label{eq:triangle_inequality_derivative}
-        \abs{f'(1) - d(\delta)}
-        \leq \left\lvert f'(1) - \frac{f(1 + \delta) - f(\delta)}{\delta} \right\rvert 
-        + \left\lvert \frac{f(1 + \delta) - f(\delta)}{\delta} - \Bigl(\widehat f(1 + \delta) \msub \widehat f(1)\Bigr) \mdiv \delta \right\rvert.
+        \abs{f'(x) - d(\delta)}
+        \leq \left\lvert f'(x) - \frac{f(x + \delta) - f(\delta)}{\delta} \right\rvert
+        + \left\lvert \frac{f(x + \delta) - f(\delta)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{equation}
-    By Taylor's theorem, there exists $\xi \in [1, \delta]$ such that
+    \paragraph{Bounding the first term in~\eqref{eq:triangle_inequality_derivative}.}
+    By Taylor's theorem, there exists $\xi \in [x, \delta]$ such that
     \[
-        f(1 + \delta) = f(1) + \delta f'(1) + \frac{\delta^2}{2} f''(\xi).
+        f(x + \delta) = f(x) + \delta f'(x) + \frac{\delta^2}{2} f''(\xi).
     \]
     Therefore, the first term in~\eqref{eq:triangle_inequality_derivative} satisfies
     \[
-        \left\lvert f'(1) - \frac{f(1 + \delta) - f(\delta)}{\delta} \right\rvert 
+        \left\lvert f'(x) - \frac{f(x + \delta) - f(\delta)}{\delta} \right\rvert
         = \frac{\delta}{2} \lvert f''(\xi) \rvert
-        = \frac{\delta}{2} \lvert f''(1) \rvert + \mathcal O(\delta^2).
+        = \frac{\delta}{2} \lvert f''(x) \rvert + \mathcal O(\delta^2).
     \]
-    Bounding the second term in~\eqref{eq:triangle_inequality_derivative} is more tedious but not difficult:
-    we only make use of the triangle inequality and~\cref{prop:relative_error_and_machine_epsilon} several times.
-    We begin by noticing that
+
+    \paragraph{Bounding the second term in~\eqref{eq:triangle_inequality_derivative}.}
+    This is more tedious but not difficult;
+    the main ingredient is the triangle inequality.
+    Specifically, we will use the bound
     \begin{align}
         \nonumber
-        \left\lvert \bigl( f(1+ \delta) - f(1) \bigr)  
-        - \bigl( \widehat f(1 + \delta) - \widehat f(1) \bigr) \right\rvert
-        &\leq  
-        \left\lvert f(1 + \delta) - \widehat f(1 + \delta) \right\rvert
-        + \left\lvert f(1) - \widehat f(1) \right\rvert \\
-        \label{eq:numerical_differentiation_term1}
-        &\leq \varepsilon \Bigl( \bigl\lvert f(1 + \delta) \bigr\rvert + \bigl\lvert f(1) \bigr\rvert  \Bigr)
-        = 2 \varepsilon \abs{f(1)} + \mathcal O(\delta \varepsilon).
+        &\left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert \\
+        \nonumber
+        &\qquad \leq \delta^{-1}\left\lvert f(x+ \delta) - f(x\madd \delta)  \right\rvert
+         + \delta^{-1} \left\lvert f(x\madd \delta) - \widehat f(x \madd \delta)  \right\rvert
+         + \delta^{-1} \left\lvert f(x) - \widehat f(x)  \right\rvert \\
+        \nonumber
+        &\qquad \quad + \delta^{-1} \left\lvert \Bigl(\widehat f(x \madd \delta) - \widehat f(x)\Bigr) - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \right\rvert  \\
+        \label{eq:numerical_differentiation_big_triangle}
+        &\qquad \quad + \left\lvert \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) / \delta - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{align}
-    The term $\mathcal O(\delta \varepsilon)$ is negligible in front of the other term when $\delta \ll 1$.
-    Then, since by~\cref{prop:relative_error_and_machine_epsilon} it holds that $\lvert (a-b) - (a \msub b) \rvert \leq \varepsilon \abs{a-b}$ for any $a$ and $b$ \emph{in $\floating_{64}$},
-    we have
+    The first three terms on the right-hand side are together a bound from above for 
     \begin{equation}
-        \label{eq:numerical_differentiation_term2}
-        \left\lvert \bigl(f(1 + \delta) - f(1)\bigr)  - \left(f(1 + \delta) \msub f(1)\right)  \right\rvert
-        \leq \varepsilon \lvert f(1 + \delta) - f(1) \rvert 
-        \approx \varepsilon \delta \lvert f'(1) \rvert
-        = \mathcal O(\delta \varepsilon).
+        \label{eq:bound_above_first_three_terms}
+        \left\lvert \frac{f(x+\delta) - f(x) }{\delta} - \frac{ \widehat f(x\madd\delta) - \widehat f(x) }{\delta} \right\rvert,
     \end{equation}
-    This term is small in front of $2 \varepsilon \abs{f(1)}$ when $\delta \ll 1$,
-    and so we deduce by a triangle inequality from~\eqref{eq:numerical_differentiation_term1} and~\eqref{eq:numerical_differentiation_term2} that
+    while the other two terms account for the roundoff errors associated to the machine subtraction and division operators,
+    respectively.
+    We will show that the dominant terms in this part of the error the first three;
+    the latter two are negligible in comparison.
+    Applying~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
+    $x = a \pm b$ and $x = a/b$, 
+    we deduce that the following inequalities hold for all~$(a, b) \in \floating_{64} \times \floating_{64}$:
     \begin{align}
-        \label{eq:intermedia_numerical_derivative}
-        \left\lvert \bigl( f(1 + \delta) - f(1) \bigr)  
-        - \bigl( \widehat f(1 + \delta) \msub \widehat f(1) \bigr) \right\rvert
-        &\leq  2 \varepsilon \abs{f(1)} + \mathcal O(\delta \varepsilon).
+        \label{eq:inequalities_numerical_differentiation}
+        &\left\lvert \widehat f(a) - f(a) \right\rvert \leq \varepsilon \lvert f(a) \rvert,
+        \qquad \lvert (a\pm b) - (a \, \widehat \pm\, b) \rvert \leq \varepsilon \abs{a-b},
+        \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert.
     \end{align}
-    Finally, since $\abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert$ for any $a$ and $b$ \emph{in the floating point format}, 
-    we have
-    \[
-        \left\lvert \bigl( \widehat f(1 + \delta) \msub \widehat f(1) \bigr) / \delta 
-        - \bigl( \widehat f(1 + \delta) \msub \widehat f(1) \bigr) \mdiv \delta \right\rvert 
-        \leq \varepsilon \bigl\lvert  \widehat f(1 + \delta) \msub \widehat f(1) \bigr \rvert / \delta
-    \]
-    Using~\eqref{eq:intermedia_numerical_derivative},
-    the right-hand side of this equation may be bounded as follows:
-    \[
-        \frac{\varepsilon}{\delta} \bigl\lvert  \widehat f(1 + \delta) \msub \widehat f(1) \bigr \rvert 
-        \leq 
-        \frac{\varepsilon}{\delta} \left( \underbrace{ \bigl\lvert  f(1 + \delta) - f(1) \bigr \rvert }_{\mathcal O(\delta)}  + 2 \varepsilon \abs{f(1)} + \mathcal O(\delta \varepsilon) \right)
-        = \mathcal O(\varepsilon) + \mathcal O\left(\frac{\varepsilon^2}{\delta} \right) + \mathcal O(\varepsilon^2).
-    \]
-    To conclude the proof, we use the triangle inequality yet another time:
+    The first of these inequalities
+    can be employed to bound the second and third term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
     \begin{align*}
-        & \left\lvert \frac{f(1 + \delta) - f(\delta)}{\delta} - \Bigl(\widehat f(1 + \delta) \msub \widehat f(1)\Bigr) \mdiv \delta \right\rvert \\
-        &\qquad \leq 
-       \left\lvert  \frac{f(1 + \delta) - f(\delta)}{\delta} - \frac{\widehat f(1 + \delta) \msub \widehat f(1)}{\delta} \right\rvert 
-       + \left\lvert  \frac{\widehat f(1 + \delta) \msub \widehat f(1)}{\delta} -  \Bigl(\widehat f(1 + \delta) \msub \widehat f(1)\Bigr) \mdiv \delta  \right\rvert  \\
-       &\qquad \leq 
-       \Bigl(2  \bigl\lvert f(1) \bigr\rvert \left( \frac{\varepsilon}{\delta} \right) + \mathcal O(\varepsilon) \Bigr)       
-       + \left( \mathcal O(\varepsilon) + \mathcal O\left(\frac{\varepsilon^2}{\delta} \right) + \mathcal O(\varepsilon^2)\right).
+        \nonumber
+        \delta^{-1}\left\lvert f(x \madd \delta) - \widehat f(x \madd \delta) \right\rvert
+        + \delta^{-1} \left\lvert f(x) - \widehat f(x) \right\rvert 
+        &\leq \delta^{-1} \varepsilon \Bigl( \bigl\lvert f(x + \delta) \bigr\rvert + \bigl\lvert f(x) \bigr\rvert  \Bigr) \\
+        &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \mathcal O(\varepsilon).
     \end{align*}
-    The dominant term on the right-hand side is $2  \bigl\lvert f(1) \bigr\rvert \left( \frac{\varepsilon}{\delta} \right)$,
-    and so going back to~\eqref{eq:triangle_inequality_derivative} we have
+    Using Taylor's theorem and then the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $+$),
+    we then bound the first term on right-hand side of~\eqref{eq:numerical_differentiation_big_triangle} as
+    \begin{align*}
+        \delta^{-1}\left\lvert f(x + \delta) - f(x \madd \delta) \right\rvert
+        &= \delta^{-1} \left\lvert f'(\xi) \bigl( (x + \delta) - (x \madd \delta)  \bigr) \right\rvert \\
+        &\leq \delta^{-1} \varepsilon \lvert f'(\xi) \rvert \lvert x + \delta \rvert
+        = \delta^{-1} \varepsilon \lvert f'(x) x \rvert  + \mathcal O(\varepsilon).
+    \end{align*}
+    Therefore, since the first three terms are a bound from above for~\eqref{eq:bound_above_first_three_terms} by the triangle inequality,
+    we have shown that
+    \begin{equation}
+        \label{eq:numerical_differentiation_term1}
+        \delta^{-1}
+        \left\lvert \bigl( f(x+ \delta) - f(x) \bigr)
+        - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
+        \leq \mathcal O(\delta^{-1} \varepsilon)
+    \end{equation}
+    The term $\mathcal O(\varepsilon)$ is negligible in front of the other terms when $\delta \ll 1$.
+    Using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and 
+    then~\eqref{eq:numerical_differentiation_term1},
+    we bound the fourth term in~\eqref{eq:numerical_differentiation_big_triangle}:
+    \begin{align}
+        \nonumber
+        &\delta^{-1} \left\lvert \bigl( \widehat f(x \madd \delta) - \widehat f(x) \bigr)  - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr)  \right\rvert \\
+        \label{eq:numerical_differentiation_term2}
+        &\qquad \leq \delta^{-1} \varepsilon \lvert\widehat f(x \madd \delta) - \widehat f(x)\rvert 
+        = \delta^{-1} \varepsilon  \underbrace{\lvert f(x + \delta) - f(x)\rvert}_{= \mathcal O(\delta)} +  \mathcal O (\delta^{-1} \varepsilon^2)
+        = \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
+    \end{align}
+    Notice that this term is smaller than the first three when $\delta \ll 1$.
+    We deduce by a triangle inequality from~\eqref{eq:numerical_differentiation_term1} and~\eqref{eq:numerical_differentiation_term2} that
+    \begin{align*}
+        \label{eq:intermedia_numerical_derivative}
+        \delta^{-1} \left\lvert \bigl( f(x + \delta) - f(x) \bigr)
+        - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) \right\rvert
+        &= \mathcal O(\delta^{-1} \varepsilon).
+    \end{align*}
+    Finally, using the third inequality in~\eqref{eq:inequalities_numerical_differentiation} together with this equation,
+    we bound the fifth term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
+    \begin{align*}
+        &\left\lvert \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) / \delta
+        - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) \mdiv \delta \right\rvert \\
+        &\qquad \leq \varepsilon \bigl\lvert  \widehat f(x \madd \delta) \msub \widehat f(x) \bigr \rvert / \delta
+        = \frac{\varepsilon}{\delta} \underbrace{ \bigl\lvert  f(x + \delta) - f(x) \bigr \rvert }_{\mathcal O(\delta)}  
+        +\, \mathcal O(\delta^{-1} \varepsilon^2) 
+        = \mathcal O(\varepsilon + \delta^{-1} \varepsilon^2).
+    \end{align*}
+    This term is also negligible in front of the other dominant contributions to the roundoff error.
+    Going back to~\eqref{eq:numerical_differentiation_big_triangle},
+    we conclude that
     \[
-        \lvert f'(1) - d(\delta) \rvert \leq \frac{\delta}{2} \lvert f''(1) \rvert + 2 \lvert f(1) \rvert \frac{\varepsilon}{\delta},
+        \left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert 
+        \leq \delta^{-1} \varepsilon \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x)x \rvert \Bigr) + \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
+    \]
+    \paragraph{Concluding the proof.}
+    Going back to~\eqref{eq:triangle_inequality_derivative} we have
+    \[
+        \lvert f'(x) - d(\delta) \rvert \leq \frac{\delta}{2} \lvert f''(x) \rvert + \frac{\varepsilon}{\delta} \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert \Bigr),
     \]
     up to higher order terms.
     Minimizing the right-hand side with respect to~$\delta$ gives
     \[
-        \delta = 2 \sqrt{\frac{\varepsilon \abs{f(1)}}{\abs{f''(1)}}},
+        \delta = 2 \sqrt{\varepsilon} \sqrt{\frac{ 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert }{\abs{f''(x)}}},
     \]
     which is a well-known formula in numerical differentiation.
 \end{solution}
