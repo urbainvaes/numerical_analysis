@@ -1020,7 +1020,8 @@ freely available online.
 \end{remark}
 
 \begin{exercise}
-    Does \julia{Float16(0.1) + Float16(0.2) == Float16(0.3)} evaluate to \julia{true} or \julia{false}.
+    Given that the default rounding rule specified by the IEEE 754 standard is ``round to nearest, tie to even'',
+    does \julia{Float16(0.1) + Float16(0.2) == Float16(0.3)} evaluate to \julia{true} or \julia{false}.
     Explain.
 \end{exercise}
 
@@ -1102,17 +1103,17 @@ freely available online.
     \begin{equation}
         \label{eq:triangle_inequality_derivative}
         \abs{f'(x) - d(\delta)}
-        \leq \left\lvert f'(x) - \frac{f(x + \delta) - f(\delta)}{\delta} \right\rvert
-        + \left\lvert \frac{f(x + \delta) - f(\delta)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
+        \leq \left\lvert f'(x) - \frac{f(x + \delta) - f(x)}{\delta} \right\rvert
+        + \left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{equation}
     \paragraph{Bounding the first term in~\eqref{eq:triangle_inequality_derivative}.}
-    By Taylor's theorem, there exists $\xi \in [x, \delta]$ such that
+    By Taylor's theorem, there exists $\xi \in [x, x+\delta]$ such that
     \[
         f(x + \delta) = f(x) + \delta f'(x) + \frac{\delta^2}{2} f''(\xi).
     \]
     Therefore, the first term in~\eqref{eq:triangle_inequality_derivative} satisfies
     \[
-        \left\lvert f'(x) - \frac{f(x + \delta) - f(\delta)}{\delta} \right\rvert
+        \left\lvert f'(x) - \frac{f(x + \delta) - f(x)}{\delta} \right\rvert
         = \frac{\delta}{2} \lvert f''(\xi) \rvert
         = \frac{\delta}{2} \lvert f''(x) \rvert + \mathcal O(\delta^2).
     \]
@@ -1127,12 +1128,14 @@ freely available online.
         \nonumber
         &\qquad \leq \delta^{-1}\left\lvert f(x+ \delta) - f(x\madd \delta)  \right\rvert
          + \delta^{-1} \left\lvert f(x\madd \delta) - \widehat f(x \madd \delta)  \right\rvert
-         + \delta^{-1} \left\lvert f(x) - \widehat f(x)  \right\rvert \\
+         + \delta^{-1} \left\lvert \widehat f(x) - f(x)  \right\rvert \\
         \nonumber
         &\qquad \quad + \delta^{-1} \left\lvert \Bigl(\widehat f(x \madd \delta) - \widehat f(x)\Bigr) - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \right\rvert  \\
         \label{eq:numerical_differentiation_big_triangle}
         &\qquad \quad + \left\lvert \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) / \delta - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{align}
+    Note that without absolute values, 
+    both sides would be equal.
     The first three terms on the right-hand side are together a bound from above for 
     \begin{equation}
         \label{eq:bound_above_first_three_terms}
@@ -1144,19 +1147,21 @@ freely available online.
     the latter two are negligible in comparison.
     Applying~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
     $x = a \pm b$ and $x = a/b$, 
-    we deduce that the following inequalities hold for all~$(a, b) \in \floating_{64} \times \floating_{64}$:
+    we deduce that the following inequalities:
     \begin{align}
         \label{eq:inequalities_numerical_differentiation}
         &\left\lvert \widehat f(a) - f(a) \right\rvert \leq \varepsilon \lvert f(a) \rvert,
         \qquad \lvert (a\pm b) - (a \, \widehat \pm\, b) \rvert \leq \varepsilon \abs{a-b},
-        \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert.
+        \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert,
     \end{align}
-    The first of these inequalities
+    The first two inequalities are valid for all~$(a, b) \in \floating_{64} \times \floating_{64}$,
+    while the third one is valid for all~$(a, b) \in \floating_{64} \times \floating_{64} \backslash \{0\}$,
+    The first inequality in~\eqref{eq:inequalities_numerical_differentiation}
     can be employed to bound the second and third term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
     \begin{align*}
         \nonumber
         \delta^{-1}\left\lvert f(x \madd \delta) - \widehat f(x \madd \delta) \right\rvert
-        + \delta^{-1} \left\lvert f(x) - \widehat f(x) \right\rvert 
+        + \delta^{-1} \left\lvert \widehat f(x) - f(x) \right\rvert 
         &\leq \delta^{-1} \varepsilon \Bigl( \bigl\lvert f(x + \delta) \bigr\rvert + \bigl\lvert f(x) \bigr\rvert  \Bigr) \\
         &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \mathcal O(\varepsilon).
     \end{align*}
@@ -1175,9 +1180,8 @@ freely available online.
         \delta^{-1}
         \left\lvert \bigl( f(x+ \delta) - f(x) \bigr)
         - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
-        \leq \mathcal O(\delta^{-1} \varepsilon)
+        = \mathcal O(\delta^{-1} \varepsilon).
     \end{equation}
-    The term $\mathcal O(\varepsilon)$ is negligible in front of the other terms when $\delta \ll 1$.
     Using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and 
     then~\eqref{eq:numerical_differentiation_term1},
     we bound the fourth term in~\eqref{eq:numerical_differentiation_big_triangle}:
@@ -1189,7 +1193,7 @@ freely available online.
         = \delta^{-1} \varepsilon  \underbrace{\lvert f(x + \delta) - f(x)\rvert}_{= \mathcal O(\delta)} +  \mathcal O (\delta^{-1} \varepsilon^2)
         = \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \end{align}
-    Notice that this term is smaller than the first three when $\delta \ll 1$.
+    Notice that this term is smaller than the first three in~\eqref{eq:numerical_differentiation_big_triangle} when $\delta \ll 1$.
     We deduce by a triangle inequality from~\eqref{eq:numerical_differentiation_term1} and~\eqref{eq:numerical_differentiation_term2} that
     \begin{align*}
         \label{eq:intermedia_numerical_derivative}
@@ -1224,8 +1228,8 @@ freely available online.
     \[
         \delta = \sqrt{\varepsilon} \sqrt{\frac{ 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert }{\abs{f''(x)}}},
     \]
-    which is a well-known formula in numerical differentiation.
-    The error as a function of~$\delta$ for $x = 1$ is depicted in~\eqref{fig:differentiation}
+    which is a well-known formula for the optimal step size in numerical differentiation.
+    The error as a function of~$\delta$ for $x = 1$ is depicted in~\cref{fig:differentiation}.
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\linewidth]{figures/numerical_differentiation.pdf}
