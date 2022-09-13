@@ -1050,21 +1050,6 @@ such as \julia{2^64} evaluating to 0.
     which is precisely the result returned by Julia.
 \end{solution}
 
-\begin{exercise}
-    Determine the encoding of the following \julia{Float32} numbers:
-    \begin{itemize}
-        \item $x_1 = 2.0^{E_{\min}}$
-        \item $x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
-        \item $x_3 =2.0^{E_{\max}} (2-2^{-p+1})$
-    \end{itemize}
-    % \[
-    %     x_1 = 2.0^{E_{\min}},
-    %     \qquad x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149},
-    %     \qquad x_3 = 2.0^{E_{\max}} (2-2^{-p+1}).
-    % \]
-    Check your results using the Julia function \julia{bitstring}.
-\end{exercise}
-
 \begin{compexercise}
     [Numerical differentiation]
     \label{exercise_differentiation}
@@ -1106,7 +1091,7 @@ such as \julia{2^64} evaluating to 0.
         = \frac{\delta}{2} \lvert f''(x) \rvert + \mathcal O(\delta^2).
     \]
 
-    \paragraph{Bounding the second term in~\eqref{eq:triangle_inequality_derivative}.}
+    \paragraph{Bounding the second term in~\eqref{eq:triangle_inequality_derivative} -- the roundoff error.}
     This is more tedious but not difficult;
     the main ingredient is the triangle inequality.
     Specifically, we will use the bound
@@ -1123,46 +1108,50 @@ such as \julia{2^64} evaluating to 0.
         &\qquad \quad + \left\lvert \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) / \delta - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert.
     \end{align}
     Note that without absolute values,
-    both sides would be equal.
+    both sides are indeed equal.
     The first three terms on the right-hand side are together a bound from above for
     \begin{equation}
         \label{eq:bound_above_first_three_terms}
         \left\lvert \frac{f(x+\delta) - f(x) }{\delta} - \frac{ \widehat f(x\madd\delta) - \widehat f(x) }{\delta} \right\rvert,
     \end{equation}
-    while the other two terms account for the roundoff errors associated to the machine subtraction and division operators,
+    while the two other terms account for the roundoff errors associated to the machine subtraction and division operators,
     respectively.
-    We will show that the dominant terms in this part of the error the first three;
+    We will show that the dominant contributions in~\eqref{eq:numerical_differentiation_big_triangle} are the first three terms;
     the latter two are negligible in comparison.
-    Applying~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
+    Employing~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
     $x = a \pm b$ and $x = a/b$,
     we deduce that the following inequalities:
     \begin{align}
         \label{eq:inequalities_numerical_differentiation}
         &\left\lvert \widehat f(a) - f(a) \right\rvert \leq \varepsilon \lvert f(a) \rvert,
         \qquad \lvert (a\pm b) - (a \, \widehat \pm\, b) \rvert \leq \varepsilon \abs{a-b},
-        \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert,
+        \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert.
     \end{align}
     The first two inequalities are valid for all~$(a, b) \in \floating_{64} \times \floating_{64}$,
-    while the third one is valid for all~$(a, b) \in \floating_{64} \times \floating_{64} \backslash \{0\}$,
+    while the third one is valid for all~$(a, b) \in \floating_{64} \times \floating_{64} \backslash \{0\}$.
     The first inequality in~\eqref{eq:inequalities_numerical_differentiation}
-    can be employed to bound the second and third term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
-    \begin{align*}
+    can be employed in order to bound the second and third term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
+    \begin{align}
         \nonumber
         \delta^{-1}\left\lvert f(x \madd \delta) - \widehat f(x \madd \delta) \right\rvert
         + \delta^{-1} \left\lvert \widehat f(x) - f(x) \right\rvert
+        \nonumber
         &\leq \delta^{-1} \varepsilon \Bigl( \bigl\lvert f(x + \delta) \bigr\rvert + \bigl\lvert f(x) \bigr\rvert  \Bigr) \\
+        \label{eq:num_diff_1}
         &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \mathcal O(\varepsilon).
-    \end{align*}
+    \end{align}
     Using Taylor's theorem and then the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $+$),
     we then bound the first term on right-hand side of~\eqref{eq:numerical_differentiation_big_triangle} as
-    \begin{align*}
+    \begin{align}
+        \nonumber
         \delta^{-1}\left\lvert f(x + \delta) - f(x \madd \delta) \right\rvert
         &= \delta^{-1} \left\lvert f'(\xi) \bigl( (x + \delta) - (x \madd \delta)  \bigr) \right\rvert \\
+        \label{eq:num_diff_2}
         &\leq \delta^{-1} \varepsilon \lvert f'(\xi) \rvert \lvert x + \delta \rvert
         = \delta^{-1} \varepsilon \lvert f'(x) x \rvert  + \mathcal O(\varepsilon).
-    \end{align*}
-    Therefore, since the first three terms are a bound from above for~\eqref{eq:bound_above_first_three_terms} by the triangle inequality,
-    we have shown that
+    \end{align}
+    Combining~\eqref{eq:num_diff_1} and~\eqref{eq:num_diff_2},
+    we have that
     \begin{equation}
         \label{eq:numerical_differentiation_term1}
         \delta^{-1}
@@ -1170,9 +1159,9 @@ such as \julia{2^64} evaluating to 0.
         - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
         = \mathcal O(\delta^{-1} \varepsilon).
     \end{equation}
-    Using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and
+    Next, using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and
     then~\eqref{eq:numerical_differentiation_term1},
-    we bound the fourth term in~\eqref{eq:numerical_differentiation_big_triangle}:
+    we bound the fourth term in~\eqref{eq:numerical_differentiation_big_triangle} as follows:
     \begin{align}
         \nonumber
         &\delta^{-1} \left\lvert \bigl( \widehat f(x \madd \delta) - \widehat f(x) \bigr)  - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr)  \right\rvert \\
@@ -1199,7 +1188,7 @@ such as \julia{2^64} evaluating to 0.
         +\, \mathcal O(\delta^{-1} \varepsilon^2)
         = \mathcal O(\varepsilon + \delta^{-1} \varepsilon^2).
     \end{align*}
-    This term is also negligible in front of the other dominant contributions to the roundoff error.
+    This term is also negligible in front of the other dominant contributions to the roundoff error given in~\eqref{eq:num_diff_1} and~\eqref{eq:num_diff_2}.
     Going back to~\eqref{eq:numerical_differentiation_big_triangle},
     we conclude that
     \[
@@ -1207,12 +1196,14 @@ such as \julia{2^64} evaluating to 0.
         \leq \delta^{-1} \varepsilon \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x)x \rvert \Bigr) + \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \]
     \paragraph{Concluding the proof.}
-    Going back to~\eqref{eq:triangle_inequality_derivative} we have
+    Going back to~\eqref{eq:triangle_inequality_derivative},
+    we conclude that
     \[
         \lvert f'(x) - d(\delta) \rvert \leq \frac{\delta}{2} \lvert f''(x) \rvert + \frac{\varepsilon}{\delta} \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert \Bigr),
     \]
     up to higher order terms.
-    Minimizing the right-hand side with respect to~$\delta$ gives
+    For fixed~$x$, 
+    the right-hand side is minimized when
     \[
         \delta = \sqrt{\varepsilon} \sqrt{\frac{ 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert }{\abs{f''(x)}}},
     \]
@@ -1225,6 +1216,21 @@ such as \julia{2^64} evaluating to 0.
         \label{fig:differentiation}
     \end{figure}
 \end{solution}
+
+\begin{exercise}
+    Determine the encoding of the following \julia{Float32} numbers:
+    \begin{itemize}
+        \item $x_1 = 2.0^{E_{\min}}$
+        \item $x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149}$
+        \item $x_3 =2.0^{E_{\max}} (2-2^{-p+1})$
+    \end{itemize}
+    % \[
+    %     x_1 = 2.0^{E_{\min}},
+    %     \qquad x_2 = - 2.0^{E_{\min} - p - 1} = - 2.0^{-149},
+    %     \qquad x_3 = 2.0^{E_{\max}} (2-2^{-p+1}).
+    % \]
+    Check your results using the Julia function \julia{bitstring}.
+\end{exercise}
 
 \begin{exercise}
     [Summary]
