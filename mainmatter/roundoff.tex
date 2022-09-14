@@ -927,7 +927,10 @@ such as \julia{2^64} evaluating to 0.
 \begin{remark}
     In order to estimate the true value of $s^2$ for your samples,
     you can use the \julia{BigFloat} format,
-    to which the array $x$ can be converted by using the instruction \julia{x = BigFloat.(x)}.
+    to which the array $x$ can be converted by using the instruction 
+    \begin{minted}{julia}
+        x = BigFloat.(x)
+    \end{minted}
 \end{remark}
 
 \begin{compexercise}
