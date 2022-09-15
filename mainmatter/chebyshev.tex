@@ -13,10 +13,31 @@ Equivalently,
 the Chebyshev polynomials can be defined from
 \begin{equation}
     \label{eq:chebyshev_cosh}
-    \forall x \in [1, \infty], \qquad
-    T_n(x) = \cosh \bigl(n \arcosh(x)\bigr).
+    \forall x \in [1, \infty), \qquad
+    T_n(x) = \cosh \bigl(n \arccosh(x)\bigr).
 \end{equation}
-where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and $\arcosh(\theta) = \cosh^{-1}(\theta)$ is the inverse function.
+where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and $\arccosh = \cosh^{-1}(\theta)$ is the inverse function
+with codomain~$[0, \infty)$,
+so that the inverse is uniquely defined.
+The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[domain=-1:1,legend pos=outer north east, samples=500, width=.8\linewidth, height=.4\linewidth,cycle list name=exotic]
+            \addplot +[mark=none, line width=2pt] {cos(0*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(1*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(2*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(3*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(4*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(5*acos(x))};
+            \addplot +[mark=none, line width=2pt] {cos(6*acos(x))};
+            \legend{$T_{0}(x)$, $T_{1}(x)$, $T_{2}(x)$, $T_{3}(x)$, $T_{4}(x)$, $T_{5}(x)$, $T_6(x)$}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Illustration of the first few Chebyshev polynomials over the interval $[-1, 1]$.}
+    \label{fig:chebyshev}
+\end{figure}
 
 \begin{exercise}
     \label{exercise:chebychev}
@@ -82,7 +103,7 @@ where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and 
         \cosh(n \xi)
         =  \sum_{j=0}^{\lfloor n / 2 \rfloor} \binom{n}{j} \cosh(\xi)^{n-2j} (\cosh(\xi)^2 - 1)^{j},
     \]
-    which after the substitution of $\xi = \arcosh(x)$ leads to~\eqref{eq:expression_chebyshev}.
+    which after the substitution of $\xi = \arccosh(x)$ leads to~\eqref{eq:expression_chebyshev}.
 \end{solution}
 
 \begin{exercise}
@@ -112,6 +133,11 @@ where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and 
     we obtain the statement.
 \end{solution}
 
+\begin{remark}
+    The recursion relation in~\cref{exercise:recursion_chebyshev}
+    can be employed to show by recursion that $T_n(x)$ is indeed a polynomial of degree~$n$.
+\end{remark}
+
 \begin{exercise}
     \label{exercise:chebyshev_leading_coefficient}
     Since $T_n\colon \real \to \real$ is a polynomial,
@@ -125,4 +151,48 @@ where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and 
     From the definition~\eqref{eq:chebyshev},
     the Chebychev polynomials of degrees 0 and 1 are given by $T_0(x) = 1$ and $T_1(x) = x$.
     The statement then follows by recursion, using~\cref{exercise:recursion_chebyshev}.
+\end{solution}
+
+It is immediate to show from~\eqref{eq:chebyshev} that the roots of $T_n$ are given by
+\[
+    x_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
+\]
+The polynomial $T_n$ takes the value 1 or -1 when evaluated at
+\begin{equation}
+    \label{eq:chebychev_maxima}
+    z_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
+\end{equation}
+More precisely, it holds that $T_n(z_k) = (-1)^k$.
+
+
+\begin{exercise}
+    Let $\xi \notin (-1, 1)$.
+    Show that, among all the polynomials in $\poly(n)$ that are bounded from above by 1 in absolute value uniformly over the interval $(-1, 1)$,
+    the Chebychev polynomial~$T_n$ achieves the largest absolute value when evaluated at~$\xi$.
+\end{exercise}
+\begin{solution}
+    Reasoning by contradiction,
+    we assume that $p$ satisfies
+    \[
+        \sup_{x \in (-1, 1)} \lvert p(x) \rvert \leq 1
+    \]
+    and $\lvert p(\xi) \rvert < \lvert T_n(\xi) \rvert$.
+    Let $q(x) = p(x) T_n(\xi) / p(\xi)$.
+    Then by construction $q(\xi) = T_n(\xi)$
+    and
+    \[
+       \sup_{x \in (-1, 1)} \lvert q(x) \rvert < 1.
+    \]
+    Consequently, denoting by $z_k$ the points defined in~\eqref{eq:chebychev_maxima},
+    we have that
+    \[
+        \forall k \in \{0, \dotsc, n\}, \qquad
+        (-1)^k (T_n - q)(z_k) > 0.
+    \]
+    In other words, the polynomial $T_n - q$ takes positive values at $\{z_0, z_2, z_4, \dotsc\}$ and negative values at $\{z_1, z_3, z_5, \dotsc\}$.
+    Consequently, by the intermediate value theorem,
+    $T_n - q$ possesses~$n$ distinct roots in the open interval $(-1, 1)$.
+    Since, in addition, $(T_n - q)(\xi) = 0$,
+    we deduce that~$T_n - q$ has $n+1$ distinct roots,
+    which is a contradiction given that $T_n - q$ is a nonzero polynomial of degree at most $n$.
 \end{solution}
