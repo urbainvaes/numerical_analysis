@@ -927,7 +927,7 @@ such as \julia{2^64} evaluating to 0.
 \begin{remark}
     In order to estimate the true value of $s^2$ for your samples,
     you can use the \julia{BigFloat} format,
-    to which the array $x$ can be converted by using the instruction 
+    to which the array $x$ can be converted by using the instruction
     \begin{minted}{julia}
         x = BigFloat.(x)
     \end{minted}
@@ -1205,20 +1205,20 @@ such as \julia{2^64} evaluating to 0.
         \lvert f'(x) - d(\delta) \rvert \leq \frac{\delta}{2} \lvert f''(x) \rvert + \frac{\varepsilon}{\delta} \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert \Bigr),
     \]
     up to higher order terms.
-    For fixed~$x$, 
+    For fixed~$x$,
     the right-hand side is minimized when
     \[
         \delta = \sqrt{\varepsilon} \sqrt{\frac{ 2 \lvert f(x) \rvert + \lvert f'(x) x \rvert }{\abs{f''(x)}}},
     \]
     which is a well-known formula for the optimal step size in numerical differentiation.
     The error as a function of~$\delta$ for $x = 1$ is depicted in~\cref{fig:differentiation}.
-    \begin{figure}[ht]
-        \centering
-        \includegraphics[width=0.8\linewidth]{figures/numerical_differentiation.pdf}
-        \caption{Solution to \cref{exercise_differentiation}.}%
-        \label{fig:differentiation}
-    \end{figure}
 \end{solution}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/numerical_differentiation.pdf}
+    \caption{Solution to \cref{exercise_differentiation}.}%
+    \label{fig:differentiation}
+\end{figure}
 
 \begin{exercise}
     Determine the encoding of the following \julia{Float32} numbers:

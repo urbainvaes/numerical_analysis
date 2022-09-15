@@ -36,11 +36,10 @@
 
 % Colors
 \definecolor{lightblue}{HTML}{f1f8fb}
+\definecolor{lightgreen}{HTML}{f1faf8}
 \definecolor{darkblue}{HTML}{315a88}
-\definecolor{lightgreen}{HTML}{eef8f6}
 \definecolor{lightred}{HTML}{f8f6ee}
 \definecolor{lightcyan}{rgb}{0.84,1,1}
-\definecolor{lightgreen}{rgb}{0.64,1,0.71}
 \definecolor{lightred}{rgb}{1,0.7,0.71}
 \hypersetup{%
     linktocpage=true,
@@ -61,6 +60,24 @@
         skipabove=.3cm,
         linecolor=blue,
         backgroundcolor=lightblue,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
+\newenvironment{solutionframe}
+{%
+    \begin{mdframed}[
+        leftmargin=1cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightgreen,
         linewidth=0pt,
         innerleftmargin=.5em,
         innerrightmargin=.5em,
@@ -178,7 +195,12 @@
 \theoremstyle{remark}
 \newtheorem{protoexample}{Example}[chapter]
 \newtheorem{protoremark}{Remark}[chapter]
-\newtheorem*{solution}{Solution}
+\newtheorem*{protosolution}{Solution}
+
+\newenvironment{solution}
+{\pushQED{\qed}\renewcommand{\qedsymbol}{$\triangle$}
+\begin{solutionframe}\small \begin{protosolution}}
+{\popQED\end{protosolution}\end{solutionframe}}
 
 % Minitoc
 \usepackage[nohints]{minitoc}
