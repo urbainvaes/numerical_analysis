@@ -2,6 +2,7 @@
 
 \chapter{Linear algebra}%
 \label{cha:vectors_and_matrices}
+\minitoc
 
 In this chapter,
 we collect basic results on vectors and matrices that are useful for this course.
@@ -19,7 +20,7 @@ For generality,
 we consider the case of a \emph{complex} vector space,
 i.e.\ a vector space for which the scalar field is $\complex$.
 \begin{definition}
-    An inner product on a \emph{real} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex$ satisfying the following axioms:
+    An inner product on a \emph{complex} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex$ satisfying the following axioms:
     \begin{itemize}
         \item
             \textbf{Conjugate symmetry}:
@@ -490,12 +491,12 @@ We deduce, as a corollary of the spectral theorem,
 that if $\vect e_1$ and $\vect e_2$ are eigenvectors of a Hermitian matrix associated with different eigenvalues,
 then they are necessarily orthogonal for the Euclidean inner product.
 Indeed, since $\mat A = \mat A^*$ and the eigenvalues are real, it holds that
-\[
+\begin{align*}
     (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
-    = \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2}
-    = \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
+    &= \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2} \\
+    &= \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
     = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^* \vect e_1, \vect e_2} = 0.
-\]
+\end{align*}
 
 The largest eigenvalue of a matrix, in modulus,
 is called the \emph{spectral radius} and denoted by~$\rho$.
@@ -509,15 +510,16 @@ The following result relates the 2-norm of a matrix to the spectral radius of $\
     Therefore, denoting by $(\mu_i)_{1 \leq i \leq n}$ the (positive) diagonal elements of $\mat D$
     and introducing $\vect y := \mat Q^* \vect x$,
     we have
-    \begin{equation}
-        \label{eq:matrices_link_norm_spectral_radius}
+    \begin{align}
+        \nonumber
         \norm{\mat A \vect x}
-        = \sqrt{\vect x^* \mat A^* \mat A \vect x}
-        = \sqrt{\vect x^* \mat Q \mat D \mat Q^* \vect x}
-        = \sqrt{\sum_{i=1}^{n} \mu_i y_i^2}
+        &= \sqrt{\vect x^* \mat A^* \mat A \vect x}
+        = \sqrt{\vect x^* \mat Q \mat D \mat Q^* \vect x} \\
+        \label{eq:matrices_link_norm_spectral_radius}
+        &= \sqrt{\sum_{i=1}^{n} \mu_i y_i^2}
         \leq \sqrt{\rho(\mat A^* \mat A)} \sqrt{\sum_{i=1}^{n} y_i^2}
         =  \sqrt{\rho(\mat A^* \mat A)} \norm{\vect x},
-    \end{equation}
+    \end{align}
     where we used in the last equality the fact that $\vect y$ has the same norm as $\vect x$,
     because $\mat Q$ is unitary.
     It follows from~\eqref{eq:matrices_link_norm_spectral_radius} that $\norm{\mat A} \leq \sqrt{\rho(\mat A^* \mat A)}$,
