@@ -3,6 +3,11 @@
 
 \minitoc
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/extrapolating.png}
+\end{figure}
+
 \section*{Introduction}
 In this chapter,
 we study numerical methods for interpolating and approximating functions.
@@ -703,6 +708,7 @@ In this case, the interpolating polynomial converges uniformly to the Runge func
     \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_15.pdf}
     \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_20.pdf}
     \includegraphics[width=0.49\linewidth]{figures/interpolation_cheb_runge_30.pdf}
+    \caption{Interpolation (in orange) of the Runge function~\eqref{eq:runge_function} (in blue) using 10, 15, 20, and~30 Chebyshev nodes.}%
     \label{fig:cheb_runge}
 \end{figure}
 
@@ -773,12 +779,12 @@ The following theorem gives an expression of the error.
 The interpolation methods we discussed so far are in some sense global;
 they aim to construct one polynomial that goes through all the data points.
 This approach is attractive because the interpolant is infinitely smooth but,
-as we showed, it is not always fruitful,
+as we observed, it is not always fruitful,
 in particular when equidistant interpolation nodes are employed.
-An alternative approach is to divide the domain in a number of small intervals,
-and to perform polynomial interpolation within each interval.
+An alternative approach is to divide the domain in a number of small intervals
+and perform polynomial interpolation within each interval.
 Although the resulting interpolating function is usually not smooth over the full domain,
-this ``local'' approach to interpolation is in general more robust.
+this ``local'' approach to interpolation is more robust.
 
 Several methods belong in the category of piecewise interpolation.
 We mention, for instance, piecewise Lagrange interpolation and cubic splines interpolation.

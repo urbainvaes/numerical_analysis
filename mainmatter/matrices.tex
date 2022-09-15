@@ -133,19 +133,24 @@ The proof is provided for information purposes.
     Then all the norms defined on~$\mathcal X$ are pairwise equivalent.
 \end{proposition}
 \begin{proof}
-    Let $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ be two norms on $\mathcal X$,
-    and let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$,
-    where $n$ is the dimension of the vector space.
-    % Assume for contradiction that there exists a sequence $(x_i)_{i \in \nat}$ in the limit as $i \to \infty$ such that $\norm{x_i}_{\alpha} \to 0$ but $\norm{x_n}_{\beta} > \varepsilon > 0$.
-    % Upon replacing $x_i$ by $x_i/\norm{x_i}_{\beta}$, we may assume without loss of generality that $\norm{x_n}_{\beta} = 1$.
+    Let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$.
     Any $\vect x \in \mathcal X$ can be represented as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
+    We will show that any norm $\norm{\placeholder}$ on~$\mathcal X$ is equivalent to the norm $\norm{\placeholder}_*$ given by
+    \[
+        \norm{\vect x}_* = \abs{\lambda_1} + \dotsc + \abs{\lambda_n}.
+    \]
     By the triangle inequality,
     it holds that
-    \begin{equation}
+    \begin{align}
         \label{eq:bound1}
-        \norm{\vect x}_{\alpha} \leq \abs{\lambda_1} \norm{\vect e_1}_{\alpha} + \dotsb + \abs{\lambda_n} \norm{\vect e_n}_{\alpha} \leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \, \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}_{\alpha}\Bigr\}.
-    \end{equation}
-    On the other hand, as we prove below,
+        \nonumber
+        \norm{\vect x} \leq \abs{\lambda_1} \norm{\vect e_1} + \dotsb + \abs{\lambda_n} \norm{\vect e_n} 
+        &\leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \, 
+        \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\} \\
+        \label{eq:norm_equivalence_one}
+        &= \norm{\vect x}_* \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\}.
+    \end{align}
+    It remains to show that
     there exists a positive constant $\ell$ such that
     \begin{equation}
         \label{eq:bound2}
@@ -153,27 +158,20 @@ The proof is provided for information purposes.
         \norm{\vect x}_{\beta}
         \geq \ell \Bigl( \abs{\lambda_1} + \dotsb + \abs{\lambda_n} \Bigr).
     \end{equation}
-    Combining~\eqref{eq:bound1} and~\eqref{eq:bound2},
-    we conclude that
-    \[
-        \norm{\vect x}_{\alpha} \leq \frac{1}{\ell} \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}_{\alpha}\Bigr\} \norm{\vect x}_{\beta}.
-    \]
-    This proves the first inequality in~\eqref{eq:norm_equilavence},
-    and reversing the roles of $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ yields the second inequality.
-
-    We now prove~\eqref{eq:bound2} by contradiction.
+    To this end, we reason by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
-    that~$\norm{\vect x^{(i)}}_{\beta} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all $i \in \nat$.
+    that~$\norm{\vect x^{(i)}} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all $i \in \nat$.
     Since $\lambda_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
-    we can extract a subsequence, still denoted by $(\vect x^{(i)})_{i \in \nat}$ for simplicity,
+    we can extract a subsequence, still denoted by~$(\vect x^{(i)})_{i \in \nat}$ for simplicity,
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
     by compactness of the interval~$[-1, 1]$.
     Repeating this procedure for $\lambda_2, \lambda_3, \dots$,
     taking a new subsequence every time,
     we obtain a subsequence $(\vect x^{(i)})_{i \in \nat}$ such that $\lambda^{(i)}_j \to \lambda_j^*$ in the limit as~$i \to \infty$, for all $j \in \{1, \dotsc, n\}$.
-    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the~$\norm{\placeholder}_{\beta}$ norm.
-    Since $\vect x^{(i)} \to \vect 0$ in this norm by assumption,
+    Therefore, it holds that $\vect x^{(i)} \to \vect x^* := \lambda_1^* \vect e_1 + \dotsb \lambda_n^* \vect e_n$ in the~$\norm{\placeholder}_*$ norm,
+    and thus also in the~$\norm{\placeholder}$ norm by~\eqref{eq:norm_equivalence_one}.
+    Since $\vect x^{(i)} \to \vect 0$ in the latter norm by assumption,
     we deduce that $\vect x^* = \vect 0$.
     But the vectors $\vect e_1, \dotsc, \vect e_n$ are linearly independent,
     and so this implies that $\lambda_1^* = \dots = \lambda_n^* = 0$,
@@ -196,6 +194,7 @@ The proof is provided for information purposes.
 
 In the vector space $\complex^n$,
 the most commonly used norms are particular cases of the $p$-norm, also called H\"older norm.
+
 \begin{definition}
     \label{definition:pnorm_vector}
     Given $p \in [1, \infty]$,
