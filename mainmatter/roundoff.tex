@@ -787,10 +787,9 @@ such as \julia{2^64} evaluating to 0.
 
 \begin{compexercise}
     Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
-    Your function should take as argument an array of integers containing the digits after the decimal point;
-    that is, an array of the form \verb?[a_1, ..., a_n]?,
-    as well as the~$m$ number of bits to return.
-    The result should be returned in an array \verb?[b_1, ..., b_m]?
+    Your function should take two arguments: an array of integers \verb?[a_1, ..., a_n]? containing the digits after the decimal point
+    and the~$m$ number of bits to return.
+    The bits should be \emph{returned} as an array~\verb?[b_1, ..., b_m]?
 \end{compexercise}
 
 \begin{compexercise}
