@@ -155,15 +155,15 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 
 It is immediate to show from~\eqref{eq:chebyshev} that the roots of $T_n$ are given by
 \[
-    x_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
+    z_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
 \]
+The roots are illustrated in~\cref{fig:chebyshev_roots}.
 The polynomial $T_n$ takes the value 1 or -1 when evaluated at
 \begin{equation}
     \label{eq:chebychev_maxima}
-    z_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
+    x_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
 \end{equation}
-More precisely, it holds that $T_n(z_k) = (-1)^k$.
-
+More precisely, it holds that $T_n(x_k) = (-1)^k$.
 
 \begin{exercise}
     Let $\xi \notin (-1, 1)$.
@@ -183,16 +183,41 @@ More precisely, it holds that $T_n(z_k) = (-1)^k$.
     \[
        \sup_{x \in (-1, 1)} \lvert q(x) \rvert < 1.
     \]
-    Consequently, denoting by $z_k$ the points defined in~\eqref{eq:chebychev_maxima},
+    Consequently, denoting by $x_k$ the points defined in~\eqref{eq:chebychev_maxima},
     we have that
     \[
         \forall k \in \{0, \dotsc, n\}, \qquad
-        (-1)^k (T_n - q)(z_k) > 0.
+        (-1)^k (T_n - q)(x_k) > 0.
     \]
-    In other words, the polynomial $T_n - q$ takes positive values at $\{z_0, z_2, z_4, \dotsc\}$ and negative values at $\{z_1, z_3, z_5, \dotsc\}$.
+    In other words, the polynomial $T_n - q$ takes positive values at $\{x_0, x_2, x_4, \dotsc\}$ and negative values at $\{x_1, x_3, x_5, \dotsc\}$.
     Consequently, by the intermediate value theorem,
     $T_n - q$ possesses~$n$ distinct roots in the open interval $(-1, 1)$.
     Since, in addition, $(T_n - q)(\xi) = 0$,
     we deduce that~$T_n - q$ has $n+1$ distinct roots,
     which is a contradiction given that $T_n - q$ is a nonzero polynomial of degree at most $n$.
 \end{solution}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[unit vector ratio*=1 1 1,, ymin=-0.1, ymax=1.1, xmin=-1.1, xmax=1.1, width=.7\linewidth, cycle list name=exotic, axis lines = middle, xtick={0}, ytick={0, 1}]
+            \draw [red, thick, domain=0:180, samples=500] plot ({cos(\x)}, {sin(\x)});
+            \foreach \k in {0, 1, 2, 3, 4, 5, 6, 7}
+            {
+                \pgfmathsetmacro{\n}{8}
+                \pgfmathsetmacro{\pi}{3.1415}
+                \pgfmathsetmacro{\xcoord}{cos(deg((\pi/(2*\n) + \k*\pi/\n)))}
+                \pgfmathsetmacro{\ycoord}{sin(deg(\pi/(2*\n) + \k*\pi/\n))}
+                \edef\temp{
+                    \noexpand \filldraw[black] (\xcoord,\ycoord) circle (2pt);
+                    \noexpand \filldraw[black] (\xcoord,0) circle (2pt);
+                    \noexpand \node[below] at (\xcoord,0) {$z_\k$};
+                    \noexpand \draw [thick,dashed, color=gray] (\xcoord,0) -- (\xcoord,\ycoord);
+                }
+                \temp
+            }
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Roots of the Chebyshev polynomial $T_8$.}
+    \label{fig:chebyshev_roots}
+\end{figure}

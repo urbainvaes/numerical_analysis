@@ -53,7 +53,7 @@ For example, the familiar Euclidean inner product on $\complex^n$ is given by
 A vector space with an inner product is called an \emph{inner product space}.
 
 \begin{definition}
-A norm on a real vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
+A norm on a complex vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
 \begin{itemize}
     \item
         \textbf{Positivity}:
@@ -98,7 +98,7 @@ It is also useful for showing that the functional defined in~\eqref{eq:induced_n
 \begin{proof}
     The statement is obvious if $\vect y = \vect 0$,
     so we assume in the rest of the proof that $\vect y \neq \vect 0$.
-    Let us define $p(t) = \norm{\vect x + t \vect y}^2$.
+    Let us define $p\colon \real \ni t \mapsto \norm{\vect x + t \vect y}^2$.
     Using the bilinearity of the inner product,
     we have
     \[
@@ -134,17 +134,18 @@ The proof is provided for information purposes.
 \end{proposition}
 \begin{proof}
     Let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$.
-    Any $\vect x \in \mathcal X$ can be represented as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
+    Any $\vect x \in \mathcal X$ admits a unique representation in the basis as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
     We will show that any norm $\norm{\placeholder}$ on~$\mathcal X$ is equivalent to the norm $\norm{\placeholder}_*$ given by
-    \[
+    \begin{equation}
+        \label{eq:norm_star}
         \norm{\vect x}_* = \abs{\lambda_1} + \dotsc + \abs{\lambda_n}.
-    \]
+    \end{equation}
     By the triangle inequality,
     it holds that
     \begin{align}
         \nonumber
-        \norm{\vect x} \leq \abs{\lambda_1} \norm{\vect e_1} + \dotsb + \abs{\lambda_n} \norm{\vect e_n} 
-        &\leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \, 
+        \norm{\vect x} \leq \abs{\lambda_1} \norm{\vect e_1} + \dotsb + \abs{\lambda_n} \norm{\vect e_n}
+        &\leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \,
         \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\} \\
         \label{eq:norm_equivalence_one}
         &= \norm{\vect x}_* \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\}.
@@ -154,14 +155,14 @@ The proof is provided for information purposes.
     \begin{equation}
         \label{eq:bound2}
         \forall \vect x \in \mathcal X, \qquad
-        \norm{\vect x}_{\beta}
+        \norm{\vect x}
         \geq \ell \Bigl( \abs{\lambda_1} + \dotsb + \abs{\lambda_n} \Bigr).
     \end{equation}
     To this end, we reason by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
-    that~$\norm{\vect x^{(i)}} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all $i \in \nat$.
-    Since $\lambda_1^{(i)} \in [-1, 1]$ for all $i \in \nat$,
+    that~$\norm{\vect x^{(i)}} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all~$i \in \nat$.
+    Since~$\lambda_1^{(i)} \in [-1, 1]$ for all~$i \in \nat$,
     we can extract a subsequence, still denoted by~$(\vect x^{(i)})_{i \in \nat}$ for simplicity,
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
     by compactness of the interval~$[-1, 1]$.
@@ -182,6 +183,9 @@ The proof is provided for information purposes.
     This concludes the proof of~\eqref{eq:bound2}.
 \end{proof}
 
+\begin{exercise}
+    Show that $\norm{\placeholder}_*\colon \mathcal X \to \real$ defined in~\eqref{eq:norm_star} is indeed a norm.
+\end{exercise}
 
 \begin{exercise}
     Using~\cref{proposition:cauchy_shwartz},
@@ -759,8 +763,8 @@ and is used in \cref{cha:solution_of_linear_systems}.
     \]
     Since $\varepsilon$ was arbitrary, we obtain that
     \[
-        \rho(\mat A) 
-        \leq \liminf_{k \to \infty} \bigl\lVert \mat A^k \bigr\rVert^{\frac{1}{k}} 
+        \rho(\mat A)
+        \leq \liminf_{k \to \infty} \bigl\lVert \mat A^k \bigr\rVert^{\frac{1}{k}}
         \leq \limsup_{k \to \infty} \bigl\lVert \mat A^k \bigr\rVert^{\frac{1}{k}}
         \leq \rho(\mat A),
     \]
