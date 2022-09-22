@@ -1538,6 +1538,30 @@ We will revisit this subject in~\cref{cha:quadrature}.
 \end{compexercise}
 
 \begin{compexercise}
+    Write from scratch a function to obtain the polynomial interpolating the data points
+    \[
+        (x_0, u_0), \dotsc, (x_n, u_n).
+    \]
+    Your function should return the values taken by the interpolating polynomial
+    when evaluated at the points $X_0, \dotsc, X_m$.
+    You may use the following code to test your function
+    \begin{minted}{julia}
+    import Plots
+    function interp(X, x, u)
+        # Your code comes here
+    end
+    n, m = 10, 100
+    f(t) = cos(2π * t)
+    x = LinRange(0, 1, n)
+    X = LinRange(0, 1, m)
+    U = interp(X, x, u)
+    Plots.plot(x, f.(x), label="Original function")
+    Plots.plot!(X, U, label="Interpolation")
+    Plots.scatter!(x, u, label="Data")
+    \end{minted}
+\end{compexercise}
+
+\begin{compexercise}
     \label{exercise:parametric_interpolation}
     We wish to use interpolation to approximate the following parametric function,
     called an \emph{epitrochoid}:
@@ -1557,6 +1581,48 @@ We will revisit this subject in~\cref{cha:quadrature}.
         \caption{Solution for \cref{exercise:parametric_interpolation}.}%
         \label{fig:parametric_interpolation}
     \end{figure}
+\end{compexercise}
+
+\begin{compexercise}
+    [Solving the Laplace equation using a spectral method]
+    The classical Laplace equation with homogeneous Dirichlet boundary conditions in dimension 1 reads
+    \begin{equation}
+        \label{eq:laplace}
+        \text{Find $u \in C^2\bigl([0, 1]\bigr)$ such that} 
+        \qquad 
+        \left\{
+        \begin{aligned}
+        &- u''(x) = f(x) \qquad \forall x \in (0, 1), \\
+        &u(0) = u(1) = 0.
+        \end{aligned}
+        \right.
+    \end{equation}
+    Our goal in this exercise is to approximate the exact solution~$u(x)$ using interpolation.
+    Specifically,
+    we propose to proceed in two steps:
+    \begin{itemize}
+        \item 
+            Interpolate the right-hand side using a polynomial with equidistant nodes.
+            That is, find a polynomial $\widehat f \in \poly(n)$ such that
+            \[
+                \forall i \in \{0, \dotsc, n\}, \qquad
+                \widehat f(x_i) = f(x_i) \qquad x_i = \frac{i}{n}.
+            \]
+
+        \item
+            Solve~\eqref{eq:laplace} with $\widehat f$ instead of $f$.
+            Since $\widehat f$ is a polynomial, this can be achieved analytically.
+    \end{itemize}
+    Implement this program in the case where
+    \[
+        f(x) = \exp\bigl(\sin(2\pi x)\bigr) \cos(2 \pi x)^2 - \exp\bigl(\sin(2 \pi x)\bigr)  \sin(2 \pi x),
+    \]
+    and compare for various values of~$n$ the approximate solution you obtain with
+    the exact solution to~\eqref{eq:laplace},
+    which is given by $u(x) = (2\pi)^{-2} \exp \bigl(\bigl( \sin(2\pi x) \bigr) - 1\bigr)$ in this case.
+
+
+
 \end{compexercise}
 
 \begin{compexercise}
