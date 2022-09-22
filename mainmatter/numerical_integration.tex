@@ -583,9 +583,12 @@ which opens the door to a practical approach for calculating them.
         \frac{(x - x_0) \dotsb (x - x_{i-1})(x- x_{i+1}) \dotsb (x - x_n)}
         {(x_i - x_0) \dotsb (x_i - x_{i-1})(x_i- x_{i+1}) \dotsb (x_i - x_n)}.
     \]
+    In addition, the weights are all positive.
 \end{theorem}
 \begin{proof}
-    We show first that the solution to~\eqref{eq:system_gauss_legendre} exists and then that it is unique.
+    We show first that the solution to~\eqref{eq:system_gauss_legendre} exists,
+    then that it is unique,
+    and finally that the weights are positive.
     \paragraph{Existence.}
     We begin by showing that,
     if $(x_i)_{i \in \{0,\dotsc m\}}$ are the roots of~$L_{m+1}$ and the weights are defined from~\eqref{eq:weights_gauss},
@@ -631,12 +634,12 @@ which opens the door to a practical approach for calculating them.
     we show that the nodes are necessarily the roots of $L_{m+1}$.
     To this end,
     assume that $x_0, \dotsc, x_m$ and weights $w_0, \dotsc, w_m$ are such that the equations~\eqref{eq:system_gauss_legendre} are satisfied,
-    and let 
+    and let
     \[
         q(x) = (x - x_0) \dotsc (x - x_m).
     \]
     Our goal is to show that $q(x)$ coincides with $L_{m+1}$ up to a constant factor.
-    In order to show this, 
+    In order to show this,
     it is sufficient to prove that $q(x)$ is orthogonal to $x^d$ for all $d = 0, \dotsc, m$,
     because the only polynomial in~$\poly(m+1)$ that satisfies these orthogonality relations is the Legendre polynomial~$L_{m+1}$,
     or a multiple thereof.
@@ -648,18 +651,25 @@ which opens the door to a practical approach for calculating them.
         \qquad \int_{-1}^{1} q(x) x^d \, \d x = \sum_{i=0}^{n} w_i q(x_i) x_i^d = 0.
     \]
     Finally, we show that the weights are necessarily given by~\eqref{eq:weights_gauss}.
-    Since integration rule must be exact for any Lagrange polynomial $\ell_j$,
+    Since the integration rule must be exact for any Lagrange polynomial $\ell_j$,
     we have
     \[
         \int_{-1}^{1} \ell_j(x) \, \d x = \sum_{i=0}^{m} w_i \ell_j(x_i) = w_j,
     \]
-    which concludes the proof.
+    which concludes the proof of uniqueness.
+    \paragraph{Positivity of the weights.}
+    Since the integration rule is exact for all the polynomials in~$\poly(2n+1)$ and $\ell_j(x)^2 \in \poly(2n+1)$,
+    we deduce that
+    \[
+        \int_{-1}^{-1} \bigl\lvert \ell_j(x) \bigr\rvert^2 \, \d x
+        = \sum_{i=0}^{m} w_i \bigl\lvert \ell_j(x_i) \bigr\rvert^2 = w_j.
+    \]
+    The left-hand side is positive,
+    and so $w_j$ must also be positive.
 \end{proof}
 
-It is possible to prove,
-and this should be clear after reading~\cref{sub:orthogonal_integration},
-that the integration weights are all positive,
-and so Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
+Since the integration weights are all positive,
+the Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
 
 \paragraph{Generalization to higher dimensions.}
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
