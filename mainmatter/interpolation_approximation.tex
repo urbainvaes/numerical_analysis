@@ -196,11 +196,13 @@ let us define the \emph{falling power} of a real number $x$ as
     x^{\underline{k}} = x (x-1) (x-2) \dots (x-k+1).
 \]
 We then have that
-\begin{align*}
+\begin{align}
+    \nonumber
     \Delta x^{\underline{k}}
     &= (x+1) x (x-1) \dots (x-k+2) - x (x-1) (x-2) \dots (x-k+1) \\
+    \label{eq:falling_powers_rule}
     &= \bigl((x+1) - (x-k+1)\bigr) \bigl(x (x-1) \dots (x-k+2)\bigr) = k x^{\underline{k-1}}
-\end{align*}
+\end{align}
 In other words,
 the action of the difference operator on falling powers mirrors that of the differentiation operator on monomials.
 The falling powers form a basis of the space of polynomials,
@@ -1430,20 +1432,83 @@ We will revisit this subject in~\cref{cha:quadrature}.
 \begin{exercise}
     Let $(f_0, f_1, f_2, \dotsc) = (1, 1, 2, \dotsc)$ denote the Fibonacci sequence.
     Prove that there does not exist a polynomial~$p$ such that
-    \[
-        \forall i \in \nat, \qquad
-        f_i = p(i).
-    \]
+    \begin{equation}
+        \label{eq:fibonacci_polynomial}
+        \forall n \in \nat, \qquad
+        f_n = p(n).
+    \end{equation}
 \end{exercise}
+\begin{solution}
+    Assume by contradiction that~$p\colon \real \to \real$ is a polynomial such that~\eqref{eq:fibonacci_polynomial} is satisfied,
+    and let~$n$ be the degree of this polynomial.
+    Then it holds that $\Delta^{n+1} p = 0$~\eqref{eq:falling_powers_rule},
+    where both sides should be viewed as functions from $\real$ to $\real$.
+    On the other hand,
+    since $p(n) = f_n$ for all~$n\in \nat$,
+    we can calculate explicitly the values of taken by the function $\Delta^{m} p$ when evaluated at all the natural numbers,
+    for all $m \in \nat$.
+    We collate a few values in the following table.
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        $n$    & 0 & 1 & 2 & 3 & 4 & 5 & 6 \\ \hline
+        $\Delta^0 p(n)$ & $\mathbf{1}$ & $\mathbf{1}$ & $\mathbf{2}$ & $\mathbf{3}$ & $\mathbf{5}$ & $\mathbf{8}$ & $\mathbf{13}$ \\ \hline
+        $\Delta^1 p(n)$ & $0$ & $\mathbf{1}$ & $\mathbf{1}$ & $\mathbf{2}$ & $\mathbf{3}$ & $\mathbf{5}$ & $\mathbf{8}$ \\ \hline
+        $\Delta^2 p(n)$ & $1$ & $0$ & $\mathbf{1}$ & $\mathbf{1}$ & $\mathbf{2}$ & $\mathbf{3}$ & $\mathbf{5}$ \\ \hline
+        $\Delta^3 p(n)$ & $-1$ & $1$ & $0$ & $\mathbf{1}$ & $\mathbf{1}$ & $\mathbf{2}$ & $\mathbf{3}$ \\ \hline
+    \end{tabular}
+    \end{center}
+    It appears from these calculations that the Fibonacci sequence is shifted one position to the right with each additional application of $\Delta$.
+    In other words, our calculations suggest that
+    \begin{equation}
+        \label{eq:difference_fib}
+        \forall (m, n) \in \nat \times \nat,
+        \qquad \Delta^m p(m+n) = f_n,
+    \end{equation}
+    which is a contradiction.
+    To conclude, let us prove~\eqref{eq:difference_fib} rigorously.
+    This equation is obvious for $m = 0$ by assumption.
+    Now, reasoning by contradiction, we assume that~\eqref{eq:difference_fib} is true up to~$m$.
+    Then by definition of the difference operator~$\Delta$,
+    we have
+    \begin{align*}
+        \Delta^{m+1} p(m+n+1)
+        &= \Delta^m p(m+n+2) - \Delta^m p(m+n+1) \\
+        &= f_{n+2} - f_{n+1} = f_n.
+    \end{align*}
+    Here, we used the induction hypothesis~\eqref{eq:difference_fib} in the second equality,
+    and the definition of the Fibonacci series in the third one.
+\end{solution}
 
 \begin{exercise}
     Using the Gregory--Newton formula,
     show that
     \begin{equation}
         \label{eq:discrete_exponential}
-        \forall n \in \nat_{>0},
+        \forall n \in \nat,
         \qquad 2^n = 1 + n + \frac{n^{\underline{2}}}{2!} + \frac{n^{\underline 3}}{3!} + \frac{n^{\underline 4}}{4!} + \dotsb
     \end{equation}
+    \begin{solution}
+        Equation~\eqref{eq:discrete_exponential} is a particular case of the following more general statement:
+        for any function $f \in \real \to \real$, 
+        it holds that
+        \begin{equation}
+            \label{eq:more_general_agreement_interpolation}
+            \forall n \in \nat,
+            \qquad f(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \frac{n^{\underline{2}}}{2!} + \Delta^3 f(0) \frac{n^{\underline 3}}{3!} + \Delta^4 f(0) \frac{n^{\underline 4}}{4!} + \dotsb
+        \end{equation}
+        In order to show this equation,
+        it is sufficient to prove that for any $n_* \in \nat$,
+        the two sides of~\eqref{eq:more_general_agreement_interpolation} coincide for every $n \in \{0, \dotsc, n_*\}$.
+        Since $n^{\underline p} = 0$ for all $n \in \{0, \dotsc, p-1\}$,
+        the right-hand side of~\eqref{eq:more_general_agreement_interpolation} coincides for all $n \in \{0, \dotsc, n_*\}$ with
+        \[
+            g(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \frac{n^{\underline{2}}}{2!} + \dotsb + \Delta^{n_*} f(0) \frac{n^{\underline {n_*}}}{{n_*}!}.
+        \]
+        We recognize on the right-hand side Newton's expression of the interpolating polynomial through the points $\bigl(0, f(0)\bigr)$, \dotsc $\bigl(n_*, f(n_*)\bigr)$,
+        and so $g(n) = f(n)$ for all $n \in \{0, \dotsc, n_*\}$, 
+        which concludes the proof.
+    \end{solution}
     \begin{remark}
         Remarkably, equation~\eqref{eq:discrete_exponential} holds in fact for \emph{any} $n \in \real_{> 0}$.
         However, showing this more general statement is beyond the scope of this course.

@@ -39,7 +39,7 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 \end{figure}
 
 \begin{exercise}
-    \label{exercise:chebychev}
+    \label{exercise:chebyshev}
     Show that~\eqref{eq:chebyshev} defines a polynomial of degree~$n$,
     and find its expression in the usual polynomial notation.
 \end{exercise}
@@ -148,7 +148,7 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 \end{exercise}
 \begin{solution}
     From the definition~\eqref{eq:chebyshev},
-    the Chebychev polynomials of degrees 0 and 1 are given by $T_0(x) = 1$ and $T_1(x) = x$.
+    the Chebyshev polynomials of degrees 0 and 1 are given by $T_0(x) = 1$ and $T_1(x) = x$.
     The statement then follows by recursion, using~\cref{exercise:recursion_chebyshev}.
 \end{solution}
 
@@ -159,7 +159,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that the roots of $T_n$ are gi
 The roots are illustrated in~\cref{fig:chebyshev_roots}.
 The polynomial $T_n$ takes the value 1 or -1 when evaluated at
 \begin{equation}
-    \label{eq:chebychev_maxima}
+    \label{eq:chebyshev_maxima}
     x_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
 \end{equation}
 More precisely, it holds that $T_n(x_k) = (-1)^k$.
@@ -167,7 +167,7 @@ More precisely, it holds that $T_n(x_k) = (-1)^k$.
 \begin{exercise}
     Let $\xi \notin (-1, 1)$.
     Show that, among all the polynomials in $\poly(n)$ that are bounded from above by 1 in absolute value uniformly over the interval $(-1, 1)$,
-    the Chebychev polynomial~$T_n$ achieves the largest absolute value when evaluated at~$\xi$.
+    the Chebyshev polynomial~$T_n$ achieves the largest absolute value when evaluated at~$\xi$.
 \end{exercise}
 \begin{solution}
     Reasoning by contradiction,
