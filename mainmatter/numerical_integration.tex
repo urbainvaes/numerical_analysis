@@ -466,7 +466,7 @@ Constructing the functions in Julia can be achieved in just a few lines of code.
     \centering
     \includegraphics[width=0.8\linewidth]{figures/richardson.pdf}
     \caption{Illustration of the functions $J_1$, $J_2$ and $J_3$ constructed by Richardson interpolation.}%
-    \label{fig:richardson}.
+    \label{fig:richardson}
 \end{figure}
 
 \paragraph{Generalization.}
@@ -520,28 +520,28 @@ and the only degrees of freedom are the integration weights.
 If the nodes are not fixed,
 then additional degrees of freedom are available,
 and these can be leveraged in order to construct a better integration formula.
-The total number of degrees of freedom for a general integration rule of the form~\eqref{eq:deterministic_integration} is $2n + 2$,
-which enable to construct an integration rule with degree of precision equal to~$2n+1$.
+The total number of degrees of freedom for a general integration rule of the form~\eqref{eq:deterministic_integration} is $2m + 2$ which,
+in principle, should enable to construct an integration rule with a degree of precision equal to~$2m+1$.
 
 A necessary condition for an integration rule of the form~\eqref{eq:deterministic_integration} to have a degree of precision
-equal to $2n +1$ is that it integrates exactly all the monomials of degree $0$ to~$2n+1$.
+equal to $2m +1$ is that it integrates exactly all the monomials of degree $0$ to~$2m+1$.
 This condition is also sufficient because,
 assuming that it is satisfied,
 we have by linearity of the functionals~$I$ and $\widehat I$ that
 \begin{align*}
-    \widehat I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1} x^{2n+1})
-    &= \alpha_0 \widehat I(1) + \alpha_1 \widehat I(x) + \dotsb + \alpha_{2n+1} \widehat I(x^{2n+1}) \\
-    &= \alpha_0 I(1) + \alpha_1 I(x) + \dotsb + \alpha_{2n+1} I(x^{2n+1}) \\
-    &= I(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2n+1} x^{2n+1}),
+    \widehat I\left(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2m+1} x^{2m+1}\right)
+    &= \alpha_0 \widehat I(1) + \alpha_1 \widehat I(x) + \dotsb + \alpha_{2m+1} \widehat I\left(x^{2m+1}\right) \\
+    &= \alpha_0 I(1) + \alpha_1 I(x) + \dotsb + \alpha_{2m+1} I\left(x^{2m+1}\right) \\
+    &= I\left(\alpha_0 + \alpha_1 x + \dotsb + \alpha_{2m+1} x^{2m+1}\right),
 \end{align*}
 Here $I(u)$ and $\widehat I(u)$ denote respectively the exact integral of~$u$ and its approximate integral using~\eqref{eq:deterministic_integration}.
-Finding the nodes and weights of the integration rule,
-we can therefore solve the nonlinear system of $2n+2$ equations with $2n+2$ unknowns:
+In order to find the nodes and weights of the integration rule,
+we can therefore solve the following nonlinear system of $2m+2$ equations with $2m+2$ unknowns:
 \begin{align}
     \label{eq:system_gauss_legendre}
-    \sum_{i=0}^{n} w_i x_i^{d} &= \int_{-1}^{1} x^d \, \d x, \qquad d = 0, \dotsc, 2n+1.
+    \sum_{i=0}^{m} w_i x_i^{d} &= \int_{-1}^{1} x^d \, \d x, \qquad d = 0, \dotsc, 2m+1.
 \end{align}
-The quadrature rule obtained by solving this system of equations is called the \emph{Gauss--Legendre quadrature}.
+The quadrature rule thus obtained is called the \emph{Gauss--Legendre quadrature}.
 \begin{example}
 Let us derive the Gauss--Legendre quadrature with $n + 1 = 2$ nodes.
 The system of equations that we need to solve in this case is the following:
@@ -557,53 +557,109 @@ The solution to these equations is given by
 \]
 \end{example}
 
-\paragraph{Connection with orthogonal polynomials.\moreinfo}
-The Gauss--Legendre quadrature rules can be obtained more constructively from orthogonal polynomials,
-an approach we presented in~\cref{sub:orthogonal_integration}.
-In particular, the integration nodes are related the roots of a Legendre polynomial,
-which opens the door to another computational approach for computing them.
+\paragraph{Connection with orthogonal polynomials.}
+Let $(L_n)_{n \in \nat}$ denote the Legendre polynomials,
+i.e. the orthogonal polynomials with for the inner product
+\[
+    \ip{f, g} = \int_{-1}^{1} f(x) g(x) \, \d x.
+\]
+The nodes and weights of the Gauss--Legendre quadrature rules can be obtained constructively from Legendre polynomials,
+as shown in~\cref{sub:orthogonal_integration}.
+We shall now demonstrate this connection in much more direct manner.
+Specifically, we prove the integration nodes are given by the roots of a Legendre polynomial,
+which opens the door to a practical approach for calculating them.
+\begin{theorem}
+    \label{theorem:gauss_legendre_connection_polynomials}
+    For every $m \in \nat$,
+    there exists a unique solution to the system of equations~\eqref{eq:system_gauss_legendre}.
+    The nodes $(x_i)_{i \in \{0,\dotsc m\}}$ are the roots of $L_{m+1}$
+    and the weights are given by
+    \begin{equation}
+        \label{eq:weights_gauss}
+        w_i = \int_{-1}^{1} \ell_i(x) \, \d x,
+    \end{equation}
+    where $\ell_i$ is the Lagrange polynomial
+    \[
+        \frac{(x - x_0) \dotsb (x - x_{i-1})(x- x_{i+1}) \dotsb (x - x_n)}
+        {(x_i - x_0) \dotsb (x_i - x_{i-1})(x_i- x_{i+1}) \dotsb (x_i - x_n)}.
+    \]
+\end{theorem}
+\begin{proof}
+    We show first that the solution to~\eqref{eq:system_gauss_legendre} exists and then that it is unique.
+    \paragraph{Existence.}
+    We begin by showing that,
+    if $(x_i)_{i \in \{0,\dotsc m\}}$ are the roots of~$L_{m+1}$ and the weights are defined from~\eqref{eq:weights_gauss},
+    then the equations~\eqref{eq:system_gauss_legendre} are satisfied.
+    To this end,
+    it is sufficient to show that for all $p \in \poly(2n + 1)$,
+    \begin{equation}
+        \label{eq:gauss_legendre_equation}
+        \int_{-1}^{1} p(x) \, \d x = \sum_{i=0}^{m} w_i p(x_i).
+    \end{equation}
+    Take $p \in \poly(2m + 1)$ and let $q \in \poly(m)$ and $r \in \poly(m)$ be the polynomials such that
+    \[
+        p(x) = q(x) L_{m+1}(x) + r(x).
+    \]
+    Since $L_{m+1}$ is orthogonal to any polynomial in~$\poly(m)$
+    and the nodes $(x_i)_{i \in \{0,\dotsc m\}}$ are the roots of~$L_{m+1}$,
+    it holds that
+    \begin{equation}
+        \label{eq:intermediate_gauss}
+        \int_{-1}^{1} p(x) \, \d x
+        - \sum_{i=0}^{m} w_i p(x_i)
+        = \int_{-1}^{1} r(x) \, \d x
+        - \sum_{i=0}^{m} w_i r(x_i).
+    \end{equation}
+    Given that $r \in \poly(m)$,
+    $r$ must coincides with its polynomial interpolation at the points $x_0, \dotsc x_m$.
+    Therefore,
+    \[
+        r = r(x_0) \ell_0 + \dotsb + r(x_m) \ell_m,
+    \]
+    and so
+    \[
+        \int_{-1}^1 r(x) \, \d x
+        = \sum_{i=0}^{m} r(x_i) \int_{-1}^1 \ell_i(x) \, \d x
+        = \sum_{i=0}^{m} r(x_i) w_i,
+    \]
+    where we used~\eqref{eq:weights_gauss} in the last equality.
+    Consequently, the right-hand side of~\eqref{eq:intermediate_gauss} is zero,
+    and since $p$ was arbitrary this implies that~\eqref{eq:gauss_legendre_equation} is satisfied.
+
+    \paragraph{Uniqueness.}
+    Next,
+    we show that the nodes are necessarily the roots of $L_{m+1}$.
+    To this end,
+    assume that $x_0, \dotsc, x_m$ and weights $w_0, \dotsc, w_m$ are such that the equations~\eqref{eq:system_gauss_legendre} are satisfied,
+    and let 
+    \[
+        q(x) = (x - x_0) \dotsc (x - x_m).
+    \]
+    Our goal is to show that $q(x)$ coincides with $L_{m+1}$ up to a constant factor.
+    In order to show this, 
+    it is sufficient to prove that $q(x)$ is orthogonal to $x^d$ for all $d = 0, \dotsc, m$,
+    because the only polynomial in~$\poly(m+1)$ that satisfies these orthogonality relations is the Legendre polynomial~$L_{m+1}$,
+    or a multiple thereof.
+    For the values of~$i$ considered, the polynomial~$q(x) x^d$ belongs to $\poly(2n+1)$.
+    Given that the integration rule with nodes $x_0, \dotsc, x_m$ and weights $w_0,\dotsc, w_m$ is exact for all the elements of $\poly(2n+1)$ by~\eqref{eq:system_gauss_legendre} by assumption,
+    we deduce that
+    \[
+        \forall d \in \{0, \dotsc, n\},
+        \qquad \int_{-1}^{1} q(x) x^d \, \d x = \sum_{i=0}^{n} w_i q(x_i) x_i^d = 0.
+    \]
+    Finally, we show that the weights are necessarily given by~\eqref{eq:weights_gauss}.
+    Since integration rule must be exact for any Lagrange polynomial $\ell_j$,
+    we have
+    \[
+        \int_{-1}^{1} \ell_j(x) \, \d x = \sum_{i=0}^{m} w_i \ell_j(x_i) = w_j,
+    \]
+    which concludes the proof.
+\end{proof}
+
 It is possible to prove,
 and this should be clear after reading~\cref{sub:orthogonal_integration},
 that the integration weights are all positive,
 and so Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
-
-In this section, we prove,
-starting from the system of nonlinear equations~\eqref{eq:system_gauss_legendre},
-that the roots of the integration formula are necessarily the roots of a Legendre polynomial.
-This will imply, as a corollary, that the set of integration nodes satisfying~\eqref{eq:system_gauss_legendre} is unique,
-because the orthogonal polynomials are unique.
-To this end, let us denote by
-\[
-    p(x) = (x - x_0) \dotsc (x - x_n) =: \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n+1} x^{n+1}
-\]
-the polynomial whose roots coincide with the unknown integration nodes.
-Multiplying the first equation of~\eqref{eq:system_gauss_legendre} ($d=0$) by $\alpha_0$,
-the second ($d=1$) by $\alpha_1$, and so forth until the equation corresponding to $d=n+1$,
-we obtain after summing these equations
-\[
-    \sum_{i=0}^{n} w_i \sum_{d=0}^{n+1} \alpha_d x_i^d = \int_{-1}^{1} \sum_{d=0}^{n+1} \alpha_d x^d \, \d x
-    \qquad \Leftrightarrow \qquad
-    \sum_{i=0}^{n} w_i p(x_i) = \int_{-1}^{1} p(x) \, \d x.
-\]
-Since the left-hand side of this equation is equal to 0 by definition of~$p$,
-we deduce that $p$ is orthogonal to the constant polynomial for the inner product
-\begin{equation}
-    \label{eq:l2_inner_product}
-    \ip{f, g} =
-    \int_{-1}^{1} f(x) \, g(x) \, \d x.
-\end{equation}
-Now if we multiply the \emph{second} equation of~\eqref{eq:system_gauss_legendre} ($d=1$) by $\alpha_0$,
-the third ($d=2$) by $\alpha_1$, and so forth until until the equation corresponding to $d=n+2$,
-we obtain after summation of these equations that
-\[
-    \sum_{i=0}^{n} w_i x_i \sum_{d=0}^{n+1} \alpha_d x_i^d = \int_{-1}^{1} \sum_{d=0}^{n+1} \alpha_d x^{d+1} \, \d x
-    \qquad \Leftrightarrow \qquad
-    \sum_{i=0}^{n} w_i x_i p(x_i) = \int_{-1}^{1} p(x) \, x \d x.
-\]
-Since the left-hand side of this equation is again 0 because the nodes $x_i$ are the roots of $p$,
-we deduce that $p$ is orthogonal to the linear polynomial $x \mapsto x$ for the inner product~\eqref{eq:l2_inner_product}.
-This reasoning can be repeated in order to deduce that $p$ is in fact orthogonal to all the monomials of degree 0 to $n$,
-implying that $p$ is a multiple of the Legendre polynomial of degree $n+1$.
 
 \paragraph{Generalization to higher dimensions.}
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,

@@ -733,32 +733,32 @@ a polynomial~$\widehat u$ of degree at most~$2n + 1$ such that
 In order to construct the interpolating polynomial,
 it is useful to define the functions
 \[
-    \varphi_{i}(x)
+    \psi_{i}(x)
     = \prod_{j=0, j\neq i}^{n} \left( \frac{x-x_j}{x_i-x_j} \right)^2,
     \qquad i = 0, \dotsc, n.
 \]
-The function $\varphi_i$ is the square of the usual Lagrange polynomials associated with~$x_i$,
+The function $\psi_i$ is the square of the usual Lagrange polynomials associated with~$x_i$,
 and it satisfies
 \[
-    \varphi_i(x_j) = 1,
-    \qquad \varphi_i'(x_i) = \sum_{j=0,j\neq i}^{n} \frac{2}{x_i - x_j},
-    \qquad \forall j \neq i \qquad \varphi_i(x_j) = \varphi_i'(x_j) = 0.
+    \psi_i(x_j) = 1,
+    \qquad \psi_i'(x_i) = \sum_{j=0,j\neq i}^{n} \frac{2}{x_i - x_j},
+    \qquad \forall j \neq i \qquad \psi_i(x_j) = \psi_i'(x_j) = 0.
 \]
 We consider the following ansatz for~$\widehat u$:
 \[
-    \widehat u(x) = \sum_{i=0}^{n} \varphi_i(x) q_i(x),
+    \widehat u(x) = \sum_{i=0}^{n} \psi_i(x) q_i(x),
 \]
 where $q_i$ are polynomials to be determined of degree at most one,
 so that~$\widehat u$ is of degree at most~$2n+1$.
 We then require
 \[
-    \widehat u(x_i) = q_i(x_i), \qquad \widehat u'(x_i) = \varphi_i'(x_i) q(x_i) + q'(x_i).
+    \widehat u(x_i) = q_i(x_i), \qquad \widehat u'(x_i) = \psi_i'(x_i) q(x_i) + q'(x_i).
 \]
 From the first equation, we deduce that $q_i(x_i) = u_i$,
-and from the second equation we then have~$q'(x_i) = \widehat u'(x_i) - \varphi_i'(x_i) u_i$.
+and from the second equation we then have~$q'(x_i) = \widehat u'(x_i) - \psi_i'(x_i) u_i$.
 We conclude that the interpolating polynomial is given by
 \[
-    \widehat u(x) = \sum_{i=0}^{n} \varphi_i(x) \Bigl(u_i + \bigl(u_i' - \varphi_i'(x_i) u_i\bigr) (x - x_i)\Bigr).
+    \widehat u(x) = \sum_{i=0}^{n} \psi_i(x) \Bigl(u_i + \bigl(u_i' - \psi_i'(x_i) u_i\bigr) (x - x_i)\Bigr).
 \]
 The following theorem gives an expression of the error.
 \begin{theorem}
@@ -1505,7 +1505,7 @@ We will revisit this subject in~\cref{cha:quadrature}.
         \[
             g(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \frac{n^{\underline{2}}}{2!} + \dotsb + \Delta^{n_*} f(0) \frac{n^{\underline {n_*}}}{{n_*}!}.
         \]
-        We recognize on the right-hand side Newton's expression of the interpolating polynomial through the points $\bigl(0, f(0)\bigr)$, \dotsc $\bigl(n_*, f(n_*)\bigr)$,
+        We recognize on the right-hand side Newton's expression of the interpolating polynomial through the points $\bigl(0, f(0)\bigr), \dotsc, \bigl(n_*, f(n_*)\bigr)$,
         and so $g(n) = f(n)$ for all $n \in \{0, \dotsc, n_*\}$, 
         which concludes the proof.
     \end{solution}
