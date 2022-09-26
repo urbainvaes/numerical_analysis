@@ -16,7 +16,7 @@ the numerical calculation of such integrals when $n \gg 1$ is still a very activ
 In this chapter,
 we will focus for simplicity on the one-dimensional setting where $\Omega = [a, b] \subset \real$.
 We assume throughout this chapter that the function~$u$ is Riemann-integrable.
-This means that
+Then, by definition,
 \[
     I = \lim_{h \to 0}
     \sum_{i=0}^{n-1} u(t_i) (z_{i+1} - z_i),
@@ -34,9 +34,15 @@ In many cases, integration formulas contain a small parameter that can be change
 In methods based on equidistant interpolation nodes,
 for example, this parameter encodes the distance between nodes and is typically denoted by~$h$,
 and we often use the notation~$\widehat I_h$ to emphasize the dependence of the approximation on~$h$.
-The difference~$E_h = I - I_h$ is called the \emph{integration error} or \emph{discretization error},
-and the \emph{degree of precision} of an integration method is the smallest integer number~$d$ such that
-the integration error is zero for all the polynomials of degree less than or equal to~$d$.
+The difference~$E_h = I - \widehat I_h$ is called the \emph{integration error} or \emph{discretization error}.
+The \emph{degree of precision},
+defined hereafter,
+is an important measure of the quality of an integration rule.
+\begin{definition}
+        The \emph{degree of precision} of an integration method is the smallest integer number~$d$ such that
+        the integration error is zero for all $u \in \poly(d)$,
+        i.e. for all the polynomials of degree less than or equal to~$d$.
+\end{definition}
 
 We observe that,
 without loss of generality,
@@ -60,10 +66,10 @@ and the right-hand side is the integral of $u \circ \zeta$ over the interval~$[-
 \section{The Newton--Cotes method}
 \label{sec:newton_cotes}
 
-Given a set of equidistant points $-1 = x_0 < \dotsb < x_m = 1$,
+Given a set of equidistant points $-1 = x_0 < \dotsb < x_n = 1$,
 a natural method for approximating the integral~\eqref{eq:integral} of a function~$u\colon [-1, 1] \to \real$
-is to first construct the interpolating polynomial~$\widehat u$ through the nodes,
-and then calculate the integral of this polynomial.
+is to first construct the interpolating polynomial~$\widehat u$ at the nodes,
+and then calculate the exact integral of this polynomial.
 By construction, this method is exact for polynomials of degree up to~$m$,
 and so the degree of precision is equal to \emph{at least}~$m$.
 Let $\varphi_0, \dotsc, \varphi_m$ denote the Lagrange polynomials associated with the integration nodes.
@@ -112,17 +118,20 @@ In principle,
 this approach could be employed in order to construct integration rules of arbitrary high degree of precision.
 In practice, however, the weights become more and more imbalanced as the number of interpolation points increases,
 with some of them becoming negative.
-As a result, roundoff errors become increasingly detrimental to accuracy as the degree of precision increases.
+As a result, roundoff errors become increasingly detrimental to accuracy.
 In addition, in cases where the interpolating polynomial does not converge to~$u$,
 for example if~$u$ is Runge's function,
-the approximate integral may not even converge to the correct value in the limit as~$m \to \infty$ in exact arithmetic!
+the approximate integral may not converge to the correct value in the limit as~$n \to \infty$,
+even in exact arithmetic!
 
-Note that,
-although it is based on a quadratic polynomial interpolation,
-Simpson's rule~\eqref{eq:simpsons} has a degree of precision equal to~$3$.
-This is because any integration rule with nodes and weights symmetric around $x=0$ is exact for odd functions,
-in particular $x^3$.
-Likewise, the degree of precision of Bode's rule is equal to 5.
+\begin{remark}
+    Note that,
+    although it is based on a quadratic polynomial interpolation,
+    Simpson's rule~\eqref{eq:simpsons} has a degree of precision equal to~$3$.
+    This is because any integration rule with nodes and weights symmetric around $x=0$ is exact for odd functions,
+    in particular $x^3$.
+    Likewise, the degree of precision of Bode's rule is equal to 5.
+\end{remark}
 
 \section{Composite methods with equidistant nodes}
 \label{sec:composite_methods}
@@ -135,7 +144,7 @@ the integral can be approximated by using one of the rules presented in~\eqref{s
 \paragraph{Composite trapezoidal rule.}
 Let us illustrate the composite approach with an example.
 To this end,
-we introduce a partition $a = x_0 < \dotsb < x_m = b$ of the interval $[a, b]$ and
+we introduce a partition $a = x_0 < \dotsb < x_n = b$ of the interval $[a, b]$ and
 assume that the nodes are equidistant with $x_{i+1} - x_i = h$.
 Using~\eqref{eq:change_of_variable_equivalence},
 we first generalize~\eqref{eq:trapezoidal_rule} to an interval~$[x_i, x_{i+1}]$ as follows:
@@ -160,14 +169,28 @@ we obtain the composite trapezoidal rule:
 Like the trapezoidal rule~\eqref{eq:trapezoidal_rule},
 the composite trapezoidal rule~\eqref{eq:composite_trapezoidal_rule} has a degree of precision equal to 1.
 However,
-the accuracy of the method depends on the parameter~$h$,
+the integration error of the method depends on the parameter~$h$,
 which represents the width of each subinterval:
 for very small~$h$,
 equation~\eqref{eq:composite_trapezoidal_rule} is expected to provide a good approximation of the integral.
 An error estimate can be obtained directly from the formula in~\cref{theorem:interpolation_error} for the interpolation error,
 provided that we assume that~$u \in C^2([a, b])$.
-Denoting by~$\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
-and by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
+
+\begin{theorem}
+    [Integration error for the composite trapezoidal rule]
+    Let $\widehat I_h$ denote the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule}.
+    Then
+    \begin{equation}
+        \label{eq:error_bound_trapezoidal}
+        \bigl\lvert I - \widehat I_h \bigr\rvert
+        \leq \frac{b-a}{12} C_2 h^2,
+        \qquad
+        C_2 := \sup_{\xi \in [a, b]} \abs*{u''(\xi)}.
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+Denoting by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
 we have
 \[
     \int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x
@@ -177,21 +200,19 @@ Since $(x - x_i) (x - x_{i+1})$ is nonpositive over the interval $[x_i, x_{i+1}]
 we deduce that
 \[
     \abs*{\int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x}
-    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x - x_{i+1}) \, \d x
-    = C_2 \frac{h^3}{12},
-\]
-where we introduced
-\[
-    C_2 =  \sup_{\xi \in [a, b]} \abs*{u''(\xi)} .
+    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x_{i+1} - x) \, \d x
+    = C_2 \frac{h^3}{12}.
 \]
 Summing the contributions of all the intervals,
 we obtain
-\begin{equation}
-    \label{eq:error_bound_trapezoidal}
-    \abs{I - \widehat I}
+\[
+    \bigl\lvert I - \widehat I_h \bigr\rvert
     \leq \sum_{i=0}^{n-1} \abs*{\int_{x_i}^{x_{i+1}} u(x) - \widehat u(x) \, \d x }
-    \leq n \times C_2 \frac{h^3}{12} = \frac{b-a}{12} C_2 h^2.
-\end{equation}
+    \leq n \times C_2 \frac{h^3}{12} = \frac{b-a}{12} C_2 h^2,
+\]
+which concludes the proof.
+\end{proof}
+
 The integration error therefore scales as~$\mathcal O(h^2)$.
 (Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\mathcal O(h^2)$,
 but it turns out that the dependence on~$h$ of this bound is optimal).
@@ -209,56 +230,75 @@ over a partition of the integration interval into $n/2$ subintervals of equal wi
 Obtaining an optimal error estimate,
 in terms of the dependence on~$h$,
 for this integration formula is slightly more involved.
-% because it requires to employ the fact that the degree of precision for Simpson's rule is 4.
+
+\begin{theorem}
+    [Integration for the composite Simpson rule]
+    Let $\widehat I_h$ denote the approximate integral calculated using~\eqref{eq:composite_simpson}.
+    Then
+    \begin{equation}
+        \label{eq:error_bound_trapezoidal}
+        \bigl\lvert I - \widehat I \bigr\rvert
+        \leq (b-a)\frac{C_4 h^4}{180},
+        \qquad
+        C_4 := \sup_{\xi \in [a, b]} \abs*{u^{(4)}(\xi)}.
+    \end{equation}
+\end{theorem}
+\begin{proof}
 For a given subinterval~$[x_{2i}, x_{2i+2}]$,
-let us denote by~$\widehat u_2(x)$ the quadratic interpolating polynomial at $x_{2i}, x_{2i+1}, x_{2i+2}$,
-and by $\widehat u_3(x)$ a cubic interpolating polynomial relative to the nodes $x_{2i}, x_{2i+1}, x_{2i+2}, x_{\alpha}$,
-for some $\alpha \in [x_{2i}, x_{2i+1}]$.
+let us denote by~$\widehat u_2$ the quadratic interpolating polynomial at $x_{2i}, x_{2i+1}, x_{2i+2}$,
+and by $\widehat u_3(\placeholder; \alpha)$ the cubic interpolating polynomial relative to the nodes $x_{2i}, x_{2i+1}, x_{2i+2}, \alpha$,
+for some $\alpha \in [x_{2i}, x_{2i+1}]$ that does not coincide with the integration nodes.
 We have
 \begin{align}
     \label{eq:composite_simpson_error}
     \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_2(x) \, \d x
-    &= \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x + \int_{x_{2i}}^{x_{2i+2}} \widehat u_3(x) - \widehat u_2(x)  \, \d x.
+    &= \int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x; \alpha)  \, \d x + \int_{x_{2i}}^{x_{2i+2}} \widehat u_3(x; \alpha) - \widehat u_2(x)  \, \d x.
 \end{align}
-The second term is zero,
+The second term on the right-hand side is zero,
 because the integrand is a cubic polynomial with zeros at $x_{2i}$, $x_{2i+1}$ and $x_{2i+2}$,
 and because
 \[
     \int_{x_{2i}}^{x_{2i+2}} (x - x_{2i}) (x - x_{2i+1}) (x - x_{2i+2}) = 0.
 \]
-(Notice that the integrand is even around $x_{2i+1}$.)
+(The integral is zero because the integrand is odd around the vertical axis $x = x_{2i+1}$.)
+By~\cref{theorem:interpolation_error},
+the first term in~\eqref{eq:composite_simpson_error} is bounded from above as follows:
+\begin{align*}
+    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x; \alpha)  \, \d x}
+    &\leq \int_{x_{2i}}^{x_{2i+2}} \left\lvert \frac{u^{(4)} \bigl(\xi(x)\bigr)}{24} (x-x_{2i})(x- x_{2i+1}) (x-x_{2i+2}) (x - \alpha) \right\rvert \, \d x \\
+    &\leq \frac{C_4}{24} \int_{x_{2i}}^{x_{2i+2}} \bigl\lvert (x-x_{2i})(x- x_{2i+1}) (x-x_{2i+2}) (x - \alpha) \bigr\rvert \, \d x.
+\end{align*}
+This formula is valid for any $\alpha \in A := [x_{2i}, x_{2i+2}] \backslash \{x_{2i}, x_{2i+1}, x_{2i+2}\}$.
+Denoting by $h(\alpha)$ the integral on the right-hand side,
+we observe that
+\[
+    \lim_{\alpha \to x_{2i+1}} h(\alpha) =
+    \int_{x_{2i}}^{x_{2i+2}} (x-x_{2i})(x- x_{2i+1})^2 (x_{2i+2} - x) \, \d x = \frac{4}{15} h^5.
+\]
+Therefore, we conclude that
+\[
+    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_2(x)  \, \d x}
+    \leq \inf_{\alpha \in A} \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x; \alpha)  \, \d x} \leq \frac{C_4}{90} h^5.
+\]
+Summing the contributions of all the subintervals,
+we finally obtain
+\begin{equation}
+    \label{eq:scaling_error}
+    \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{90} = (b-a)\frac{C_4 h^4}{180},
+\end{equation}
+which concludes the proof.
+\end{proof}
+
+\begin{remark}
 The cancellation of the second term in~\eqref{eq:composite_simpson_error} also follows from the fact that
 the degree of precision of the Simpson rule~\eqref{eq:simpsons} is equal to~3,
 and so
 \[
     \int_{x_{2i}}^{x_{2i+2}} \widehat u_3(x) - \widehat u_2(x)  \, \d x = \frac{1}{3} (\widehat u_3 - \widehat u_2)(x_{2i}) + \frac{4}{3} (\widehat u_3 - \widehat u_2)(x_{2i+1}) + \frac{1}{3} (\widehat u_3 - \widehat u_2)(x_{2i+2}) = 0.
 \]
-Using~\cref{theorem:interpolation_error},
-we rewrite first term in~\eqref{eq:composite_simpson_error} from above as follows:
-\[
-    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x}
-    \leq \int_{x_{2i}}^{x_{2i+2}} \frac{u^{(4)} \bigl(\xi(x)\bigr)}{24} (x-x_{2i})(x- x_{2i+1}) (x-x_{2i+2}) (x - x_{\alpha})\, \d x.
-\]
-Since this formula is valid for all $\alpha \in [2i, 2i+2]$,
-we are allowed to take $\alpha = x_{2i+1}$.
-Given that
-\[
-    \int_{x_{2i}}^{x_{2i+2}} (x-x_{2i})(x- x_{2i+1})^2 (x-x_{2i+2}) \, \d x = \frac{4}{15} h^5,
-\]
-with an integrand everywhere nonpositive in the interval $[x_{2i}, x_{2i+2}]$,
-we conclude that
-\[
-    \abs*{\int_{x_{2i}}^{x_{2i+2}} u(x) - \widehat u_3(x)  \, \d x} \leq \frac{C_4}{90} h^5,
-    \qquad C_4 = \sup_{\xi \in [a, b]} \abs[big]{u^{(4)}(\xi)}.
-\]
-Summing the contributions of all the subintervals,
-we finally obtain
-\begin{equation}
-    \label{eq:scaling_error}
-    \abs{I - \widehat I_h} \leq  \frac{n}{2} \times \frac{C_4 h^5}{90} = (b-a)\frac{C_4 h^4}{180}.
-\end{equation}
+\end{remark}
 
-\paragraph{Estimating the error.}
+\paragraph{Estimating the error a posteriori.}
 In practice,
 it is useful to be able to estimate the integration error so that,
 if the error is deemed too large,
