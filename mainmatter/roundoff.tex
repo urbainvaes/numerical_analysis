@@ -203,7 +203,7 @@ the latter being an abbreviation for \emph{Not a Number}.
 Three parameters appear in the set definition~\eqref{eq:number_format}.
 The parameter $p \in \nat_{>0}$ is the number of significant bits (also called the precision),
 and $(E_{\min}, E_{\max}) \in \integer^2$ are respectively the minimum and maximum exponents.
-From the precision, the \emph{machine epsilon} is defined as $\varepsilon_{M} = 2^{-p-1}$;
+From the precision, the \emph{machine epsilon} is defined as $\varepsilon_{M} = 2^{-(p-1)}$;
 its significance is discussed in~\cref{sub:relative_error_and_epsilon_machine}.
 
 For a number $x \in \floating(p, E_{\min}, E_{\max})$,
