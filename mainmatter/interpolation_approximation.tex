@@ -1490,7 +1490,7 @@ We will revisit this subject in~\cref{cha:quadrature}.
     \end{equation}
     \begin{solution}
         Equation~\eqref{eq:discrete_exponential} is a particular case of the following more general statement:
-        for any function $f \in \real \to \real$, 
+        for any function $f \in \real \to \real$,
         it holds that
         \begin{equation}
             \label{eq:more_general_agreement_interpolation}
@@ -1506,7 +1506,7 @@ We will revisit this subject in~\cref{cha:quadrature}.
             g(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \frac{n^{\underline{2}}}{2!} + \dotsb + \Delta^{n_*} f(0) \frac{n^{\underline {n_*}}}{{n_*}!}.
         \]
         We recognize on the right-hand side Newton's expression of the interpolating polynomial through the points $\bigl(0, f(0)\bigr), \dotsc, \bigl(n_*, f(n_*)\bigr)$,
-        and so $g(n) = f(n)$ for all $n \in \{0, \dotsc, n_*\}$, 
+        and so $g(n) = f(n)$ for all $n \in \{0, \dotsc, n_*\}$,
         which concludes the proof.
     \end{solution}
     \begin{remark}
@@ -1554,8 +1554,9 @@ We will revisit this subject in~\cref{cha:quadrature}.
     f(t) = cos(2π * t)
     x = LinRange(0, 1, n)
     X = LinRange(0, 1, m)
+    u = f.(x)
     U = interp(X, x, u)
-    Plots.plot(x, f.(x), label="Original function")
+    Plots.plot(X, f.(X), label="Original function")
     Plots.plot!(X, U, label="Interpolation")
     Plots.scatter!(x, u, label="Data")
     \end{minted}
@@ -1588,8 +1589,8 @@ We will revisit this subject in~\cref{cha:quadrature}.
     The classical Laplace equation with homogeneous Dirichlet boundary conditions in dimension 1 reads
     \begin{equation}
         \label{eq:laplace}
-        \text{Find $u \in C^2\bigl([0, 1]\bigr)$ such that} 
-        \qquad 
+        \text{Find $u \in C^2\bigl([0, 1]\bigr)$ such that}
+        \qquad
         \left\{
         \begin{aligned}
         &- u''(x) = f(x) \qquad \forall x \in (0, 1), \\
@@ -1601,12 +1602,12 @@ We will revisit this subject in~\cref{cha:quadrature}.
     Specifically,
     we propose to proceed in two steps:
     \begin{itemize}
-        \item 
+        \item
             Interpolate the right-hand side using a polynomial with equidistant nodes.
             That is, find a polynomial $\widehat f \in \poly(n)$ such that
             \[
                 \forall i \in \{0, \dotsc, n\}, \qquad
-                \widehat f(x_i) = f(x_i) \qquad x_i = \frac{i}{n}.
+                \widehat f(x_i) = f(x_i), \qquad x_i = \frac{i}{n}.
             \]
 
         \item
@@ -1620,9 +1621,7 @@ We will revisit this subject in~\cref{cha:quadrature}.
     and compare for various values of~$n$ the approximate solution you obtain with
     the exact solution to~\eqref{eq:laplace},
     which is given by $u(x) = (2\pi)^{-2} \exp \bigl(\bigl( \sin(2\pi x) \bigr) - 1\bigr)$ in this case.
-
-
-
+    % How does the maximum of the error over the interval $[0, 1]$?
 \end{compexercise}
 
 \begin{compexercise}

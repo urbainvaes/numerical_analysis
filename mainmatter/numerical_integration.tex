@@ -164,7 +164,7 @@ the accuracy of the method depends on the parameter~$h$,
 which represents the width of each subinterval:
 for very small~$h$,
 equation~\eqref{eq:composite_trapezoidal_rule} is expected to provide a good approximation of the integral.
-An error estimate can be obtained directly from the formula in~\cref{theorem:interpolation_error} for interpolation error,
+An error estimate can be obtained directly from the formula in~\cref{theorem:interpolation_error} for the interpolation error,
 provided that we assume that~$u \in C^2([a, b])$.
 Denoting by~$\widehat I_h$ the approximate integral calculated using~\eqref{eq:composite_trapezoidal_rule},
 and by~$\widehat u_h$ the piecewise linear interpolation of~$u$,
@@ -566,8 +566,7 @@ i.e. the orthogonal polynomials with for the inner product
 The nodes and weights of the Gauss--Legendre quadrature rules can be obtained constructively from Legendre polynomials,
 as shown in~\cref{sub:orthogonal_integration}.
 We shall now demonstrate this connection in much more direct manner.
-Specifically, we prove the integration nodes are given by the roots of a Legendre polynomial,
-which opens the door to a practical approach for calculating them.
+Specifically, we prove the integration nodes are given by the roots of a Legendre polynomial.
 \begin{theorem}
     \label{theorem:gauss_legendre_connection_polynomials}
     For every $m \in \nat$,
