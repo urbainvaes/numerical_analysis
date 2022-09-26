@@ -533,7 +533,7 @@ This time, the linear combinations required for populating this table are given 
 \paragraph{Application to integration: Romberg's method}
 Romberg's integration method consists of applying Richardson's extrapolation to the function
 \[
-    J(h) = \widehat I_h = u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-1}) + 2 u(x_n), \qquad h \in \left\{ \frac{b-a}{n}; n \in \nat\right\}.
+    J(h) = \widehat I_h = u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-1}) + 2 u(x_n), \qquad h \in \left\{ \frac{b-a}{n}: n \in \nat\right\}.
 \]
 where $a = x_0 < x_1 < \dotsb < x_n = b$ are equidistant nodes.
 The right-hand side of this equation is simply the composite trapezoidal rule with step size~$h$.
@@ -543,7 +543,7 @@ that~$J(h)$ may be expanded as follows:
     \forall k \in \nat, \qquad
     J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^{2k} + \mathcal O(h^{2k+2}).
 \]
-Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of the integral increasing accuracy.
+Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of the integral with increasing accuracy.
 The convergence of Romberg's method for calculating the integral~\eqref{eq:integral_example} is illustrated in~\cref{fig:romberg}.
 \begin{figure}[ht]
     \centering
