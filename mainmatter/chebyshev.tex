@@ -118,7 +118,7 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 \begin{solution}
     It is sufficient to show the identity for $x \in [-1, 1]$,
     where the formula~\eqref{eq:chebyshev} applies.
-    Using the well-known trigonometric identities,
+    Using well-known trigonometric identities,
     we have
     \begin{align*}
         \cos\bigl((n+1) \theta\bigr) &= \cos(n \theta) \cos(\theta) - \sin(n \theta) \sin (\theta)  \\
@@ -165,7 +165,7 @@ The polynomial $T_n$ takes the value 1 or -1 when evaluated at
 More precisely, it holds that $T_n(x_k) = (-1)^k$.
 
 \begin{exercise}
-    Let $\xi \notin (-1, 1)$.
+    Let $\xi \in \real \backslash (-1, 1)$.
     Show that, among all the polynomials in $\poly(n)$ that are bounded from above by 1 in absolute value uniformly over the interval $(-1, 1)$,
     the Chebyshev polynomial~$T_n$ achieves the largest absolute value when evaluated at~$\xi$.
 \end{exercise}
@@ -175,7 +175,7 @@ More precisely, it holds that $T_n(x_k) = (-1)^k$.
     \[
         \sup_{x \in (-1, 1)} \lvert p(x) \rvert \leq 1
     \]
-    and $\lvert p(\xi) \rvert < \lvert T_n(\xi) \rvert$.
+    and $\lvert p(\xi) \rvert > \lvert T_n(\xi) \rvert$.
     Let $q(x) = p(x) T_n(\xi) / p(\xi)$.
     Then by construction $q(\xi) = T_n(\xi)$
     and
