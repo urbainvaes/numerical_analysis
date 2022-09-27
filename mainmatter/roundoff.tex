@@ -1224,6 +1224,56 @@ such as \julia{2^64} evaluating to 0.
 \begin{exercise}
     Explain why \julia{exp(log(Float16(7))) == 7} is \julia{false}.
 \end{exercise}
+\begin{solution}
+    We begin by finding the binary representation of $\log(7)$.
+    In the $\floating_{64}$ format, the sign and exponent are encoded over 1 and 11 bits respectively,
+    and so the fraction is given by the last 52 bits, which can be obtained from the command
+    \begin{minted}{julia}
+        julia> bitstring(log(7))[13:end]
+        "1111001000100111001010101110001100100101101001010111"
+    \end{minted}
+    Therefore,
+    \begin{equation}
+        \label{eq:log7_in_binary}
+        \log(7) = (\underbrace{1.1111001000}_{\text{11 bits}}100111001010101110001100100101101001010111...)_2
+    \end{equation}
+    The number returned by the command \julia{log(Float16(7))}
+    is given by ${\rm fl}_{16}\bigl(\log(7)\bigr)$,
+    where ${\rm fl}_{16}$ denotes the half-precision rounding operator.
+    Rounding the right-hand side of~\eqref{eq:log7_in_binary} to 11 bits, we obtain
+    \[
+        {\rm fl}_{16}\bigl(\log(7)\bigr) = (1.1111001001)_2 = 1.9462890625.
+    \]
+    The number returned by the code \julia{exp(log(Float16(7)))} is
+    \[
+        {\rm fl}_{16} \biggl( \exp\Bigl({\rm fl}_{16}\bigl(\log(7)\bigr)\Bigr) \biggr)
+        = {\rm fl}_{16} \bigl( \exp (1.9462890625)  \bigr).
+    \]
+    The rounding operator appears twice on the left-hand side,
+    because the computer rounds \emph{after every operation}.
+    To explain the result of the rounding operation,
+    we begin by calculating the binary expansion of $\exp(1.9462890625)$.
+    \begin{minted}{julia}
+        julia> bitstring(exp(1.9462890625))[13:end]
+        "1100000000101011011101110000111000100001100010001110"
+
+        julia> exponent(exp(1.9462890625))
+        2
+    \end{minted}
+    Therefore,
+    \[
+        \exp(1.9462890625)
+        = 2^2 (\underbrace{1.1100000000}_{\text{11 bits}}101011011101110000111000100001100010001110...)_2,
+    \]
+    and, rounding to 11 bits,
+    we finally obtain
+    \begin{align*}
+        {\rm fl}_{16} \bigl( \exp (1.9462890625) \bigr)
+        &= 2^2 (1.110000000\textcolor{red}{1})_2 = 4 \left(1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{2^{10}}\right) \\
+        &= 7 + \frac{1}{2^8} = 7.00390625,
+    \end{align*}
+    which is different from 7.
+\end{solution}
 
 \begin{exercise}
     Determine the encoding of the following \julia{Float32} numbers:
