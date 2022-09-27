@@ -1647,6 +1647,51 @@ We will revisit this subject in~\cref{cha:quadrature}.
     \end{figure}
 \end{compexercise}
 
+\begin{compexercise}
+    Let $u\colon [0, 2\pi] \to \real$ and
+    \begin{equation}
+        \label{eq:interp_nodes_fourier}
+        x_k = \left( \frac{2k\pi}{2n+1} \right), \qquad k = 0, \dotsc, 2n.
+    \end{equation}
+    We wish to interpolate $u$ at these nodes using complex exponentials:
+    \[
+        \widehat u = \sum_{k=-n}^{n} a_k \e^{\i k x}.
+    \]
+    Write a function
+    \begin{minted}{julia}
+        function fourier_interpolate(u, x, X)
+            # Your code comes here ...
+        end
+    \end{minted}
+    which takes three arguments:
+    \begin{itemize}
+        \item \julia{u} is the function to interpolate;
+
+        \item \julia{x} are the interpolation nodes, given by~\eqref{eq:interp_nodes_fourier} in the test code below; 
+            You can assume that this array contains an odd number of elements.
+
+        \item \julia{X} is a one-dimensional of values on the $x$ axis.
+    \end{itemize}
+    The function should return a one-dimensional array containing the values taken by $\widehat u$ when evaluated at the points contained in \julia{X}.
+    The test code may be
+    \begin{minted}{julia}
+    import Plots
+    n, m = 5, 100
+    x = 2π/(2n+1) * (0:2n)
+    X = 2π/m * (0:m)
+
+    u(x) = (x > π ? 1 : 0)
+    # u(x) = exp(sin(x) + cos(5x))
+    # u(x) = x^2 * (x - 2π)^2 / π^4
+
+    U = fourier_interpolate(u, x, X)
+    Plots.plot(X, u.(X), label="u(x)", legend=:bottomright)
+    Plots.plot!(X, U, label="û(x)")
+    Plots.scatter!(x, u.(x), label="Interpolation points")
+    Plots.xlims!(0, 2π)
+    \end{minted}
+\end{compexercise}
+
 \section{Discussion and bibliography}
 A comprehensive study of approximation theory would require to cover the $L^{\infty}$ setting
 as well as other functional settings.
