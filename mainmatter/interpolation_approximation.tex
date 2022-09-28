@@ -1648,6 +1648,7 @@ We will revisit this subject in~\cref{cha:quadrature}.
 \end{compexercise}
 
 \begin{compexercise}
+    \label{exercise:fourier_interp}
     Let $u\colon [0, 2\pi] \to \real$ and
     \begin{equation}
         \label{eq:interp_nodes_fourier}
@@ -1676,21 +1677,28 @@ We will revisit this subject in~\cref{cha:quadrature}.
     The can use the following code to test your function:
     \begin{minted}{julia}
     import Plots
-    n, m = 5, 100
+    n, m = 5, 1000
     x = 2π/(2n+1) * (0:2n)
     X = 2π/m * (0:m)
 
-    u(x) = (x > π ? 1 : 0)
+    u(x) = sign(x - π)
     # u(x) = exp(sin(x) + cos(5x))
     # u(x) = x^2 * (x - 2π)^2 / π^4
 
-    U = fourier_interpolate(u, x, X)
+    @time U = fourier_interpolate(u, x, X)
     Plots.plot(X, u.(X), label="u(x)", legend=:bottomright)
     Plots.plot!(X, U, label="û(x)")
     Plots.scatter!(x, u.(x), label="Interpolation points")
     Plots.xlims!(0, 2π)
     \end{minted}
+    An example of the output plot is illustrated in~\cref{fig:fourier}.
 \end{compexercise}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/fourier.pdf}
+    \caption{Example solution for~\cref{exercise:fourier_interp}.}%
+    \label{fig:fourier}
+\end{figure}
 
 \section{Discussion and bibliography}
 A comprehensive study of approximation theory would require to cover the $L^{\infty}$ setting
