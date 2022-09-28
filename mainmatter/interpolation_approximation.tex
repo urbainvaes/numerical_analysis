@@ -1668,12 +1668,12 @@ We will revisit this subject in~\cref{cha:quadrature}.
         \item \julia{u} is the function to interpolate;
 
         \item \julia{x} are the interpolation nodes, given by~\eqref{eq:interp_nodes_fourier} in the test code below; 
-            You can assume that this array contains an odd number of elements.
+            you can assume that this array contains an odd number of elements.
 
         \item \julia{X} is a one-dimensional of values on the $x$ axis.
     \end{itemize}
     The function should return a one-dimensional array containing the values taken by $\widehat u$ when evaluated at the points contained in \julia{X}.
-    The test code may be
+    The can use the following code to test your function:
     \begin{minted}{julia}
     import Plots
     n, m = 5, 100
