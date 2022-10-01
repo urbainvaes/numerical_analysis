@@ -18,10 +18,10 @@ x_32 = Float32.(2.0.^exponents)
 successors_32 = nextfloat.(x_32)
 distance_32 = successors_32 - x_32
 
-Plots.plot(x_64, 1 ./ distance_64, label=L"\frac{1}{\Delta(x)}~\mathrm{(Float64)}")
+Plots.plot(x_64, distance_64, label=L"\Delta(x)~\mathrm{(Float64)}")
 Plots.plot!(xaxis=:log, yaxis=:log, top_margin=2Plots.mm, bottom_margin=2Plots.mm, size=(900,450))
 Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i in exp_min:exp_max])
-Plots.title!("Density of Float64 numbers")
+Plots.title!("Absolute spacing between Float64 numbers")
 Plots.xlabel!(L"x")
 Plots.savefig("figures/float64_density.pdf")
 
