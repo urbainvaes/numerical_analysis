@@ -303,7 +303,7 @@ where we used the short-hand notation $\widehat u_3(x) = \widehat u_3(x; \alpha)
 In practice,
 it is useful to be able to estimate the integration error so that,
 if the error is deemed too large,
-a better approximation of the integral can then be calculated by using a smaller value for the step size~$h$.
+a better approximation of the integral can be calculated by using a smaller value for the step size~$h$.
 Calculating the exact error $I - \widehat I_h$ is impossible in general,
 because this would require to know the exact value of the integral,
 but it is possible to calculate a rough approximation of the error based on two numerical approximations of the integral,
@@ -319,7 +319,7 @@ then it holds approximately that
 \end{equation}
 This implies that
 \[
-    I - \widehat I_{2h} = (I - \widehat I_h) + (I_h - \widehat I_{2h}) \approx \frac{1}{16}(I - \widehat I_{2h}) + (I_h - \widehat I_{2h}).
+    I - \widehat I_{2h} = (I - \widehat I_h) + (I_h - \widehat I_{2h}) \approx \frac{1}{16}(I - \widehat I_{2h}) + (\widehat I_h - \widehat I_{2h}).
 \]
 Rearranging this equation gives an approximation of the error for $\widehat I_{2h}$:
 \[
@@ -485,6 +485,7 @@ for example, the calculation of an approximation $J_3(h/8) = J(0) + \mathcal O(h
         \mathcal O(h) & \mathcal O(h^2) & \mathcal O(h^3) & \mathcal O(h^4).
     \end{tikzcd}
 \]
+Here, the last row indicates the scaling of the error with respect to the parameter $h$ in the limit as~$h \to 0$.
 The linear combination in order to calculate $J_{i} (h/2^i)$ is always of the form
 \[
     J_i(h/2^i) = \frac{2^i J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^i - 1}, \qquad J_0 = J.
@@ -514,7 +515,7 @@ Constructing the functions in Julia can be achieved in just a few lines of code.
 Sometimes,
 it is known a priori that the Taylor development of the function~$J$ around zero contains only even powers of~$h$.
 In this case, the Richardson extrapolation procedure can be slightly modified in order to produce approximations with errors scaling as~$\mathcal O(h^4)$,
-then $\mathcal O(h^6)$, then $\mathcal O(h^8)$, etc.
+then~$\mathcal O(h^6)$, then~$\mathcal O(h^8)$, etc.
 This procedure is illustrated below:
 \[
     \begin{tikzcd}[cramped, sep=small]
@@ -774,7 +775,7 @@ that of the corresponding one-dimensional rule.
 
 \begin{exercise}
     [Improving the error bound for the composite trapezoidal rule]
-    The notation used in this exercise is the same as in \cref{sec:composite_nethods}.
+    The notation used in this exercise is the same as in \cref{sec:composite_methods}.
     In particular, $\widehat I_h$ denotes the approximate integral obtained by using the composite trapezoidal rule~\eqref{eq:composite_trapezoidal_rule},
     and $\widehat u_h$ is the corresponding piecewise linear interpolant.
 
@@ -826,6 +827,136 @@ that of the corresponding one-dimensional rule.
         \frac{g(x)}{\int_{a}^{b} g(x) \, \d x}.
     \]
 \end{remark}
+
+\begin{exercise}
+    [From the final exam of Spring 2022]
+    Construct an integration rule of the form
+    \[
+        \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
+    \]
+    with a degree of precision equal to at least 2.
+    What is the degree of precision of the rule constructed?
+\end{exercise}
+\begin{solution}
+    The Lagrange polynomials associated with $-1/2$, $0$ and $1/2$ are respectively
+    \begin{align*}
+        p_{1}(x) &= 2x \left(x - \frac{1}{2}\right), \\
+        p_{2}(x)    &= - 4\left(x + \frac{1}{2}\right) \left(x - \frac{1}{2}\right), \\
+        p_{3}(x)  &= 2\left(x + \frac{1}{2}\right) x.
+    \end{align*}
+    We deduce that
+    \begin{align*}
+        w_1 &= \int_{-1}^1 p_{1}(x) = \frac{4}{3}, \qquad
+        w_2 &= \int_{-1}^1 p_{2}(x) = - \frac{2}{3}, \qquad
+        w_3 &= \int_{-1}^1 p_{3}(x) = \frac{4}{3}.
+    \end{align*}
+    By construction,
+    the degree of precision is at least 2.
+    However, the integration rule is exact also when $u(x) = x^3$.
+    Since the rule is not exact for $u(x) = x^4$,
+    we conclude that the degree of precision is 3.
+\end{solution}
+
+\begin{exercise}
+    [From the final exam of Spring 2022]
+    The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
+    \[
+        \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
+    \]
+    such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+    \begin{itemize}
+        \item 
+            Find the Gauss--Laguerre rule with one node ($n = 1$).
+
+        \item
+            Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
+            You may find it useful to first calculate the Laguerre polynomial of degree 2.
+    \end{itemize}
+\end{exercise}
+\begin{solution}
+    Below are the derivations of the Gauss--Laguerre rules with 1 and 2 nodes.
+    \paragraph{Gauss--Laguerre rule with 1 node.}
+    We are looking for $w_1$ and $x_1$ such that
+    \[
+        \forall (a,b) \in \real^2, \qquad
+        \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x = w_1 (a + b x_1).
+    \]
+    The left-hand side is equal to
+    \[
+        a \int_{0}^{\infty} \e^{-x} \, \d x + b \int_{0}^{\infty} x \e^{-x} \, \d x
+        = a + b \int_{0}^{\infty} x \e^{-x} \, \d x.
+    \]
+    Using integration by parts,
+    we find the value of the remaining integral on the right-hand side:
+    \begin{align*}
+        \int_{0}^{\infty} x \e^{-x}
+        &= \int_{0}^{\infty} - (x \e^{-x})' + \e^{-x} \, \d x \\
+        &= - (x \e^{-x}) \Big\vert_{x={\infty}} + (x \e^{-x}) \Big\vert_{x={0}} + \int_{0}^{\infty} \e^{-x} \, \d x \\
+        &= 0 + 0 + 1.
+    \end{align*}
+    (To be fully rigorous, we would need to write the first term on the second line as a limit.)
+    Therefore, we obtain
+    \[
+        a + b = w_1(a + b x_1),
+    \]
+    which implies that $w_1 = x_1 = 1$.
+
+    \paragraph{Gauss--Laguerre rule with 2 nodes.}
+    The integration nodes are given by the roots of the Laguerre polynomials,
+    which are the orthogonal polynomials for the inner product
+    \[
+        \ip{f, g} :=
+        \int_{0}^{\infty} f(x) g(x) \, \e^{-x} \, \d x.
+    \]
+    The first polynomial is $\ell_0(x) = 1$.
+    It is simple to check that the only linear monic polynomial orthogonal to $\ell_0$ is given by $\ell_1(x) = x - 1$.
+    Next, by integration by parts we calculate that
+    \[
+        \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x 
+        = \int_{0}^{\infty} - (x^2 \e^{-x})' + 2 x \e^{-x} \, \d x = 2.
+    \]
+    and, similarly,
+    \[
+        \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x 
+        = \int_{0}^{\infty} - (x^3 \e^{-x})' + 3 x^2 \e^{-x} \, \d x = 6.
+    \]
+    Consider the ansatz $\ell_2(x) = x^2 + a \ell_1(x) + b$.
+    In order for $\ell_2$ to be orthogonal to $\ell_0$ and~$\ell_1$,
+    it is necessary that
+    \begin{align*}
+        0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_0(x) \, \e^{-x} \, \d x = 2 + b, \\
+        0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x 
+        = 4 + a \int_{0}^{\infty} \ell_1(x) \ell_1(x) \, \ d x = 4 + a.
+    \end{align*}
+    Therefore, we conclude that $a = -4$ and $b=-2$,
+    which gives
+    \[
+        \ell_2(x) = x^2 - 4 x + 2.
+    \]
+    The roots are given by $2 \pm \sqrt{2}$,
+    so we have $x_1 = 2 - \sqrt{2}$ and $x_2 = 2 + \sqrt{2}$.
+    It remains to find the weights.
+    To this end, we need only two additional equations;
+    it is sufficient to require that, for any $(a,b) \in \real^2$,
+    \begin{align*}
+        a + b = 
+            \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x 
+    &= w_1 (a + b x_1) + w_2 (a + b x_2) \\
+    &= a (w_1 + w_2) + 2 b (w_1 + w_2) + \sqrt{2} b (w_2 - w_1).
+    \end{align*}
+    Letting $a = 1$ and $b = 0$,
+    we obtain $w_1 + w_2 = 1$.
+    Then, letting $a = 0$ and $b = 1$,
+    we deduce
+    \[
+        1 = 2 + \sqrt{2} (w_2 - w_1) \qquad \Leftrightarrow w_2 - w_1 = - \frac{\sqrt{2}}{2}.
+    \]
+    Therefore
+    \[
+        w_1 = \frac{2 + \sqrt{2}}{4}, \qquad w_2 = \frac{2 - \sqrt{2}}{4},
+    \]
+    which concludes the exercise.
+\end{solution}
 
 \section{Discussion and bibliography}
 In this chapter,
