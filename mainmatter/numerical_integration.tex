@@ -114,15 +114,6 @@ We present a few particular cases:
             \approx \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{12}{45} u\left(0\right) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1).
         \]
 \end{itemize}
-In principle,
-this approach could be employed in order to construct integration rules of arbitrary high degree of precision.
-In practice, however, the weights become more and more imbalanced as the number of interpolation points increases,
-with some of them becoming negative.
-As a result, roundoff errors become increasingly detrimental to accuracy.
-In addition, in cases where the interpolating polynomial does not converge to~$u$,
-for example if~$u$ is Runge's function,
-the approximate integral may not converge to the correct value in the limit as~$n \to \infty$,
-even in exact arithmetic!
 
 \begin{remark}
     Note that,
@@ -133,6 +124,21 @@ even in exact arithmetic!
     Likewise, the degree of precision of Bode's rule is equal to 5.
 \end{remark}
 
+In principle,
+this approach could be employed in order to construct integration rules of arbitrary high degree of precision.
+In practice, however, the weights become more and more imbalanced as the number of interpolation points increases,
+with some of them becoming negative.
+As a result, roundoff errors become increasingly detrimental to accuracy.
+In addition, in cases where the interpolating polynomial does not converge to~$u$,
+for example if~$u$ is Runge's function,
+the approximate integral may not converge to the correct value in the limit as~$n \to \infty$,
+even in exact arithmetic!
+
+The integration rules presented in this section,
+which are based on equidistant nodes that include the endpoints of the integration interval,
+are called \emph{closed Newton--Cotes} methods.
+A similar approach can be employed in order to construct to integration rules based on equidistant nodes that do not include the endpoints;
+these are called \emph{open Newton--Cotes} methods.
 \section{Composite methods with equidistant nodes}
 \label{sec:composite_methods}
 A natural alternative to the approach presented in~\cref{sec:newton_cotes}
@@ -714,6 +720,11 @@ Specifically, we prove that the integration nodes are given by the roots of a Le
 Since the integration weights are all positive,
 the Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
 
+\paragraph{Computation of the integration nodes.}
+We proved that the integration nodes are given by the roots of the Legendre polynomials.
+In practice, calculating these roots can be achieved by calculating the eigenvalues of a tridiagonal matrix, see~\cref{sub:orthogonal_integration}.
+This is known as the Golub--Welsch algorithm.
+
 \paragraph{Generalization to higher dimensions.}
 Gauss--Legendre integration is ubiquitous in numerical methods for partial differential equations,
 in particular the \emph{finite element method}.
@@ -865,7 +876,7 @@ that of the corresponding one-dimensional rule.
     \]
     such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
     \begin{itemize}
-        \item 
+        \item
             Find the Gauss--Laguerre rule with one node ($n = 1$).
 
         \item
@@ -912,12 +923,12 @@ that of the corresponding one-dimensional rule.
     It is simple to check that the only linear monic polynomial orthogonal to $\ell_0$ is given by $\ell_1(x) = x - 1$.
     Next, by integration by parts we calculate that
     \[
-        \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x 
+        \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x
         = \int_{0}^{\infty} - (x^2 \e^{-x})' + 2 x \e^{-x} \, \d x = 2.
     \]
     and, similarly,
     \[
-        \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x 
+        \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x
         = \int_{0}^{\infty} - (x^3 \e^{-x})' + 3 x^2 \e^{-x} \, \d x = 6.
     \]
     Consider the ansatz $\ell_2(x) = x^2 + a \ell_1(x) + b$.
@@ -925,7 +936,7 @@ that of the corresponding one-dimensional rule.
     it is necessary that
     \begin{align*}
         0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_0(x) \, \e^{-x} \, \d x = 2 + b, \\
-        0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x 
+        0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x
         = 4 + a \int_{0}^{\infty} \ell_1(x) \ell_1(x) \, \ d x = 4 + a.
     \end{align*}
     Therefore, we conclude that $a = -4$ and $b=-2$,
@@ -939,8 +950,8 @@ that of the corresponding one-dimensional rule.
     To this end, we need only two additional equations;
     it is sufficient to require that, for any $(a,b) \in \real^2$,
     \begin{align*}
-        a + b = 
-            \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x 
+        a + b =
+            \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x
     &= w_1 (a + b x_1) + w_2 (a + b x_2) \\
     &= a (w_1 + w_2) + 2 b (w_1 + w_2) + \sqrt{2} b (w_2 - w_1).
     \end{align*}

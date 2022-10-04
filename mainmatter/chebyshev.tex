@@ -109,11 +109,12 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
     [Recursion relation]
     \label{exercise:recursion_chebyshev}
     Show that the Chebyshev polynomials satisfy the relation
-    \[
-        \forall n \in \{2, 3, \dotsc\},
+    \begin{equation}
+        \label{eq:recursion_chebyshev}
+        \forall n \in \{1, 2, \dotsc\},
         \qquad
         T_{n+1} = 2 x T_{n} - T_{n-1}.
-    \]
+    \end{equation}
 \end{exercise}
 \begin{solution}
     It is sufficient to show the identity for $x \in [-1, 1]$,
