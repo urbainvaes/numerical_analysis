@@ -737,6 +737,115 @@ we have
 The degree of precision of this integration rule is the same as
 that of the corresponding one-dimensional rule.
 
+\section{Introduction to probabilistic integration methods}
+So far in this chapter,
+we covered only \emph{deterministic} integration formulas.
+Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
+These methods are based on the connection between integrals and expectations.
+To illustrate this approach, we consider the problem of approximating the integral
+\[
+    I = \int_{0}^{1} u(x) \, \d x.
+\]
+The integral may be expressed as the expectation $\expect \bigl[u(X)\bigr]$,
+where~$\expect$ is the expectation operator and~$X \sim \mathcal U(0, 1)$ is a uniformly distributed random variable over the interval~$[0, 1]$.
+Therefore, in practice,
+the integral $I$ may be approximated by generating a large number of \emph{independent} samples $X_1, X_2,\dotsc$ drawn from the distribution~$\mathcal U(0, 1)$
+and averaging $f(X_i)$ over all these samples:
+\[
+    \widehat I_N = \frac{1}{N} \sum_{n=1}^{N} u(X_n).
+\]
+The quantity $\widehat I_N$,
+where the subscript~$N$ denotes the number of samples employed,
+is itself a random variable;
+it is called an \emph{estimator} of the exact integral~$I$.
+In Julia, the calculation of the integral using the Monte Carlo method can be achieved with the following code.
+\begin{minted}{julia}
+    N = 1000
+    u(x) = x^2
+    X = rand(N)
+    Î = (1/N) * sum(u.(X))
+\end{minted}
+Since the expectation operator is linear,
+we calculate that
+\[
+    \expect[\widehat I_N] = \frac{1}{N} \sum_{n=1}^{N} \expect \bigl[u(X_n)\bigr] = \frac{1}{N} \sum_{n=1}^{N} \int_{0}^{1} u(x) \, \d x = \frac{1}{N} \sum_{n=1}^{N} I = I.
+\]
+The estimator $\widehat I_N$ is therefore said to be \emph{unbiased},
+because the bias $\expect [\widehat I_N] - I$ is zero.
+Now assume that the function $u$ is square integrable over the interval $[0, 1]$ and let
+\[
+    \sigma^2 := \var[X] = \int_{0}^{1} \lvert u(x) - I \rvert^2 \, \d x,
+\]
+where $\var[X]$ denotes the variance of the random variable $X$.
+We can calculate explicitly the variance of the estimator $\widehat I_N$:
+\begin{align*}
+    \var[\widehat I_N]
+    = \expect \left[ \left( \frac{1}{N} \sum_{n=1}^{N} u(X_n) - I \right)^2 \right]
+    = \expect \left[ \frac{1}{N^2} \sum_{n=1}^{N} \sum_{m=1}^{N} \bigl(u(X_n) - I\bigr) \bigl(u(X_m) - I\bigr) \right].
+\end{align*}
+Since the samples $X_1, X_2, \dotsc$ are independent,
+it holds that
+\[
+    \expect\Bigl[\bigl(u(X_n) - I\bigr) \bigl(u(X_m) - I\bigr)\Bigr] = \delta_{nm} \sigma^2,
+\]
+where $\delta_{mn}$ is the Kronecker delta.
+Consequently, we deduce that
+\begin{align*}
+    \var[\widehat I_N]
+    &=  \frac{1}{N^2} \sum_{n=1}^{N} \sum_{m=1}^{N} \expect \Bigl[ \bigl(u(X_n) - I\bigr) \bigl(u(X_m) - I\bigr) \Bigr]
+    =  \frac{1}{N^2} \sum_{n=1}^{N} \sum_{m=1}^{N} \delta_{mn} \sigma^2 = \frac{\sigma^2}{N}.
+\end{align*}
+Therefore, the variance of $\widehat I_N$ decreases as $1/N$ when the number of samples $N$ increases,
+indicating that the estimator becomes increasingly accurate.
+To state this more precisely,
+we will use Chebyshev's inequality.
+\begin{theorem}
+    [Chebyshev's inequality]
+    Let $Z$ be a random variable with mean $m$ and variance $s^2$.
+    Then for any real $k > 0$,
+    \[
+        \proba \bigl[ |Z - m|  \geq k s \bigr] \leq \frac{1}{k^2}.
+    \]
+\end{theorem}
+Let $\varepsilon > 0$.
+Employing Chebyshev's inequality with $k = \varepsilon / \sqrt{\var[\widehat I_N]}$,
+we obtain
+\begin{equation}
+    \label{eq:chebyshev_monte_carlo}
+    \proba\Bigl[\lvert \widehat I_N - I \rvert \geq \varepsilon \Bigr]
+    \leq \frac{\var[\widehat I_N]}{\varepsilon^2}
+    = \frac{\sigma^2}{N \varepsilon^2}.
+\end{equation}
+Consequently, for any $\varepsilon > 0$,
+the probability that the integration error $\bigl\lvert \widehat I_N - I \bigr\rvert$ is greater than or equal to $\varepsilon$ tends to zero in the limit as $N \to \infty$.
+In probabilistic jargon, we say that $\widehat I_N$ converges \emph{in probability} to~$I$.
+Equation~\eqref{eq:chebyshev_monte_carlo} can also be employed in order to construct a \emph{confidence interval} for the exact integral,
+as we demonstrate in the following paragraph.
+
+\paragraph{Construction of $(1 - \alpha)$ confidence interval.}
+By definition,
+a $(1 - \alpha)$ confidence interval for~$I$ is
+an interval $[x_1, x_2]$ such that the probability that $I \in [x_1, x_2]$ is more than or equal to~$1 - \alpha$.
+To construct such an interval,
+we begin by finding~$\varepsilon$ such that the right-hand side of~\eqref{eq:chebyshev_monte_carlo} is equal to $\alpha$,
+which gives $\varepsilon = \sqrt{\alpha \sigma^2 / N}$.
+For this value of~$\varepsilon$, 
+we have
+\[
+    \proba\Bigl[\lvert \widehat I_N - I \rvert \geq \varepsilon \Bigr] \leq \alpha.
+\]
+Since $\lvert \widehat I_N - I \rvert \geq \varepsilon$ if and only if $I \notin  (\widehat I_N - \varepsilon, \widehat I_N + \varepsilon)$,
+we conclude that
+\[
+    \proba \Bigl[I \in  \left(\widehat I_N - \varepsilon, \widehat I_N + \varepsilon\right) \Bigr]   = 1 - \alpha.
+\]
+We have thus shown that
+\[
+    \left(\widehat I_N - \sqrt{\frac{\alpha \sigma^2}{N}}, \widehat I_N + \frac{\alpha \sigma^2}{N}\right)
+\]
+is a $(1 - \alpha)$ confidence interval for $I$.
+
+% \paragraph{Central limit theorem}
 \section{Exercises}
 \begin{exercise}
     Derive the Simpson's integration rule~\eqref{eq:simpsons}.
@@ -969,25 +1078,9 @@ that of the corresponding one-dimensional rule.
     which concludes the exercise.
 \end{solution}
 
+
 \section{Discussion and bibliography}
-In this chapter,
-we covered mainly \emph{deterministic} integration formulas.
 The presentation of part of the material follows that in~\cite{Legat},
 and some exercises come from~\cite[Chapter 9]{MR2265914}.
-Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
-These methods are based on the connection between integrals and expectations.
-For example, the integral
-\[
-    I = \int_{0}^{1} x^2 \, \d x
-\]
-may be expressed as the expectation $\expect [X^2]$,
-where~$\expect$ is the expectation operator and~$X \sim \mathcal U(0, 1)$ is a uniformly distributed random variable over the interval~$[0, 1]$.
-Therefore, in practice, $I$ may be approximated by generating a large number of samples $X_1, X_2,\dotsc$ from the distribution~$\mathcal U(0, 1)$
-and averaging $f(X_i)$ over all these samples.
-\begin{minted}{julia}
-    n = 1000
-    f(x) = x^2
-    X = rand(n)
-    Î = (1/n) * sum(f.(X))
-\end{minted}
-The main advantage of this approach is that it generalizes very easily to high-dimensional and infinite-dimensional settings.
+The main advantage of probabilistic integration approaches is that
+they generalize naturally to high-dimensional and infinite-dimensional settings.
