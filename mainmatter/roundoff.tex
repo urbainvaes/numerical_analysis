@@ -983,8 +983,8 @@ such as \julia{2^64} evaluating to 0.
     The first task is to determine the member of $\floating_{32}$ that is nearest $x$.
     We have
     \begin{align*}
-        x^- = \max \bigl\{x: x \in \floating_{32} \text{ and } x \leq \sqrt{2}\bigr\} &= 2^{-4} \times (1.10011001100110011001100)_2 \\
-        x^+ = \min \bigl\{x: x \in \floating_{32} \text{ and } x \geq \sqrt{2}\bigr\} &= 2^{-4} \times (1.10011001100110011001101)_2.
+        x^- = \max \bigl\{y: y \in \floating_{32} \text{ and } y \leq x\bigr\} &= 2^{-4} \times (1.10011001100110011001100)_2 \\
+        x^+ = \min \bigl\{y: y \in \floating_{32} \text{ and } y \geq x\bigr\} &= 2^{-4} \times (1.10011001100110011001101)_2.
     \end{align*}
     Since the number $(0.\overline{1100})_2$ is closer to 1 than to 0,
     the number $x$ is closer to $x^+$ than to $x^-$.
