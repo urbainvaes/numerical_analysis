@@ -829,7 +829,7 @@ a $(1 - \alpha)$ confidence interval for~$I$ is
 an interval $[x_1, x_2]$ such that the probability that $I \in [x_1, x_2]$ is greater than or equal to~$1 - \alpha$.
 To construct such an interval,
 we begin by finding~$\varepsilon$ such that the right-hand side of~\eqref{eq:chebyshev_monte_carlo} is equal to $\alpha$,
-which gives $\varepsilon = \sqrt{\alpha \sigma^2 / N}$.
+which gives $\varepsilon = \sqrt{\sigma^2 / N \alpha}$.
 For this value of~$\varepsilon$,
 we have
 \[
@@ -842,7 +842,7 @@ we conclude that
 \]
 We have thus shown that
 \[
-    \left(\widehat I_N - \sqrt{\frac{\alpha \sigma^2}{N}}, \widehat I_N + \frac{\alpha \sigma^2}{N}\right)
+    \left(\widehat I_N - \sqrt{\frac{\sigma^2}{N \alpha}}, \widehat I_N + \sqrt{\frac{\sigma^2}{N \alpha}}\right)
 \]
 is a $(1 - \alpha)$ confidence interval for $I$.
 
@@ -1079,6 +1079,52 @@ is a $(1 - \alpha)$ confidence interval for $I$.
     which concludes the exercise.
 \end{solution}
 
+\begin{compexercise}
+    [Calculating the volume of hyperballs]
+    \label{exercise:hyperballs}
+    Let $B_{d}$ denote the $d$-dimensional unit ball for the Euclidean norm:
+    \[
+        B_{d} = \Bigl\{ \vect x \in \real^d : \norm{\vect x}_p \leq 1 \Bigr\}.
+    \]
+    The volume of $B_{d}$ is defined as the integral of the characteristic function over~$B_d$:
+    \[
+        {\rm vol}(B_d) = \underbrace{\int_{\real^d} \dots \int_{\real^d}}_{\text{$d$ times}} \chi(\vect x) \, \d x_1 \dots \d x_d,
+        \qquad
+        \chi(\vect x) :=
+        \begin{cases}
+            1 & \text{if $\vect x \in B_d$} \\
+            0 & \text{otherwise.}
+        \end{cases}
+    \]
+    Complete the following tasks:
+    \begin{itemize}
+        \item
+            Write a function
+    \begin{minted}{julia}
+        function hyperball_volume(dim, n)
+            # Your code comes here
+            return vol, σ
+        end
+    \end{minted}
+            that calculates the volume of the unit ball $B_{d}$ with $d = \julia{dim}$
+            using a Monte Carlo approach with~$\julia{n}$ samples.
+            Your function should return the estimated volume
+            together with the standard deviation of the estimator
+            (which you should estimate from the samples).
+
+        \item
+            Using the function \julia{hyperball_volume},
+            plot the volumes for $d$ going from 1 to 15, 
+            together with a 99\% confidence interval.
+            See~\cref{fig:hyperballs} for an example solution with $n = 10^7$.
+    \end{itemize}
+\end{compexercise}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/hyperballs.pdf}
+    \caption{Example solution for~\cref{exercise:hyperballs}}%
+    \label{fig:hyperballs}
+\end{figure}
 
 \section{Discussion and bibliography}
 The presentation of part of the material follows that in~\cite{Legat},
