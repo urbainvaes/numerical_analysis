@@ -742,7 +742,8 @@ So far in this chapter,
 we covered only \emph{deterministic} integration formulas.
 Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
 These methods are based on the connection between integrals and expectations.
-To illustrate this approach, we consider the problem of approximating the integral
+To illustrate the simplest probabilistic approach,
+we consider the problem of approximating the integral
 \[
     I = \int_{0}^{1} u(x) \, \d x.
 \]
@@ -774,7 +775,7 @@ The estimator $\widehat I_N$ is therefore said to be \emph{unbiased},
 because the bias $\expect [\widehat I_N] - I$ is zero.
 Now assume that the function $u$ is square integrable over the interval $[0, 1]$ and let
 \[
-    \sigma^2 := \var[X] = \int_{0}^{1} \lvert u(x) - I \rvert^2 \, \d x,
+    \sigma^2 := \var\bigl[u(X)\bigr] := \expect \biggl[ \Bigl(u(X) - \expect \bigl[u(X)\bigr]\Bigr)^2 \biggr]  = \int_{0}^{1} \lvert u(x) - I \rvert^2 \, \d x,
 \]
 where $\var[X]$ denotes the variance of the random variable $X$.
 We can calculate explicitly the variance of the estimator $\widehat I_N$:
@@ -825,7 +826,7 @@ as we demonstrate in the following paragraph.
 \paragraph{Construction of $(1 - \alpha)$ confidence interval.}
 By definition,
 a $(1 - \alpha)$ confidence interval for~$I$ is
-an interval $[x_1, x_2]$ such that the probability that $I \in [x_1, x_2]$ is more than or equal to~$1 - \alpha$.
+an interval $[x_1, x_2]$ such that the probability that $I \in [x_1, x_2]$ is greater than or equal to~$1 - \alpha$.
 To construct such an interval,
 we begin by finding~$\varepsilon$ such that the right-hand side of~\eqref{eq:chebyshev_monte_carlo} is equal to $\alpha$,
 which gives $\varepsilon = \sqrt{\alpha \sigma^2 / N}$.
