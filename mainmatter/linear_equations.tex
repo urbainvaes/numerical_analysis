@@ -26,7 +26,7 @@ There are two main approaches for solving linear systems:
 \begin{itemize}
     \item
         Direct methods enable to calculate the exact solution to systems of linear equations,
-        up to round-off errors.
+        up to round-off errors, in a finite number of steps.
         Although this is an attractive property,
         direct methods are usually too computationally costly for large systems:
         The cost of inverting a general $n \times n$ matrix,
@@ -120,28 +120,16 @@ We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real
 \end{proof}
 \Cref{proposition:linear_perturbation_rhs} implies that
 the relative condition number of~\eqref{eq:linear_system} with respect to perturbations of the right-hand side is bounded from above by $\norm{\mat A} \norm{\mat A^{-1}}$.
-\Cref{exercise:linear_sharp_inequality} shows that there are values of $\vect x$ and $\Delta \vect b$ for which the inequality~\eqref{eq:linear_perturbation_rhs} is sharp.
+\Cref{exercise:linear_sharp_inequality} shows that there are values of $\vect x$ and $\Delta \vect b$ for which the inequality~\eqref{eq:linear_perturbation_rhs} is an equality,
+indicating that the inequality is sharp.
 
 Studying the impact of perturbations of the matrix~$\mat A$ is slightly more difficult,
-because this time the variation~$\Delta \vect x$ of the solution does not depend linearly on the perturbation.
-\begin{proposition}
-    [Perturbation of the matrix]
-    \label{proposition:linear_perturbation_matrix}
-    Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b$.
-    If $\mat A$ is invertible and $\norm{\Delta \mat A} < \norm{\mat A^{-1}}^{-1}$,
-    then
-    \begin{equation}
-        \label{eq:linear_perturbation_matrix}
-        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
-        \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
-        \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right).
-    \end{equation}
-\end{proposition}
-Before proving this result,
+because this time the variation~$\Delta \vect x$ of the solution does not depend linearly on the perturbation of the data.
+Before stating and proving the main result,
 we show an ancillary lemma.
 \begin{lemma}
     \label{lemma:linear_inverse_neumann}
-    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} < 1$.
+    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} < 1$ in some submultiplicative matrix norm~$\norm{\placeholder}$.
     Then $\mat I - \mat B$ is invertible and
     \begin{equation}
         \label{eq:linear_bound_inverse_perturbation_identity}
@@ -152,13 +140,29 @@ we show an ancillary lemma.
 \end{lemma}
 \begin{proof}
     It holds for any matrix $\mat B \in \real^{n \times n}$ that
-    \[
+    \begin{equation}
+        \label{eq:first_equation_neumann}
         \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n).
-    \]
+    \end{equation}
     Since $\norm{\mat B} < 1$ in a submultiplicative matrix norm,
-    both sides of the equation are convergent in the limit as $n \to \infty$,
-    with the left-hand side converging to identity matrix $\mat I$.
-    Equating the limits,
+    both sides of the equation are convergent in the limit as $n \to \infty$.
+    The left-hand side converges to the identity matrix $\mat I$,
+    and the right-hand side converges as $n \to \infty$ because $\{\mat S_0, \mat S_1, \dotsc\}$ with
+    \[
+        \mat S_n := \mat I + \mat B + \dotsb + \mat B^n
+    \]
+    is a Cauchy sequence in the vector space of matrices endowed with the norm for which~$\norm{\mat B} < 1$.
+    Indeed, by the triangle inequality and the submultiplicative property of the norm,
+    it holds that
+    \begin{align*}
+        \norm{\mat S_{n+m} - \mat S_n}
+        &= \norm{\mat B^{n+1} + \dotsb + \mat B^{n+m}} \\
+        &\leq \norm{\mat B^{n+1}} + \dotsb + \norm{\mat B^{n+m}}
+        \leq \norm{\mat B}^{n+1} + \dotsb + \norm{\mat B}^{n+m} \\
+        &\leq  \frac{\norm{\mat B}^{n+1}}{1 - \norm{\mat B}} \xrightarrow[n \to \infty]{} \mat 0,
+    \end{align*}
+    where we employed the formula for a geometric series in the last inequality.
+    Equating the limits of both sides of~\eqref{eq:first_equation_neumann},
     we obtain
     \[
         \mat I = (\mat I - \mat B) \sum_{i=0}^{\infty} \mat B^i.
@@ -184,15 +188,27 @@ we show an ancillary lemma.
     using the continuity of the norm enables to conclude the proof.
 \end{proof}
 
+\begin{proposition}
+    [Perturbation of the matrix]
+    \label{proposition:linear_perturbation_matrix}
+    Let $\vect x + \Delta \vect x$ denote the solution to the perturbed equation $(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b$.
+    If $\mat A$ is invertible and $\norm{\Delta \mat A} < \norm{\mat A^{-1}}^{-1}$,
+    then
+    \begin{equation}
+        \label{eq:linear_perturbation_matrix}
+        \frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+        \leq \norm{\mat A} \norm{\mat A^{-1}} \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
+        \left(\frac{1}{1 - \norm{\mat A^{-1} \Delta \mat A}} \right).
+    \end{equation}
+\end{proposition}
 \begin{proof}
-    [Proof of \cref{proposition:linear_perturbation_matrix}]
-    Left-multiplying both side with $\mat A^{-1}$,
+    Left-multiplying both sides of the perturbed equation with $\mat A^{-1}$,
     we obtain
     \begin{equation}
         \label{eq:linear_perturbation_matrix_initial}
-        (\mat I + \mat A^{-1} \Delta \mat A) (\vect x + \Delta \vect x) = \vect x
+        \left(\mat I + \mat A^{-1} \Delta \mat A\right) (\vect x + \Delta \vect x) = \vect x
         \quad \Leftrightarrow \quad
-        (\mat I + \mat A^{-1} \Delta \mat A) \Delta \vect x = - \mat A^{-1} \Delta \mat A \vect x.
+        \left(\mat I + \mat A^{-1} \Delta \mat A\right) \Delta \vect x = - \mat A^{-1} \Delta \mat A \vect x.
     \end{equation}
     Since $\norm{\mat A^{-1} \Delta \mat A} \leq \norm{\mat A^{-1}} \norm{\Delta \mat A} < 1$ by assumption,
     we deduce from~\cref{lemma:linear_inverse_neumann} that the matrix on the left-hand side is invertible
@@ -226,7 +242,9 @@ This motivates the following definition.
     defined in \cref{definition:pnorm_vector},
     is denoted by $\kappa_p(\mat A)$.
 \end{definition}
-Note that the condition number $\kappa(\mat A)$ associated with an induced norm is at least one.
+Note that the condition number $\kappa(\mat A)$ associated with an induced norm,
+i.e.\ a matrix norm induced by a vector norm, 
+is at least one.
 Indeed, since the identity matrix has induced norm 1,
 it holds that
 \[
@@ -238,7 +256,7 @@ the condition number $\kappa_2$ corresponding to the $2$-norm is equal to
 \[
     \kappa_2(\mat A) = \sqrt{\frac{\lambda_{\max}(\mat A^\t \mat A)}{\lambda_{\min}(\mat A^\t \mat A)}},
 \]
-where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both real and positive) eigenvalues of $\mat A$.
+where $\lambda_{\max}(\mat A^\t \mat A)$ and $\lambda_{\min}(\mat A^\t \mat A)$ are the maximal and minimal (both real and positive) eigenvalues of the matrix $\mat A^\t \mat A$.
 \begin{example}
     [Perturbation of the matrix]
     Consider the following linear system
@@ -251,13 +269,13 @@ where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both re
         \end{pmatrix}
         = \begin{pmatrix}
             0 \\
-            .01
+            0.01
         \end{pmatrix},
         \qquad
         \mat A
         = \begin{pmatrix}
             1 & 0 \\
-            0 & .01
+            0 & 0.01
         \end{pmatrix},
         \qquad
         \Delta \mat A =
@@ -266,7 +284,7 @@ where $\lambda_{\max}$ and $\lambda_{\min}$ are the maximal and minimal (both re
             0 & \varepsilon
         \end{pmatrix},
     \]
-    where $0 < \varepsilon \ll .01$.
+    where $0 < \varepsilon \ll 0.01$.
     Here the eigenvalues of $\mat A$ are given by $\lambda_1 = 1$ and $\lambda_2 = 0.01$.
     The solution when $\varepsilon = 0$ is given by $(0, 1)^\t$,
     and the solution to the perturbed equation is
