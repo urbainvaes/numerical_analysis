@@ -839,7 +839,7 @@ we have
 Since $\lvert \widehat I_N - I \rvert \geq \varepsilon$ if and only if $I \notin  (\widehat I_N - \varepsilon, \widehat I_N + \varepsilon)$,
 we conclude that
 \[
-    \proba \Bigl[I \in  \left(\widehat I_N - \varepsilon, \widehat I_N + \varepsilon\right) \Bigr]   
+    \proba \Bigl[I \in  \left(\widehat I_N - \varepsilon, \widehat I_N + \varepsilon\right) \Bigr]
     \geq 1 - \alpha.
 \]
 We have thus shown that
@@ -1086,7 +1086,7 @@ is a $(1 - \alpha)$ confidence interval for $I$.
     \label{exercise:hyperballs}
     Let $B_{d}$ denote the $d$-dimensional unit ball for the Euclidean norm:
     \[
-        B_{d} = \Bigl\{ \vect x \in \real^d : \norm{\vect x}_p \leq 1 \Bigr\}.
+        B_{d} = \Bigl\{ \vect x \in \real^d : \norm{\vect x} \leq 1 \Bigr\}.
     \]
     The volume of $B_{d}$ is defined as the integral of the characteristic function over~$B_d$:
     \[
@@ -1103,20 +1103,20 @@ is a $(1 - \alpha)$ confidence interval for $I$.
         \item
             Write a function
     \begin{minted}{julia}
-        function hyperball_volume(dim, n)
-            # Your code comes here
-            return vol, σ
-        end
+    function hyperball_volume(dim, n)
+        # Your code comes here
+        return vol, σ
+    end
     \end{minted}
             that calculates the volume of the unit ball $B_{d}$ with $d = \julia{dim}$
             using a Monte Carlo approach with~$\julia{n}$ samples.
-            Your function should return the estimated volume
+            Your function should return an estimation of the volume
             together with the standard deviation of the estimator
             (which you should estimate from the samples).
 
         \item
             Using the function \julia{hyperball_volume},
-            plot the volumes for $d$ going from 1 to 15, 
+            plot the volumes for $d$ going from 1 to 15,
             together with a 99\% confidence interval.
             See~\cref{fig:hyperballs} for an example solution with $n = 10^7$.
     \end{itemize}
@@ -1124,7 +1124,7 @@ is a $(1 - \alpha)$ confidence interval for $I$.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/hyperballs.pdf}
-    \caption{Example solution for~\cref{exercise:hyperballs}}%
+    \caption{Example solution for~\cref{exercise:hyperballs}.}%
     \label{fig:hyperballs}
 \end{figure}
 
