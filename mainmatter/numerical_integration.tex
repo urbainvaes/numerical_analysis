@@ -650,8 +650,8 @@ Specifically, we prove that the integration nodes are given by the roots of a Le
     \[
         p(x) = q(x) L_{n+1}(x) + r(x).
     \]
-    The quotient $q$ and the remainder $r$ can be obtained by Euclidean division.
-    Since $L_{n+1}$ is orthogonal to any polynomial in~$\poly(n)$,
+    The quotient $q$ and the remainder $r$ can be obtained by Euclidean division of $p$ by $L_{n+1}$.
+    Since~$L_{n+1}$ is orthogonal to any polynomial in~$\poly(n)$,
     in particular $q$,
     and the nodes $(x_i)_{i \in \{0,\dotsc n\}}$ are the roots of~$L_{n+1}$,
     it holds that
@@ -740,18 +740,19 @@ that of the corresponding one-dimensional rule.
 \section{Introduction to probabilistic integration methods}
 So far in this chapter,
 we covered only \emph{deterministic} integration formulas.
-Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using Monte Carlo approaches.
+Much of the research around the calculation of high-dimensional integrals today is concerned with~\emph{probabilistic} integration methods using probabilistic approaches.
 These methods are based on the connection between integrals and expectations.
 To illustrate the simplest probabilistic approach,
+called the \emph{Monte Carlo method},
 we consider the problem of approximating the integral
 \[
     I = \int_{0}^{1} u(x) \, \d x.
 \]
-The integral may be expressed as the expectation $\expect \bigl[u(X)\bigr]$,
+This integral may be expressed as the expectation $\expect \bigl[u(X)\bigr]$,
 where~$\expect$ is the expectation operator and~$X \sim \mathcal U(0, 1)$ is a uniformly distributed random variable over the interval~$[0, 1]$.
 Therefore, in practice,
 the integral $I$ may be approximated by generating a large number of \emph{independent} samples $X_1, X_2,\dotsc$ drawn from the distribution~$\mathcal U(0, 1)$
-and averaging $f(X_i)$ over all these samples:
+and averaging $f(X_i)$ over all of these samples:
 \[
     \widehat I_N = \frac{1}{N} \sum_{n=1}^{N} u(X_n).
 \]
@@ -823,10 +824,10 @@ In probabilistic jargon, we say that $\widehat I_N$ converges \emph{in probabili
 Equation~\eqref{eq:chebyshev_monte_carlo} can also be employed in order to construct a \emph{confidence interval} for the exact integral,
 as we demonstrate in the following paragraph.
 
-\paragraph{Construction of $(1 - \alpha)$ confidence interval.}
+\paragraph{Construction of a $(1 - \alpha)$ confidence interval.}
 By definition,
 a $(1 - \alpha)$ confidence interval for~$I$ is
-an interval $[x_1, x_2]$ such that the probability that $I \in [x_1, x_2]$ is greater than or equal to~$1 - \alpha$.
+an interval $[z_1, z_2]$ such that the probability that $I \in [z_1, z_2]$ is greater than or equal to~$1 - \alpha$.
 To construct such an interval,
 we begin by finding~$\varepsilon$ such that the right-hand side of~\eqref{eq:chebyshev_monte_carlo} is equal to $\alpha$,
 which gives $\varepsilon = \sqrt{\sigma^2 / N \alpha}$.
@@ -838,7 +839,8 @@ we have
 Since $\lvert \widehat I_N - I \rvert \geq \varepsilon$ if and only if $I \notin  (\widehat I_N - \varepsilon, \widehat I_N + \varepsilon)$,
 we conclude that
 \[
-    \proba \Bigl[I \in  \left(\widehat I_N - \varepsilon, \widehat I_N + \varepsilon\right) \Bigr]   = 1 - \alpha.
+    \proba \Bigl[I \in  \left(\widehat I_N - \varepsilon, \widehat I_N + \varepsilon\right) \Bigr]   
+    \geq 1 - \alpha.
 \]
 We have thus shown that
 \[
