@@ -827,7 +827,9 @@ as we demonstrate in the following paragraph.
 \paragraph{Construction of a $(1 - \alpha)$ confidence interval.}
 By definition,
 a $(1 - \alpha)$ confidence interval for~$I$ is
-an interval $[z_1, z_2]$ such that the probability that $I \in [z_1, z_2]$ is greater than or equal to~$1 - \alpha$.
+an interval $[z_1, z_2]$,
+the endpoints of which being random variables,
+such that the probability that $I \in [z_1, z_2]$ is greater than or equal to~$1 - \alpha$.
 To construct such an interval,
 we begin by finding~$\varepsilon$ such that the right-hand side of~\eqref{eq:chebyshev_monte_carlo} is equal to $\alpha$,
 which gives $\varepsilon = \sqrt{\sigma^2 / N \alpha}$.
