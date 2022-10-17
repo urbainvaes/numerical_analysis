@@ -130,7 +130,8 @@ which are given by
 \[
     \varphi_{i}(x)
     = \frac{(x - x_0) (x - x_1) \dotsc (x - x_{i-1}) (x - x_{i+1}) \dotsc (x - x_n)}
-    {(x_i - x_0) (x_i - x_1) \dotsc (x_i - x_{i-1}) (x_i - x_{i+1}) \dotsc (x_i - x_n)}.
+    {(x_i - x_0) (x_i - x_1) \dotsc (x_i - x_{i-1}) (x_i - x_{i+1}) \dotsc (x_i - x_n)}
+    = \frac{\Pi_{j \neq i}(x - x_j)} {\Pi_{j \neq i} (x_i - x_j)}
 \]
 It is simple to check that
 \[
@@ -143,7 +144,7 @@ It is simple to check that
 \]
 Finding the interpolant in this basis is immediate:
 \[
-    \widehat u(x) = u_1 \varphi_1(x) + \dotsb + u_n \varphi_n(x).
+    \widehat u(x) = u_0 \varphi_0(x) + \dotsb + u_n \varphi_n(x).
 \]
 While simple, this approach to polynomial interpolation has a few disadvantages:
 \begin{itemize}

@@ -243,7 +243,7 @@ This motivates the following definition.
     is denoted by $\kappa_p(\mat A)$.
 \end{definition}
 Note that the condition number $\kappa(\mat A)$ associated with an induced norm,
-i.e.\ a matrix norm induced by a vector norm, 
+i.e.\ a matrix norm induced by a vector norm,
 is at least one.
 Indeed, since the identity matrix has induced norm 1,
 it holds that
@@ -341,7 +341,7 @@ The direct method can be decomposed into three steps:
     \item
         Finally, solve
         \(
-            \mat U \vect x = \vect y.
+            \mat U \vect x = \vect y
         \)
          using a method called \emph{backward substitution}.
 \end{itemize}
@@ -621,7 +621,7 @@ then the pivots are necessarily nonzero and the Gaussian elimination algorithm i
     then the Gaussian elimination algorithm is well-defined and successfully terminates.
 \end{proposition}
 \begin{proof}
-    We denote by $\vect c^{(1)}, \dots \vect c^{(n-1)},$ the columns of the matrix $\mat L - \mat I$.
+    We denote by $\vect c^{(1)}, \dotsc, \vect c^{(n-1)},$ the columns of the matrix $\mat L - \mat I$.
     Then the matrices given by $\mat M_k = \mat I - \vect c^{(k)} \vect e_{k}^\t$,
     for $k \in \{1, \dotsc, n-1 \}$,
     are Gaussian transformations and it holds that
@@ -643,7 +643,7 @@ then the pivots are necessarily nonzero and the Gaussian elimination algorithm i
     % and since $u_{2,1} = 0$ we deduce that $a_{21} - c^{(1)}_2 a_{11} = 0$.
     Then notice that $a^{(k)}_{3,1} = a^{(1)}_{3, 1}$ for all $k \geq 1$,
     because the entry $(3, 1)$ of the matrix $\mat M_2 \mat A^{(1)}$ is given by $a^{(1)}_{3,1} - c^{(2)}_3 a^{(1)}_{2,1} = a^{(1)}_{3,1}$,
-    and the other transformation matrices $\mat M_3, \dotsc, \mat M_{n-1}$ leave the third line invariant.
+    and the other transformation matrices $\mat M_3, \dotsc, \mat M_{n-1}$ leave the third row invariant.
     Consequently, it holds that $a^{(1)}_{3,1} = u_{3,1} = 0$.
     Continuing in this manner,
     we deduce that $\mat A^{(1)}$ is upper triangular in the first column and that,
@@ -2988,6 +2988,73 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
         \mathcal K_n(\mat A, \vect b)
         = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
     \]
+\end{exercise}
+
+\begin{exercise}
+    Write a computer algorithm for calculating the $\mat L \mat U$ decomposition of a square matrix $\mat A \in \real^{n \times n}$,
+    with $\mat L$ unit lower triangular and $\mat U$ upper triangular,
+    not by Gaussian elimination but by comparing the entries of the product $\mat L \mat U$ with those of $\mat A$.
+    To this end, one option is to compare the entries one by one
+    in the order $(1, 1)$, $(1, 2)$, \dots, $(1, n)$, $(2, 1)$, $(2, 2)$, \dots,
+    i.e.\ row by row starting from the top.
+    For example,
+    \begin{itemize}
+        \item
+            Comparing the entry $(1, k)$ with $k \in \{1, \dotsc, n\}$ gives
+            \[
+                \ell_{11} u_{1k} = a_{1k}.
+            \]
+            Since $\ell_{11} = 1$ as $\mat U$ is lower triangular,
+            this gives $u_{1k} = a_{1k}$.
+
+        \item
+            Comparing the entry $(2, 1)$ gives
+            \[
+                \ell_{21} u_{11} = a_{21}
+            \]
+            and so $\ell_{21} = a_{21} / u_{11}$.
+
+        \item
+            Comparing the entry $(2, k)$ with $k \in \{2, \dotsc, n\}$ gives
+            \[
+                \ell_{21} u_{1k} + \ell_{22} u_{2k} = a_{2k}
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$u_{2k}$.
+
+        \item
+            Comparing the entry $(3, 1)$ gives
+            \[
+                \ell_{31} u_{11} = a_{31},
+            \]
+            and so $\ell_{31} / u_{11}$.
+
+        \item
+            Comparing the entry $(3, 1)$ gives
+            \[
+                \ell_{31} u_{11} = a_{31},
+            \]
+            and so $\ell_{31} = a_{31} / u_{11}$.
+
+        \item
+            Comparing the entry $(3, 2)$ gives
+            \[
+                \ell_{31} u_{12} + \ell_{32} u_{22} = a_{32},
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$\ell_{32}$.
+
+        \item
+            Comparing the entry $(3, k)$ with $k \in \{3, \dotsc, n\}$ give
+            \[
+                \ell_{31} u_{1k} + \ell_{32} u_{2k} + \ell_{33} u_{3k} = a_{3k},
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$u_{3k}$.
+    \end{itemize}
+    It is crucial, for this exercise,
+    to first figure out the algorithm on paper,
+    before you start programming.
 \end{exercise}
 
 \section{Discussion and bibliography}%
