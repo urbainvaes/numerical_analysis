@@ -2743,6 +2743,174 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
     which enables to conclude the proof.
 \end{solution}
 
+
+\begin{exercise}
+    \label{exercise:linear_convergence_gauss_seidel}
+    Prove that, if the matrix $\mat A$ is strictly diagonally dominant (by rows or columns),
+    then the Gauss--Seidel method converges, i.e.\ $\rho(\mat M^{-1} \mat N) < 1$.
+    You can use the same approach as in the proof of \cref{proposition:linear_convergence_jacobi}.
+\end{exercise}
+
+\begin{exercise}
+    \label{exercise:linear_independence_conjugate_directions}
+    Let $\mat A \in \real^{n \times n}$ denote a symmetric positive definite matrix,
+    and assume that the vectors $\vect d_1, \dotsc, \vect d_n$ are pairwise $\mat A$-orthogonal directions.
+    Show that $\vect d_1, \dotsc, \vect d_n$ are linearly independent.
+\end{exercise}
+
+\begin{compexercise}
+    [Steepest descent algorithm]
+    Consider the linear system
+    \begin{equation}
+        \label{eq:exercise_linear_system}
+        \mat A \vect x :=
+        \begin{pmatrix}
+            3 & 1 \\ 1 & 3
+        \end{pmatrix}
+        \begin{pmatrix}
+            x_1 \\
+            x_2
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            1 \\
+            1
+        \end{pmatrix} =: \vect b.
+    \end{equation}
+    \begin{itemize}
+        \item
+            Show that $\mat A$ is positive definite.
+
+        \item
+            Draw the contour lines of the function
+            \[
+                f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+            \]
+
+        \item
+            Plot the contour lines of~$f$ in Julia using the function \julia{contourf} from the package \julia{Plots}.
+
+        \item
+            Using \cref{theorem:linear_convergenec_steepest_descent},
+            estimate the number~$K$ of iterations of the steepest descent algorithm required in order to guarantee that $E_K \leq 10^{-8}$,
+            when starting from the vector $\vect x^{(0)} = (2~3)^\t$.
+
+        \item
+            Implement the steepest descent method for finding the solution to~\eqref{eq:exercise_linear_system},
+            and plot the iterates as linked dots over the filled contour of~$f$.
+
+        \item
+            Plot the error $E_k$ as a function of the iteration index,
+            using a linear scale for the $x$ axis and a logarithmic scale for the $y$ axis.
+    \end{itemize}
+\end{compexercise}
+
+\begin{exercise}
+    Compute the number of floating point operations required for performing one iteration of the conjugate gradient method,
+    assuming that the matrix $\mat A$ contains $\alpha \ll n$ nonzero elements per row.
+\end{exercise}
+
+\begin{compexercise}
+    [Solving the Poisson equation over a rectangle]
+    We consider in this exercise Poisson's equation in the domain $\Omega = (0, 2) \times (0, 1)$,
+    equipped with homogeneous Dirichlet boundary conditions:
+    \[
+        \begin{aligned}
+            - \laplacian f(x, y) &= b(x, y), \qquad x \in \Omega, \\
+            f(x) &= 0, \quad \qquad x \in \partial \Omega.
+        \end{aligned}
+    \]
+    The right-hand side is
+    \[
+        b(x, y) = \sin(4\pi x) + \sin(2\pi y).
+    \]
+    A number of methods can be employed in order to discretize this partial differential equation.
+    After discretization, a finite-dimensional linear system of the form~$\mat A \vect x = \vect b$ is obtained.
+    % and solving this system is often the most computationally expensive part of approximating the solution~$f$.
+    A Julia function for calculating the matrix $\mat A$ and the vector $\vect b$ using the finite difference method is given to you on the course website,
+    as well as a function to plot the solution.
+    The goal of this exercise is to solve the linear system using the conjugate gradient method.
+    Use the same stopping criterion as in~\cref{exercise:one_dim_finite_difference}.
+\end{compexercise}
+
+\begin{exercise}
+    Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
+    then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
+    \[
+        \mathcal K_n(\mat A, \vect b)
+        = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
+    \]
+\end{exercise}
+
+\begin{exercise}
+    Write a function \julia{lu(A)} for calculating the $\mat L \mat U$ decomposition of a square matrix $\mat A \in \real^{n \times n}$,
+    with $\mat L$ unit lower triangular and $\mat U$ upper triangular,
+    not by Gaussian elimination but by comparing the entries of the product $\mat L \mat U$ with those of $\mat A$.
+    To this end, one option is to compare the entries one by one
+    in the order $(1, 1)$, $(1, 2)$, \dots, $(1, n)$, $(2, 1)$, $(2, 2)$, \dots,
+    i.e.\ row by row starting from the top.
+    For example,
+    \begin{itemize}
+        \item
+            Comparing the entry $(1, k)$ with $k \in \{1, \dotsc, n\}$ gives
+            \[
+                \ell_{11} u_{1k} = a_{1k}.
+            \]
+            Since $\ell_{11} = 1$ as $\mat U$ is unit lower triangular,
+            this implies that $u_{1k} = a_{1k}$.
+
+        \item
+            Comparing the entry $(2, 1)$ gives
+            \[
+                \ell_{21} u_{11} = a_{21}
+            \]
+            and so $\ell_{21} = a_{21} / u_{11}$.
+
+        \item
+            Comparing the entry $(2, k)$ with $k \in \{2, \dotsc, n\}$ gives
+            \[
+                \ell_{21} u_{1k} + \ell_{22} u_{2k} = a_{2k}.
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$u_{2k}$.
+
+        \item
+            Comparing the entry $(3, 1)$ gives
+            \[
+                \ell_{31} u_{11} = a_{31},
+            \]
+            and so $\ell_{31} = a_{31} / u_{11}$.
+
+        \item
+            Comparing the entry $(3, 2)$ gives
+            \[
+                \ell_{31} u_{12} + \ell_{32} u_{22} = a_{32},
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$\ell_{32}$.
+
+        \item
+            Comparing the entry $(3, k)$ with $k \in \{3, \dotsc, n\}$ gives
+            \[
+                \ell_{31} u_{1k} + \ell_{32} u_{2k} + \ell_{33} u_{3k} = a_{3k},
+            \]
+            Given the previous items,
+            the only unknown in this equation is~$u_{3k}$.
+    \end{itemize}
+    Notice that a pattern seems to be emerging:
+    when going through the entries row by row starting from the top left corner of the matrix,
+    comparing the entry $(i, j)$ provides an equation for $\ell_{ij}$ if~$j < i$,
+    and an equation for $u_{ij}$ if $j \geq i$.
+    Do not use any external package for this exercise.
+
+    \noindent \textbf{Extra credit:} ... if your code is able to exploit the potential banded structure of the matrix passed as argument for better efficiency.
+    Specifically, your code will be tested with a matrix created as follows
+    \begin{minted}{julia}
+        b, n = 5, 10000
+        A = [abs(i-j) <= b ? rand() : 0.0 for i in 1:n, j in 1:n]
+    \end{minted}
+\end{exercise}
+
 \begin{compexercise}
     \label{exercise:one_dim_finite_difference}
     Implement an iterative method based on a splitting for finding a solution to the following linear system on $\real^n$.
@@ -2891,171 +3059,6 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
     for different eigenvalues of $\mu$.}
     \label{fig:modulus_lambdas}
 \end{figure}
-
-\begin{exercise}
-    \label{exercise:linear_convergence_gauss_seidel}
-    Prove that, if the matrix $\mat A$ is strictly diagonally dominant (by rows or columns),
-    then the Gauss--Seidel method converges, i.e.\ $\rho(\mat M^{-1} \mat N) < 1$.
-    You can use the same approach as in the proof of \cref{proposition:linear_convergence_jacobi}.
-\end{exercise}
-
-\begin{exercise}
-    \label{exercise:linear_independence_conjugate_directions}
-    Let $\mat A \in \real^{n \times n}$ denote a symmetric positive definite matrix,
-    and assume that the vectors $\vect d_1, \dotsc, \vect d_n$ are pairwise $\mat A$-orthogonal directions.
-    Show that $\vect d_1, \dotsc, \vect d_n$ are linearly independent.
-\end{exercise}
-
-\begin{compexercise}
-    [Steepest descent algorithm]
-    Consider the linear system
-    \begin{equation}
-        \label{eq:exercise_linear_system}
-        \mat A \vect x :=
-        \begin{pmatrix}
-            3 & 1 \\ 1 & 3
-        \end{pmatrix}
-        \begin{pmatrix}
-            x_1 \\
-            x_2
-        \end{pmatrix}
-        =
-        \begin{pmatrix}
-            1 \\
-            1
-        \end{pmatrix} =: \vect b.
-    \end{equation}
-    \begin{itemize}
-        \item
-            Show that $\mat A$ is positive definite.
-
-        \item
-            Draw the contour lines of the function
-            \[
-                f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
-            \]
-
-        \item
-            Plot the contour lines of~$f$ in Julia using the function \julia{contourf} from the package \julia{Plots}.
-
-        \item
-            Using \cref{theorem:linear_convergenec_steepest_descent},
-            estimate the number~$K$ of iterations of the steepest descent algorithm required in order to guarantee that $E_K \leq 10^{-8}$,
-            when starting from the vector $\vect x^{(0)} = (2~3)^\t$.
-
-        \item
-            Implement the steepest descent method for finding the solution to~\eqref{eq:exercise_linear_system},
-            and plot the iterates as linked dots over the filled contour of~$f$.
-
-        \item
-            Plot the error $E_k$ as a function of the iteration index,
-            using a linear scale for the $x$ axis and a logarithmic scale for the $y$ axis.
-    \end{itemize}
-\end{compexercise}
-
-\begin{exercise}
-    Compute the number of floating point operations required for performing one iteration of the conjugate gradient method,
-    assuming that the matrix $\mat A$ contains $\alpha \ll n$ nonzero elements per row.
-\end{exercise}
-
-\begin{compexercise}
-    [Solving the Poisson equation over a rectangle]
-    We consider in this exercise Poisson's equation in the domain $\Omega = (0, 2) \times (0, 1)$,
-    equipped with homogeneous Dirichlet boundary conditions:
-    \[
-        \begin{aligned}
-            - \laplacian f(x, y) &= b(x, y), \qquad x \in \Omega, \\
-            f(x) &= 0, \quad \qquad x \in \partial \Omega.
-        \end{aligned}
-    \]
-    The right-hand side is
-    \[
-        b(x, y) = \sin(4\pi x) + \sin(2\pi y).
-    \]
-    A number of methods can be employed in order to discretize this partial differential equation.
-    After discretization, a finite-dimensional linear system of the form~$\mat A \vect x = \vect b$ is obtained.
-    % and solving this system is often the most computationally expensive part of approximating the solution~$f$.
-    A Julia function for calculating the matrix $\mat A$ and the vector $\vect b$ using the finite difference method is given to you on the course website,
-    as well as a function to plot the solution.
-    The goal of this exercise is to solve the linear system using the conjugate gradient method.
-    Use the same stopping criterion as in~\cref{exercise:one_dim_finite_difference}.
-\end{compexercise}
-
-\begin{exercise}
-    Show that if $\mat A \in \real^{n \times n}$ is nonsingular,
-    then the solution to the equation $\mat A \vect x = \vect b$ belongs to the Krylov subspace
-    \[
-        \mathcal K_n(\mat A, \vect b)
-        = \Span \Bigl\{ \vect b, \mat A \vect b, \mat A^2 \vect b, \dotsc, \mat A^{n-1} \vect b \Bigr\}.
-    \]
-\end{exercise}
-
-\begin{exercise}
-    Write a computer algorithm for calculating the $\mat L \mat U$ decomposition of a square matrix $\mat A \in \real^{n \times n}$,
-    with $\mat L$ unit lower triangular and $\mat U$ upper triangular,
-    not by Gaussian elimination but by comparing the entries of the product $\mat L \mat U$ with those of $\mat A$.
-    To this end, one option is to compare the entries one by one
-    in the order $(1, 1)$, $(1, 2)$, \dots, $(1, n)$, $(2, 1)$, $(2, 2)$, \dots,
-    i.e.\ row by row starting from the top.
-    For example,
-    \begin{itemize}
-        \item
-            Comparing the entry $(1, k)$ with $k \in \{1, \dotsc, n\}$ gives
-            \[
-                \ell_{11} u_{1k} = a_{1k}.
-            \]
-            Since $\ell_{11} = 1$ as $\mat U$ is lower triangular,
-            this gives $u_{1k} = a_{1k}$.
-
-        \item
-            Comparing the entry $(2, 1)$ gives
-            \[
-                \ell_{21} u_{11} = a_{21}
-            \]
-            and so $\ell_{21} = a_{21} / u_{11}$.
-
-        \item
-            Comparing the entry $(2, k)$ with $k \in \{2, \dotsc, n\}$ gives
-            \[
-                \ell_{21} u_{1k} + \ell_{22} u_{2k} = a_{2k}
-            \]
-            Given the previous items,
-            the only unknown in this equation is~$u_{2k}$.
-
-        \item
-            Comparing the entry $(3, 1)$ gives
-            \[
-                \ell_{31} u_{11} = a_{31},
-            \]
-            and so $\ell_{31} / u_{11}$.
-
-        \item
-            Comparing the entry $(3, 1)$ gives
-            \[
-                \ell_{31} u_{11} = a_{31},
-            \]
-            and so $\ell_{31} = a_{31} / u_{11}$.
-
-        \item
-            Comparing the entry $(3, 2)$ gives
-            \[
-                \ell_{31} u_{12} + \ell_{32} u_{22} = a_{32},
-            \]
-            Given the previous items,
-            the only unknown in this equation is~$\ell_{32}$.
-
-        \item
-            Comparing the entry $(3, k)$ with $k \in \{3, \dotsc, n\}$ give
-            \[
-                \ell_{31} u_{1k} + \ell_{32} u_{2k} + \ell_{33} u_{3k} = a_{3k},
-            \]
-            Given the previous items,
-            the only unknown in this equation is~$u_{3k}$.
-    \end{itemize}
-    It is crucial, for this exercise,
-    to first figure out the algorithm on paper,
-    before you start programming.
-\end{exercise}
 
 \section{Discussion and bibliography}%
 
