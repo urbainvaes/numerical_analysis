@@ -1297,9 +1297,23 @@ is presented in~\cref{figure:linear_example_from_cuthill_mckee}.
 \begin{exercise}
     [Matrix square root]
     \label{exercise:matrix_square_root}
-    Let $\mat A$ be a symmetric positive definite matrix.
-    Show that $\mat A$ has a square root, i.e.\ that there exists a symmetric matrix $\mat B$ such that $\mat B \mat B = \mat A$.
+    Let $\mat A \in \real^{n\times n}$ be a symmetric positive definite matrix.
+    Show that $\mat A$ has a positive definite square root,
+    i.e.\ that there exists a symmetric matrix $\mat B$ such that $\mat B \mat B = \mat A$.
 \end{exercise}
+\begin{solution}
+    Since $\mat A$ is symmetric,
+    there exist a diagonal matrix $\mat D$ and an orthogonal matrix $\mat Q$ such that $\mat A = \mat Q \mat D \mat Q^\t$.
+    Let $\mat D^{1/2}$ denote the diagonal matrix obtained by applying the square root function to the entries of~$\mat D$,
+    and notice that $\mat D^{1/2} \mat D^{1/2} = \mat D$.
+    Then it holds that
+    \[
+        \mat A = \bigl(\mat Q \mat D^{1/2} \mat Q^\t\bigr) \bigl(\mat Q \mat D^{1/2} \mat Q^\t\bigr).
+    \]
+    The matrix $\mat A^{1/2} := \mat Q \mat D^{1/2} \mat Q^\t$ is a square root of the matrix~$\mat A$,
+    in the sense that $\mat A^{1/2} \mat A^{1/2}$,
+    and it is positive definite because the diagonal elements of $\mat D^{1/2}$ are strictly positive.
+\end{solution}
 
 \section{Iterative methods for linear systems}%
 \label{sec:iterative_methods}
@@ -2671,6 +2685,35 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
     \]
     defines a norm on $\real^n$.
 \end{exercise}
+\begin{solution}
+    We need to prove that the three axioms of a norm are satisfied:
+    \begin{itemize}
+        \item 
+            (\textbf{Positivity})
+            Since $\mat A$ is positive definite,
+            it holds that $\norm{\vect x}_{\mat A} > 0$ for any $\vect x \in \real^{n} \setminus \{\vect 0\}$.
+
+        \item 
+            (\textbf{Homogeneity})
+            It is clear that $\norm{c \vect x}_{\mat A} = |c| \norm{\vect x}_{\mat A}$ for any $c \in \real$.
+
+        \item
+            (\textbf{Triangle inequality})
+            Let $\mat A^{1/2}$ denote the positive definite square root of~$\mat A$,
+            which exists by~\cref{exercise:matrix_square_root}.
+            Then 
+            \[
+                \norm{\vect x}_{\mat A} = \norm{\mat A^{1/2} \vect x}_2.
+            \]
+            The triangle inequality for $\norm{\placeholder}_{\mat A}$ then follows from that for~$\norm{\placeholder}_2$:
+            \[
+                \norm{\vect x + \vect y}_{\mat A}
+                = \norm{\mat A^{1/2} \vect x + \mat A^{1/2} \vect y}_2
+                \leq \norm{\mat A^{1/2} \vect x} + \norm{\mat A^{1/2} \vect y}_2
+                = \norm{\vect x}_{\mat A} + \norm{\vect y}_{\mat A}.
+            \]
+    \end{itemize}
+\end{solution}
 
 \begin{exercise}
     Show that the residual satisfies the equation
