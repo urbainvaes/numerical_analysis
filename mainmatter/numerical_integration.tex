@@ -461,7 +461,7 @@ the approximation $J_1(h/2)$ is simply the $y$ intercept of the straight line pa
 If we had tracked the coefficient of $h^2$ in the previous paragraph,
 we would have obtained instead of~\eqref{eq:expansion_richardson} the following equation:
 \[
-    J_1(h/2) = J(0) - J^{(3)}(0) \frac{h^2}{4} + \mathcal O(h^3).
+    J_1(h/2) = J(0) - J^{(2)}(0) \frac{h^2}{4} + \mathcal O(h^3).
 \]
 Provided that we have access also to $J(h/4)$,
 we can also calculate
@@ -472,7 +472,7 @@ At this point,
 it is natural to wonder whether we can combine $J_1(h/2)$ and $J_1(h/4)$ in order to produce an even better approximation of $J(0)$.
 Applying the same reasoning as in the previous section leads us to introduce
 \[
-    J_2(h/4) = \frac{4 J_1(h/2) - J_2(h/4)}{4 - 1} = J(0) + \mathcal O(h^3).
+    J_2(h/4) = \frac{4 J_1(h/4) - J_2(h/2)}{4 - 1} = J(0) + \mathcal O(h^3).
 \]
 This is an exact approximation of $J(0)$ if $J$ is a quadratic polynomial,
 indicating that $J_2(h/4)$ is simply the $y$ intercept of the quadratic polynomial interpolating the function~$J$ through the three points
