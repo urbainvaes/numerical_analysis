@@ -207,7 +207,7 @@ Since $(x - x_i) (x - x_{i+1})$ is nonpositive over the interval $[x_i, x_{i+1}]
 we deduce that
 \[
     \abs*{\int_{x_{i}}^{x_{i+1}} u(x) - \widehat u(x) \, \d x}
-    \leq \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x_{i+1} - x) \, \d x
+    \leq \frac{1}{2} \left( \sup_{\xi \in [a, b]} \abs*{u''(\xi)} \right) \int_{x_{i}}^{x_{i+1}} (x - x_{i}) (x_{i+1} - x) \, \d x
     = C_2 \frac{h^3}{12}.
 \]
 Summing the contributions of all the intervals,
@@ -1094,7 +1094,7 @@ is a $(1 - \alpha)$ confidence interval for $I$.
     \]
     The volume of $B_{d}$ is defined as the integral of the characteristic function over~$B_d$:
     \[
-        {\rm vol}(B_d) = \underbrace{\int_{\real^d} \dots \int_{\real^d}}_{\text{$d$ times}} \chi(\vect x) \, \d x_1 \dots \d x_d,
+        {\rm vol}(B_d) = \underbrace{\int_{\real} \dots \int_{\real}}_{\text{$d$ times}} \chi(\vect x) \, \d x_1 \dots \d x_d,
         \qquad
         \chi(\vect x) :=
         \begin{cases}
