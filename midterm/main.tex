@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{setspace}
 \onehalfspacing
+\usepackage[colorlinks=true]{hyperref}
 \usepackage[outputdir=build,newfloat]{minted}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
@@ -9,6 +10,8 @@
 \usepackage{mathtools}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
+\usepackage{enumitem}
+\setlist[enumerate]{font=\bfseries}
 \input{../macros.tex}
 \begin{document}
 
@@ -80,11 +83,12 @@
             It holds that $(0.\overline{2200})_3 = (0.9)_{10}$.
 
         \item
+            Let $p \in \nat$.
             The set
             \(
-                \Bigl\{ (b_0. b_1 b_2 \dots b_{31})_2 \colon b_i \in \{0, 1\} \Bigr\} \subset \real
+                \bigl\{ (b_0. b_1 b_2 \dots b_{p-1})_2 \colon b_i \in \{0, 1\} \bigr\}
             \)
-            contains $2^{32}$ distinct real numbers.
+            contains $2^{p}$ distinct real numbers.
         % \item
         %     Let~$\madd$ and~$\msub$ denote machine addition and machine subtraction in the $\floating_{64}$ format.
         %     The result of $(10^{10} \madd 0.1) \msub 10^{10}$ is closer to 0.1 than $0.1 \madd (10^{10} \msub 10^{10})$.
@@ -98,16 +102,15 @@
     Throughout this exercise, we assume
     that $x_0 < \dotsc < x_n$ are distinct values and
     that $u \colon \real \to \real$ is a smooth function.
+    The notation $\poly(n)$ denotes the set of polynomials of degree less than or equal to $n$.
 
     \begin{enumerate}
         \item
             \mymarks{4}
-            Are the following statements true or false?
+            Are the following statements true or false? (+1/0/-1)
             \begin{itemize}
                 \item
-                    There exists a unique polynomial~$p \in \poly(n)$,
-                    of degree less than or equal to $n$,
-                    such that
+                    There exists a unique polynomial~$p \in \poly(n)$ such that
                     \begin{equation}
                         \label{eq:interpolation}
                         \forall i \in \{0, \dotsc, n\}, \qquad
@@ -139,6 +142,8 @@
                         S(n) = \sum_{i=1}^{n} \left(i + i^2 + i^3 + i^4\right)
                     \]
                     is a polynomial of degree 5.
+                    (More precisely, there exists a polynomial of degree~5,
+                    say~$q$, such that $S(n) = q(n)$ for all $n \in \nat$.)
 
                 % \item
                 %     Assume that $p \in \poly(n)$ is such that~\eqref{eq:interpolation} is satisfied.
@@ -219,7 +224,7 @@
     which is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
     (Note that the nodes are here numbered starting from 1.)
 
-    \begin{itemize}
+    \begin{enumerate}
         \item
             \mymarks{5}
             Find the nodes and weights of the Gauss--Legendre rule with $n=3$ nodes.
@@ -292,8 +297,8 @@
                             \]
 
                         \item
-                            Equation~\eqref{eq:hermite_interpolation} is true in particular when $p$ is the Hermite interpolation of $u$ at the nodes $x_1, \dotsc, x_n$.
-                            Conclude by using the formula for the interpolation error proved in class:
+                            Notice that equation~\eqref{eq:hermite_interpolation} is true in particular when $p$ is the Hermite interpolation of~$u$ at the nodes~$x_1, \dotsc, x_n$.
+                            Finally, conclude by using the formula for the interpolation error proved in class:
                             if $p$ is the Hermite interpolant of $u$ at the nodes $x_1, \dotsc, x_n$,
                         then
                         \[
@@ -301,7 +306,7 @@
                             u(x) - p(x) = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} (x-x_1)^2 \dotsc (x - x_n)^2.
                         \]
                     \end{itemize}
-    \end{itemize}
+    \end{enumerate}
 
 \end{question}
 
@@ -320,7 +325,7 @@
         := \sup \Bigl\{ \norm{\mat A \vect x}_p : \norm{\vect x}_p = 1 \Bigr\}.
     \]
     Prove, for $\mat A \in \real^{n \times n}$, that
-    \begin{itemize}
+    \begin{enumerate}
         \item
             \mymarks{10}
             $\norm{\mat A}_1$ is given by the maximum absolute column sum:
@@ -335,7 +340,7 @@
             \[
                 \norm{\mat A}_{\infty} = \max_{1 \leq i \leq n}  \sum_{j=1}^{n} \abs{a_{ij}}.
             \]
-    \end{itemize}
+    \end{enumerate}
 
     \textbf{Hint:} In order to prove~\eqref{eq:matrix_1_norm},
     you may find it useful to proceed as follows:
