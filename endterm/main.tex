@@ -10,6 +10,7 @@
 \usepackage{enumitem}
 \usepackage[colorlinks=true]{hyperref}
 \usepackage{cleveref}
+\usepackage{amssymb}
 \setlist[enumerate]{font=\bfseries}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
@@ -592,7 +593,7 @@
     \begin{enumerate}
 
         \item
-            The parabola $p_n$ is required to pass through the points $(0, 1)$, $(\pi, -1)$ and $(2\pi, 0)$.
+            The parabola $p_n$ is required to pass through the points $(0, 1)$, $(\pi, -1)$ and $(2\pi, 1)$.
             It is clear, therefore, that the axis of symmetry of $p_n$ is at $x = \pi$,
             which suggests the ansatz
             \[
@@ -747,12 +748,12 @@
             It is simple to check that the only linear monomial orthogonal to $\ell_0$ is given by $\ell_1(x) = x - 1$.
             Next, by integration by parts we calculate that
             \[
-                \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x 
+                \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x
                 = \int_{0}^{\infty} - (x^2 \e^{-x})' + 2 x \e^{-x} \, \d x = 2.
             \]
             and, similarly,
             \[
-                \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x 
+                \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x
                 = \int_{0}^{\infty} - (x^3 \e^{-x})' + 3 x^2 \e^{-x} \, \d x = 6.
             \]
             Consider the ansatz $\ell_2(x) = x^2 + a \ell_1(x) + b$.
@@ -760,7 +761,7 @@
             it is necessary that
             \begin{align*}
                 0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_0(x) \, \e^{-x} \, \d x = 2 + b, \\
-                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x 
+                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x
                 = 4 + a \int_{0}^{\infty} \ell_1(x) \ell_1(x) \, \ d x = 4 + a.
             \end{align*}
             Therefore, we conclude that $a = -4$ and $b=-2$,
@@ -774,8 +775,8 @@
             To this end, we need only two additional equations,
             it is sufficient to require that, for any $(a,b) \in \real^2$,
             \begin{align*}
-                a + b = 
-                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x 
+                a + b =
+                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x
                 &= w_1 (a + b x_1) + w_2 (a + b x_2) \\
                 &= a (w_1 + w_2) + 2 b (w_1 + w_2) + \sqrt{2} b (w_2 - w_1),
             \end{align*}
