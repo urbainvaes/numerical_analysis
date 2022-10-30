@@ -5,16 +5,43 @@
 \usepackage[outputdir=build,newfloat]{minted}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage{mdframed}
 \usepackage[margin=1.2in]{geometry}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{mathtools}
 \theoremstyle{definition}
 \newtheorem{question}{Question}
 \theoremstyle{remark}
-\newtheorem*{solution}{Solution}
+\newtheorem*{protosolution}{Solution}
 \usepackage{enumitem}
+\usepackage{xcolor}
 \setlist[enumerate]{font=\bfseries}
 \input{../macros.tex}
+
+\definecolor{lightgreen}{HTML}{f1faf8}
+\newenvironment{solutionframe}
+{%
+    \begin{mdframed}[
+        leftmargin=1cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightgreen,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
+\newenvironment{solution}
+{\pushQED{\qed}\renewcommand{\qedsymbol}{$\triangle$}
+\begin{solutionframe}\small \begin{protosolution}}
+{\popQED\end{protosolution}\end{solutionframe}}
+
 \begin{document}
 
 \title{Numerical Analysis: Midterm \\
@@ -472,7 +499,7 @@
                     \ip{L_3, x^2} &= \frac{2}{5} c_3 + \frac{2}{3} a_3.
                 \end{align*}
                 The second equation gives $b_3 = - \frac{3}{5}$,
-                and the other two equations lead to $c_3 = a_3 = 0$. 
+                and the other two equations lead to $c_3 = a_3 = 0$.
                 We conclude that $L_3(x) = x^3 - \frac{3}{5}  x$.
                 The roots of $L_3$ are given by $\left\{- \sqrt{\frac{3}{5}}, 0, \sqrt{\frac{3}{5}} \right\}$,
                 and they coincide with the nodes of the Gauss--Legendre quadrature with 3 nodes.
@@ -500,19 +527,19 @@
                     Show that the weights are all positive: $w_i > 0$ for all $i$.
             \end{itemize}
             \begin{solution}
-                Since~\eqref{eq:interpolation} holds true for all $u \in \poly(2n-1)$,
+                Since~\eqref{gauss_legendre} holds true for all $u \in \poly(2n-1)$,
                 it holds true in particular for the function~$u = \ell_i \in \poly(2n-1)$,
                 which implies that
                 \[
                     \int_{-1}^{1} \ell_i(x) \, \d x = \sum_{i=1}^{n} w_j \ell_i(x_j) = w_i.
                 \]
-                Similarly, since~\eqref{eq:interpolation} holds true also for $u \in \ell_i^2 \in \poly(2n-1)$,
+                Similarly, since~\eqref{gauss_legendre} holds true also for $u \in \ell_i^2 \in \poly(2n-1)$,
                 we deduce that
                 \[
-                    \int_{-1}^{1} \bigl(\ell_i(x)\bigr)^2 \, \d x 
-                    = \sum_{i=1}^{n} w_j \ell_i(x_j) = w_i.
+                    \int_{-1}^{1} \bigl(\ell_i(x)\bigr)^2 \, \d x
+                    = \sum_{i=1}^{n} w_j \bigl(\ell_i(x_j)\bigr)^2 = w_i.
                 \]
-                Since the left-hand side is positive, 
+                Since the left-hand side is positive,
                 we deduce that $w_i > 0$.
             \end{solution}
 
@@ -535,10 +562,11 @@
                                 = \int_{-1}^{1} u(x) - p(x) \, \d x,
                             \end{equation}
                             for \emph{any} polynomial $p \in \poly(2n-1)$ such that
-                            \[
+                            \begin{equation}
+                                \label{eq:polynomial_interp}
                                 \forall i \in \{1, \dotsc, n\}, \qquad
                                 p(x_i) = u(x_i).
-                            \]
+                            \end{equation}
 
                         \item
                             Notice that equation~\eqref{eq:hermite_interpolation} is true in particular when $p$ is the Hermite interpolation of~$u$ at the nodes~$x_1, \dotsc, x_n$.
@@ -550,8 +578,35 @@
                             u(x) - p(x) = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} (x-x_1)^2 \dotsc (x - x_n)^2.
                         \]
                     \end{itemize}
+                    \begin{solution}
+                        Assume that $p \in \poly(2n-1)$ is such that~\eqref{eq:polynomial_interp} is satisfied.
+                        Then by~\eqref{gauss_legendre} we deduce that
+                        \[
+                            \int_{-1}^{1} p(x) \, \d x = \sum_{i=1}^{n} w_i p(x_i) = \sum_{i=1}^{n} w_i u(x_i) = \widehat I_n(u).
+                        \]
+                        Consequently,
+                        we obtain that
+                        \[
+                            I(u) - \widehat I_n(u) = \int_{-1}^1 u(x)  \, \d x - \int_{-1}^1 p(x) \, \d x = \int_{-1}^1 u(x) - p(x) \, \d x.
+                        \]
+                        This equation holds true in particular with $p$ being the Hermite interpolation of~$u$ at the nodes $x_1, \dotsc, x_n$.
+                        Then, using the formula for the interpolation error,
+                        we obtain
+                        \[
+                            u(x) - u(x) = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} (x-x_1)^2 \dotsc (x - x_n)^2
+                            = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} \bigl(L_n(x)\bigr)^2.
+                        \]
+                        Indeed, as shown in class, $L_n$ is a polynomial of degree $n$ with single roots at $x_1, \dotsc, x_n$.
+                        Now we conclude by noting that
+                        \[
+                            \bigl\lvert I(u) - \widehat I_n(u) \bigr\rvert
+                            = \left\lvert \int_{-1}^{1} u(x) - p(x) \, \d x \right\rvert
+                            \leq \int_{-1}^{1} \left\lvert u(x) - p(x) \right\rvert \, \d x
+                            \leq \int_{-1}^{1} \frac{C_{2n}}{(2n)!} \bigl(L_n(x)\bigr)^2 \, \d x,
+                        \]
+                        which concludes the exercise.
+                    \end{solution}
     \end{enumerate}
-
 \end{question}
 
 \newpage
@@ -608,4 +663,53 @@
            \]
     \end{itemize}
 \end{question}
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item
+            Let $\vect e_j$ denote the column vector with a 1 at entry~$j$ and zero everywhere else.
+            Notice that~$\lVert \vect e_j \rVert_1 = 1$ and
+            \[
+                \norm{\mat A \vect e_{j_*}}_1 = \sum_{i=1}^{n} \lvert a_{ij_*} \rvert,
+            \]
+            and so $\norm{\mat A}_1 \geq \sum_{i=1}^{n} a_{ij_*}$.
+            It remains to prove that $\norm{\mat A}_1 \leq \sum_{i=1}^{n} a_{ij_*}$.
+            To this end,
+            it is sufficient to show that $\norm{\mat A \vect x}_1 \leq \sum_{i=1}^{n} a_{ij_*}$ for all $\vect x \in \real^n$ with $\norm{\vect x}_1 = 1$.
+            Take~$\vect x \in \real^n$ with $\norm{\vect x}_1 = 1$.
+            We calculate that
+            \begin{align*}
+                \norm{\mat A \vect x}_1
+                &= \sum_{i=1}^{n} \left\lvert \sum_{j=1}^{n} a_{ij} x_j \right\rvert
+                \leq \sum_{i=1}^{n} \sum_{j=1}^{n} \lvert a_{ij} \rvert \lvert x_j \rvert  \\
+                &=  \sum_{j=1}^{n} \left(\sum_{i=1}^{n} \lvert a_{ij} \rvert\right) \lvert x_j \rvert
+                \leq \sum_{j=1}^{n} \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \lvert x_j \rvert  \\
+                &= \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \sum_{j=1}^{n} \lvert x_j \rvert
+                = \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \norm{\vect x}_1 = \sum_{i=1}^{n}\lvert a_{ij_*} \rvert,
+            \end{align*}
+            implying that $\norm{\mat A}_1 \leq \sum_{i=1}^{n}\lvert a_{ij_*} \rvert$.
+
+        \item
+            Let~$i_*$ denote the index of a row (not necessarily unique) with maximum absolute sum,
+            and let $\vect y$ be a column vector with entry~$j$ equal to $\sign(a_{i_* j})$.
+            Then $\norm{\vect y}_{\infty} = 1$ and
+            \[
+                \norm{\mat A \vect y}_{\infty} = \sum_{j=1}^{n} \abs{a_{i_* j}},
+            \]
+            which implies that $\norm{\mat A}_{\infty} \geq \sum_{j=1}^{n} \abs{a_{i_* j}}$.
+            It remains to prove that $\norm{\mat A}_{\infty} \leq \sum_{j=1}^{n} \abs{a_{i_* j}}$.
+            To this end, take $\vect x \in \real^n$ with $\norm{\vect x}_{\infty} = 1$.
+            Then for all $i \in \{1, \dotsc, n\}$,
+            \begin{align*}
+                \bigl\lvert (\mat A \vect x)_i \bigr\rvert
+                &= \left\lvert \sum_{j=1}^{n} a_{ij} x_j \right\rvert
+                \leq \sum_{j=1}^{n} \lvert a_{ij} \rvert \lvert x_j \rvert
+                \leq \left( \sum_{j=1}^{n} \lvert a_{ij} \rvert \right) \max_{1\leq j \leq n} \abs{x_j} \\
+                &= \left( \sum_{j=1}^{n} \lvert a_{ij} \rvert \right) \norm{\vect x}_{\infty}
+                = \sum_{j=1}^{n} \lvert a_{i j} \rvert
+                \leq \sum_{j=1}^{n} \lvert a_{i_* j} \rvert,
+            \end{align*}
+            which implies that $\norm{\mat A}_{\infty} \leq \sum_{j=1}^{n} \lvert a_{i_* j} \rvert$.
+    \end{enumerate}
+\end{solution}
 \end{document}
