@@ -366,7 +366,9 @@ as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
 
 \begin{proposition}
     \label{proposition:linear_existence_lu}
-    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$ exists and is unique if and only if
+    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$,
+    with $\mat L$ unit lower triangular and $\mat U$ upper triangular,
+    exists and is unique if and only if
     the principal submatrices of $\mat A$ of all orders are nonsingular.
 \end{proposition}
 \begin{proof}
@@ -562,7 +564,7 @@ then the Gaussian transformation matrices exist and are uniquely defined.
     with $k \leq n-2$.
     If~$a^{(k)}_{k+1,k+1} > 0$,
     then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that $\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
-    It is given by $\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$ where
+    This transformation matrix is given by $\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$, where
     \[
         \vect c^{(k+1)} =
         \begin{pmatrix}
@@ -636,7 +638,7 @@ then the pivots are necessarily nonzero and the Gaussian elimination algorithm i
     \]
     is upper triangular.
     Let us use the notation $\mat A^{(k)} = \mat M_{k} \dotsb \mat M_1 \mat A$.
-    Our goal is to show that the matrices~$\mat M_1, \dotsc, \mat M_{n-1}$ are the same as those obtained by Gaussian elimination.
+    Our goal is to show that the matrices~$\mat M_1, \dotsc, \mat M_{n-1}$ are the same as those obtained by the Gaussian elimination algorithm.
 
     Of all the Gaussian transformations $\mat M_1, \dotsc, \mat M_{n-1}$,
     only $\mat M_1$ acts on the second row of the matrix it multiplies.
@@ -656,6 +658,7 @@ then the pivots are necessarily nonzero and the Gaussian elimination algorithm i
 
     The reasoning can then be repeated with other columns,
     in order to deduce that $\mat A^{(k)}$ is upper triangular up to column $k$ and that all the pivots $a^{(k-1)}_{kk}$ are nonzero.
+    Therefore, all the Gaussian transformation matrices are uniquely defined given~\cref{lemma:linear_expression_gaussian_transformations}.
     % Since this uniquely defines the Gaussian transformations by \cref{lemma:linear_expression_gaussian_transformations},
     % we conclude that $\mat L$ is unique, and therefore $\mat U = \mat L^{-1} \mat A$ is also unique.
 \end{proof}
@@ -679,10 +682,9 @@ The Gaussian elimination procedure is summarized as follows.
 \end{algorithmic}
 % \end{algorithm}
 
-Of course,
-in practice it is not necessary to explicitly create the Gaussian transformation matrices,
+In practice, it is not necessary to explicitly create the Gaussian transformation matrices,
 or to perform full matrix multiplications.
-A more realistic, but still very simplified, version of the algorithm in Julia is given below.
+A more realistic version of the algorithm in Julia is given below.
 The code exploits the relation~\eqref{eq:linear_matrix_L} between $\mat L$ and the parameters of the Gaussian transformations.
 \begin{minted}[xleftmargin=\parindent, linenos, mathescape]{julia}
  # A is an invertible matrix of size n x n
@@ -722,8 +724,8 @@ Let us consider the case of a lower triangular system:
 \[
     \mat L \vect y = \vect b
 \]
-Notice that the unknown $y_1$ may be obtained from the first line of the system.
-Then, since $y_1$ is known, the value of $y_2$ can be obtained from the second line, etc.
+Notice that the unknown $y_1$ may be obtained from the first equation of the system.
+Then, since $y_1$ is known, the value of $y_2$ can be obtained from the second equation, etc.
 A simple implementation of this algorithm is as follows:
 \begin{minted}{julia}
     # L is unit lower triangular
@@ -751,7 +753,7 @@ There are two types of pivoting:
 partial pivoting, where only the rows are rearranged through a permutation at each iteration,
 and complete pivoting, where both the rows and the columns are rearranged at each iteration.
 
-Showing rigorously why pivoting is useful requires a detailed analysis and is beyond the scope of this course.
+Showing rigorously why pivoting is useful is beyond the scope of this course.
 In this section, we only present the partial pivoting method.
 Its influence on the condition number of the factors $\mat L$ and $\mat U$ is studied empirically in \cref{exercise:linear_lu_with_partial_pivoting}.
 It is useful at this point to introduce the concept of a row permutation matrix.
@@ -771,7 +773,7 @@ It is useful at this point to introduce the concept of a row permutation matrix.
     \]
 \end{definition}
 When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \times n}$,
-row $i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
+row~$i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
 for all $i \in \{1, \dots, n\}$.
 A permutation matrix has a single entry equal to~1 per row and per column,
 and its inverse coincides with its transpose:~$\mat P^{-1} = \mat P^\t$.
@@ -805,7 +807,7 @@ in position $(k+1, k+1)$ of the product~$\mat P_{k+1} \mat A^{(k)}$, is maximum.
 The matrix $\mat M_{k+1}$ is then the unique Gaussian transformation matrix ensuring that~%
 $\mat A^{(k+1)}$ is upper triangular up to column~$k+1$,
 obtained as in~\cref{lemma:linear_expression_gaussian_transformations}.
-The resulting matrix $\mat A^{(n-1)}$ after $n-1$ steps of the form~\eqref{eq:step_partial_pivoting} is upper triangular and satisfies
+The resulting matrix $\mat A^{(n-1)}$ after~$n-1$ steps of the form~\eqref{eq:step_partial_pivoting} is upper triangular and satisfies
 \[
     \mat A^{(n-1)} = \mat M_{n-1} \mat P_{n-1} \dotsb \mat M_{1} \mat P_{1} \mat A
     \quad \Leftrightarrow \quad
@@ -1372,7 +1374,7 @@ for any initial guess~$\vect x^{(0)}$.
     \[
         \forall k \geq K,
         \qquad
-        \norm{\vect e^{(k)}} \leq \bigl(\rho(A) + \varepsilon\bigr)^k \norm{\vect e^{(0)}}.
+        \norm{\vect e^{(k)}} \leq \bigl(\rho(\mat M^{-1} \mat N) + \varepsilon\bigr)^k \norm{\vect e^{(0)}}.
     \]
 \end{proposition}
 \begin{proof}
@@ -1387,30 +1389,36 @@ for any initial guess~$\vect x^{(0)}$.
     \[
         \vect e^{(k+1)} = (\mat M^{-1} \mat N) \vect e^{(k)}.
     \]
-    Applying this equality repeatedly, we deduce
+    Applying this equality repeatedly,
+    we deduce that
     \[
         \vect e^{(k+1)} = (\mat M^{-1} \mat N)^2 \vect e^{(k-1)} = \dots = (\mat M^{-1} \mat N)^{k+1} \vect e^{(0)}.
     \]
-    Therefore,
-    it holds that
+    If $\rho(\mat M^{-1} \mat N) \geq 1$ and $\vect e^{(0)}$ is proportional to the eigenvector corresponding to the eigenvalue with largest modulus,
+    then the right-hand side of this equation does not converge to 0 in the limit as $k \to 0$,
+    implying that the condition $\rho(\mat M^{-1} \mat N) < 1 $ is necessary to ensure convergence for all initial guess $\vect x^{(0)}$.
+    In order to show that the condition is also sufficient,
+    note that
     \[
         \forall k \geq 0, \qquad
         \norm{\vect e^{(k)}}
         \leq \norm[bigl]{(\mat M^{-1} \mat N)^{k}} \norm{\vect e^{(0)}}.
     \]
-    In order to conclude the proof,
-    we will used Gelfand's formula,
-    proved in~\cref{proposition:matrices_gelfands} of \cref{cha:vectors_and_matrices}.
-    This states that
-    \[
+    By Gelfand's formula,
+    proved in~\cref{proposition:matrices_gelfands} of \cref{cha:vectors_and_matrices},
+    it holds that
+    \begin{equation}
+        \label{eq:gelfand}
         \lim_{k \to \infty} \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} = \rho(\mat M^{-1} \mat N).
-    \]
-    In particular, for all $\varepsilon > 0$ there is $K \in \nat$ such that
+    \end{equation}
+    Therefore, we deduce that $\norm[bigl]{(\mat M^{-1} \mat N)^{k}} \to 0$,
+    and so $\vect e^{(k)} \to \vect 0$, if $\rho(\mat M^{-1} \mat N) < 1$.
+    In addition, it follows from~\eqref{eq:gelfand} that for all $\varepsilon > 0$ there is $K \in \nat$ such that
     \[
         \forall k \geq K, \qquad
         \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} \leq \rho(\mat M^{-1} \mat N) + \varepsilon.
     \]
-    Rearranging this inequality gives that $\norm[bigl]{(\mat M^{-1} \mat N)^{k}} $ the statement.
+    Rearranging this inequality gives the second part of the statement.
 \end{proof}
 
 At this point,
@@ -1435,6 +1443,7 @@ if, respectively,
 \label{ssub:richardson_s_method}
 
 Arguably the simplest splitting of the matrix $\mat A$ is given by $\mat A = \frac{1}{\omega} \mat I - \bigl(\frac{1}{\omega} \mat I - \mat A\bigr)$,
+for some parameter~$\omega \in \real$,
 which leads to \emph{Richardson's method}:
 \begin{equation}
     \label{eq:linear_richardson}
@@ -1453,13 +1462,28 @@ Therefore, the spectral radius is given by
     \rho(\mat M^{-1} \mat N)
     = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}.
 \]
+If the eigenvalues of the matrix~$\mat A$ do not either (i) all have a positive real part or (ii) all have a negative real part,
+then
+\[
+    \forall \omega \in \real,
+    \qquad \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i} \geq 1.
+\]
+In other words,
+by~\cref{proposition:linear_convergence},
+there is for any choice of~$\omega \in \real$ some $\vect x^{(0)}$ such that Richardson's method is non-convergent.
+Therefore, in order for convergence to hold for all~$\vect x^{(0)}$,
+it is necessary that the eigenvalues of $\mat A$ either all have a positive real part,
+or all have a negative real part.
+We focus in the next paragraph on the latter case and we also assume,
+for simplicity, that $\mat A$ is symmetric.
 
 \paragraph{Case of symmetric positive definite $\mat A$.}%
 \label{par:case_of_symmetric_positive_definite_mat_a_}
 If the matrix $\mat A$ is symmetric and positive definite,
-it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
-In order make convergence as fast as possible,
-we want the spectral radius of $\mat M^{-1} \mat N$ to be as small as possible,
+the eigenvalues of $\mat A$ are all real and positive,
+and it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
+In order for convergence to be as fast as possible,
+the spectral radius of $\mat M^{-1} \mat N$ should be as small as possible,
 in view of~\cref{proposition:linear_convergence}.
 Denoting by $\lambda_{\min}$ and $\lambda_{\max}$ the minimum and maximum eigenvalues of $\mat A$,
 it is not difficult to show that
@@ -1502,7 +1526,7 @@ the better the asymptotic rate of convergence.
 \subsubsection{Jacobi's method}%
 \label{ssub:jacobi_s_method}
 In Jacobi's method, the matrix $\mat M$ in the splitting is the diagonal matrix $\mat D$ with the same entries as those of $\mat A$ on the diagonal.
-We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of $\mat A$,
+We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of~$\mat A$,
 without the diagonal.
 One step of the method reads
 \begin{equation}
@@ -1570,7 +1594,7 @@ One step of the method then reads
     \label{eq:linear_gauss_seidel}
     (\mat L + \mat D) \vect x^{(k+1)} = - \mat U \vect x^{(k)} + \vect b
 \end{equation}
-The system can be solved by forward substitution.
+The system is solved by forward substitution.
 The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
 \begin{equation*}
     \left\{
@@ -1584,8 +1608,8 @@ The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
    \right .
 \end{equation*}
 Given $\vect x^{(k)}$,
-the first entry of $\vect x^{(k+1)}$ can be obtained from the first equation.
-Then the value of the second entry can be obtained from the second equation, etc.
+the first entry of $\vect x^{(k+1)}$ is obtained from the first equation.
+Then the value of the second entry is obtained from the second equation, etc.
 Unlike Jacobi's method,
 the Gauss--Seidel method is sequential and the entries of $\vect x^{(k+1)}$ cannot be updated in parallel.
 
@@ -1607,7 +1631,7 @@ It corresponds to the splitting
 \end{equation}
 When $\omega = 1$,
 this is simply the Gauss--Seidel splitting.
-The idea is that,
+The idea of the relaxation method is that,
 by letting $\omega$ be a parameter that can differ from 1,
 faster convergence can be achieved.
 This intuition will be verified later.
@@ -2690,12 +2714,12 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
 \begin{solution}
     We need to prove that the three axioms of a norm are satisfied:
     \begin{itemize}
-        \item 
+        \item
             (\textbf{Positivity})
             Since $\mat A$ is positive definite,
             it holds that $\norm{\vect x}_{\mat A} > 0$ for any $\vect x \in \real^{n} \setminus \{\vect 0\}$.
 
-        \item 
+        \item
             (\textbf{Homogeneity})
             It is clear that $\norm{c \vect x}_{\mat A} = |c| \norm{\vect x}_{\mat A}$ for any $c \in \real$.
 
@@ -2703,7 +2727,7 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
             (\textbf{Triangle inequality})
             Let $\mat A^{1/2}$ denote the positive definite square root of~$\mat A$,
             which exists by~\cref{exercise:matrix_square_root}.
-            Then 
+            Then
             \[
                 \norm{\vect x}_{\mat A} = \norm{\mat A^{1/2} \vect x}_2.
             \]
