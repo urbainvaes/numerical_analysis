@@ -1394,9 +1394,13 @@ for any initial guess~$\vect x^{(0)}$.
     \[
         \vect e^{(k+1)} = (\mat M^{-1} \mat N)^2 \vect e^{(k-1)} = \dots = (\mat M^{-1} \mat N)^{k+1} \vect e^{(0)}.
     \]
+
+    \paragraph{Proof that $\rho(\mat M^{-1} \mat N) < 1$ is necessary for convergence.}
     If $\rho(\mat M^{-1} \mat N) \geq 1$ and $\vect e^{(0)}$ is proportional to the eigenvector corresponding to the eigenvalue with largest modulus,
     then the right-hand side of this equation does not converge to 0 in the limit as $k \to 0$,
     implying that the condition $\rho(\mat M^{-1} \mat N) < 1 $ is necessary to ensure convergence for all initial guess $\vect x^{(0)}$.
+
+    \paragraph{Proof that $\rho(\mat M^{-1} \mat N) < 1$ is sufficient for convergence.}
     In order to show that the condition is also sufficient,
     note that
     \[
@@ -1683,9 +1687,10 @@ which concerns a general splitting $\mat A = \mat M - \mat N$.
         \norm{\mat M^{-1} \mat N}_{\mat A}
         = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
     \]
-    Letting $\vect y = \mat M^{-1} \mat A \vect x$, we calculate
+    Take $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} \leq 1$
+    and let $\vect y = \mat M^{-1} \mat A \vect x$.
+    We calculate
     \begin{align*}
-        \forall \vect x \in \real^n \text{~with~} \norm{\vect x}_{\mat A} \leq 1, \quad
         \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}^2
         &= \vect x^* \mat A \vect x - \vect y^* \mat A \vect x - \vect x^* \mat A \vect y + \vect y^* \mat A \vect y \\
         &= \vect x^* \mat A \vect x - \vect y^* \mat M \mat M^{-1} \mat A \vect x - (\mat M^{-1} \mat A \vect x)^* \mat M^* \vect y + \vect y^* \mat A \vect y \\
@@ -1694,7 +1699,9 @@ which concerns a general splitting $\mat A = \mat M - \mat N$.
         % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
     \end{align*}
     where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
-    This shows that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\), and so $\rho(\mat M^{-1} \mat N) < 1$.
+    This inequality holds true for all $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} = 1$,
+    and so we conclude that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\),
+    which implies that $\rho(\mat M^{-1} \mat N) < 1$.
 \end{proof}
 
 As a corollary,
@@ -1728,7 +1735,7 @@ we obtain a sufficient condition for the convergence of the relaxation method.
 \end{proof}
 Note that \cref{corollary:convergence_relaxation} implies as a particular case
 the convergence of the Gauss--Seidel method when $\mat A$ is Hermitian and positive definite.
-The condition $\omega \in (0, 2)$ is fact necessary for the convergence of the relaxation method,
+The condition $\omega \in (0, 2)$ is in fact necessary for the convergence of the relaxation method,
 not only in the case of a Hermitian positive definite matrix $\mat A$ but in general.
 \begin{proposition}
     [Necessary condition for the convergence of the relaxation method]
@@ -1891,13 +1898,13 @@ the two are related by the equation
 Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
 Likewise, the relative error satisfies
 \[
-     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x}}
+     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x_*}}
      = \frac{\norm{\mat A^{-1} \vect r^{(k)}}}{\norm{\mat A^{-1} \vect b}}
 \]
 and since $\norm{\vect b} = \norm{\mat A \mat A^{-1} \vect b} \leq \norm{\mat A} \norm{\mat A^{-1} \vect b}$,
 we deduce
 \[
-     \frac{\norm{\vect e^{(k)}}}{\vect x}
+    \frac{\norm{\vect e^{(k)}}}{\norm{\vect x_*}}
      \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
 \]
 The fraction on the right-hand side is the \emph{relative residual}.
@@ -1914,7 +1921,7 @@ Given a small number $\varepsilon$ (unrelated to the machine epsilon in \cref{ch
 the following alternatives are available:
 \begin{itemize}
     \item
-        Stop when $\vect r^{(k)} \leq \varepsilon$.
+        Stop when $\norm{\vect r^{(k)}} \leq \varepsilon$.
         The downside of this approach is that
         it is not \emph{scaling invariant}:
         when used for solving the following rescaled system
@@ -2096,7 +2103,7 @@ We are now able to prove the convergence of the steepest descent method.
     \begin{align*}
         E_{k+1}
         &= (\vect x^{(k)} - \omega_k \vect d - \vect x_*)^\t \mat A (\vect x^{(k)} - \omega_k \vect d - \vect x_*) \\
-        &= E_k - 2 \omega_k \vect d^\t \mat A \vect r^{(k)} + \omega_k^2 \vect d^\t \mat A \vect d \\
+        &= E_k - 2 \omega_k \vect d^\t \vect r^{(k)} + \omega_k^2 \vect d^\t \mat A \vect d \\
         &=  E_k - \frac{(\vect d^\t \vect d)^2}{\vect d^\t \mat A \vect d}
         =  \left( 1 - \frac{(\vect d^\t \vect d)^2}{(\vect d^\t \mat A \vect d) (\vect d^\t \mat A^{-1} \vect d)} \right) E_k,
     \end{align*}
@@ -3017,7 +3024,7 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
             1
         \end{pmatrix},
         \qquad
-        h = \frac{1}{n}.
+        h = \frac{1}{n+1}.
     \]
     Plot the norm of the residual as a function of the iteration index.
     Use as stopping criterion the condition
@@ -3026,7 +3033,9 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
         \qquad \varepsilon = 10^{-8}.
     \]
     As initial guess, use a vector of zeros.
-    The code will be tested with $n = 5000$.
+    The code will be tested with $n = 500$.
+    Do not use any library (except for plotting),
+    and do not use the backslash operator.
 
     \vspace{.2cm}
     \noindent \textbf{Extra credit:~\moreinfo} Find a formula for the optimal value of $\omega$ in the relaxation method given $n$.
@@ -3035,105 +3044,105 @@ but this is impossible for a nonzero polynomial of degree $k+1$.
     are useful to this end.
 \end{compexercise}
 
-\begin{solution}
-    \Cref{corollary:convergence_relaxation,proposition:necessary_sor} imply that a sufficient and necessary condition for convergence,
-    when $\mat A$ is Hermitian and positive definite, is that $\omega \in (0, 2)$.
-    Let $M_{\omega} = \frac{1}{\omega} \mat D + \mat L$ and $N_{\omega} = \frac{1-\omega}{\omega} \mat D - \mat U$.
-    A nonzero scalar $\lambda \in \complex$ is an eigenvalue of $\mat M_{\omega}^{-1} \mat N_{\omega}$ if and only if
-    \[
-        \det(\mat M_{\omega}^{-1} \mat N_{\omega} - \lambda \mat I) = 0
-        \quad \Leftrightarrow \quad
-        \det(\mat M_{\omega}^{-1}) \det(\mat N_{\omega} - \lambda \mat M_{\omega}) = 0
-        \quad \Leftrightarrow \quad
-        \det(\lambda \mat M_{\omega} - \mat N_{\omega}) = 0.
-    \]
-    Substituting the expressions of $\mat M_{\omega}$ and $\mat N_{\omega}$,
-    we obtain that this condition can be equivalently rewritten as
-    \[
-        \det\left(\lambda \mat L + \left(\frac{\lambda + \omega - 1}{\omega}\right) \mat D + \mat U\right) = 0
-        \quad \Leftrightarrow \quad
-        \det\left(\sqrt{\lambda} \mat L + \left(\frac{\lambda + \omega - 1}{\omega}\right) \mat D + \sqrt{\lambda}\mat U\right) = 0
-    \]
-    where we used~\eqref{eq:preliminary_equation} for the last equivalence.
-    The equality of the determinants in these two equations is valid for
-    $\sqrt{\lambda}$ denoting either of the two complex square roots of~$\lambda$.
-    This condition is equivalent to
-    \[
-        \det\left(\mat L + \left(\frac{\lambda + \omega - 1}{\sqrt{\lambda}\omega}\right) \mat D + \mat U\right) = 0.
-    \]
-    We recognize from the proof of \cref{proposition:tridiagonal}
-    that this condition is equivalent to
-    \[
-        \frac{\lambda + \omega - 1}{\sqrt{\lambda}\omega}  \in \spectrum(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}).
-    \]
-    In other words, for any $(\lambda, \mu) \in \complex^2$ such that
-    \begin{equation}
-        \label{eq:relationship_lambda_mu}
-        \frac{(\lambda + \omega - 1)^2}{\lambda\omega^2} = \mu^2,
-    \end{equation}
-    it holds that $\mu \in \spectrum(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J})$ if and only if $\lambda \in \spectrum(\mat M_{\omega}^{-1} \mat N_{\omega})$.
-    By~\eqref{eq:linear_eigenvalues_toeplitz},
-    the eigenvalues of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ are real and given by
-    \begin{equation}
-        \label{eq:explicit_eigenvalues_jacobi}
-        \mu_j = \cos \left( \frac{j \pi}{n+1} \right),
-        \qquad 1 \leq j \leq n.
-    \end{equation}
-    Rearranging~\eqref{eq:relationship_lambda_mu},
-    we find
-    \[
-        \lambda^2 + \lambda \left(2(\omega -1) - \omega^2 \mu^2\right) + (\omega - 1)^2  = 0.
-    \]
-    For given $\omega \in (0, 2)$ and $\mu \in \real$,
-    this is a quadratic equation for $\lambda$ with solutions
-    \[
-        \lambda_{\pm} = \left( \frac{\omega^2 \mu^2}{2} + 1 - \omega \right) \pm \omega \mu \sqrt{\frac{\omega^2 \mu^2}{4} + 1 - \omega},
-    \]
-    Since the first bracket is positive when the argument of the square root is positive,
-    it is clear that
-    \[
-        \max \bigl\{ \abs{\lambda_{-}}, \abs{\lambda_{+}} \bigr\}
-        = \left| \frac{\omega^2 \mu^2}{2} + 1 - \omega + \omega \abs{\mu} \sqrt{\frac{\omega^2 \mu^2}{4} + 1 - \omega} \right|.
-    \]
-    Combining this with~\eqref{eq:explicit_eigenvalues_jacobi},
-    we deduce that the spectral radius of $\mat M_{\omega}^{-1} \mat N_{\omega}$ is given by
-    \begin{equation}
-        \label{eq:sor_spectral_radius}
-        \rho(\mat M_{\omega}^{-1} \mat N_{\omega}) =
-        \max_{j \in \{1, \dotsc, n\}} \left| \frac{\omega^2 \mu_j^2}{2} + 1 - \omega + \omega \abs{\mu_j} \sqrt{\frac{\omega^2 \mu_j^2}{4} + 1 - \omega} \right|.
-    \end{equation}
-    We wish to minimize this expression over the interval $\omega \in (0, 2)$.
-    While this can be achieved by algebraic manipulations,
-    we content ourselves here with graphical exploration.
-    \Cref{fig:modulus_lambdas} depicts the amplitude of the modulus in~\eqref{eq:sor_spectral_radius}
-    for different values of $\mu$.
-    It is apparent that, for given $\omega$,
-    the modulus increases as $\mu$ increases,
-    which suggests that
-    \begin{equation}
-        \rho(\mat M_{\omega}^{-1} \mat N_{\omega}) =
-        \left| \frac{\omega^2 \mu_*^2}{2} + 1 - \omega + \omega \abs{\mu_*} \sqrt{\frac{\omega^2 \mu_*^2}{4} + 1 - \omega} \right|,
-        \qquad \mu_* = \rho(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}).
-    \end{equation}
-    The figure also suggests that for a given value of $\mu$,
-    the modulus is minimized at the discontinuity of the first derivative,
-    which occurs when the argument of the square root is zero.
-    We conclude that the optimal $\omega$ satisfies
-    \[
-        \frac{\omega_{\rm opt}^2 \mu_*^2}{4} + 1 - \omega_{\rm opt} = 0
-        \quad \xRightarrow[\omega < 2]{}  \quad
-        \omega_{\rm opt} = 2\frac{1 - \sqrt{1 - \mu_*^2}}{\mu_*^2}
-        = \frac{2}{1 + \sqrt{1 - \mu_*^2}}
-        = \frac{2}{1 + \sin\left(\frac{\pi}{n+1}\right)}.
-    \]
-\end{solution}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figures/optimal_omega.pdf}
-    \caption{Modulus of $\abs{\lambda_+}$ as a function of $\omega$,
-    for different eigenvalues of $\mu$.}
-    \label{fig:modulus_lambdas}
-\end{figure}
+% \begin{solution}
+%     \Cref{corollary:convergence_relaxation,proposition:necessary_sor} imply that a sufficient and necessary condition for convergence,
+%     when $\mat A$ is Hermitian and positive definite, is that $\omega \in (0, 2)$.
+%     Let $M_{\omega} = \frac{1}{\omega} \mat D + \mat L$ and $N_{\omega} = \frac{1-\omega}{\omega} \mat D - \mat U$.
+%     A nonzero scalar $\lambda \in \complex$ is an eigenvalue of $\mat M_{\omega}^{-1} \mat N_{\omega}$ if and only if
+%     \[
+%         \det(\mat M_{\omega}^{-1} \mat N_{\omega} - \lambda \mat I) = 0
+%         \quad \Leftrightarrow \quad
+%         \det(\mat M_{\omega}^{-1}) \det(\mat N_{\omega} - \lambda \mat M_{\omega}) = 0
+%         \quad \Leftrightarrow \quad
+%         \det(\lambda \mat M_{\omega} - \mat N_{\omega}) = 0.
+%     \]
+%     Substituting the expressions of $\mat M_{\omega}$ and $\mat N_{\omega}$,
+%     we obtain that this condition can be equivalently rewritten as
+%     \[
+%         \det\left(\lambda \mat L + \left(\frac{\lambda + \omega - 1}{\omega}\right) \mat D + \mat U\right) = 0
+%         \quad \Leftrightarrow \quad
+%         \det\left(\sqrt{\lambda} \mat L + \left(\frac{\lambda + \omega - 1}{\omega}\right) \mat D + \sqrt{\lambda}\mat U\right) = 0
+%     \]
+%     where we used~\eqref{eq:preliminary_equation} for the last equivalence.
+%     The equality of the determinants in these two equations is valid for
+%     $\sqrt{\lambda}$ denoting either of the two complex square roots of~$\lambda$.
+%     This condition is equivalent to
+%     \[
+%         \det\left(\mat L + \left(\frac{\lambda + \omega - 1}{\sqrt{\lambda}\omega}\right) \mat D + \mat U\right) = 0.
+%     \]
+%     We recognize from the proof of \cref{proposition:tridiagonal}
+%     that this condition is equivalent to
+%     \[
+%         \frac{\lambda + \omega - 1}{\sqrt{\lambda}\omega}  \in \spectrum(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}).
+%     \]
+%     In other words, for any $(\lambda, \mu) \in \complex^2$ such that
+%     \begin{equation}
+%         \label{eq:relationship_lambda_mu}
+%         \frac{(\lambda + \omega - 1)^2}{\lambda\omega^2} = \mu^2,
+%     \end{equation}
+%     it holds that $\mu \in \spectrum(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J})$ if and only if $\lambda \in \spectrum(\mat M_{\omega}^{-1} \mat N_{\omega})$.
+%     By~\eqref{eq:linear_eigenvalues_toeplitz},
+%     the eigenvalues of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ are real and given by
+%     \begin{equation}
+%         \label{eq:explicit_eigenvalues_jacobi}
+%         \mu_j = \cos \left( \frac{j \pi}{n+1} \right),
+%         \qquad 1 \leq j \leq n.
+%     \end{equation}
+%     Rearranging~\eqref{eq:relationship_lambda_mu},
+%     we find
+%     \[
+%         \lambda^2 + \lambda \left(2(\omega -1) - \omega^2 \mu^2\right) + (\omega - 1)^2  = 0.
+%     \]
+%     For given $\omega \in (0, 2)$ and $\mu \in \real$,
+%     this is a quadratic equation for $\lambda$ with solutions
+%     \[
+%         \lambda_{\pm} = \left( \frac{\omega^2 \mu^2}{2} + 1 - \omega \right) \pm \omega \mu \sqrt{\frac{\omega^2 \mu^2}{4} + 1 - \omega},
+%     \]
+%     Since the first bracket is positive when the argument of the square root is positive,
+%     it is clear that
+%     \[
+%         \max \bigl\{ \abs{\lambda_{-}}, \abs{\lambda_{+}} \bigr\}
+%         = \left| \frac{\omega^2 \mu^2}{2} + 1 - \omega + \omega \abs{\mu} \sqrt{\frac{\omega^2 \mu^2}{4} + 1 - \omega} \right|.
+%     \]
+%     Combining this with~\eqref{eq:explicit_eigenvalues_jacobi},
+%     we deduce that the spectral radius of $\mat M_{\omega}^{-1} \mat N_{\omega}$ is given by
+%     \begin{equation}
+%         \label{eq:sor_spectral_radius}
+%         \rho(\mat M_{\omega}^{-1} \mat N_{\omega}) =
+%         \max_{j \in \{1, \dotsc, n\}} \left| \frac{\omega^2 \mu_j^2}{2} + 1 - \omega + \omega \abs{\mu_j} \sqrt{\frac{\omega^2 \mu_j^2}{4} + 1 - \omega} \right|.
+%     \end{equation}
+%     We wish to minimize this expression over the interval $\omega \in (0, 2)$.
+%     While this can be achieved by algebraic manipulations,
+%     we content ourselves here with graphical exploration.
+%     \Cref{fig:modulus_lambdas} depicts the amplitude of the modulus in~\eqref{eq:sor_spectral_radius}
+%     for different values of $\mu$.
+%     It is apparent that, for given $\omega$,
+%     the modulus increases as $\mu$ increases,
+%     which suggests that
+%     \begin{equation}
+%         \rho(\mat M_{\omega}^{-1} \mat N_{\omega}) =
+%         \left| \frac{\omega^2 \mu_*^2}{2} + 1 - \omega + \omega \abs{\mu_*} \sqrt{\frac{\omega^2 \mu_*^2}{4} + 1 - \omega} \right|,
+%         \qquad \mu_* = \rho(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}).
+%     \end{equation}
+%     The figure also suggests that for a given value of $\mu$,
+%     the modulus is minimized at the discontinuity of the first derivative,
+%     which occurs when the argument of the square root is zero.
+%     We conclude that the optimal $\omega$ satisfies
+%     \[
+%         \frac{\omega_{\rm opt}^2 \mu_*^2}{4} + 1 - \omega_{\rm opt} = 0
+%         \quad \xRightarrow[\omega < 2]{}  \quad
+%         \omega_{\rm opt} = 2\frac{1 - \sqrt{1 - \mu_*^2}}{\mu_*^2}
+%         = \frac{2}{1 + \sqrt{1 - \mu_*^2}}
+%         = \frac{2}{1 + \sin\left(\frac{\pi}{n+1}\right)}.
+%     \]
+% \end{solution}
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{figures/optimal_omega.pdf}
+%     \caption{Modulus of $\abs{\lambda_+}$ as a function of $\omega$,
+%     for different eigenvalues of $\mu$.}
+%     \label{fig:modulus_lambdas}
+% \end{figure}
 
 \section{Discussion and bibliography}%
 
