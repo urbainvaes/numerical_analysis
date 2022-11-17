@@ -1,57 +1,19 @@
 \setlength{\OuterFrameSep}{0pt}
 
-\chapter{Linear algebra}%
+\chapter{Background material}%
 \label{cha:vectors_and_matrices}
 \minitoc
 
 In this chapter,
-we collect basic results on vectors and matrices that are useful for this course.
-Throughout these lecture notes,
-we use lower case and bold font to denote vectors, e.g.\ $\vect x \in \complex^n$,
-and upper case to denote matrices, e.g.\ $\mat A \in \complex^{m \times n}$.
-The entries of a vector $\vect x \in \complex^n$ are denoted by~$(x_i)$,
-and those of a matrix $\mat A \in \complex^{m \times n}$ are denoted by~$(a_{ij})$ or~$(a_{i,j})$.
+we collect basic results that are useful for this course.
 
 \section{Inner products and norms}%
 \label{sec:inner_product_and_norm}
 
-We begin by recalling the definitions of the fundamental concepts of \emph{inner product} and \emph{norm}.
+We begin by recalling the definitions of the fundamental concepts of \emph{norm} and \emph{inner product}.
 For generality,
 we consider the case of a \emph{complex} vector space,
 i.e.\ a vector space for which the scalar field is $\complex$.
-\begin{definition}
-    An inner product on a \emph{complex} vector space $\mathcal X$ is a function $\ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex$ satisfying the following axioms:
-    \begin{itemize}
-        \item
-            \textbf{Conjugate symmetry}:
-            Here $\overline \placeholder$ denotes the complex conjugate.
-            \[
-                \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
-                \ip{\vect x, \vect y} = \overline{\ip{\vect y, \vect x}}.
-            \]
-        \item
-            \textbf{Linearity}:
-            For all $(\alpha, \beta) \in \real^2$ and all $(\vect x, \vect y, \vect z) \in \mathcal X^3$,
-            it holds that
-            \[
-                \ip{\alpha \vect x + \beta \vect y, \vect z}
-                = \alpha \ip{\vect x, \vect z} + \beta \ip{\vect y, \vect z}.
-            \]
-
-        \item
-            \textbf{Positive-definiteness}:
-            \[
-                \forall \vect x \in \mathcal X \backslash \{0\}, \qquad
-                \ip{\vect x, \vect x} > 0.
-            \]
-    \end{itemize}
-\end{definition}
-For example, the familiar Euclidean inner product on $\complex^n$ is given by
-\[
-    \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i \overline y_i.
-\]
-A vector space with an inner product is called an \emph{inner product space}.
-
 \begin{definition}
 A norm on a complex vector space $\mathcal X$ is a function $\norm{\placeholder}: \mathcal X \to \real$ satisfying the following axioms:
 \begin{itemize}
@@ -77,13 +39,56 @@ A norm on a complex vector space $\mathcal X$ is a function $\norm{\placeholder}
         \)
 \end{itemize}
 \end{definition}
-Any inner product on $\mathcal X$ induces a norm via the formula
+For example,
+the Euclidean norm on~$\complex^n$ is given by
+\[
+    \norm{\vect x} = \sqrt{x_1 + \dotsc + x_n}.
+\]
+
+\begin{definition}
+    An inner product on a \emph{complex} vector space $\mathcal X$ is a function
+    \[
+        \ip{\placeholder,\placeholder}: \mathcal X \times \mathcal X \to \complex
+    \]
+    satisfying the following axioms:
+    \begin{itemize}
+        \item
+            \textbf{Conjugate symmetry}:
+            Here $\overline \placeholder$ denotes the complex conjugate.
+            \[
+                \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+                \ip{\vect x, \vect y} = \overline{\ip{\vect y, \vect x}}.
+            \]
+        \item
+            \textbf{Linearity}:
+            For all $(\alpha, \beta) \in \complex^2$ and all $(\vect x, \vect y, \vect z) \in \mathcal X^3$,
+            it holds that
+            \[
+                \ip{\alpha \vect x + \beta \vect y, \vect z}
+                = \alpha \ip{\vect x, \vect z} + \beta \ip{\vect y, \vect z}.
+            \]
+
+        \item
+            \textbf{Positive-definiteness}:
+            \[
+                \forall \vect x \in \mathcal X \backslash \{0\}, \qquad
+                \ip{\vect x, \vect x} > 0.
+            \]
+    \end{itemize}
+\end{definition}
+For example, the familiar Euclidean inner product on $\complex^n$ is given by
+\[
+    \ip{\vect x, \vect y} := \sum_{i=1}^{n} x_i \overline y_i.
+\]
+A vector space with an inner product is called an \emph{inner product space}.
+Any inner product on~$\mathcal X$ induces a norm via the formula
 \begin{equation}
     \label{eq:induced_norm}%
     \norm{\vect x} = \sqrt{\ip{\vect x, \vect x}}.
 \end{equation}
 The Cauchy--Schwarz inequality enables to bound inner products using norms.
-It is also useful for showing that the functional defined in~\eqref{eq:induced_norm} satisfies the triangle inequality.
+It is also useful for showing that the functional defined in~\eqref{eq:induced_norm} satisfies the triangle inequality,
+which is the goal of \cref{exercise:triangle_inequality}.
 \begin{proposition}
     [Cauchy--Schwarz inequality]
     \label{proposition:cauchy_shwartz}
@@ -146,7 +151,7 @@ The proof is provided for information purposes.
         \nonumber
         \norm{\vect x} \leq \abs{\lambda_1} \norm{\vect e_1} + \dotsb + \abs{\lambda_n} \norm{\vect e_n}
         &\leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \,
-        \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\} \\
+        \max \Bigl\{\norm{\vect e_1}, \dotsc, \norm{\vect e_n}\Bigr\} \\
         \label{eq:norm_equivalence_one}
         &= \norm{\vect x}_* \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\}.
     \end{align}
@@ -188,8 +193,75 @@ The proof is provided for information purposes.
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:triangle_inequality}
     Using~\cref{proposition:cauchy_shwartz},
     show that the function $\norm{\placeholder}$ defined by~\eqref{eq:induced_norm} satisfies the triangle inequality.
+\end{exercise}
+
+\section{Completeness}
+Assume that $\mathcal X$ is a vector space with a norm~$\norm{\placeholder}$.
+Together, $\mathcal X$ and $\norm{\placeholder}$ form a \emph{normed vector space}.
+A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is convergent in this space
+if there exists $\vect x_* \in \mathcal X$ such that
+\[
+    \norm{\vect x_n - \vect x_*} \to 0 \quad \text{ in the limit $n \to \infty$. }
+\]
+In this case,
+we write or $\lim_{n \to \infty} \vect x_n = \vect x_*$ or $\vect x_n \to \vect x_*$.
+\begin{definition}[Cauchy sequence]
+    A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is said to be Cauchy if for every $\varepsilon > 0$,
+    there exists $N \in \nat$ such that
+    \[
+        \forall m,n \geq N, \qquad
+        \norm{\vect x_n - \vect x_m} \geq \varepsilon.
+    \]
+    The normed vector space $(\mathcal X, \norm{\placeholder})$ is called complete if every Cauchy sequences is convergent.
+\end{definition}
+Every convergent sequence is Cauchy,
+but the converse is not always true.
+
+\begin{example}
+    Consider the case where $\mathcal X = C([-1, 1])$,
+    the space of continuous functions from~$[-1, 1]$ to~$\real$,
+    endowed with the norm
+    \[
+        \norm{f} = \int_{-1}^{1} \abs{f(x)} \, \d x.
+    \]
+    The sequence of functions $(f_n)_{n\geq 0}$ in~$\mathcal X$ given by
+    \[
+        f_n(x) = x^{\frac{1}{2n+1}}
+    \]
+    is Cauchy but not convergent.
+    Indeed, assume by contradiction that there exists~$f_* \in C([-1, 1])$ such that
+    \[
+        \norm{f_n - f_*} \xrightarrow[n \to \infty]{} 0.
+    \]
+    Then $f_*$ must necessarily coincide with sign function:
+    \[
+        {\rm sgn}(x)
+        :=\begin{cases}
+            -1 & \text{if } x < 0, \\
+            0 & \text{if } x = 0, \\
+        1 & \text{if } x > 0. \end{cases}.
+    \]
+    However, this function is discontinuous,
+    and so it does not belong to~$\mathcal X$,
+    which is a contradiction.
+\end{example}
+
+In this course,
+all the spaces encountered are complete.
+For example,
+\begin{itemize}
+    \item $\real^n$ with any vector norm is complete.
+    \item $\complex^{m\times n}$ with any matrix norm is complete.
+\end{itemize}
+In order to show that a sequence is convergent in a complete normed vector space,
+it is sufficient to show that the sequence is Cauchy.
+This approach is used in~\cref{lemma:linear_inverse_neumann} and~\cref{exercise:global_exponential_stability}.
+
+\begin{exercise}
+    Prove that every convergent sequence is Cauchy.
 \end{exercise}
 
 \section{Vector norms}%
@@ -333,7 +405,8 @@ and so is the Frobenius norm.
     Show that the matrix $p$-norm is submultiplicative.
 \end{exercise}
 
-\section{Diagonalization}%
+\newpage
+\section{Diagonalization and spectral theorem}%
 \label{sec:diagonalization}
 
 \begin{definition}
