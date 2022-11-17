@@ -208,6 +208,7 @@ for the open ball of radius $\delta$ around $\vect x \in \real^n$:
             there exists $\delta > 0$ such that
             \[
                 \forall \vect x_0 \in B_{\delta}(\vect x_*), \qquad
+                \forall k \in \nat, \qquad
                 \norm{\vect x_k - \vect x_*} < \varepsilon.
             \]
 
@@ -223,14 +224,14 @@ for the open ball of radius $\delta$ around $\vect x \in \real^n$:
             \]
 
         \item
-            globally exponentially stable if there exists $C > 0$, $\alpha \in (0, 1)$ such that
+            globally exponentially stable if there exists $C > 0$ and $\alpha \in (0, 1)$ such that
             \[
                 \forall \vect x_0 \in \real^n,
                 \quad \forall k \in \nat, \qquad
                 \norm{\vect x_k - \vect x_*} \leq C \alpha^k \norm{\vect x_0 - \vect x_*}.
             \]
         \item
-            Unstable if it is not stable.
+            unstable if it is not stable.
     \end{itemize}
 \end{definition}
 Clearly, global exponential stability implies exponential stability,
@@ -261,13 +262,18 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
     Assume that $\vect F$ is a contraction.
     Then there exists a unique fixed point of~\eqref{eq:fixed_point},
     and it holds that
-    \[
+    \begin{equation}
+        \label{eq:global_exp}
         \forall \vect x_0 \in \real^n,
         \quad \forall k \in \nat, \qquad
         \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
-    \]
+    \end{equation}
 \end{theorem}
 \begin{proof}
+    We prove first existence of the fixed point,
+    then uniqueness, and finally~\eqref{eq:global_exp}.
+
+    \noindent\textbf{Existence.}
     It holds that
     \[
         \norm[big]{\vect x_{k+2} - \vect x_{k+1}}
@@ -288,18 +294,18 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
     implying by completeness that $\vect x_k \to \vect x_*$ in the limit as $k \to \infty$,
     for some limit $\vect x_* \in \real^n$.
     Being a contraction, the function $\vect F$ is continuous,
-    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point} we obtain that $\vect x_*$ is a fixed point of~$\vect F$.
-    Then
-    \begin{equation}
-        \label{eq:contraction}
-        \norm[big]{\vect x_{k} - \vect x_{*}}
-        = \norm[big]{\vect F(\vect x_{k-1}) - \vect F(\vect x_*)}
-        \leq L\norm{\vect x_{k-1} - \vect x_*}
-        \leq \dots \leq L^{k} \norm{\vect x_{0} - \vect x_*},
-    \end{equation}
-    proving the statement.
-    To show the uniqueness of the fixed point,
-    assume $\vect y_*$ is another fixed point.
+    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point}, we obtain that
+    \[
+        \vect x_* = \lim_{k \to \infty} \vect x_{k+1} 
+        = \lim_{k \to \infty} \vect F(\vect x_k) 
+        = \vect F \left( \lim_{k \to \infty} \vect x_k \right) 
+        = \vect F(\vect x_*).
+    \]
+    In other words, $\vect x_*$ is a fixed point of~$\vect F$.
+
+    \vspace{.2cm}
+    \noindent\textbf{Uniqueness.}
+    Assume that $\vect y_*$ is another fixed point.
     Then,
     \begin{equation*}
         \norm[big]{\vect y_* - \vect x_{*}}
@@ -307,6 +313,19 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
         \leq L \norm{\vect y_* - \vect x_*},
     \end{equation*}
     which implies that $\vect y_* = \vect x_*$ since $L < 1$.
+
+    \vspace{.2cm}
+    \noindent\textbf{Global exponential convergence.}
+    Since $\vect F$ is a contraction, 
+    it holds that
+    \begin{equation}
+        \label{eq:contraction}
+        \norm[big]{\vect x_{k} - \vect x_{*}}
+        = \norm[big]{\vect F(\vect x_{k-1}) - \vect F(\vect x_*)}
+        \leq L\norm{\vect x_{k-1} - \vect x_*}
+        \leq \dots \leq L^{k} \norm{\vect x_{0} - \vect x_*},
+    \end{equation}
+    which proves~\eqref{eq:global_exp}.
 \end{proof}
 
 It is possible to prove a weaker, local result under a less restrictive assumptions on the function~$\vect F$.
@@ -335,7 +354,7 @@ The function $\vect F$ is differentiable at $\vect x$ (in the sense of Fréchet)
 there exists a linear operator $\D \vect F_{\vect x} \colon \real^n \to \real^n$ such that
 \begin{equation}
     \label{eq:limit_differentiability}
-    \lim_{\vect h \to 0} \frac{\norm{\vect F(\vect x + \vect h) - \vect F(\vect x) - \D F_{\vect x}(\vect h)}}{\norm{\vect h}}
+    \lim_{\vect h \to 0} \frac{\norm{\vect F(\vect x + \vect h) - \vect F(\vect x) - \D \vect F_{\vect x}(\vect h)}}{\norm{\vect h}}
     = 0.
 \end{equation}
 If $\vect F$ is differentiable,
@@ -364,7 +383,7 @@ and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
     and so the fixed point $\vect x_*$ is locally exponentially stable.
 \end{proposition}
 \begin{proof}
-    Let $\vect x \in B_{\delta}(\vect x_*)$
+    Let $\vect x \in B_{\delta}(\vect x_*)$.
     By the fundamental theorem of calculus and the chain rule,
     we have
     \begin{align*}
