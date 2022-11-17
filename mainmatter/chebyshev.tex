@@ -16,14 +16,33 @@ the Chebyshev polynomials can be defined from
     \forall x \in [1, \infty), \qquad
     T_n(x) = \cosh \bigl(n \arccosh(x)\bigr).
 \end{equation}
-where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$ and $\arccosh = \cosh^{-1}(\theta)$ is the inverse function,
+where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$
+and $\arccosh = \cosh^{-1}$ is the inverse function,
 which is uniquely defined for the codomain~$[0, \infty)$.
 The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
+It is immediate to show from~\eqref{eq:chebyshev} that
+\begin{itemize}
+    \item
+        the roots of $T_n$ are given by
+        \[
+            z_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
+        \]
+        These are illustrated in~\cref{fig:chebyshev_roots}.
+
+    \item
+        The polynomial $T_n$ takes the value 1 or -1 when evaluated at
+        \begin{equation}
+            \label{eq:chebyshev_maxima}
+            x_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
+        \end{equation}
+        More precisely, it holds that $T_n(x_k) = (-1)^k$.
+\end{itemize}
+
 
 \begin{figure}
     \centering
     \begin{tikzpicture}
-        \begin{axis}[domain=-1:1,legend pos=outer north east, samples=500, width=.8\linewidth, height=.4\linewidth,cycle list name=exotic]
+        \begin{axis}[domain=-1:1,legend pos=outer north east, samples=500, width=\linewidth, height=.4\linewidth,cycle list name=exotic]
             \addplot +[mark=none, line width=2pt] {cos(0*acos(x))};
             \addplot +[mark=none, line width=2pt] {cos(1*acos(x))};
             \addplot +[mark=none, line width=2pt] {cos(2*acos(x))};
@@ -44,23 +63,21 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
     and find its expression in the usual polynomial notation.
 \end{exercise}
 \begin{solution}
-    The key idea is to rewrite the cosine function as the real part of a complex exponential:
+    The key idea is to rewrite the cosine function in terms of the complex exponential:
     \[
-        \cos (n \theta) = \Re \left( \e^{\i n \theta} \right)
-            % = \Re \left( \left( \e^{\i \theta} \right)^n \right)
-            = \Re \Bigl( \bigl( \cos (\theta) + \i \sin (\theta) \bigr)^n \Bigr).
+        \cos (n \theta) = \frac{1}{2}\left( \e^{\i n \theta} + \e^{-\i n \theta} \right)
+            = \frac{1}{2}\Bigl( \bigl(\cos(\theta) + \i \sin (\theta)\bigr)^n + \bigl(\cos(\theta) - \i \sin (\theta)\bigr)^n \Bigr).
     \]
     By expanding the power on the right-hand side,
-    we can obtain an expression for $\cos(n \theta)$ in terms of $\cos(\theta)$ and $\sin(\theta)$.
-    By the binomial formula,
-    it holds that
-    \[
+    we obtain
+    \begin{align*}
         \bigl( \cos (\theta) + \i \sin (\theta) \bigr)^n
-        = \sum_{j=0}^{n} \binom{n}{j} \cos(\theta)^{n-j}  \, \i^{j} \, \sin(\theta)^{j}.
-    \]
-    The terms corresponding to odd values of~$j$ are imaginary,
-    and so these cancel out after taking the real part,
-    which leads to
+        &= \sum_{j=0}^{n} \binom{n}{j} \cos(\theta)^{n-j}  \, \i^{j} \, \sin(\theta)^{j} \\
+        \bigl( \cos (\theta) - \i \sin (\theta) \bigr)^n
+        &= \sum_{j=0}^{n} \binom{n}{j} \cos(\theta)^{n-j}  \, (-\i)^{j} \, \sin(\theta)^{j}.
+    \end{align*}
+    The terms corresponding to odd values of~$j$ cancels out in the expression of $\cos(n \theta)$,
+    and so we obtain the following expression for $\cos(n \theta)$ in terms of $\cos(\theta)$ and $\sin(\theta)$:
     \begin{align*}
         \cos (n \theta)
         &= \sum_{j=0}^{\lfloor n/2 \rfloor} \binom{n}{2j} \cos(\theta)^{n-2j}  \i^{2j} \sin(\theta)^{2j} \\
@@ -75,6 +92,7 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 \end{solution}
 
 \begin{exercise}
+    \label{exercise:chebyshev_cosh}
     Show that the same polynomials are obtained from~\eqref{eq:chebyshev_cosh}.
 \end{exercise}
 \begin{solution}
@@ -87,7 +105,7 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
     Using the binomial formula, we obtain
     \begin{align*}
         \cosh(n \xi)
-        &= \frac{1}{2}  \sum_{j=0}^{n} \binom{n}{j} \left( \cosh(\xi)^{n-j} \sinh(\xi)^j + \cosh(\xi)^{n-1} (-1)^j \sinh(\xi)^j \right) \\
+        &= \frac{1}{2}  \sum_{j=0}^{n} \binom{n}{j} \left( \cosh(\xi)^{n-j} \sinh(\xi)^j + \cosh(\xi)^{n-j} (-1)^j \sinh(\xi)^j \right) \\
         &=  \frac{1}{2} \sum_{j=0}^{n} \binom{n}{j} \cosh(\xi)^{n-j} \left( \sinh(\xi)^j + (-1)^j \sinh(\xi)^j \right).
     \end{align*}
     The contributions of the odd values of~$j$ cancel out,
@@ -103,6 +121,29 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
         =  \sum_{j=0}^{\lfloor n / 2 \rfloor} \binom{n}{j} \cosh(\xi)^{n-2j} (\cosh(\xi)^2 - 1)^{j},
     \]
     which after the substitution of $\xi = \arccosh(x)$ leads to~\eqref{eq:expression_chebyshev}.
+\end{solution}
+
+\begin{exercise}
+    [Yet another expression for the Chebyshev polynomials]
+    \label{exercise:yet_another_expression_cheby}
+    Show that $T_n(x)$ may be defined from the formula
+    \begin{equation}
+        \label{eq:chebyshev_polynomials}
+        T_n(x) =
+            \frac{1}{2} \Big(x+\sqrt{x^2-1} \Big)^n + \frac{1}{2} \Big(x-\sqrt{x^2-1} \Big)^n   \qquad & \text{ for }~ |x| \ge 1.
+    \end{equation}
+\end{exercise}
+\begin{solution}
+    We showed in the solution of~\cref{exercise:chebyshev_cosh} that
+    \[
+        \cosh(n \xi)= \frac{1}{2} \Bigl( \bigl(\cosh (\xi) + \sinh(\xi)\bigr)^n  + \bigl(\cosh(\xi) - \sinh(\xi)\bigr)^n \Bigr).
+    \]
+    Letting $\xi = \arccosh(x)$ in this equation and using that $\cosh(\xi)^2 - \sinh(\xi)^2 = 1$,
+    we obtain
+    \[
+        T_n(x) = \frac{1}{2} \Bigl( \bigl(x + \sqrt{x^2 - 1} \bigr)^n  + \bigl(x - \sqrt{x^2 - 1}\bigr)^n \Bigr),
+    \]
+    which is the required formula.
 \end{solution}
 
 \begin{exercise}
@@ -153,19 +194,8 @@ The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
     The statement then follows by recursion, using~\cref{exercise:recursion_chebyshev}.
 \end{solution}
 
-It is immediate to show from~\eqref{eq:chebyshev} that the roots of $T_n$ are given by
-\[
-    z_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
-\]
-The roots are illustrated in~\cref{fig:chebyshev_roots}.
-The polynomial $T_n$ takes the value 1 or -1 when evaluated at
-\begin{equation}
-    \label{eq:chebyshev_maxima}
-    x_k = \cos \left( \frac{k \pi}{n} \right), \qquad k = 0, \dotsc, n.
-\end{equation}
-More precisely, it holds that $T_n(x_k) = (-1)^k$.
-
 \begin{exercise}
+    \label{exercise:auxiliary_chebyshev}
     Let $\xi \in \real \backslash (-1, 1)$.
     Show that, among all the polynomials in $\poly(n)$ that are bounded from above by 1 in absolute value uniformly over the interval $(-1, 1)$,
     the Chebyshev polynomial~$T_n$ achieves the largest absolute value when evaluated at~$\xi$.
@@ -200,7 +230,7 @@ More precisely, it holds that $T_n(x_k) = (-1)^k$.
 \begin{figure}
     \centering
     \begin{tikzpicture}
-        \begin{axis}[unit vector ratio*=1 1 1,, ymin=-0.1, ymax=1.1, xmin=-1.1, xmax=1.1, width=.7\linewidth, cycle list name=exotic, axis lines = middle, xtick={0}, ytick={0, 1}]
+        \begin{axis}[unit vector ratio*=1 1 1,, ymin=-0.1, ymax=1.1, xmin=-1.1, xmax=1.1, width=\linewidth, cycle list name=exotic, axis lines = middle, xtick={0}, ytick={0, 1}]
             \draw [red, thick, domain=0:180, samples=500] plot ({cos(\x)}, {sin(\x)});
             \foreach \k in {0, 1, 2, 3, 4, 5, 6, 7}
             {
@@ -221,3 +251,83 @@ More precisely, it holds that $T_n(x_k) = (-1)^k$.
     \caption{Roots of the Chebyshev polynomial $T_8$.}
     \label{fig:chebyshev_roots}
 \end{figure}
+
+\begin{exercise}
+    \label{exercise:conjugate_gradient_chebyshev}
+    Assume that $0 < x_1 < x_2$.
+    Prove that for any polynomial $p \in \poly(n)$ that satisfies $p(0) = 1$,
+    it holds that
+    \[
+        \sup_{\lambda \in (\lambda_1, \lambda_2)} \abs{p(\lambda)} \geq \frac{1}{T_n(\xi)},
+        \qquad \xi := \frac{\lambda_2 + \lambda_1}{\lambda_2-  \lambda_1},
+    \]
+    with equality for
+    \[
+        p_*(\lambda) = \frac{T_n \left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1} \right)}{T_n \left(\frac{\lambda_1 + \lambda_2}{\lambda_2 - \lambda_1} \right)}.
+    \]
+\end{exercise}
+\begin{solution}
+    Assume that $p \in \poly(n)$ is such that $p(0) = 1$,
+    and let $q \in \poly(n)$ be given by
+    \[
+        q(\mu) = p\left(\frac{\lambda_1 + \lambda_2 - (\lambda_2 - \lambda_1) \mu}{2}\right)
+        \qquad \Leftrightarrow \qquad
+        p(\lambda) = q\left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1}\right).
+    \]
+    Since $\xi > 1$,
+    it follows from~\cref{exercise:auxiliary_chebyshev} that
+    \[
+        p(0) = q(\xi)
+        \leq T_{n}(\xi) \sup_{\mu \in (-1, 1)} \lvert q(\mu) \rvert
+        = T_{n}(\xi) \sup_{\lambda \in (\lambda_1, \lambda_2)} \lvert p(\lambda) \rvert,
+    \]
+    with equality when $q \propto T_n$,
+    i.e.\ when
+    % Rewriting this equation in terms of~$p$, we obtain
+    % \[
+    %     p(0) \leq T_n(\xi) \sup_{\mu \in (\lambda_1, \lambda_2)} \lvert p(\mu) \rvert,
+    % \]
+    % with equality when
+    \[
+        p(\lambda) \propto T_n \left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1} \right).
+    \]
+    The statement then follows from the fact that $p(0) = 1$.
+\end{solution}
+
+\begin{solution}
+    \Cref{exercise:conjugate_gradient_chebyshev} may alternatively be solved without a change of variable,
+    by using a more direct approach similar to that in~\cref{exercise:auxiliary_chebyshev}.
+    Reasoning by contradiction,
+    we assume that there is $q \in \poly(n)$ such that
+    \begin{equation}
+        \label{eq:contradiction_inequatily}
+        \sup_{\lambda \in (\lambda_1, \lambda_2)} \abs{q(\lambda)}
+        <  T_{n}\left(\frac{\lambda_2 + \lambda_1}{\lambda_2 - \lambda_1}\right) ^{-1}.
+    \end{equation}
+    Then $p_* - q$ is a polynomial of degree $n$
+    with a zero at $\lambda = 0$.
+    For $k \in \{0, \dotsc, n\}$, let
+    \[
+        x_k = \frac{\lambda_2 + \lambda_1 - (\lambda_2 - \lambda_1) \cos \left(\frac{k \pi}{n} \right)}{2}.
+    \]
+    By~\eqref{eq:chebyshev_maxima},
+    it holds that
+    \[
+        p_*(x_k) = \frac{T_n \Bigl(\cos\left(\frac{k\pi}{n}\right) \Bigr)}{T_n \left(\frac{\lambda_1 + \lambda_2}{\lambda_2 - \lambda_1} \right)}
+        = \frac{(-1)^j}{T_n \left(\frac{\lambda_1 + \lambda_2}{\lambda_2 - \lambda_1} \right)}
+    \]
+    From this equation and~\eqref{eq:contradiction_inequatily},
+    it follows that
+    \[
+        \forall k \in \{0, \dotsc, n\}, \qquad
+        (p_* - q)(x_k)~\text{is}
+        \begin{cases}
+            \text{strictly positive if $k$ is even,} \\
+            \text{strictly negative if $k$ is odd.}
+        \end{cases}
+    \]
+    This implies, by the intermediate value theorem,
+    that $p_* - q$ has $n$ roots in the interval $[\lambda_1, \lambda_2]$,
+    so $n+1$ roots in total,
+    but this is impossible for a nonzero polynomial of degree $n$.
+\end{solution}

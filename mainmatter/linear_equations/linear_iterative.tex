@@ -1,0 +1,1323 @@
+\section{Iterative methods for linear systems}%
+\label{sec:iterative_methods}
+Iterative methods enjoy more flexibility than direct methods,
+because they can be stopped at any point if the residual is deemed sufficiently small.
+This generally enables to obtain a good solution at a computational cost that is significantly lower than that of direct methods.
+In this section,
+we present and study two classes of iterative methods:
+basic iterative methods based on a splitting of the matrix $\mat A$,
+and the so-called Krylov subspace methods.
+
+\subsection{Basic iterative methods}%
+\label{sub:basic_iterative_methods}
+The basic iterative methods are particular cases of a general \emph{splitting method}.
+Given a splitting of the matrix of the linear system as $\mat A = \mat M - \mat N$,
+for a nonsingular matrix $\mat M \in \real^{n \times n}$ and a matrix $\mat N \in  \real^{n \times n}$,
+together with an initial guess $\vect x^{(0)}$ of the solution,
+one step of this general method reads
+\begin{equation}
+    \label{eq:linear_system_iterative_method}
+    \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b.
+\end{equation}
+For any choice of splitting,
+the exact solution $\vect x_*$ to the linear system is a fixed point of this iteration,
+in the sense that if $\vect x^{(0)} = \vect x_*$, then $\vect x^{(k)} = \vect x_*$ for all $k \geq 0$.
+\Cref{eq:linear_system_iterative_method} is a linear system with matrix~$\mat M$,
+unknown $\vect x^{(k+1)}$, and right-hand side $\mat N \vect x^{(k)} + \vect b$.
+There is a compromise between the cost of a single step and the speed of convergence of the method.
+In the extreme case where $\mat M = \mat A$ and $\mat N = 0$,
+the method converges to the exact solution in one step,
+but performing this step amounts to solving the initial problem.
+In practice, in order for the method to be useful,
+the linear system~\eqref{eq:linear_system_iterative_method} should be relatively simple to solve.
+Concretely, this means that the matrix~$\mat M$ should be diagonal, triangular, block diagonal, or block triangular.
+The error $\vect e^{(k)}$ and residual $\vect r^{(k)}$ at iteration $k$ are defined as follows:
+\[
+    \vect e^{(k)} = \vect x^{(k)} - \vect x_*,
+    \qquad
+    \vect r^{(k)} = \mat A \vect x^{(k)} - \vect b.
+\]
+
+\subsubsection{Convergence of the splitting method}%
+\label{ssub:convergence_of_the_basic_splitting_method}
+Before presenting concrete examples of splitting methods,
+we obtain a necessary and sufficient condition for the convergence of~\eqref{eq:linear_system_iterative_method}
+for any initial guess~$\vect x^{(0)}$.
+
+\begin{proposition}
+    [Convergence]
+    \label{proposition:linear_convergence}
+    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial guess~$\vect x^{(0)}$
+    if and only if $\rho(\mat M^{-1} \mat N) < 1$.
+    In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
+    \begin{equation}
+        \label{eq:additional_claim}
+        \forall k \geq K,
+        \qquad
+        \norm{\vect e^{(k)}} \leq \bigl(\rho(\mat M^{-1} \mat N) + \varepsilon\bigr)^k \norm{\vect e^{(0)}}.
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    Let $\vect x_*$ denote the solution to the linear system.
+    Since $\mat M \vect x_* - \mat N \vect x_* = \vect b$,
+    we have
+    \[
+        \mat M (\vect x^{(k+1)} - \vect x_*) = \mat N (\vect x^{(k)} - \vect x_*).
+    \]
+    Using the assumption that $\mat M$ is nonsingular,
+    we obtain that the error satisfies the equation
+    \[
+        \vect e^{(k+1)} = (\mat M^{-1} \mat N) \vect e^{(k)}.
+    \]
+    Applying this equality repeatedly,
+    we deduce that
+    \begin{equation}
+        \label{eq:error_equation_basic_iterative_method}
+        \vect e^{(k)} = (\mat M^{-1} \mat N) \vect e^{(k-1)} = \dots = (\mat M^{-1} \mat N)^{k} \vect e^{(0)}.
+    \end{equation}
+
+    \paragraph{Proof that $\rho(\mat M^{-1} \mat N) < 1$ is necessary for convergence.}
+    We prove the equivalent claim that if $\rho(\mat M^{-1} \mat N) \geq 1$,
+    then there exists $\vect x^{(0)}$ such that the method is not convergent.
+    Indeed, assume that $\vect x^{(0)} = \vect x_* + \vect v^{(0)}$,
+    where $\vect v^{(0)}$ is the eigenvector of $\mat M^{-1} \mat N$ associated with the eigenvalue of largest modulus.
+    Then $\vect e^{(0)} = \vect v^{(0)}$ and the right-hand side of~\eqref{eq:error_equation_basic_iterative_method} does not converge to 0 in the limit as $k \to 0$,
+    because
+    \[
+        \norm{(\mat M^{-1} \mat N)^{k} \vect e^{(0)}} = \rho(\mat M^{-1} \mat N)^k \norm{\vect v^{(0)}} \geq \norm{\vect v^{(0)}}.
+    \]
+    Thus, the condition $\rho(\mat M^{-1} \mat N) < 1 $ is necessary to ensure convergence for all initial guess $\vect x^{(0)}$.
+
+    \paragraph{Proof that $\rho(\mat M^{-1} \mat N) < 1$ is sufficient for convergence.}
+    In order to show that the condition is also sufficient,
+    note that by~\eqref{eq:error_equation_basic_iterative_method}
+    \[
+        \forall k \geq 0, \qquad
+        \norm{\vect e^{(k)}}
+        \leq \norm[bigl]{(\mat M^{-1} \mat N)^{k}} \norm{\vect e^{(0)}}.
+    \]
+    By Gelfand's formula,
+    proved in~\cref{proposition:matrices_gelfands} of \cref{cha:vectors_and_matrices},
+    it holds that
+    \begin{equation}
+        \label{eq:gelfand}
+        \lim_{k \to \infty} \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} = \rho(\mat M^{-1} \mat N).
+    \end{equation}
+    Therefore, we deduce that if $\rho(\mat M^{-1} \mat N) < 1$,
+    then $\norm[bigl]{(\mat M^{-1} \mat N)^{k}} \to 0$ and so $\vect e^{(k)} \to \vect 0$.
+    In addition, it follows from~\eqref{eq:gelfand} that for all $\varepsilon > 0$ there is $K \in \nat$ such that
+    \[
+        \forall k \geq K, \qquad
+        \norm[bigl]{(\mat M^{-1} \mat N)^{k}}^{\frac{1}{k}} \leq \rho(\mat M^{-1} \mat N) + \varepsilon.
+    \]
+    Rearranging this inequality gives~\eqref{eq:additional_claim}.
+\end{proof}
+
+At this point,
+it is natural to wonder whether there exist sufficient conditions on the matrix~$\mat A$ such that the inequality $\rho(\mat M^{-1} \mat N) < 1$ is satisfied,
+which is best achieved on a case by case basis.
+In the next sections,
+we present four instances of splitting methods.
+For each of them,
+we obtain a sufficient condition for convergence.
+We are particularly interested in the case where the matrix~$\mat A$ is symmetric (or Hermitian) and positive definite,
+which often arises in applications,
+and in the case where $\mat A$ is strictly row or column diagonally dominant.
+We recall that a matrix $\mat A$ is said to be row or column diagonally dominant
+if, respectively,
+\[
+    \lvert a_{ii} \rvert \geq \sum_{j \neq i} \lvert a_{ij} \rvert \quad \forall i
+    \qquad \text{ or } \qquad
+    \lvert a_{jj} \rvert \geq \sum_{i \neq j} \lvert a_{ij} \rvert \quad \forall j.
+\]
+
+\subsubsection{Richardson's method}%
+\label{ssub:richardson_s_method}
+
+Arguably the simplest splitting of the matrix $\mat A$ is given by $\mat A = \frac{1}{\omega} \mat I - \bigl(\frac{1}{\omega} \mat I - \mat A\bigr)$,
+for some parameter~$\omega \in \real$,
+which leads to \emph{Richardson's method}:
+\begin{equation}
+    \label{eq:linear_richardson}
+    \vect x^{(k+1)} = \vect x^{(k)} +  \omega (\vect b - \mat A \vect x^{(k)}).
+\end{equation}
+In this case the spectral radius which enters in the asymptotic rate of convergence is given by
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \rho\left(\omega \left(\frac{1}{\omega} \mat I - \mat A\right) \right)
+    = \rho\bigl( \mat I - \omega \mat A \bigr)
+\]
+The eigenvalues of the matrix $\mat I - \omega \mat A$ are given by $1 - \omega \lambda_i$,
+where $(\lambda_i)_{1 \leq i \leq L}$ are the eigenvalues of~$\mat A$.
+Therefore, the spectral radius is given by
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}.
+\]
+If the eigenvalues of the matrix~$\mat A$ do not either (i) all have a positive real part or (ii) all have a negative real part,
+then
+\[
+    \forall \omega \in \real,
+    \qquad \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i} \geq 1.
+\]
+In other words,
+by~\cref{proposition:linear_convergence},
+there is for any choice of~$\omega \in \real$ some $\vect x^{(0)}$ such that Richardson's method is non-convergent.
+Therefore, in order for convergence to hold for all~$\vect x^{(0)}$,
+it is necessary that the eigenvalues of $\mat A$ either all have a positive real part,
+or all have a negative real part.
+We focus in the next paragraph on the latter case and we also assume,
+for simplicity, that $\mat A$ is symmetric.
+
+\paragraph{Case of symmetric positive definite $\mat A$.}%
+\label{par:case_of_symmetric_positive_definite_mat_a_}
+If the matrix $\mat A$ is symmetric and positive definite,
+the eigenvalues of $\mat A$ are all real and positive,
+and it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
+In order for convergence to be as fast as possible,
+the spectral radius of $\mat M^{-1} \mat N$ should be as small as possible,
+in view of~\cref{proposition:linear_convergence}.
+Denoting by $\lambda_{\min}$ and $\lambda_{\max}$ the minimum and maximum eigenvalues of $\mat A$,
+it is not difficult to show that
+\[
+    \rho(\mat M^{-1} \mat N)
+    = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}
+    = \max \bigl\{ \abs{1 - \omega \lambda_{\min}}, \abs{1 - \omega \lambda_{\max}}\bigr\}.
+\]
+The maximum is minimized when its two arguments are equal,
+i.e.\ when $1 - \omega \lambda_{\min} = \omega \lambda_{\max} -1$.
+From this we deduce the optimal value of $\omega$ and the associated spectral radius:
+\[
+    \omega_{\rm opt} = \frac{2}{\lambda_{\max} + \lambda_{\min}},
+    \qquad
+    \rho_{\rm opt}
+    = 1 - \frac{2\lambda_{\min}}{\lambda_{\max} + \lambda_{\min}}
+    = \frac{\lambda_{\max} - \lambda_{\min}}{\lambda_{\max} + \lambda_{\min}}
+    =  \frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}.
+\]
+We observe that the smaller the condition number of the matrix $\mat A$,
+the better the asymptotic rate of convergence.
+
+\begin{remark}
+    [Link to optimization]
+    \label{remark:linear_link_optimization}
+    In the case where $\mat A$ is symmetric and positive definite,
+    the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm
+    for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
+    \begin{equation}
+        \label{eq:linear_richardson_gradient}
+        \vect x^{(k+1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}).
+    \end{equation}
+    The gradient of this function is $\nabla f(\vect x) = \mat A \vect x - \vect b$,
+    and its Hessian matrix is $\mat A$.
+    Since the Hessian matrix is positive definite, the function is convex
+    and attains its global minimum when $\nabla f$ is zero,
+    i.e.\ when $\mat A x = \vect b$.
+\end{remark}
+
+\subsubsection{Jacobi's method}%
+\label{ssub:jacobi_s_method}
+In Jacobi's method, the matrix $\mat M$ in the splitting is the diagonal matrix $\mat D$ with the same entries as those of $\mat A$ on the diagonal.
+We denote by $\mat L$ and $\mat U$ the lower and upper triangular parts of~$\mat A$,
+without the diagonal.
+One step of the method reads
+\begin{equation}
+    \label{eq:linear_jacobi}
+    \mat D \vect x^{(k+1)}
+    = (\mat D - \mat A) \vect x^{(k)} + \vect b
+    = - (\mat L + \mat U) \vect x^{(k)} + \vect b
+\end{equation}
+Since the matrix $\mat D$ on the left-hand side is diagonal,
+this linear system with unknown $\vect x^{(k+1)}$ is very simple to solve.
+The equation~\eqref{eq:linear_jacobi} can be rewritten as
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
+        & a_{21} x^{(k)}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
+        & \vdots \\
+        & a_{n1} x^{(k)}_1 + a_{n2} x^{(k)}_2 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
+       \end{aligned}
+   \right .
+\end{equation*}
+The updates for each of the entries of $\vect x^{(k+1)}$ are independent,
+and so the Jacobi method lends itself well to parallel implementation.
+The computational cost of one iteration,
+measured in number of floating point operations required,
+scales as $\mathcal O(n^2)$ if~$\mat A$ is a full matrix,
+or $\mathcal O(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per row on average.
+It is simple to prove the convergence of Jacobi's method is the case where $\mat A$ is diagonally dominant.
+\begin{proposition}
+    \label{proposition:linear_convergence_jacobi}
+    Assume that $\mat A$ is strictly (row or column) diagonally dominant.
+    Then it holds that $\rho(\mat M^{-1} \mat N) < 1$ for the Jacobi splitting.
+\end{proposition}
+\begin{proof}
+    Assume that $\lambda$ is an eigenvalue of $\mat M^{-1} \mat N$
+    and $\vect v$ is the associated unit eigenvector.
+    Then
+    \[
+        \mat M^{-1} \mat N \vect v = \lambda \vect v
+        \quad \Leftrightarrow \quad
+        \mat N \vect v = \lambda \mat M \vect v
+        \quad \Leftrightarrow \quad
+        (\mat N - \lambda \mat M) \vect v = 0.
+    \]
+    In the case of Jacobi's splitting,
+    this is equivalent to
+    \[
+        - (\mat L + \lambda \mat D + \mat U) \vect v = 0.
+    \]
+    If $\abs{\lambda} > 1$,
+    then the matrix on the left-hand side of this equation is diagonally dominant and thus invertible
+    (see \cref{exercise:invertibility_diagonal_dominant}).
+    Therefore $\vect v = 0$, but this is a contradiction because $\vect v$ is vector of unit norm.
+    Consequently, all the eigenvalues are bounded from above strictly by 1 in modulus.
+\end{proof}
+
+
+\subsubsection{Gauss--Seidel's method}%
+\label{ssub:gauss_seidel_s_method}
+
+In Gauss Seidel's method, the matrix $\mat M$ in the splitting is the lower triangular part of $\mat A$,
+including the diagonal.
+One step of the method then reads
+\begin{equation}
+    \label{eq:linear_gauss_seidel}
+    (\mat L + \mat D) \vect x^{(k+1)} = - \mat U \vect x^{(k)} + \vect b
+\end{equation}
+The system is solved by forward substitution.
+The equation~\eqref{eq:linear_gauss_seidel} can be rewritten equivalently as
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} x^{(\textcolor{darkblue}{k+1})}_1 + a_{12} x^{(k)}_2 + a_{13} x^{(k)}_3 + \dotsb + a_{1n} x^{(k)}_n = b_1 \\
+        & a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(\textcolor{darkblue}{k+1})}_2 + a_{23} x^{(k)}_3 + \dotsb + a_{2n} x^{(k)}_n = b_2 \\
+        & a_{32} x^{(\textcolor{darkblue}{k+1})}_1 + a_{32} x^{(\textcolor{darkblue}{k+1})}_2 + a_{33} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{3n} x^{(k)}_n = b_3 \\
+        & \vdots \\
+        & a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + a_{n3} x^{(\textcolor{darkblue}{k+1})}_3 + \dotsb + a_{nn} x^{(\textcolor{darkblue}{k+1})}_n = b_n.
+       \end{aligned}
+   \right .
+\end{equation*}
+Given $\vect x^{(k)}$,
+the first entry of $\vect x^{(k+1)}$ is obtained from the first equation.
+Then the value of the second entry is obtained from the second equation, etc.
+Unlike Jacobi's method,
+the Gauss--Seidel method is sequential and the entries of $\vect x^{(k+1)}$ cannot be updated in parallel.
+
+It is possible to prove the convergence of the Gauss--Seidel method in particular cases.
+For example, the method converges if $\mat A$ is strictly diagonally dominant.
+Proving this,
+using an approach similar to that in the proof of~\cref{proposition:linear_convergence_jacobi},
+is the goal of~\cref{exercise:linear_convergence_gauss_seidel}.
+It is also possible to prove convergence when $\mat A$ is Hermitian and positive definite.
+We show this in the next section for the relaxation method,
+which generalizes the Gauss--Seidel method.
+
+\subsubsection{Relaxation method}%
+
+The relaxation method generalizes the Gauss--Seidel method.
+It corresponds to the splitting
+\begin{equation}
+    \mat A = \left( \frac{\mat D}{\omega} + \mat L \right) - \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right).
+\end{equation}
+When $\omega = 1$,
+this is simply the Gauss--Seidel splitting.
+The idea of the relaxation method is that,
+by letting $\omega$ be a parameter that can differ from 1,
+faster convergence can be achieved.
+This intuition will be verified later.
+The equation~\eqref{eq:linear_system_iterative_method} for this splitting can be rewritten equivalently as
+\begin{equation*}
+    \left\{
+       \begin{aligned}
+        & a_{11} \bigl(x^{(\textcolor{darkblue}{k+1})}_1 - x^{(k)}_1 \bigr) =  -\omega \left(a_{11} x^{(k)}_1 + a_{12} x^{(k)}_2 + \dotsb + a_{1n} x^{(k)}_n - b_1 \right) \\
+        & a_{22} \bigl(x^{(\textcolor{darkblue}{k+1})}_2 - x^{(k)}_2 \bigr) =  -\omega \left(a_{21} x^{(\textcolor{darkblue}{k+1})}_1 + a_{22} x^{(k)}_2 + \dotsb + a_{2n} x^{(k)}_n - b_2 \right) \\
+        & \vdots \\
+        & a_{nn} \bigl(x^{(\textcolor{darkblue}{k+1})}_n - x^{(k)}_n \bigr) =  -\omega \left(a_{n1} x^{(\textcolor{darkblue}{k+1})}_1 + a_{n2} x^{(\textcolor{darkblue}{k+1})}_2 + \dotsb + a_{nn} x^{(k)}_n - b_n \right).
+       \end{aligned}
+   \right .
+\end{equation*}
+The coefficient on the right-hand side is larger than in the Gauss--Seidel method if $\omega > 1$,
+and smaller if $\omega < 1$.
+These regimes are called \emph{over-relaxation} and \emph{under-relaxation}, respectively.
+
+To conclude this section,
+we establish a sufficient condition for the convergence of the relaxation method,
+and also of the Gauss--Seidel method as a particular case when $\omega = 1$,
+when the matrix $\mat A$ is Hermitian and positive definite.
+To this end, we begin by showing the following preparatory result,
+which concerns a general splitting $\mat A = \mat M - \mat N$.
+\begin{proposition}
+    \label{proposition:criterion_convergence}
+    Let $\mat A$ be Hermitian and positive definite.
+    If the Hermitian matrix $\mat M^* + \mat N$ is positive definite,
+    then $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proposition}
+\begin{proof}
+    First, notice that $\mat M + \mat N^*$ is indeed Hermitian because
+    \[
+        (\mat M + \mat N^*)^* = \mat M^* + \mat N = \mat A^* + \mat N^* + \mat N = \mat A + \mat N^* + \mat N.
+    \]
+    We will show that $\norm{\mat M^{-1} \mat N}_{\mat A} < 1$,
+    where $\norm{\placeholder}_{\mat A}$ is the matrix norm induced by the following norm on vectors:
+    \[
+        \norm{\vect x}_{\mat A} := \sqrt{\vect x^* \mat A \vect x}.
+    \]
+    Showing that this indeed defines a vector norm is the goal of~\cref{exercise:linear_norm_induced_A}.
+    Since $\mat N = \mat M - \mat A$, it holds that
+    \(
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \norm{\mat I - \mat M^{-1} \mat A}_{\mat A},
+    \)
+    and so
+    \[
+        \norm{\mat M^{-1} \mat N}_{\mat A}
+        = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
+    \]
+    Take $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} \leq 1$
+    and let $\vect y = \mat M^{-1} \mat A \vect x$.
+    We calculate
+    \begin{align*}
+        \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}^2
+        &= \vect x^* \mat A \vect x - \vect y^* \mat A \vect x - \vect x^* \mat A \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \mat M^{-1} \mat A \vect x - (\mat M^{-1} \mat A \vect x)^* \mat M^* \vect y + \vect y^* \mat A \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* \mat M \vect y - \vect y^* \mat M^* \vect y + \vect y^* (\mat M - \mat N) \vect y \\
+        &= \vect x^* \mat A \vect x - \vect y^* (\mat M^* + \mat N) \vect y \leq 1 - \vect y^* (\mat M^* + \mat N) \vect y < 1,
+        % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
+    \end{align*}
+    where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
+    This inequality holds true for all $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} = 1$,
+    and so we conclude that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\),
+    which implies that $\rho(\mat M^{-1} \mat N) < 1$.
+\end{proof}
+
+As a corollary,
+we obtain a sufficient condition for the convergence of the relaxation method.
+\begin{corollary}
+    \label{corollary:convergence_relaxation}
+    Assume that $\mat A$ is Hermitian and positive definite.
+    Then the relaxation method converges if $\omega \in (0, 2)$.
+\end{corollary}
+\begin{proof}
+    For the relaxation method,
+    we have
+    \[
+        \mat M + \mat N^*
+        = \left( \frac{\mat D}{\omega} + \mat L \right) + \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right)^*.
+    \]
+    Since $\mat A$ is Hermitian,
+    it holds that $\mat D^* = \mat D$ and $\mat U^* = \mat L$.
+    Therefore,
+    \[
+        \mat M + \mat N^*
+        = \frac{2 - \omega}{\omega} \mat D.
+    \]
+    The diagonal elements of $\mat D$ are all positive,
+    because $\mat A$ is positive definite.
+    (Indeed, if there was an index $i$ such that $d_{ii} \leq 0$,
+    then it would hold that $\vect e_i^\t \mat A \vect e_i = d_{ii} \leq 0$,
+    contradicting the assumption that $\mat A$ is positive definite.)
+    We deduce that $\mat M + \mat N^*$ is positive definite if and only if $\omega \in (0, 2)$.
+    We can then conclude the proof by using \cref{proposition:criterion_convergence}.
+\end{proof}
+Note that \cref{corollary:convergence_relaxation} implies as a particular case
+the convergence of the Gauss--Seidel method when $\mat A$ is Hermitian and positive definite.
+The condition $\omega \in (0, 2)$ is in fact necessary for the convergence of the relaxation method,
+not only in the case of a Hermitian positive definite matrix $\mat A$ but in general.
+\begin{proposition}
+    [Necessary condition for the convergence of the relaxation method]
+    \label{proposition:necessary_sor}
+    Let $\mat A \in \complex^{n \times n}$ be an invertible matrix,
+    and let $\mat A = \mat M_{\omega} - \mat N_{\omega}$ denote the splitting of the relaxation method with parameter~$\omega$.
+    It holds that
+    \[
+        \forall \omega \neq 0, \qquad
+        \rho(\mat M_{\omega}^{-1} \mat N_{\omega})
+        \geq \abs{\omega - 1}.
+    \]
+\end{proposition}
+\begin{proof}
+    We recall the following facts:
+    \begin{itemize}
+        \item the determinant of a product of matrices is equal to the product of the determinants.
+        \item the determinant of a triangular matrix is equal to the product of its diagonal entries;
+        \item the determinant of a matrix is equal to the product of its eigenvalues,
+            to the power of their algebraic multiplicity.
+            This can be shown from the previous two items,
+            by passing to the Jordan normal form.
+    \end{itemize}
+    Therefore,
+    we have that
+    \[
+        \det (\mat M_{\omega}^{-1} \mat N_{\omega}) = \det (\mat M_{\omega})^{-1}  \det (\mat N_{\omega})
+        = \frac {\det \left(\frac{1 - \omega}{\omega} \mat D - \mat U \right)}{\det \left( \frac{\mat D}{\omega} + \mat L \right)}
+        = (1 - \omega)^n.
+    \]
+    Since the determinant on the left-hand side is the product of the eigenvalues of $\mat M_{\omega}^{-1} \mat N_{\omega}$,
+    it is bounded from above in modulus by $\rho(\mat M_{\omega}^{-1} \mat N_{\omega})^n$,
+    and so we deduce $\rho(\mat M_{\omega}^{-1} \mat N_{\omega})^n \geq \abs{1 - \omega}^n$.
+    The statement then follows by taking the $n$-th root.
+\end{proof}
+
+\subsubsection{Comparison between Jacobi and Gauss--Seidel for tridiagonal matrices~\moreinfo}%
+\label{ssub:comparison_between_jacobi_and_gauss_seidel_for_tridiagonal_matrices}
+For tridiagonal matrices,
+the convergence rate of the Jacobi and Gauss--Seidel methods satisfy an explicit relation,
+which we prove in this section.
+We denote the Jacobi and Gauss--Seidel splittings by $\mat M_{\mathcal J} - \mat N_{\mathcal J}$ and  $\mat M_{\mathcal G} - \mat N_{\mathcal G}$,
+respectively,
+and use the following notation for the entries of the matrix $\mat A$:
+\[
+    \begin{pmatrix}
+        a_1 & b_1 \\
+        c_1 & \ddots & \ddots  \\
+             & \ddots & \ddots & b_{n-1} \\
+             & & c_{n-1} & a_n
+    \end{pmatrix}.
+\]
+Before presenting and proving the result,
+notice that for any $\mu \neq 0$ it holds that
+\begin{equation}
+    \label{eq:preliminary_equation}
+    \begin{pmatrix}
+        \mu \\
+        & \mu^{2} &  \\
+        & & \ddots & \\
+        & & & \mu^{n}
+    \end{pmatrix}
+    \mat A
+    \begin{pmatrix}
+        \mu^{-1}  \\
+        & \mu^{-2} &  \\
+        & & \ddots & \\
+        & & & \mu^{-n}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        a_1 & \mu^{-1} b_1 \\
+        \mu c_1 & \ddots & \ddots  \\
+             & \ddots & \ddots & \mu^{-1} b_{n-1} \\
+             & & \mu c_{n-1} & a_n
+    \end{pmatrix}.
+\end{equation}
+\begin{proposition}
+    \label{proposition:tridiagonal}
+    Assume that $\mat A$ is tridiagonal with nonzero diagonal elements,
+    so that both $\mat M_{\mathcal J} = \mat D$ and $\mat \mat M_{\mathcal G} = \mat L + \mat D$ are invertible.
+    Then
+    \[
+        \rho(\mat M_{\mathcal G}^{-1} \mat N_{\mathcal  G})
+        = \rho(\mat M_{\mathcal J}^{-1} \mat N_{\mathcal  J})^2
+    \]
+\end{proposition}
+\begin{proof}
+    If $\lambda$ is an eigenvalue of $\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$ with associated unit eigenvector $\vect v$,
+    then
+    \[
+        \mat M_{\mathcal G}^{-1} \mat N_{\mathcal G} \vect v = \lambda \vect v
+        \quad \Leftrightarrow \quad
+        \mat N_{\mathcal G} \vect v = \lambda \mat M_{\mathcal G} \vect v
+        \quad \Leftrightarrow \quad
+        (\mat N_{\mathcal G} - \lambda \mat M_{\mathcal G}) \vect v = 0.
+    \]
+    For fixed $\lambda$,
+    there exists a nontrivial solution $\vect v$ to the last equation if and only if
+    \[
+        p_{\mathcal G}(\lambda) := \det (\mat N_{\mathcal G} - \lambda \mat M_{\mathcal G})
+        = - \det (\lambda \mat L + \lambda \mat D + \mat U) = 0.
+    \]
+    Likewise, $\lambda$ is an eigenvalue of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ if and only if
+    \[
+        p_{\mathcal J}(\lambda) := \det (\mat N_{\mathcal J} - \lambda \mat M_{\mathcal J})
+        = - \det (\mat L + \lambda \mat D + \mat U) = 0.
+    \]
+    Now notice that
+    \[
+        p_{\mathcal G}(\lambda^2)
+        = - \det \bigl(\lambda^2 \mat L + \lambda^2 \mat D + \mat U\bigr)
+        = - \lambda^n \det \bigl(\lambda \mat L + (\lambda \mat D) + \lambda^{-1} \mat U\bigr).
+    \]
+    Applying~\eqref{eq:preliminary_equation} with $\mu = \lambda \neq 0$,
+    we deduce
+    \[
+        p_{\mathcal G}(\lambda^2)
+        = - \lambda^n \det \bigl(\mat L + \lambda \mat D + \mat U\bigr)
+        = \lambda^n p_{\mathcal J}(\lambda)
+    \]
+    It is clear that this relation is true also if $\lambda = 0$.
+    Consequently, it holds that if $\lambda$ is an eigenvalue of the matrix $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ then
+    $\lambda^2$ is an eigenvalue of $\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$.
+    Conversely, if $\lambda$ is an eigenvalue of~$\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$,
+    then the two square roots of $\lambda$ are eigenvalues of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$.
+\end{proof}
+
+If a matrix $\mat A$ is tridiagonal and Toeplitz,
+i.e.\ if it is of the form
+\[
+    \begin{pmatrix}
+        a & b \\
+        c & \ddots & \ddots  \\
+             & \ddots & \ddots & b \\
+             & & c & a
+    \end{pmatrix},
+\]
+then it is possible to prove that the eigenvalues of~$\mat A$ are given by
+\begin{equation}
+    \label{eq:linear_eigenvalues_toeplitz}
+    \lambda_k =
+    a + 2\sqrt{bc} \cos \left(\frac{k \pi}{n+1} \right),
+    \qquad k = 1, \dots, n.
+\end{equation}
+In this case, the spectral radius of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ can be determined explicitly.
+
+\subsubsection{Monitoring the convergence}
+\label{ssub:monitoring_the_convergence}
+In practice,
+we have access to the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ at each iteration,
+but not to the error $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$,
+as calculating the latter would require to know the exact solution of the problem.
+Nevertheless,
+the two are related by the equation
+\[
+    \vect r^{(k)} = \mat A \vect e^{(k)}
+    \quad \Leftrightarrow \quad \vect e^{(k)} = \mat A^{-1} \vect r^{(k)}.
+\]
+Therefore, it holds that $\norm{\vect e^{(k)}} \leq \norm{\mat A^{-1}} \norm{\vect r^{(k)}}$.
+Likewise, the relative error satisfies
+\[
+     \frac{\norm{\vect e^{(k)}}}{\norm{\vect x_*}}
+     = \frac{\norm{\mat A^{-1} \vect r^{(k)}}}{\norm{\mat A^{-1} \vect b}},
+\]
+and since $\norm{\vect b} = \norm{\mat A \mat A^{-1} \vect b} \leq \norm{\mat A} \norm{\mat A^{-1} \vect b}$,
+we deduce
+\[
+    \frac{\norm{\vect e^{(k)}}}{\norm{\vect x_*}}
+     \leq \kappa(\mat A) \frac{\norm{\vect r^{(k)}}}{\norm{\vect b}}.
+\]
+The fraction on the right-hand side is the \emph{relative residual}.
+If the system is well conditioned,
+that is if $\kappa(A)$ is close to one,
+then controlling the relative residual enables a good control of the relative error.
+
+\subsubsection{Stopping criterion}%
+\label{ssub:stopping_criterion}
+
+In practice,
+several criteria can be employed in order to decide when to stop iterating.
+Given a small number $\varepsilon$ (unrelated to the machine epsilon in \cref{cha:rounding_errors}),
+the following alternatives are available:
+\begin{itemize}
+    \item
+        Stop when $\norm{\vect r^{(k)}} \leq \varepsilon$.
+        The downside of this approach is that
+        it is not \emph{scaling invariant}:
+        when used for solving the following rescaled system
+        \[
+            k \mat A \vect x = k \vect b, \qquad k \neq 1,
+        \]
+        a splitting method with rescaled initial guess $k \vect x^{(0)}$
+        will require a number of iterations that depends on $k$:
+        fewer if $k \ll 1$ and more if $k \gg 1$.
+        In practice, controlling the relative residual and the relative error is often preferable.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect r^{(0)}} \leq \varepsilon$.
+        This criterion is scaling invariant,
+        but the number of iterations is dependent on the quality of the initial guess $\vect x^{(0)}$.
+
+    \item
+        Stop when $\norm{\vect r^{(k)}} / \norm{\vect b}$.
+        This criterion is generally the best,
+        because it is both scaling invariant and the quality of the final iterate is independent of that of the initial guess.
+\end{itemize}
+
+\subsection{The conjugate gradient method}%
+\label{sub:the_conjugate_gradient_method}
+
+As already mentioned in~\cref{remark:linear_link_optimization},
+when the matrix $\mat A \in \real^{n \times n}$ in the linear system $\mat A \vect x = \vect b$ is symmetric and positive definite,
+the system can be interpreted as a minimization problem for the function
+\begin{equation}
+    \label{eq:function_optimization}
+    f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+\end{equation}
+The fact that
+the exact solution $\vect x_*$ to the linear system is the unique minimizer of this function appears clearly
+when rewriting $f$ as follows:
+\begin{equation}
+    \label{eq:rewritten_expression_of_f}
+    f(\vect x)
+    = \frac{1}{2} (\vect x - \vect x_*)^\t \mat A (\vect x - \vect x_*)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}.
+\end{equation}
+The second term is constant with $\vect x$,
+and the first term is strictly positive if $\vect x - \vect x_* \neq \vect 0$,
+because~$\mat A$ is positive definite.
+We saw that Richardson's method can be interpreted as a steepest descent with fixed step size,
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}).
+\]
+In this section,
+we will present and study other methods
+for solving the linear system~\eqref{eq:linear_system}
+which can be viewed as optimization methods.
+Since $\mat A$ is symmetric,
+it is diagonalizable and the function $f$ can be rewritten as
+\begin{align*}
+    f(\vect x)
+    &= \frac{1}{2} (\vect x - \vect x_*)^\t \mat Q \mat D \mat Q^\t (\vect x - \vect x_*)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*} \\
+    &= \frac{1}{2} (\mat Q^\t \vect e)^\t \mat D (\mat Q^\t \vect e)  - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}, \qquad  \vect e = \vect x - \vect x_*.
+\end{align*}
+Therefore, we have that
+\begin{align*}
+    f(\vect x)= \frac{1}{2} \sum_{i=1}^{n} \lambda_i \eta_i^2 - \frac{1}{2} \vect x_*^\t \mat A \vect x_{*}, \qquad  \vect \eta = \vect Q^\t (\vect x - \vect x_*),
+\end{align*}
+where $(\lambda_i)_{1 \leq i \leq n}$ are the diagonal entries of $\mat D$.
+This shows that $f$ is a paraboloid
+after a change of coordinates.
+
+\subsubsection{Steepest descent method}%
+\label{ssub:steepest_descent_method}
+
+The steepest descent method is more general than Richardson's method in the sense that
+the step size changes from iteration to iteration
+and the method is not restricted to quadratic functions of the form~\eqref{eq:function_optimization}.
+Each iteration is of the form
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \omega_k \nabla f(\vect x^{(k)}).
+\]
+It is natural to wonder whether the step size $\omega_k$ can be fixed in such a way that
+$f(\vect x^{(k+1)})$ is as small as possible.
+For the case of the quadratic function~\eqref{eq:function_optimization},
+this value of $\omega_k$ can be calculated explicitly for a general search direction $\vect d$,
+and in particular also when $\vect d = \nabla f(\vect x^{(k)})$.
+We calculate that
+\begin{align}
+    \notag
+    f(\vect x^{(k+1)})
+    &= f\bigl(\vect x^{(k)} - \omega_k \vect d\bigr) = \frac{1}{2} \left( \vect x^{(k)} - \omega_k \vect d\right)^\t \mat A \left(\vect x^{(k)} - \omega_k \vect d\right) - \left(\vect x^{(k)} - \omega_k \vect d\right)^\t \vect b \\
+    \label{eq:linear_steepest}
+    &= f\bigl( \vect x^{(k)} \bigr) + \frac{\omega_k^2}{2} \vect d^\t \mat A \vect d - \omega_k \vect d^\t \vect r^{(k)}.
+\end{align}
+When viewed as a function of the real parameter $\omega_k$,
+the right-hand side is a convex quadratic function.
+It is minimized when its derivative is equal to zero,
+i.e.\ when
+\begin{equation}
+    \label{eq:linear_optimal_step_size_steepest_descent}
+    \omega_k \vect d^\t \mat A \vect d - \vect d^\t (\mat A \vect x_k - \vect b) = 0
+    \qquad \Rightarrow  \qquad \omega_k = \frac{\vect d^\t \vect r^{(k)}}{\vect d^\t \mat A \vect d}.
+\end{equation}
+The steepest descent algorithm with step size obtained from this equation is summarized in~\cref{algo:steepest_descent_method} below.
+By construction,
+the function value $f(\vect x^{(k)})$ is nonincreasing with $k$,
+which is equivalent to saying that
+the error $\vect x - \vect x_*$ is nonincreasing in the norm $\vect x \mapsto \sqrt{\vect x^\t \mat A \vect x}$.
+In order to quantify more precisely the decrease of the error in this norm,
+we introduce the notation
+\[
+    E_k = \norm{\vect x - \vect x_*}^2_{\mat A} := (\vect x^{(k)} - \vect x_*)^\t \mat A (\vect x^{(k)} - \vect x_*)
+    = (\mat A \vect x^{(k)} - \vect b)^\t \mat A^{-1} (\mat A \vect x^{(k)} - \vect b).
+\]
+We begin by showing the following auxiliary lemma.
+\begin{lemma}
+    [Kantorovich inequality]
+    Let $\mat A \in \real^{n \times n}$ be a symmetric and positive definite matrix,
+    and let $\lambda_0 \leq \dots \leq \lambda_n$ denote its eigenvalues.
+    Then for all nonzero $\vect z \in \real^n$ it holds that
+    \[
+        \frac{(\vect z^\t \vect z)^2}{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        \geq \frac{4\lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}.
+    \]
+\end{lemma}
+\begin{proof}
+    By the AM-GM (arithmetic mean-geometric mean) inequality,
+    it holds for all $t > 0$ that
+    \begin{align*}
+        \sqrt{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        &= \sqrt{(t\vect z^\t \mat A \vect z) (t^{-1} \vect z^\t \mat A^{-1} \vect z)}
+        \leq \frac{1}{2} \left( t \vect z^\t \mat A \mat z + \frac{1}{t} \vect z^\t \mat A^{-1} \mat z \right) \\
+        &= \frac{1}{2} \vect z^\t \left( t \mat A + \frac{1}{t} \mat A^{-1} \right) \vect z.
+    \end{align*}
+    The matrix on the right-hand side is also symmetric and positive definite,
+    with eigenvalues equal to $t \lambda_i + (t \lambda_i)^{-1}$.
+    Therefore, we deduce
+    \begin{equation}
+        \label{eq:linear_kantorovich_bound}
+        \forall t \geq 0, \qquad
+        \sqrt{(\vect z^\t \mat A \vect z) (\vect z^\t \mat A^{-1} \vect z)}
+        \leq \frac{1}{2} \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right) \vect z^\t \vect z.
+    \end{equation}
+    The function $x \mapsto x + x^{-1}$ is convex,
+    and so over any closed interval $[x_{\min}, x_{\max}]$
+    it attains its maximum either at $x_{\min}$ or at $x_{\max}$.
+    Consequently, it holds that
+    \begin{equation*}
+        % \label{eq:maximum_between_two_things}
+        \left( \max_{i \in \{1, \dotsc, n\}} t \lambda_i + (t \lambda_i)^{-1} \right)
+        = \max \left\{ t \lambda_{1} + \frac{1}{t \lambda_{1}}, t \lambda_{n} + \frac{1}{t \lambda_{n}} \right\}.
+    \end{equation*}
+    In order to obtain the best possible bound from~\eqref{eq:linear_kantorovich_bound},
+    we should let $t$ be such that the maximum is minimized,
+    which occurs when the two arguments of the maximum are equal:
+    \[
+            t \lambda_{1} + \frac{1}{t \lambda_{1}} = t \lambda_{n} + \frac{1}{t \lambda_{n}}
+            \qquad \Rightarrow \qquad t = \frac{1}{\sqrt{\lambda_{1} \lambda_{n}}}.
+    \]
+    For this value of $t$,
+    the maximum in~\eqref{eq:linear_kantorovich_bound} is equal to
+    \[
+        \sqrt{\frac{\lambda_1}{\lambda_{n}}} + \sqrt{\frac{\lambda_{n}}{\lambda_1}}.
+    \]
+    By substituting this expression in~\eqref{eq:linear_kantorovich_bound} and rearranging,
+    we obtain the statement.
+\end{proof}
+
+We are now able to prove the convergence of the steepest descent method.
+\begin{theorem}
+    [Convergence of the steepest descent method]
+    \label{theorem:linear_convergenec_steepest_descent}
+    It holds that
+    \[
+        E_{k+1} \leq \left(\frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}  \right)^2 E_k.
+    \]
+\end{theorem}
+\begin{proof}
+    Substituting $\vect x^{(k+1)} = \vect x^{(k)} - \omega_k \vect d$ in the expression for $E_{k+1}$,
+    we obtain
+    % we obtain
+    % Substituting the formula for the step size~\eqref{eq:linear_optimal_step_size_steepest_descent},
+    % we obtain
+    \begin{align*}
+        E_{k+1}
+        &= (\vect x^{(k)} - \omega_k \vect d - \vect x_*)^\t \mat A (\vect x^{(k)} - \omega_k \vect d - \vect x_*) \\
+        &= E_k - 2 \omega_k \vect d^\t \vect r^{(k)} + \omega_k^2 \vect d^\t \mat A \vect d \\
+        &=  E_k - \frac{(\vect d^\t \vect d)^2}{\vect d^\t \mat A \vect d}
+        =  \left( 1 - \frac{(\vect d^\t \vect d)^2}{(\vect d^\t \mat A \vect d) (\vect d^\t \mat A^{-1} \vect d)} \right) E_k,
+    \end{align*}
+    Using the Kantorovich inequality,
+    we have
+    \begin{align*}
+        E_{k+1}
+        \leq \left( 1  - \frac{4 \lambda_1 \lambda_n}{(\lambda_1 + \lambda_n)^2}  \right) E_k
+        \leq \left(\frac{\lambda_1 - \lambda_n}{\lambda_1 + \lambda_n}  \right)^2 E_k
+        = \left(\frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}  \right)^2 E_k.
+    \end{align*}
+    We immediately deduce the statement from this inequality.
+\end{proof}
+
+\begin{algorithm}
+\caption{Steepest descent method}%
+\label{algo:steepest_descent_method}%
+\begin{algorithmic}[1]
+\State Pick $\varepsilon$ and initial $\vect x$%
+\State $\vect r \gets \mat A \vect x - \vect b$%
+\While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
+    \State $\vect d \gets \vect r$
+    \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
+    \State $\vect x \gets \vect x - \omega \vect d$
+    \State $\vect r \gets \mat A \vect x - \vect b$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Preconditioned steepest descent}%
+\label{ssub:preconditioned_steepest_descent}
+We observe from \cref{theorem:linear_convergenec_steepest_descent} that the convergence of the steepest descent method is faster when
+the condition number of the matrix $\mat A$ is low.
+This naturally leads to the following question:
+can we reformulate the minimization of $f(\vect x)$ in~\eqref{eq:function_optimization}
+as another optimization problem which is of the same form
+but involves a matrix with a lower condition number,
+thereby providing scope for faster convergence?
+In order to answer this question,
+we consider a linear change of coordinates~$\vect y = \mat T^{-1} \vect x$,
+where $\mat T$ is an invertible matrix,
+and we define
+\begin{equation}
+    \label{eq:linear_quadratic_function}
+    \widetilde f(\vect y) = f(\mat T \vect y)
+    = \frac{1}{2} \vect y^\t (\mat T^{\t} \mat A \mat T) \vect y - (\mat T^{\t} \vect b)^{\t} \vect y.
+\end{equation}
+This function is of the same form as $f$~in~\eqref{eq:function_optimization},
+with the matrix $\widetilde {\mat A} := \mat T^\t \mat A \mat T$ instead of~$\mat A$ and the vector $\widetilde {\vect b} := \mat T^{\t} \vect b$ instead of $\vect b$.
+Its minimizer is $\vect y_* = \mat T^{-1} \vect x_*$.
+The steepest descent algorithm can be applied to~\eqref{eq:linear_quadratic_function} and,
+from an approximation $\vect y^{(k)}$ of the minimizer~$\vect y_*$,
+an approximation $\vect x^{(k)}$ of $\vect x_*$ is obtained by the change of variable $\vect x^{(k)} = \mat T \vect y^{(k)}$.
+This approach is called \emph{preconditioning}.
+By \cref{theorem:linear_convergenec_steepest_descent},
+the steepest descent method
+satisfies the following error estimate
+when applied to the function~\eqref{eq:linear_quadratic_function}:
+\begin{align*}
+    E_{k+1}
+    \leq
+    \left(\frac{\kappa_2(\mat T^\t \mat A \mat T) - 1}{\kappa_2(\mat T^\t \mat A \mat T) + 1} \right)^2 E_k,
+    \qquad E_{k} &= (\vect y^{(k)} - \vect y_*)^\t \widetilde {\mat A} (\vect y^{(k)} - \vect y_*), \\
+    &= (\vect x^{(k)} - \vect x_*)^\t \mat A (\vect x^{(k)} - \vect x_*).
+\end{align*}
+Consequently, the convergence is faster than that of the usual steepest descent method if $\kappa_2(\mat T^\t \mat A \mat T) < \kappa_2(\mat A)$.
+The optimal change of coordinates is given by $\mat T = \mat C^{-\t}$,
+where $\mat C$ is the factor of the Cholesky factorization of $\mat A$ as $\mat C \mat C^\t$.
+Indeed, in this case
+\[
+    \mat T^\t \mat A \mat T = \mat C^{-1} \mat C \mat C^\t \mat C^{-\t} = \mat I
+    \qquad \Rightarrow \qquad
+    \kappa_2(\mat T^\t \mat A \mat T) = 1,
+\]
+and the method converges in a single iteration!
+However,
+this iteration amounts to solving the linear system by direct Cholesky factorization of $\mat A$.
+In practice, it is usual to define $\mat T$ from an approximation of the Cholesky factorization,
+such as the \emph{incomplete Cholesky factorization}.
+
+To conclude this section,
+we demonstrate that the change of variable from $\vect x$ to $\vect y$ need not be performed explicitly in practice.
+Indeed, one step of the steepest descent algorithm applied to function $\widetilde f$ reads
+\[
+    \vect y^{(k+1)} = \vect y^{(k)} - \widetilde \omega_k (\widetilde {\mat A} \vect y^{(k)} - \widetilde{\vect b}),
+    \qquad \widetilde \omega_k = \frac{(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})^\t(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})}{(\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})^\t \widetilde{\mat A} (\widetilde {\mat A} \vect y^{(k)} - \widetilde {\vect b})}.
+\]
+Letting $\vect x^{(k)} = \mat T \vect y^{(k)}$,
+this equation can be rewritten as the following iteration:
+\[
+    \vect x^{(k+1)} = \vect x^{(k)} - \widetilde \omega_k \vect d_k,
+    \qquad \widetilde \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}, \qquad \vect d_k = \mat T^{\t} \mat T (\mat A \vect x^{(k)} - \vect b).
+\]
+A comparison with~\eqref{eq:linear_optimal_step_size_steepest_descent} shows that the step size $\widetilde \omega_k$ is such that $f(\vect x^{(k+1)})$ is minimized.
+This reasoning shows that the preconditioned conjugate gradient method amounts to choosing the direction~$\vect d^{(k)} = \mat T \mat T^{\t} \vect r^{(k)}$ at each iteration,
+instead of just $\vect r^{(k)}$,
+as is apparent in \cref{algo:preconditioned_steepest_descent_method}.
+It is simple to check that $- \vect d^{(k)}$ is a descent direction for $f$:
+\[
+    -\nabla f(\vect x)^\t \bigl(\mat T^\t \mat T (\mat A \vect x - \vect b)\bigr) =
+    -\bigl(\mat T (\mat A \vect x - \vect b)\bigr)^\t \bigl(\mat T (\mat A \vect x - \vect b)\bigr) \leq 0.
+\]
+\begin{algorithm}[ht]
+\caption{Preconditioned steepest descent method}%
+\label{algo:preconditioned_steepest_descent_method}%
+\begin{algorithmic}[1]
+\State Pick $\varepsilon$, invertible $\mat T$ and initial $\vect x$%
+\State $\vect r \gets \mat A \vect x - \vect b$%
+\While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
+    \State $\vect d \gets \mat T^\t \mat T \vect r$
+    \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
+    \State $\vect x \gets \vect x - \omega \vect d$
+    \State $\vect r \gets \mat A \vect x - \vect b$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\vspace{-.5cm}
+
+\subsubsection{Conjugate directions method}%
+\label{ssub:conjugate_directions}
+\begin{definition}
+    [Conjugate directions]
+    Let $\mat A$ be a symmetric positive definite matrix.
+    Two vectors $\vect d_1$ and $\vect d_2$ are called $\mat A$-orthogonal or conjugate with respect to $\mat A$
+    if $\vect d_1^\t \mat A \vect d_2 = 0$,
+    i.e.\ if they are orthogonal for the inner product $\ip{\vect x, \vect y}_{\mat A} = \vect x^\t \mat A \vect y$.
+\end{definition}
+
+Assume that $\vect d_0, \dotsc, \vect d_{n-1}$ are $n$ pairwise $\mat A$-orthogonal nonzero directions.
+By \cref{exercise:linear_independence_conjugate_directions},
+these vectors are linearly independent,
+and so they form a basis of $\real^n$.
+Consequently, for any initial guess $\vect x^{(0)}$,
+the vector $\vect x^{(0)} - \vect x_*$,
+where $\vect x_*$ is the solution to the linear system $\mat A \vect x = \vect b$,
+can be decomposed as
+\[
+    \vect x^{(0)} - \vect x_* = \alpha_0 \vect d_0 + \dotsb + \alpha_{n-1} \vect d_{n-1}.
+\]
+Taking the $\ip{\placeholder, \placeholder}_{\mat A}$ inner product of both sides with $\vect d_k$,
+with $k \in \{0, \dotsc, n-1\}$,
+we obtain an expression for the scalar coefficient $\alpha_k$:
+\[
+    \alpha_k = \frac{\vect d_k^\t \mat A (\vect x^{(0)} - \vect x_*)}{\vect d_k^\t \mat A \vect d_k}
+    = \frac{\vect d_k^\t (\mat A \vect x^{(0)} - \vect b)}{\vect d_k^\t \mat A \vect d_k}.
+\]
+Therefore, calculating the expression of the coefficient does not require to know the exact solution $\vect x_*$,
+but only the residual $\vect r^{(0)}$!
+Given conjugate directions, the exact solution can be obtained as
+\begin{equation}
+    \label{eq:linear_expansion_conjugate_direction}
+    \vect x_* = \vect x^{(0)} - \sum_{k=0}^{n-1} \alpha_k \vect d_k, \qquad \alpha_k = \frac{\vect d_k^\t \vect r^{(0)}}{\vect d_k^\t \mat A \vect d_k}.
+\end{equation}
+
+If $\vect x^{(0)} = \vect 0$,
+then $\vect r^{(0)} = -\vect b$ and this equations gives that
+\[
+    \vect x_* = \sum_{k=0}^{n-1} \frac{\vect d_k^\t \vect b}{\vect d_k^\t \mat A \vect d_k} \vect d_k
+    = \left(\sum_{k=0}^{n-1} \frac{\vect d_k \vect d_k^\t}{\vect d_k^\t \mat A \vect d_k}\right) \vect b,
+\]
+which implies that that the inverse of~$\mat A$ is given by
+\[
+    \mat A^{-1} = \sum_{k=0}^{n-1} \frac{\vect d_k \vect d_k^\t}{\nu_k}, \qquad \nu_k = \vect d_k^\t \mat A \vect d_k.
+\]
+The conjugate directions method is illustrated in~\cref{algo:conjugate_directions}.
+Its implementation is very similar to that of the steepest descent method,
+the only difference being that the descent direction at iteration $k$ is given by $\vect d_k$ instead of~$\vect r^{(k)}$.
+In particular, the step size at each iteration is such that $f(\vect x^{(k+1)})$ is minimized.
+\begin{algorithm}
+    \caption{Conjugate directions method}%
+    \label{algo:conjugate_directions}%
+    \begin{algorithmic}[1]
+        \State Assuming $\vect d_0, \dotsc, \vect d_{n-1}$ are given.
+        \State Pick initial $\vect x^{(0)}$
+        \For{$k$ in $\{0, \dotsc, n-1\}$}
+            \State $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$
+            \State $\omega_k = \vect d_k^\t \vect r^{(k)}/\vect d_k^\t \mat A \vect d_k$
+            \State $\vect x^{(k+1)} = \vect x^{(k)} - \omega_k \vect d_k$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Let us now establish the connection between the~\cref{algo:conjugate_directions} and~\eqref{eq:linear_expansion_conjugate_direction},
+which may not be immediately apparent because~\eqref{eq:linear_expansion_conjugate_direction} involves only the initial residual~$\mat A \vect x^{(0)} - \vect b$,
+while the residual at the current iteration~$\vect r^{(k)}$ is used in the algorithm.
+\begin{proposition}
+    [Convergence of the conjugate directions method]
+    \label{proposition:conjugate_directions}
+    The vector $\vect x^{(k)}$ obtained after $k$ iterations of the conjugate directions method is given by
+    \begin{equation}
+        \label{eq:series_expansion_of_y}
+        \vect x^{(k)} = \vect x^{(0)}
+        - \sum_{i=0}^{k-1} \alpha_i \vect d_i,
+        \qquad \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i}.
+    \end{equation}
+    In particular,
+    the method converges in at most $n$ iterations.
+\end{proposition}
+\begin{proof}
+    Let us denote by $\vect y^{(k)}$ the solution obtained after $k$ steps of \cref{algo:conjugate_directions}.
+    Our goal is to show that $\vect y^{(k)}$ coincides with $\vect x^{(k)}$ defined in~\eqref{eq:series_expansion_of_y}.
+    The result is trivial for $k = 0$.
+    Reasoning by induction,
+    we assume that it is true up to~$k$.
+    Then performing step $k+1$ of the algorithm gives
+    \[
+        \vect y^{(k+1)} = \vect y^{(k)} - \omega_k \vect d_k, \qquad \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}.
+    \]
+    On the other hand,
+    it holds from~\eqref{eq:series_expansion_of_y} that
+    \[
+        \vect x^{(k+1)} = \vect x^{(k)} - \alpha_k \vect d_k, \qquad \alpha_k = \frac{\vect d_k^\t \vect r^{(0)}}{\vect d_k^\t \mat A \vect d_k}.
+    \]
+    By the induction hypothesis, it holds that $\vect y^{(k)} = \vect x^{(k)}$,
+    so in order to prove that $\vect y^{(k+1)} = \vect x^{(k+1)}$,
+    it is sufficient to show that $\omega_k = \alpha_k$, i.e. that
+    \[
+        \vect d_k^\t \vect r^{(k)} = \vect d_k^\t \vect r^{(0)}
+        \quad \Leftrightarrow \quad
+        \vect d_k^\t (\vect r^{(k)} - \vect r^{(0)}) = 0
+        \quad \Leftrightarrow \quad
+        \vect d_k^\t \mat A (\vect x^{(k)} - \vect x^{(0)}) = 0.
+    \]
+    The latter equality is obvious from the $\mat A$-orthonormality of the directions.
+\end{proof}
+
+Since $\omega_k$ in~\cref{algo:conjugate_directions} coincides with the expression in~\eqref{eq:linear_optimal_step_size_steepest_descent},
+the conjugate directions algorithm satisfies the following ``local optimization'' property:
+the iterate $\vect x^{(k+1)}$ minimizes $f$ on the straight line $\omega \mapsto \vect x^{(k)} - \omega \vect d_k$.
+In contrast with the steepest descent method,
+however,
+the conjugate directions method also satisfies the following stronger property.
+\begin{proposition}
+    [Optimality of the conjugate directions method]
+    \label{proposition:optimality_conjugate_directions}
+    The iterate $\vect x^{(k)}$ is the minimizer of $f$ over the set $\vect x^{(0)} + \mathcal B_k$,
+    where $\mathcal B_k = \Span \{\vect d_0, \dotsc, \vect d_{k-1} \}$.
+\end{proposition}
+\begin{proof}
+    By~\eqref{eq:linear_expansion_conjugate_direction},
+    it holds that
+    \begin{equation*}
+        \vect x_* = \vect x^{(0)} - \sum_{i=0}^{n-1} \alpha_i \vect d_i,
+        \qquad
+        \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i}
+    \end{equation*}
+    On the other hand,
+    any vector $\vect y \in \vect x^{(0)} + \mathcal B_k$ can be expanded as
+    \[
+        \vect y = \vect x^{(0)} - \beta_0 \vect d_0 - \dotsb - \beta_{k-1} \vect d_{k-1}.
+    \]
+    Employing these two expressions, the formula for $f$ in~\eqref{eq:rewritten_expression_of_f},
+    and the $\mat A$-orthogonality of the directions,
+    we obtain
+    \begin{align*}
+        f(\vect y)
+        &= \frac{1}{2} (\vect y - \vect x_*)^\t \mat A (\vect y - \vect x_*) - \frac{1}{2} \vect x_*^\t \mat A \vect x_* \\
+        &= \frac{1}{2} \sum_{i=0}^{k-1} (\beta_i - \alpha_i)^2 \vect d_i^\t \mat A \vect d_i
+        + \frac{1}{2} \sum_{i=k}^{n-1} \alpha_i^2 \vect d_i^\t \mat A \vect d_i - \frac{1}{2} \vect x_*^\t \mat A \vect x_*
+    \end{align*}
+    This is minimized when $\beta_i = \alpha_i$ for all $i \in \{0, \dotsc, k-1\}$,
+    in which case $\vect y$ coincides with the $k$-th iterate $\vect x^{(k)}$ of the conjugate directions method in view of~\cref{proposition:conjugate_directions}.
+\end{proof}
+\begin{remark}
+    Let $\norm{\placeholder}_{\mat A}$ denote the norm induced by the inner product $\ip{\placeholder,\placeholder}_{\mat A}$.
+    Since
+    \[
+        \norm{\vect x^{(k)} - \vect x_*}_{\mat A} = \sqrt{2f(\vect x^{(k)}) + \vect x_*^\t \mat A \vect x_*},
+    \]
+    \cref{proposition:optimality_conjugate_directions} shows that $\vect x^{(k)}$ minimizes the norm~$\norm{\vect x^{(k)} - \vect x_*}_{\mat A}$
+    over $\vect x^{(0)} + \mathcal  B_k$.
+    This is not surprising since,
+    by construction, the vector $\vect x^{(k)} - \vect x_*$ is the orthogonal projection
+    of $\vect x^{(0)} - \vect x_*$ onto $\mathcal B_k^\perp$,
+    for the inner product $\ip{\placeholder,\placeholder}_{\mat A}$.
+    % Equation~\eqref{eq:series_expansion_of_y} shows that $\vect x^{(k)} - \vect x^{(0)}$ is the orthogonal projection,
+    % with respect to the inner product $(\vect x, \vect y) \mapsto \vect x^\t \mat A \vect y$,
+    % of the vector $\vect x_* - \vect x^{(0)}$ over $\mathcal B_k$.
+    % In order to prove \cref{proposition:optimality_conjugate_directions},
+    % we could have simply invoked the property that the orthogonal projections in Hilbert spaces,
+    % it holds that $\vect x^{(k)} - \vect x^{(0)}$ minimizes
+    % \[
+    %     \norm[big]{(\vect x^{(k)} - \vect x^{(0)}) - (\vect x_* - \vect x^{(0)})}_{\mat A} = \norm{\vect x^{(k)} - \vect x_*}_{\mat A} = \sqrt{2f(\vect x^{(k)}) + \vect x_*^\t \mat A \vect x_*}.
+    % \]
+\end{remark}
+
+A corollary of~\eqref{proposition:optimality_conjugate_directions} is that the gradient of~$f$ at $\vect x^{(k)}$,
+i.e. the residual $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$,
+is orthogonal to any vector in $\{\vect d_0, \dotsc, \vect d_{k-1} \}$ for the usual Euclidean inner product.
+This can also be checked directly from the formula
+\[
+    \vect x^{(k)} - \vect x_* = \sum_{i=k}^{n-1} \alpha_i \vect d_i,
+    \qquad \alpha_i = \frac{\vect d_i^\t \vect r^{(0)}}{\vect d_i^\t \mat A \vect d_i},
+\]
+which follows directly from \cref{proposition:conjugate_directions}.
+Indeed, it holds that
+\begin{equation}
+    \label{eq:orthogonality_residual}
+    \forall j \in \{0, \dotsc, k-1\}, \qquad
+    \vect d_j^\t \vect r^{(k)} = \vect d_j \mat A (\vect x^{(k)} - \vect x_*)
+    = \sum_{i=k}^{n-1} \alpha_i \vect d_j^\t \vect d_i = 0.
+\end{equation}
+
+\subsubsection{The conjugate gradient method}%
+\label{ssub:the_conjugate_gradient_method}
+In the previous section,
+we showed that, given $n$ conjugate directions,
+the solution to the linear system $\mat A \vect x = \vect b$ can be obtained in a finite number of iterations using~\cref{algo:conjugate_directions}.
+The conjugate gradient method can be viewed as a particular case of the conjugate directions method.
+Instead of assuming that the conjugate directions are given,
+they are constructed iteratively as part of the algorithm.
+Given an initial guess $\vect x^{(0)}$,
+the first direction is the residual~$\vect r^{(0)}$,
+which coincides with the gradient of~$f$ at~$\vect x^{(0)}$.
+The directions employed for the next iterations are obtained by applying the Gram-Schmidt process
+to the residuals.
+More precisely, given conjugate directions~$\vect d_0, \dotsc, \vect d_{k-1}$,
+and letting $\vect x^{(k)}$ denote the $k$-th iterate of the conjugate directions method,
+the direction $\vect d_k$ is obtained by
+\begin{equation}
+    \label{eq:conjugate_gradient_gram_schmidt}
+    \vect d_k = \vect r^{(k)} - \sum_{i=0}^{k-1} \frac{\vect d_i^\t \mat A \vect r^{(k)}}{\vect d_i^\t \mat A \vect d_i} \vect d_i,
+    \qquad \vect r^{(k)} = \mat A \vect x^{(k)} - \vect b.
+\end{equation}
+It is simple to check that $\vect d_k$  is indeed $\mat A$-orthogonal to $\vect d_i$ for $i \in \{0, \dotsc, k-1\}$,
+and that $\vect d_k$ is nonzero if $\vect r^{(k)}$ is nonzero.
+To prove the latter claim,
+we can take the Euclidean inner product of both sides with $\vect r^{(k)}$ and use~\cref{proposition:optimality_conjugate_directions}
+to deduce that
+\begin{equation}
+    \label{eq:conjugate_gradient_positive_omega}
+    \vect d_k^\t \vect r^{(k)} = (\vect r^{(k)} )^\t \vect r^{(k)} > 0.
+\end{equation}
+Note also that since the directions are obtained by applying the Gram--Schmidt process to the residuals,
+it holds that
+\begin{equation}
+    \label{eq:conjugate_gradient_equality_span}
+    \forall k \in \{0, \dotsc, n-1\}, \qquad
+    \mathcal B_{k+1} := \Span\left\{ \vect d_0, \dotsc, \vect d_{k} \right\} =
+    \Span\left\{ \vect r^{(0)}, \dotsc, \vect r^{(k)} \right\}.
+\end{equation}
+The following result characterizes precisely the subspace $\mathcal B_{k+1}$.
+% for the conjugate gradient descent.
+\begin{proposition}
+    \label{proposition:krylov_subspace}
+    Assume that $\norm{\vect r^{(k)}} \neq 0$ for all $k < m \leq n$.
+    Then it holds that
+    \begin{equation}
+        \label{eq:conjugate_gradient_krylov}
+        \forall k \in \{0, \dotsc m\}, \quad
+        \Span\left\{ \vect r^{(0)}, \vect r^{(1)}, \dotsc, \vect r^{(k)} \right\}
+        = \Span\left\{ \vect r^{(0)}, \mat A \vect r^{(0)}, \dotsc, \mat A^k \vect r^{(0)} \right\}
+    \end{equation}
+    The subspace on the right-hand side is called a Krylov subspace.
+\end{proposition}
+\begin{proof}
+    The result is clear for $k = 0$.
+    Reasoning by induction,
+    we prove that if the result is true up to $k < m$,
+    then it is also true for $k+1$.
+    A simple calculation gives that
+    \begin{align}
+        \nonumber
+        \vect r^{(k+1)}
+        &= \mat A \left( \vect  x^{(k)} - \omega_k \vect d_k \right)  - \vect b  \\
+        \label{eq:residual_iteration}
+        &= \vect r^{(k)} - \omega_k \mat A \vect d_k.
+    \end{align}
+    From~\eqref{eq:conjugate_gradient_gram_schmidt},
+    we deduce that
+    \[
+        \vect r^{(k+1)}
+        = \vect r^{(k)} - \omega_k \mat A \left( \vect r^{(k)} - \sum_{i=0}^{k-1} \frac{\vect d_i^\t \mat A \vect r^{(k)}}{\vect d_i^\t \mat A \vect d_i} \vect d_i \right).
+    \]
+     By~\eqref{eq:conjugate_gradient_equality_span} and the induction hypothesis, 
+    the bracketed expression on the right-hand side belongs to $\mathcal B_{k+1}$,
+    so the inclusion~$\subset$ in~\eqref{eq:conjugate_gradient_krylov} is clear.
+    The inclusion $\supset$ then follows from the fact the dimension of the subspace
+    \[
+        \Span\left\{ \vect d_0, \dotsc, \vect d_{k} \right\} =
+        \Span\left\{ \vect r^{(0)}, \dotsc, \vect r^{(k)} \right\}
+    \]
+    is equal to $k+1$.
+\end{proof}
+
+It appears from~\eqref{eq:conjugate_gradient_gram_schmidt} that the cost of calculating a new direction grows linearly with the iteration index.
+In fact, it turns out that only the last term in the sum is nonzero,
+and so the cost of calculating a new direction does not grow with the iteration index~$k$.
+Indeed, notice that if $i \leq k-2$, then
+\[
+    \vect d_i^\t \mat A \vect r^{(k)} 
+    = (\mat A \vect d_i)^\t \mat A \vect r^{(k)}
+    = 0,
+\]
+because $\mat A \vect d_i \in \mathcal B_{i+2} \subset \mathcal B_{k}$ by~\cref{proposition:krylov_subspace},
+and $\vect r^{(k)}$ orthogonal to~$\mathcal B_k$ for the Euclidean inner product by~\eqref{eq:orthogonality_residual}.
+This observation leads to~\cref{algo:conjugate_gradient}.
+\begin{algorithm}
+    \caption{Conjugate gradient method}%
+    \label{algo:conjugate_gradient}%
+    \begin{algorithmic}[1]
+        \State Pick initial $\vect x^{(0)}$
+        \State $\vect d_0 = \vect r^{(0)} = \mat A \vect x^{(0)} - \vect b$
+        \For{$k$ in $\{0, \dotsc, n-1\}$}
+            \If{$\norm{\vect r^{(k)}} = 0$}
+                \State{Stop}
+            \EndIf
+            \State $\omega_k = \vect d_k^\t \vect r^{(k)}/\vect d_k^\t \mat A \vect d_k$
+            \State $\vect x^{(k+1)} = \vect x^{(k)} - \omega_k \vect d_k$
+            \State $\vect r^{(k+1)} = \mat A \vect x^{(k+1)} - \vect b$
+            \State $\beta_k  = \vect d_k^\t \mat A \vect r^{(k+1)}/\vect d_k^\t \mat A \vect d_k$.
+            \State $\vect d_{k+1}  = \vect r^{(k+1)} - \beta_k \vect d_k$.
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Although the conjugate gradient method converges in a finite number of iterations,
+performing $n$ iterations for very large systems  would require an excessive computational cost,
+and so it is sometimes desirable to stop iterating when the residual is sufficiently small.
+To conclude this section, we study the convergence of the method.
+\begin{theorem}
+    [Convergence of the conjugate gradient method]
+    \label{theorem:convergence_conjugate_gradient}
+    The error for the conjugate gradient method,
+    measured as 
+    \[
+        E_{k} := (\vect x^{(k)} - \vect x_*)^\t  \mat A (\vect x^{(k)} - \vect x_*),
+    \]
+    satisfies the following inequality:
+    \begin{equation}
+        \label{equation:convergence_conjugate_gradient}
+        \forall q_k \in \poly(k), \qquad
+        E_{k+1} \leq  \max_{1\leq i \leq n}\bigl(1 + \lambda_i q_k(\lambda_i) \bigr)^2   E_0.
+    \end{equation}
+    Here $\poly(k)$ is the vector space of polynomials of degree less than or equal to $k$.
+\end{theorem}
+\begin{proof}
+
+In view of \cref{proposition:krylov_subspace},
+the iterate $\vect x^{(k+1)}$ can be written as
+\[
+    \vect x^{(k+1)} = \vect x^{(0)} + \sum_{i=0}^{k} \alpha_i \mat A^i \vect r^{(0)}
+    = \vect x^{(0)} + p_k(\mat A) \vect r^{(0)},
+\]
+where $p_k$ is a polynomial of degree $k$.
+By~\cref{proposition:optimality_conjugate_directions},
+$p_k$ is in fact the polynomial of degree~$k$ such that $f(\vect x^{(k+1)})$ is minimized,
+and thus also $E_{k+1}$ by~\eqref{eq:rewritten_expression_of_f}.
+Noting that
+\begin{align*}
+    \vect x^{(k+1)} - \vect x_*
+    &= \vect x^{(0)}  - \vect x_* + p_k(\mat A) \vect r^{(0)}
+    = \vect x^{(0)}  - \vect x_* + p_k(\mat A) \mat A (\vect x^{(0)} - \vect x_*) \\
+    &= \bigl(\mat I + \mat A p_k(\mat A) \bigr) (\vect x^{(0)} - \vect x_*),
+\end{align*}
+we deduce that
+\[
+    \forall q_k \in \poly(k), \qquad
+    E_{k+1} \leq (\vect x^{(0)} - \vect x_*)^\t \mat A \bigl(\mat I + \mat A q_k(\mat A) \bigr)^2  (\vect x^{(0)} - \vect x_*).
+\]
+In order to exploit this inequality,
+it is useful to diagonalize $\mat A$ as $\mat A = \mat Q \mat D \mat Q^\t$,
+for an orthogonal matrix $\mat Q$ and a diagonal matrix $\mat D$.
+Since $q_k(\mat A) = \mat Q q_k(\mat D) \mat Q^\t$ for all $q_k \in \poly(k)$,
+it holds that
+\begin{align*}
+    \forall q_k \in \poly(k), \qquad
+    E_{k+1}
+    &= \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D \bigl(\mat I + \mat D q_k(\mat D) \bigr)^2  \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr) \\
+    &\leq  \max_{1\leq i \leq n}\bigl(1 + \lambda_i q_k(\lambda_i) \bigr)^2   \underbrace{\bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)^\t \mat D   \bigl(\mat Q^\t (\vect x^{(0)} - \vect x_*)\bigr)}_{E_0},
+\end{align*}
+which completes the proof.
+\end{proof}
+
+A corollary of~\cref{theorem:convergence_conjugate_gradient} is that,
+if $\mat A$ has $m \leq n$ distinct eigenvalues,
+then the conjugate gradient method converges in at most $m$ iterations.
+Indeed, in this case we can take
+\[
+    q_{m-1}(\lambda) = \frac{1}{\lambda} \left( \frac{(\lambda_1 - \lambda) \dotsc (\lambda_m - \lambda)}{\lambda_1 \dotsc \lambda_m} - 1 \right).
+\]
+It is simple to check that the right-hand side is indeed a polynomial,
+and that $1 + \lambda_i  q_{m-1}(\lambda_i) = 0$ for all eigenvalues of $\mat A$.
+
+In general, finding the polynomial that minimizes the right-hand side of~\eqref{equation:convergence_conjugate_gradient} is not possible,
+because the eigenvalues of $\mat A$ are unknown.
+However, it is possible to derive from this equation an error estimate with an explicit dependence on the condition number~$\kappa = \kappa_2(\mat A)$.
+\begin{theorem}
+    It holds that
+    \[
+        \forall k \geq 0, \qquad
+        E_{k} \leq  4 \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{2(k+1)} E_0,
+    \]
+\end{theorem}
+\begin{proof}
+\Cref{theorem:convergence_conjugate_gradient} implies that
+\begin{equation*}
+    \forall q_k \in \poly(k), \qquad
+    E_{k+1} \leq  \max_{\lambda \in [\lambda_1, \lambda_n]}\bigl(1 + \lambda q_k(\lambda) \bigr)^2   E_0,
+\end{equation*}
+where $\lambda_1$ and $\lambda_n$ are the minimum and maximum eigenvalues of $\mat A$.
+It follows from~\cref{exercise:conjugate_gradient_chebyshev} that the right-hand side is minimized when
+\begin{equation}
+    \label{eq:conjugate_gradient_optimal_polynom}
+    1 + \lambda q_k(\lambda) = \frac{T_{k+1}\left(\frac{\lambda_n + \lambda_1 - 2\lambda}{\lambda_n - \lambda_1}\right)}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)},
+\end{equation}
+where $T_{k+1}$ is the \emph{Chebyshev} polynomial of degree $k+1$,
+see~\eqref{eq:chebyshev}.
+We recall that $|T_{k+1}(x)| \leq 1$ for all $x \in [-1, 1]$.
+Consequently, by the expression of Chebyshev polynomials given in~\cref{exercise:yet_another_expression_cheby},
+the following inequality holds true for all $\lambda \in [\lambda_1, \lambda_n]$:
+\begin{align*}
+    \bigl\lvert 1 + \lambda q_k(\lambda) \bigr\rvert
+    \leq \frac{1}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)}
+    &= 2\left( \Big(r+\sqrt{r^2-1} \Big)^{k+1} + \Big(r-\sqrt{r^2-1}\Big)^{k+1} \right)^{-1},  \\
+    &= 2 \left( \left( \frac{\sqrt{\kappa} + 1}{\sqrt{\kappa} - 1} \right)^{k+1} + \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{k+1} \right)^{-1}.
+\end{align*}
+where $r = \frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}$.
+Since the first term in the bracket converges to zero as $k \to \infty$,
+it is natural to bound this expression by keeping only the second term,
+which after simple algebraic manipulations leads to
+\[
+    \forall \lambda \in [\lambda_1, \lambda_n], \qquad
+    \bigl\lvert 1 + \lambda q_k(\lambda) \bigr\rvert
+    \leq 2 \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^{k+1}.
+\]
+From this inequality,
+the statement of the theorem follows immediately.
+\end{proof}
