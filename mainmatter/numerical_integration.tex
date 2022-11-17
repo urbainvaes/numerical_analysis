@@ -737,7 +737,12 @@ we have
     \int_{0}^{1} \int_{0}^{1} u(x, y) \, \d y \d x \approx \sum_{i=0}^{n} \sum_{j=0}^{n} w_i w_j u(x_i, y_i).
 \]
 The degree of precision of this integration rule is the same as
-that of the corresponding one-dimensional rule.
+that of the corresponding one-dimensional rule,
+and this approach can be generalized to any dimension~$d$.
+The associated computational cost,
+however, scales as $n^d$, 
+and so it is not a good idea to use a deterministic method of this type in the high dimensional setting.
+The explosion of the computational cost as the dimension increases is known as~\emph{the curse of dimensionality}.   
 
 \section{Introduction to probabilistic integration methods}
 So far in this chapter,
