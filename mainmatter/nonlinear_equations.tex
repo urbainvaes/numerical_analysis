@@ -296,9 +296,9 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
     Being a contraction, the function $\vect F$ is continuous,
     and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point}, we obtain that
     \[
-        \vect x_* = \lim_{k \to \infty} \vect x_{k+1} 
-        = \lim_{k \to \infty} \vect F(\vect x_k) 
-        = \vect F \left( \lim_{k \to \infty} \vect x_k \right) 
+        \vect x_* = \lim_{k \to \infty} \vect x_{k+1}
+        = \lim_{k \to \infty} \vect F(\vect x_k)
+        = \vect F \left( \lim_{k \to \infty} \vect x_k \right)
         = \vect F(\vect x_*).
     \]
     In other words, $\vect x_*$ is a fixed point of~$\vect F$.
@@ -316,7 +316,7 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
 
     \vspace{.2cm}
     \noindent\textbf{Global exponential convergence.}
-    Since $\vect F$ is a contraction, 
+    Since $\vect F$ is a contraction,
     it holds that
     \begin{equation}
         \label{eq:contraction}
@@ -978,14 +978,47 @@ y = [0.6761488864859304; 0.6345697680852508; 0.6396283580587062; 0.6132010027973
     \end{figure}
 \end{exercise}
 
-% \begin{exercise}
-%     [Proof of convergence for Newton--Raphson]
-%     The aim of this exercise is to prove the convergence of the Newton--Raphson method under simple assumptions.
-%     Specifically, let $f \in C^2(\real)$ be a smooth function such that
-%     \[
-%         fa
-%     \]
-% \end{exercise}
+\begin{exercise}
+    [Nonlinear least-squares]
+    \label{exercise:nonlinear_least_squares}
+    Suppose that we are given $n$ data points $(x_i, y_i)$ of an unknown function~$y = f(x)$.
+    We wish to approximate $f$ by a straight line
+    \[
+        \widetilde f(x) = ax + b
+    \]
+    by minimizing the sum of squared \emph{Euclidean distances} between the data points and the straight line~$\widetilde f$.
+    Since the distance between a point $(x_i, y_i)$ and the straight line is given by
+    \[
+        \frac{\lvert y_i - a x_i - b \rvert}{\sqrt{1+a^2}},
+    \]
+    the objective function to minimize is given by
+    \[
+        J(a, b) := \sum_{i=1}^{n} \frac{ \left( y_i - a x_i - b \right)^2 }{1+a^2}.
+    \]
+    This is a smooth function of~$a$ and $b$,
+    and so a necessary condition for a pair $(a_*, b_*) \in \real^2$ to be a minimizer is that
+    \[
+        \nabla J(a_*, b_*) = \vect 0,
+    \]
+    which is a nonlinear equation for the unknowns~$a_*$ and $b_*$.
+    Solve this equation by using the Newton--Raphson method initialized at~$(1, 1)$,
+    and then plot the data points together with the function~$\widetilde f$ over the interval~$[0, 1]$.
+    Your plot should look like \cref{fig:solution_exercise_approximation_least_squares}.
+    The data is given hereafter:
+    \begin{minted}{julia}
+x = [0.0; 0.1; 0.2; 0.3; 0.4; 0.5; 0.6; 0.7; 0.8; 0.9; 1.0]
+y = [-0.9187980789440975; -0.6159791344678258; -0.25568734869121856;
+     -0.14269370171581808; 0.3094396057228459; 0.6318327173549161;
+     0.8370437988106428; 1.0970402798788812; 1.6057799131867696;
+     1.869090784869698; 2.075369730726694]
+    \end{minted}
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.6\linewidth]{figures/approx_line.pdf}
+        \caption{Solution to \cref{exercise:nonlinear_least_squares}.}%
+        \label{fig:solution_exercise_approximation_least_squares}
+    \end{figure}
+\end{exercise}
 
 \section{Discussion and bibliography}
 
