@@ -581,7 +581,32 @@ because then
 \[
     F'(x_*) = \frac{f(x_*) f''(x_*)}{f'(x_*)^2} = 0.
 \]
-The Newton--Raphson method generalizes to nonlinear equations in $\real^n$ of the form~\eqref{eq:nonlinear_equation}.
+The geometric interpretation of the Newton--Raphson method in dimension 1 is the following:
+at each step, the function $\vect f$ is approximated by the affine function
+$x \mapsto x_k + f'(x_k)(x - x_k)$,
+which is \emph{the tangent line to~$f$ at $x_k$},
+and the next iterate is given by the unique zero of the latter function.
+This is illustrated in \cref{fig:newton_raphson}.
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[thick,yscale=0.7]
+        \draw[-latex,name path=xaxis] (-1,0) -- (12,0) node[above]{\large $x$};
+        \draw[-latex] (0,-2) -- (0,8)node[right]{\large $y$};;
+        \draw[ultra thick, blue,name path=function]  plot[smooth,domain=1:9.5] (\x, {0.1*\x^2-1.5}) node[left]{$f(x)$};
+        \node[red,right=0.2cm] at (8,4.9) {\large Tangent};
+        \draw[gray,thin,dotted] (8,0) -- (8,4.9) node[circle,fill,inner sep=2pt]{};
+        \draw[dashed, red,name path=Tfunction]  plot[smooth,domain=4.25:9.5] (\x, {1.6*\x-7.9});
+        \draw (8,0.1) -- (8,-0.1) node[below] {$x_k$};
+        \draw [name intersections={of=Tfunction and xaxis}] ($(intersection-1)+(0,0.1)$) -- ++(0,-0.2) node[below,fill=white] {$x_{k+1}$} ;
+    \end{tikzpicture}
+    \caption{%
+        Graphical illustration of a Newton--Raphson iteration.
+        {\footnotesize The code used to create this figure is based on the answer~\url{https://tex.stackexchange.com/a/551205/125558} on \LaTeX~stack exchange}.
+    }%
+    \label{fig:newton_raphson}
+\end{figure}
+
+The Newton--Raphson method may be generalized to nonlinear equations in $\real^n$ of the form~\eqref{eq:nonlinear_equation}.
 In this case $\vect F(\vect x) = \vect x - \mat J_f(\vect x)^{-1} \vect f(\vect x)$,
 and so an iteration of the method reads
 \begin{equation}
