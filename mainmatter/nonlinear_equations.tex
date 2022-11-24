@@ -503,6 +503,8 @@ In this case, the order of convergence is at least $q$.
 As we mentioned in \cref{sec:fixed_point_methods},
 there are several choices for the function $\vect F$ that guarantee
 the equivalence $\vect F(\vect x) = \vect x \Leftrightarrow \vect f(\vect x) = \vect 0$.
+
+\subsection{The chord method}
 In the case where $f$ is a function from $\real$ to $\real$,
 the simplest approach, sometimes called the \emph{chord method}, is to define
 \[
@@ -516,6 +518,7 @@ i.e.
     \label{eq:naive_fixed_point}
     x_{k+1} = x_k - \alpha^{-1} f(x_k) = F(x_k).
 \end{equation}
+This is illustrated in \cref{fig:chord_method}.
 By~\cref{proposition:local_convergence},
 a sufficient condition to ensure local convergence is that
 \begin{equation}
@@ -536,6 +539,23 @@ Nevertheless, the above reasoning suggests that, by letting the slope $\alpha$ v
 fast convergence can be obtained.
 This is precisely what the Newton--Raphson method aims to achieve;
 see~\cref{sub:newton_raphson}
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[thick,yscale=0.65]
+        \draw[-latex,name path=xaxis] (-1,0) -- (12,0) node[above]{\large $x$};
+        \draw[-latex] (0,-2) -- (0,8)node[right]{\large $y$};;
+        \draw[ultra thick, blue,name path=function]  plot[smooth,domain=1:9.5] (\x, {0.1*\x^2-1.5}) node[left]{$f(x)$};
+        \node[red,right=0.2cm] at (8,4.9) {\large Affine approximation};
+        \draw[gray,thin,dotted] (8,0) -- (8,4.9) node[circle,fill,inner sep=2pt]{};
+        \draw[dashed, red,name path=Tfunction]  plot[smooth,domain=0:9.5] (\x, {0.7*(\x-8) + 4.9});
+        \draw (8,0.1) -- (8,-0.1) node[below] {$x_k$};
+        \draw [name intersections={of=Tfunction and xaxis}] ($(intersection-1)+(0,0.1)$) -- ++(0,-0.2) node[below,fill=white] {$x_{k+1}$} ;
+    \end{tikzpicture}
+    \caption{%
+        Graphical illustration of an iteration of the chord method.
+    }%
+    \label{fig:chord_method}
+\end{figure}
 
 When $\vect f$ is a function from $\real^n$ to $\real^n$,
 the above approach generalizes to
@@ -552,7 +572,7 @@ Superlinear convergence is achieved when~$\mat A = \mat J_f(\vect x_*)$.
 Notice that each iteration requires to calculate $\vect y := \mat A^{-1} \vect f(\vect x_k)$,
 which is generally achieved by solving the linear system $\mat A \vect y = \vect f(\vect x_k)$.
 
-\subsection{The Newton--Raphson method}
+\subsubsection{The Newton--Raphson method}
 \label{sub:newton_raphson}
 Let us first consider the case of a function from $\real$ to $\real$.
 A necessary condition for the Newton--Raphson method to apply is that $f$ is differentiable.
@@ -589,7 +609,7 @@ and the next iterate is given by the unique zero of the latter function.
 This is illustrated in \cref{fig:newton_raphson}.
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}[thick,yscale=0.7]
+    \begin{tikzpicture}[thick,yscale=0.65]
         \draw[-latex,name path=xaxis] (-1,0) -- (12,0) node[above]{\large $x$};
         \draw[-latex] (0,-2) -- (0,8)node[right]{\large $y$};;
         \draw[ultra thick, blue,name path=function]  plot[smooth,domain=1:9.5] (\x, {0.1*\x^2-1.5}) node[left]{$f(x)$};
@@ -619,7 +639,7 @@ and we demonstrate the \emph{second order} convergence of the method,
 first in dimension 1 under simplifying assumption involving the second derivative of~$f$,
 and then in the multi-dimensional setting under more general assumptions.
 
-\subsection*{Convergence in the one-dimensional setting}
+\subsubsection*{Convergence in the one-dimensional setting}
 We assume in this section that~$(x_k)_{k\geq 0}$ is generated from the Newton--Raphson method~\eqref{eq:newton_raphson} and prove the following result.
 \begin{theorem}
     [Quadratic convergence of Newton--Raphson]
@@ -1028,7 +1048,7 @@ end
 setprecision(2000)
 my_sqrt(BigFloat(2))
 \end{minted}
-For each of the methods, 
+For each of the methods,
 the number of correct digits of the approximation as the iterations progress is illustrated in~\cref{table:numerical_experiment_square_root}.
 Observe that for all the methods except the first one,
 the number of correct digits is approximately doubled at each iteration,
