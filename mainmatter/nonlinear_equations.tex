@@ -484,10 +484,11 @@ the convergence is superlinear if $\mat J_F(\vect x_*) = 0$.
 \end{proof}
 
 Similarly, if there exist $\delta > 0$, $C > 0$ and $q \in (1, \infty)$ such that
-\[
+\begin{equation}
+    \label{eq:condition_quadratic_convergence}
     \forall \vect x \in B_{\delta}(\vect x_*), \qquad
     \norm{\vect F(\vect x) - \vect F(\vect x_*)} \leq C \norm{\vect x - \vect x_*}^q,
-\]
+\end{equation}
 then assuming that $(\vect x_k)_{k\geq0}$ converges to $\vect x_*$,
 it holds for sufficiently large $k$ that
 \[
@@ -867,8 +868,29 @@ which is accurate in a close neighborhood of~$x_*$.
     By assumption, the right-hand side converges to zero,
     and so the left-hand side must also converge to zero;
     the convergence is superlinear.
-    In order to find the order of convergence,
-    we take absolute values in the previous equation to obtain,
+
+    To conclude the proof,
+    we first reason formally in order to guess the order convergence,
+    and then give a rigorous proof that our guess is correct.
+    If~$e_k$ is small, then it holds approximately by~\eqref{eq:secant_method_rearranged} that
+    \begin{equation}
+        \label{eq:recursion_error_secant}
+        \frac{e_{k+2}}{e_{k+1}}
+        \approx \mu e_k.
+    \end{equation}
+    Assume that there exists $q > 0$ such that the equation $e_{k+1} = C e_k^q$ is valid for all~$k$.
+    Then it holds that $e_{k+2} = C e_{k+1}^q = C (Ce_k^{q})^q$ and~\eqref{eq:recursion_error_secant} enables to determine~$q$:
+    \[
+        \frac{C (Ce_k^{q})^q} {Ce_k^{q}} = \frac{\mu}{\lambda} e_k
+        \qquad \Rightarrow \qquad
+        C^q e_k^{q^2 - q} = \frac{\mu}{\lambda} e_k
+        \qquad \Rightarrow \qquad
+        q^2 - q - 1 = 0.
+        \qquad \Rightarrow \qquad
+        q = \varphi.
+    \]
+    Now comes the rigorous justification.
+    Take absolute values in~\eqref{eq:secant_method_rearranged} to obtain,
     after rearranging,
     \[
         \frac{\abs{e_{k+2}}}{\abs{e_{k+1}}^{\varphi}}
@@ -893,16 +915,132 @@ which is accurate in a close neighborhood of~$x_*$.
     \[
         \log(y_k) = (1 - \varphi)^{k-1} \log(y_1) + \sum_{i=1}^{k-1} (1 - \varphi)^{k-1-i} c_i.
     \]
-    Since $(c_k)_{k \geq 0}$ converges to the constant $c_{\infty} = \abs{\mu/\lambda}$ by the assumption that $e_k \to 0$,
+    Since $(c_k)_{k \geq 0}$ converges to the constant $c_{\infty} = \log\abs{\mu/\lambda}$ by the assumption that $e_k \to 0$,
     the sequence $\bigl(\log(y_k)\bigr)_{k\geq 0}$ converges to $c_{\infty} / \varphi$ (prove this!).
     Therefore, by continuity of the exponential function,
     it holds that
     \[
-        y_k =  \exp \bigl(  \log(y_k) \bigr) \xrightarrow[k \to \infty]{} \exp \left( \frac{c_{\infty}}{\varphi} \right),
+        y_k =  \exp \bigl(  \log(y_k) \bigr) \xrightarrow[k \to \infty]{} \exp \left( \frac{c_{\infty}}{\varphi} \right)
+        = \abs*{\frac{\mu}{\lambda}}^{\frac{1}{\varphi}}
     \]
     and so we deduce~\eqref{eq:convergence_secant}.
 \end{proof}
 
+\section{A numerical experiment}
+To conclude this chapter,
+we present the results of a numerical experiment.
+Specifically,
+we consider four different fixed point methods for calculating the square root of 2,
+i.e.\ for solving the nonlinear equation
+\begin{equation}
+    \label{eq:numerical_experiment}
+    f(x) := x^2 - 2 = 0.
+\end{equation}
+The unique positive solution to this equation is $x_* = \sqrt{2}$.
+The methods we consider are the following:
+\begin{itemize}
+    \item
+        The chord method with large~$\alpha = 10$.
+
+    \item
+        The chord method with the optimal parameter~$\alpha$,
+        which is such that $F'(x_*) = 0$.
+        The optimum value for $\alpha$ for solving~\eqref{eq:numerical_experiment} is given by~$\alpha_* = 2 \sqrt{2}$.
+
+    \item
+        The Newton--Raphson method.
+
+    \item
+        The Babylonian method,
+        which is based on a fixed point iteration of the form~\eqref{eq:fixed_point} with
+        \[
+            F(x) = \frac{1}{2} \left(x + \frac{2}{x} \right).
+        \]
+        Notice that $F'(x_*) = 0$ and that $F \in C^2\bigl((0, \infty)\bigr)$.
+        Therefore, by Taylor's theorem it holds for all $x \in (x_*-1, x_* + 1)$ that
+        \[
+            \left\lvert F(x) - F(x_*) \right\rvert
+            = \left\lvert F''\bigl(\xi(x)\bigr) \right\rvert
+            \leq L (x - x_*)^2,
+            \qquad L:= \sup_{\abs{x - x_*} \leq 1} \abs{F''(x)}.
+        \]
+        Therefore,
+        the convergence is at least quadratic by~\eqref{eq:condition_quadratic_convergence}.
+\end{itemize}
+The following code implements these methods.
+Note that we use the arbitrary precision \julia{BigFloat} format with a precision we manually set to $2000$ bits,
+which enables using a very small~$\varepsilon$ in the stopping criterion.
+\begin{minted}{julia}
+function count_digits(x, y)
+    xdigits = split(string(x), "")
+    ydigits = split(string(y), "")
+    len = min(length(xdigits), length(ydigits))
+    for i in 1:len
+        xdigits[i] != ydigits[i] && return i-2
+    end
+end
+
+function my_sqrt(a)
+    exact = sqrt(a)
+    f(x) = x*x - a
+    fp(x) = 2x
+
+    # Uncomment desired line
+    F(x) = x - f(x)/10      # Chord method
+    # F(x) = x - f(x)/(2√a)   # Chord method with optimal α
+    # F(x) = 1/2 * (x + a/x)  # Babylonian
+    # F(x) = x - f(x)/fp(x)   # Newton Raphson
+
+    r, ε = 1, 1e-200
+    while abs(f(r)) > ε
+        r = F(r)
+        digits = ceil(Int, -log10(abs(r - exact)))
+        println("Number of correct digits: $digits")
+    end
+end
+
+# Sets the precision of BigFloats to 1000 bits
+setprecision(2000)
+my_sqrt(BigFloat(2))
+\end{minted}
+For each of the methods, 
+the number of correct digits of the approximation as the iterations progress is illustrated in~\cref{table:numerical_experiment_square_root}.
+Observe that for all the methods except the first one,
+the number of correct digits is approximately doubled at each iteration,
+which is consistent with quadratic convergence.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+         \hline
+         Method & Chord $\alpha = 10$ & Chord $\alpha = 2 \sqrt{2}$ & Newton--Raphson & Babylonian
+         \\ \hline
+         \# Iterations & \textbf{1357} & \textbf{8} & \textbf{9} & \textbf{9}
+         \\ \hline
+         \# Correct digits $i = 1$ & 1 & 1 & 1 & 1
+         \\ \hline
+         \# Correct digits $i = 2$ & 1 & 3 & 3 & 3
+         \\ \hline
+         \# Correct digits $i = 3$ & 1 & 6 & 6 & 6
+         \\ \hline
+         \# Correct digits $i = 4$ & 1 & 12 & 12 & 12
+         \\ \hline
+         \# Correct digits $i = 5$ & 1 & 26 & 24 & 24
+         \\ \hline
+         \# Correct digits $i = 6$ & 1 & 53 & 48 & 48
+         \\ \hline
+         \# Correct digits $i = 7$ & 1 & 107 & 97 & 97
+         \\ \hline
+         \# Correct digits $i = 8$ & 1 & 214 & 196 & 196
+         \\ \hline
+         \# Correct digits $i = 9$ & 1 & n/a & 392 & 392
+         \\ \hline
+    \end{tabular}
+    \caption{%
+        Comparison of different fixed point methods for calculating $\sqrt{2}$.
+        Here $i$ denotes the iteration index.
+    }
+    \label{table:numerical_experiment_square_root}
+\end{table}
 \section{Exercises}
 
 \begin{compexercise}
@@ -934,6 +1072,7 @@ Implement the bisection method for finding the solution(s) to the equation
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:spectral_and_norm}
     Let $\vect x_*$ be a fixed point of~\eqref{eq:fixed_point}.
     Show that if
     \[
@@ -984,6 +1123,9 @@ Implement the bisection method for finding the solution(s) to the equation
     By~\eqref{eq:alternative_norm_spectral_radius} and the assumption that~$\rho(\mat A) < 1$,
     it is clear that $\norm{\mat A}_{\varepsilon} < 1$ provided that~$\varepsilon$ is sufficiently small.
 \end{solution}
+\begin{remark}
+    A corollary of \cref{exercise:induced_matrix_norm} is that the spectral radius of a matrix~$\mat A$ is \emph{the infimum} of $\norm{\mat A}$ over all subordinate matrix norms.
+\end{remark}
 
 \begin{exercise}
     Calculate $x = \sqrt[3]{3 + \sqrt[3]{3 + \sqrt[3]{3 + \sqrt{\dots}}}}$ using the bisection method.
