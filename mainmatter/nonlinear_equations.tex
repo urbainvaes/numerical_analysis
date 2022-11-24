@@ -41,13 +41,13 @@ In particular,
 the convergence is superlinear if the order of convergence is $q > 1$.
 
 \begin{remark}
-    The definition~\eqref{eq:superlinear} for the order and rate of convergence is not entirely satisfactory,
-    as the limit may not exist.
-    A more general definition for the order of convergence of a sequence~$(\vect x_k)_{k\geq0}$ is the following:
+    The notion of order of convergence may be defined also when
+    the limit in~\eqref{eq:rate_of_convergence} does not exist.
+    A more general definition for the order of convergence of a sequence~$(\vect x_k)_{k\geq0}$ converging to $\vect x_*$ is the following:
     \[
         q(\vect x_0) = \inf \left\{ p \in [1, \infty) : \limsup_{k \to \infty} \frac{\norm{\vect e_{k+1}}}{\norm{\vect e_k}^p} = \infty \right\},
     \]
-    or $q(\vect x_0) = \infty$ if the numerator and denominator of the fraction are zero for sufficiently large $k$.
+    or $q(\vect x_0) = \infty$ if the numerator and denominator of the fraction are zero for sufficiently large~$k$.
     It is possible to define similarly the order of convergence of an iterative method
     for an initial guess in a neighborhood $V$ of $\vect x_*$:
     \[
@@ -110,9 +110,9 @@ The algorithm is presented in \cref{algo:bisection}.
 The following result establishes the convergence of the method.
 \begin{proposition}
     \label{proposition:convergence_bisection}
-    Assume that $f\colon \real \to \real$ is a continuous function.
-    Let $[a_j, b_j]$ denote the interval obtained after $j$ iterations of the bisection method,
-    and let $x_j$ denote the midpoint $(a_j + b_j)/2$.
+    Assume that $f\colon \real \to \real$ is a continuous function and $f(a) f(b) < 0$.
+    Let~$[a_j, b_j]$ denote the interval obtained after $j$ iterations of the bisection method,
+    and let $x_j = (a_j + b_j)/2$ denote the midpoint of the interval,
     Then there exists a root~$x_*$ of $f$ such that
     \begin{equation}
         \label{eq:error_bisection}
@@ -166,7 +166,7 @@ Several definitions of the function~$\vect F$ can be employed in order to ensure
 a fixed point of $\vect F$ coincides with a zero of $\vect f$.
 One may, for example, define $\vect F(\vect x) = \vect x - \alpha^{-1} \vect f(\vect x)$,
 for some nonzero scalar coefficient $\alpha$.
-Then $\vect F(\vect x_*) = \vect x_*$ if and only if $\vect f(\vect x_*) = 0$.
+Then~$\vect F(\vect x_*) = \vect x_*$ if and only if $\vect f(\vect x_*) = 0$.
 Later in this chapter,
 in \cref{sec:examples_of_fixed_point_methods},
 we study two instances of numerical methods which can be recast in the form~\eqref{eq:fixed_point}.
@@ -339,7 +339,7 @@ It is possible to prove a weaker, local result under a less restrictive assumpti
     \end{equation}
     with $0 \leq L < 1$ and $\delta > 0$.
     Then~$\vect x_*$ is the unique fixed point of~$\vect F$ in $B_{\delta}(\vect x_*)$ and,
-    for all $\vect x_0 \in B_{\delta}(\vect x_*)$, it holds that
+    for all~$\vect x_0 \in B_{\delta}(\vect x_*)$, it holds that
     \begin{itemize}
         \item All the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
         \item The sequence $(\vect x_k)_{k \in \nat}$ converges exponentially to $\vect x_*$.
@@ -350,7 +350,7 @@ It is possible to prove a weaker, local result under a less restrictive assumpti
 \end{proof}
 It is possible to guarantee that condition~\eqref{eq:local_lipschitz} holds provided that
 we have sufficiently good control of the derivatives of the function~$\vect F$.
-The function $\vect F$ is differentiable at $\vect x$ (in the sense of Fréchet) if
+The function $\vect F$ is said to be differentiable at $\vect x$ (in the sense of Fréchet) if
 there exists a linear operator $\D \vect F_{\vect x} \colon \real^n \to \real^n$ such that
 \begin{equation}
     \label{eq:limit_differentiability}
@@ -358,17 +358,17 @@ there exists a linear operator $\D \vect F_{\vect x} \colon \real^n \to \real^n$
     = 0.
 \end{equation}
 If $\vect F$ is differentiable,
-then all its first partial derivatives exist.
-The Jacobian matrix of~$\vect F$ at $\vect x$ is defined as
+then all its first partial derivatives~$\partial_j F_i$ exist and,
+in addition, it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$
+where $\mat J_F(\vect x)$ is the Jacobian matrix of~$\vect F$ at $\vect x$:
 \[
     \mat J_F(\vect x) =
     \begin{pmatrix}
         \partial_{1} F_1(\vect x) & \hdots & \partial_n F_1(\vect x) \\
         \vdots & \ddots & \vdots \\
         \partial_{1} F_n(\vect x) & \hdots & \partial_n F_n(\vect x)
-    \end{pmatrix},
+    \end{pmatrix}.
 \]
-and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
 
 \begin{proposition}
     \label{proposition:local_convergence_fixed_point}
@@ -400,6 +400,22 @@ and it holds that $\D \vect F_{\vect x}(\vect h) = \mat J_F(\vect x) \vect h$.
     \end{align*}
     which is the statement.
 \end{proof}
+\begin{remark}
+    As Hannah observed during the lecture,
+    in dimension~$n = 1$, \cref{proposition:local_convergence_fixed_point} can be proved by using the mean value theorem:
+    since $F$ is differentiable in~$(x_* -\delta, x_* + \delta)$,
+    there exists for all $x$ in this interval a $\xi = \xi(x)$ also in this interval such that
+    \[
+        F(x) - F(x_*) = F'(\xi) (x - x_*).
+    \]
+    It then follows immediately that
+    \[
+        \bigl\lvert F(x) - F(x_*) \bigr\rvert
+        = \left\lvert F'(\xi) (x - x_*) \right\rvert
+        \leq L \lvert x - x_* \rvert.
+    \]
+    This proof does not carry over to the multi-dimensional setting, however.
+\end{remark}
 
 In fact, it is possible to prove that a fixed point~$\vect x_*$ is exponentially locally stable under an even weaker condition,
 involving only the derivative of $\vect F$ at $\vect x_*$.
@@ -410,29 +426,32 @@ involving only the derivative of $\vect F$ at $\vect x_*$.
         \norm{\mat J_F(\vect x_*)} = L < 1,
     \]
     in a subordinate vector norm.
-    Then there exists $\delta > 0$ such that condition~\eqref{eq:local_lipschitz} is satisfied in the associated vector norm,
-    and so the fixed point $\vect x_*$ is locally exponentially stable.
+    Then  the fixed point $\vect x_*$ is locally exponentially stable.
 \end{proposition}
 \begin{proof}
-    Let $\varepsilon = \frac{1}{2} (1-L) > 0$.
+    In this proof, the vector norm used is that associated with the matrix norm in the statement of the proposition.
     By the definition of differentiability~\eqref{eq:limit_differentiability},
-    there exists $\delta > 0$ such that
+    there exists for all~$\varepsilon > 0$ a~$\delta > 0$ such that
     \[
-        \forall \vect h \in B_{\delta} (\vect 0) \backslash \{ \vect 0 \}, \qquad
-        \frac{\norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h}}{\norm{\vect h}} \leq \varepsilon.
+        \forall \vect x \in B_{\delta} (\vect x_*) \backslash \{ \vect x_* \}, \qquad
+        \frac{\norm{\vect F(\vect x) - \vect F(\vect x_*) - \mat J_F(\vect x_*)(\vect x - \vect x_*)}}{\norm{\vect x - \vect x_*}} \leq \varepsilon.
     \]
     By the triangle inequality,
-    this implies
+    this implies that for all $\vect x \in B_{\delta} (\vect x_*)$,
     \begin{align*}
-        \forall \vect h \in B_{\delta} (\vect 0), \qquad
-        \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*)}
+        \norm{\vect F(\vect x) - \vect F(\vect x_*)}
         &\leq
-        \norm{\vect F(\vect x_* + \vect h) - \vect F(\vect x_*) - \mat J_F(\vect x_*)\vect h} + \norm{\mat J_F(\vect x_*)\vect h} \\
+        \norm{\vect F(\vect x) - \vect F(\vect x_*) - \mat J_F(\vect x_*)(\vect x - \vect x_*)} + \norm{\mat J_F(\vect x_*)(\vect x - \vect x_*)} \\
         &\leq
-        \varepsilon \norm{\vect h} + \norm{\mat J_F(\vect x_*)} \norm{\vect h}
-        = (\varepsilon + L) \norm{\vect h} = (1 - \varepsilon) \norm{\vect h}.
+        \varepsilon \norm{\vect x - \vect x_*} + \norm{\mat J_F(\vect x_*)} \norm{(\vect x - \vect x_*)}
+        = (L + \varepsilon) \norm{\vect x - \vect x_*}.
     \end{align*}
-    This shows that $\vect F$ satisfies the condition~\eqref{eq:local_lipschitz} in the neighborhood $B_{\delta}(\vect x_*)$.
+    We have thus shown that for all~$\varepsilon > 0$,
+    there exists $\delta > 0$ such that condition~\eqref{eq:local_lipschitz} is satisfied with constant~$L+\varepsilon$.
+    By taking~$\varepsilon$ sufficiently small,
+    we can ensure that $L + \varepsilon < 1$,
+    and so the fixed point $\vect x_*$ is locally exponentially stable by~\cref{theorem:local_convergence}.
+    % This shows that $\vect F$ satisfies the condition~\eqref{eq:local_lipschitz} in the neighborhood $B_{\delta}(\vect x_*)$.
 \end{proof}
 
 The estimate in~\cref{theorem:exponenital_convergence_fixed_point} suggests that
@@ -535,7 +554,7 @@ which is generally achieved by solving the linear system $\mat A \vect y = \vect
 \subsection{The Newton--Raphson method}
 \label{sub:newton_raphson}
 Let us first consider the case of a function from $\real$ to $\real$.
-The Newton--Raphson method applies when $f$ is continuously differentiable.
+A necessary condition for the Newton--Raphson method to apply is that $f$ is differentiable.
 At each step, the function $f$ is approximated by the affine function
 $x \mapsto f(x_k) + f'(x_k) (x - x_k)$ and the unique zero of this function is returned.
 In other words, one iteration of the Newton--Raphson method reads
@@ -546,14 +565,15 @@ In other words, one iteration of the Newton--Raphson method reads
 For this iteration to be well-defined,
 it is necessary that $f'(x_k) \neq 0$.
 The Newton--Raphson method may be viewed as a variation on~\eqref{eq:naive_fixed_point} where the slope~$\alpha$ is adapted as the simulation progresses.
-If the method converges, then $f'(x_k) \to f'(x_*)$ in the limit as $k \to \infty$,
-which indicates that superlinear convergence could occur.
+If the method converges and $f'$ is continuous,
+then $f'(x_k) \to f'(x_*)$ in the limit as~$k \to \infty$,
+which is an indication that superlinear convergence could occur in view of our discussion in the previous section.
 Equation~\eqref{eq:newton_raphson} may be recast as a fixed point iteration of the form~\eqref{eq:error_bisection} with
 \[
     F(x) = x - \frac{f(x)}{f'(x)}.
 \]
-Clearly, if $x_*$ is a simple root of $f$, that is if $f(x_*) = 0$ and $f'(x_*) \neq 0$,
-then $x_*$ is a fixed point of $F$.
+If $x_*$ is a simple root of $f$, that is if $f(x_*) = 0$ and $f'(x_*) \neq 0$,
+then $x_*$ is a fixed point of the function $F$.
 If the function~$f$ is twice continuously differentiable,
 then the convergence of the Newton--Raphson method is superlinear by~\cref{proposition:superlinear_convergence},
 because then
@@ -567,11 +587,71 @@ and so an iteration of the method reads
     \label{eq:iteration_newton_raphson_nonlinear}
     \vect x_{k+1} = \vect x_k - \mat J_f(\vect x_k)^{-1} \vect f(\vect x_k).
 \end{equation}
-% This iteration is more difficult to
 In the rest of this section,
 we show that the iteration~\eqref{eq:iteration_newton_raphson_nonlinear} is well-defined in a small neighborhood of a root of $\vect f$ under appropriate assumptions,
-and we demonstrate the \emph{second order} convergence of the method.
-We begin by proving the following preparatory lemma,
+and we demonstrate the \emph{second order} convergence of the method,
+first in dimension 1 under simplifying assumption involving the second derivative of~$f$,
+and then in the multi-dimensional setting under more general assumptions.
+
+\subsection*{Convergence in the one-dimensional setting}
+We assume in this section that~$(x_k)_{k\geq 0}$ is generated from the Newton--Raphson method~\eqref{eq:newton_raphson} and prove the following result.
+\begin{theorem}
+    [Quadratic convergence of Newton--Raphson]
+    Assume that $f \in C^2(\real)$ and that the following assumptions are satisfied:
+    \begin{itemize}
+        \item
+            The first derivative of $f$ is uniformly bounded away from zero:
+            \[
+                \inf_{x \in \real} \abs{f'(x)} = m > 0.
+            \]
+
+        \item
+            The second derivative of $f$ is uniformly bounded from above in absolute value:
+            \[
+                \sup_{x \in \real} \abs{f''(x)} = M < \infty.
+            \]
+    \end{itemize}
+    Then $f(x)$ has a unique root~$x_*$ and it holds for all initial $x_0 \in \real$ that
+    \begin{equation}
+        \label{eq:convergence_newton_raphson_dim1}
+        \forall k \in \nat, \qquad
+        \abs{x_{k+1} - x_*} \leq \frac{M}{m} \abs{x_{k} - x_*}^2.
+    \end{equation}
+\end{theorem}
+\begin{proof}
+    By assumption, the function $f$ is continuous and either strictly increasing everywhere or strictly decreasing everywhere.
+    Therefore there exists a unique root $x_* \in \real$ of~$f$.
+    In order to prove~\eqref{eq:convergence_newton_raphson_dim1},
+    we note that
+    \begin{equation}
+        \label{eq:error_nr_dim1}
+        x_{k+1} - x_*
+        = x_{k} - \frac{f(x_k)}{f'(x_k)}  - x_*
+        = \frac{1}{f'(x_k)} \Bigl(f'(x_k)(x_{k} - x_*) - f(x_k)\Bigr).
+    \end{equation}
+    By Taylor's theorem, there is $\xi \in \real$ such that
+    \[
+        f(x_*) = f(x_k) + f'(x_k) (x_* - x_k) + \frac{1}{2} f''(\xi) (x_* - x_k)^2.
+    \]
+    Since~$x_*$ is a root of~$f$,
+    the left-hand side of this equation is zero.
+    Combining this equation with~\eqref{eq:error_nr_dim1},
+    we deduce that
+    \[
+        x_{k+1} - x_*  = \frac{f''(\xi) (x_k - x_*)^2}{2f'(x_k)}.
+    \]
+    Taking absolute values and using the assumptions gives
+    \[
+        \lvert x_{k+1} - x_* \rvert
+        \leq \frac{M}{2m} (x_k - x_*)^2,
+    \]
+    which concludes the proof.
+\end{proof}
+
+
+\subsection*{Convergence in the multi-dimensional setting~\moreinfo}
+As a first step towards a proof of quadratic convergence for the Newton--Raphson method in the multi-dimensional setting,
+we begin by proving the following preparatory lemma,
 which we will then employ in the particular case where the matrix-valued function $\mat A$ is equal to~$\mat J_f$.
 \begin{lemma}
     \label{lemma:lemma_newton_raphson}
@@ -607,16 +687,20 @@ which we will then employ in the particular case where the matrix-valued functio
     and so \cref{lemma:linear_inverse_neumann} implies that the second factor
     on the right-hand side of~\eqref{eq:matrix_function_newton_raphson} is invertible with a norm bounded from above by $2$.
     Therefore, we deduce that $\mat A(\vect x)$ is invertible with
-    \[
+    \begin{equation}
+        \label{eq:inverse_newton_raphson}
         \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-        \norm{\mat A(\vect x)^{-1}} \leq 2\norm{\mat A(\vect x_*)^{-1}} = 2 \beta.
-    \]
+        \norm{\mat A(\vect x)^{-1}} \leq 2\norm{\mat A(\vect x_*)^{-1}} = 2 \beta,
+    \end{equation}
+    which shows that~$\vect G$ is well-defined in~$B_{\delta}(\vect x_*)$.
     In order to prove~\eqref{eq:jacobian_G},
     we need to show that
     \[
         \lim_{\norm{\vect h} \to 0} \frac{\norm[big]{\vect G(\vect x_* + \vect h) - \vect G(\vect x_*) - \bigl(\mat I - \mat A(\vect x_*)^{-1} \mat J_f(\vect x_*)\bigr) \vect h}}{\norm {\vect h}} = 0
     \]
-    By definition of $\vect G$, the argument of the norm in the numerator is equal to
+    By definition of $\vect G$,
+    and using the fact that $\vect f(\vect x_*) = \vect 0$,
+    we obtain that the argument of the norm in the numerator is equal to
     \begin{align*}
         &\mat A (\vect x_*)^{-1} \vect f(\vect x_*) - \mat A (\vect x_* + \vect h)^{-1} \vect f(\vect x_* + \vect h) + \mat A(\vect x_*)^{-1} \mat J_f(\vect x_*) \vect h \\
         &\qquad =
@@ -624,9 +708,9 @@ which we will then employ in the particular case where the matrix-valued functio
         - \underbrace{\mat A (\vect x_* + \vect h)^{-1} \bigl( \vect f(\vect x_* + \vect h) - \vect f(\vect x_*) - \mat J_f(\vect x_*) \vect h\bigr)}_{=: \vect v_2}.
     \end{align*}
     Noting that $ \mat A^{-1}(\vect x_*) - \mat A(\vect x_* + \vect h)^{-1} = \mat A(\vect x_*)^{-1} \bigl(\mat A(\vect x_* + \vect h) - \mat A(\vect x_*)\bigr) \mat A(\vect x_* + \vect h)^{-1}$,
-    we bound the norm of the first term on the right-hand as follows:
+    we bound the norm of the first term on the right-hand side as follows:
     \begin{align*}
-        \forall h \in B_{\delta}(0), \qquad
+        \forall \vect h \in B_{\delta}(\vect 0), \qquad
         \norm{\vect v_1}
         \leq 2 \beta^2 \norm{\mat A(\vect x_* + \vect h) - \mat A(\vect x_*)} \norm{\mat J_f(\vect x_*)} \norm{\vect h}.
     \end{align*}
@@ -641,23 +725,23 @@ we can show the following result on the convergence of the multi-dimensional New
     [Convergence of Newton--Raphson]
     Let $\vect f\colon \real^n \to \real^n$ denote a function that is differentiable in a neighborhood~$B_{\delta}(\vect x_*)$
     of a point $\vect x_*$ where $\vect f(\vect x_*) = 0$.
-    Assume that $\mat J_f(\vect x)$ is nonsingular and continuous at $\vect x_*$.
+    Assume that the Jacobian matrix $\mat J_f(\vect x)$ is nonsingular and continuous at $\vect x_*$.
     Then $\vect x_*$ is an attractor of the Newton--Raphson iteration~\eqref{eq:iteration_newton_raphson_nonlinear}
     and the convergence is superlinear.
 
     In addition,
-    there is $\alpha > 0$ and such that the Lipschitz condition
+    if there is $\alpha > 0$ such that the Lipschitz condition
     \[
         \forall \vect x \in B_{\delta}(\vect x_*), \qquad
         \norm{\mat J_f(\vect x) - \mat J_f(\vect x_*)} \leq \alpha \norm{\vect x - \vect x_*}
     \]
     is satisfied,
-    then the convergence is at least quadratic:
-    there exists $d \in (0, \delta)$ such that
+    there exists $d \in (0, \delta)$ and $C > 0$ such that
     \[
         \forall \vect x_k \in B_{d}(\vect x_*), \qquad
         \norm{\vect x_{k+1} - \vect x_*}\leq C\norm{\vect x_k - \vect x_*}^2 .
     \]
+    In other words, the convergence is at least quadratic in~$B_d(\vect x_*)$.
 \end{theorem}
 \begin{proof}
     Using~\cref{lemma:lemma_newton_raphson},
@@ -667,7 +751,7 @@ we can show the following result on the convergence of the multi-dimensional New
     \]
     is well-defined in a neighborhood $B_{\delta}(\vect x_*)$ of $\vect x_*$
     for sufficiently small $\delta$.
-    In addition, the second statement in~\cref{lemma:lemma_newton_raphson} gives that $\mat J_F(\vect x_*)^{-1} = \mat I - \mat J_F(\vect x_*) \mat J_F(\vect x_*) = 0$,
+    In addition, the second statement in~\cref{lemma:lemma_newton_raphson} gives that $\mat J_F(\vect x_*)^{-1} = \mat I - \mat J_F(\vect x_*)^{-1} \mat J_F(\vect x_*) = 0$,
     which establishes the superlinear convergence by~\cref{proposition:superlinear_convergence}.
 
     In order to show that the convergence is quadratic,
@@ -675,7 +759,7 @@ we can show the following result on the convergence of the multi-dimensional New
     since
     \[
         \vect f(\vect x_k)
-        = \int_{0}^{t} \frac{\d}{\d t} \, \vect f\bigl(\vect x_* + t(\vect x_k - \vect x_x) \bigr) \, \d t,
+        = \int_{0}^{t} \frac{\d}{\d t} \, \vect f\bigl(\vect x_* + t(\vect x_k - \vect x_x) \bigr) \, \d t
         = \int_{0}^{t} \mat J_f\bigl(\vect x_* + t(\vect x_k - \vect x_x) \bigr) (\vect x_k - \vect x_*) \, \d t,
     \]
     it holds for all $\vect x_k \in B_{\delta}(\vect x_*)$ that
@@ -694,6 +778,7 @@ we can show the following result on the convergence of the multi-dimensional New
         \forall \vect x \in B_{d}(\vect x_*),
         \qquad \norm{\mat J_f(\vect x)^{-1}} \leq 2 \norm{\mat J_f(\vect x_*)^{-1}}.
     \]
+    There exists such a~$d$ by~\eqref{eq:inverse_newton_raphson}.
     Using the inequality~\eqref{eq:inequality_newton_raphson},
     we have that for all $\vect x_k \in B_{d}(\vect x_*)$,
     \begin{align*}
@@ -703,7 +788,8 @@ we can show the following result on the convergence of the multi-dimensional New
         &\qquad = \norm*{\mat J_f(\vect x_k)^{-1} \bigl(\vect f(\vect x_k) - \mat J_f(\vect x_k) (\vect x_k - \vect x_*) \bigr) }
          \leq \norm*{\mat J_f(\vect x_k)^{-1}} \norm*{\vect f(\vect x_k) - \mat J_f(\vect x_k) (\vect x_k - \vect x_*) } \\
         &\qquad \leq \norm*{\mat J_f(\vect x_k)^{-1}} \Bigl( \norm{\vect f(\vect x_k) - \mat J_f(\vect x_*) (\vect x_k - \vect x_*) } + \norm{\mat J_f(\vect x_*) - \mat J_f(\vect x_k)} \norm{\vect x_k - \vect x_*} \Bigr) \\
-        &\qquad \leq \frac{3 \alpha}{2}\norm*{\mat J_f(\vect x_k)^{-1}} \norm{\vect x_k - \vect x_*}^2 \leq 3 \alpha \norm{\mat J_f(\vect x_*)} \norm{\vect x_k - \vect x_*}^2,
+        &\qquad \leq \frac{3 \alpha}{2}\norm*{\mat J_f(\vect x_k)^{-1}} \norm{\vect x_k - \vect x_*}^2
+        \leq 3 \alpha \norm*{\mat J_f(\vect x_*)^{-1}} \norm{\vect x_k - \vect x_*}^2,
     \end{align*}
     which concludes the proof.
 \end{proof}

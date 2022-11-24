@@ -1293,7 +1293,12 @@ However, it is possible to derive from this equation an error estimate with an e
     E_{k+1} \leq  \max_{\lambda \in [\lambda_1, \lambda_n]}\bigl(1 + \lambda q_k(\lambda) \bigr)^2   E_0,
 \end{equation*}
 where $\lambda_1$ and $\lambda_n$ are the minimum and maximum eigenvalues of $\mat A$.
-It follows from~\cref{exercise:conjugate_gradient_chebyshev} that the right-hand side is minimized when
+Notice that
+\[
+    \Bigl\{ 1 + \lambda q_k: q_k \in \poly(k) \Bigr\} 
+    = \Bigl\{p_k : p_k \in \poly(k+1) \text{ and } p_k(0) = 1 \Bigr\}
+\]
+Therefore, it follows from~\cref{exercise:conjugate_gradient_chebyshev} that the right-hand side is minimized when
 \begin{equation}
     \label{eq:conjugate_gradient_optimal_polynom}
     1 + \lambda q_k(\lambda) = \frac{T_{k+1}\left(\frac{\lambda_n + \lambda_1 - 2\lambda}{\lambda_n - \lambda_1}\right)}{T_{k+1}\left(\frac{\lambda_n + \lambda_1}{\lambda_n - \lambda_1}\right)},
