@@ -37,11 +37,10 @@ The rest of this chapter is organized as follows
 
 As mentioned in~\cref{sec:diagonalization},
 a complex number $\lambda \in \complex$ is an eigenvalue of $\mat A \in \complex^{n \times n}$
-if and only if $\lambda$ is a root of the characteristic polynomial of $\mat A$:
+if and only if $\lambda$ is a root of the characteristic polynomial $p_A \colon \complex \to \complex$ of $\mat A$,
+which is given by
 \[
-    p_A
-    \colon \complex \to \complex
-    \colon \lambda \mapsto \det (\mat A - \lambda \mat I).
+    p_A(\lambda) = \det (\mat A - \lambda \mat I).
 \]
 One may,
 therefore,
@@ -49,11 +48,11 @@ calculate the eigenvalues of $\mat A$ by calculating the roots of the polynomial
 for example, one of the methods presented in~\cref{cha:solution_of_nonlinear_systems}.
 While feasible for small matrices,
 this approach is not viable for large matrices,
-because the number of floating point operations required for calculating calculating the coefficients of the characteristic polynomial scales as~$n!$.
+because the number of floating point operations required for calculating calculating the coefficients of the characteristic polynomial scales as the factorial of $n$.
 
 In view of the prohibitive computational cost required for calculating the characteristic polynomial,
 other methods are required for solving large eigenvalue problems numerically.
-All the methods that we study in this chapter are iterative in nature.
+All the methods that we study in this chapter are of iterative nature.
 While some of them are aimed at calculating all the eigenpairs of the matrix~$\mat A$,
 other methods enable to calculate only a small number of eigenpairs at a lower computational cost,
 which is often desirable.
@@ -61,12 +60,13 @@ Indeed, calculating all the eigenvalues of a large matrix is computationally exp
 on a personal computer, the following Julia code takes well over a second to terminate:
 \begin{minted}{julia}
     import LinearAlgebra
-    LinearAlgebra.eigen(rand(2000, 2000))
+    A = rand(2000, 2000)
+    LinearAlgebra.eigen(A)
 \end{minted}
 
 In many applications,
 the matrix $\mat A$ is sparse,
-and in this case it is important that algorithms for eigenvalue problems do not destroy the sparsity structure.
+and in this case it is important to use algorithms for eigenvalue problems that do not destroy the sparsity structure.
 Note that the eigenvectors of a sparse matrix are generally not sparse.
 
 To conclude this section,
@@ -74,7 +74,7 @@ we introduce some notation used throughout this chapter.
 For a diagonalizable matrix $\mat A$,
 we denote the eigenvalues by $\lambda_1, \dotsc, \lambda_n$,
 with $\abs{\lambda_1} \geq \abs{\lambda_2} \geq \dotsc \geq \abs{\lambda_n}$.
-The associated eigenvectors are denoted by $\vect v_1, \dotsc, \vect v_n$.
+The associated normalized eigenvectors are denoted by $\vect v_1, \dotsc, \vect v_n$.
 Therefore, it holds that
 \[
     \mat V^{-1} \mat A \mat V = \mat D = \diag(\lambda_1, \dotsc, \lambda_n),
@@ -102,7 +102,7 @@ Indeed, notice that
 \[
     \mat A^k \vect x_0 = \lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n.
 \]
-If $\lambda_1$ is strictly larger in modulus than the other eigenvalues,
+If $\lambda_1$ is strictly greater in modulus than the other eigenvalues,
 and if $\alpha_1 \neq 0$,
 then for large $k$ the vector $\mat A^k \vect x_0$ is approximately aligned,
 in a sense made precise below,
@@ -123,7 +123,7 @@ The power iteration is presented in~\cref{algo:power_iteration}.
 \end{algorithm}
 
 To precisely quantify the convergence of the power method,
-we introduce the notion of \emph{angle} between vectors of $\complex^n$.
+we introduce the notion of \emph{acute angle} between vectors of $\complex^n$.
 \begin{align*}
     \angle(\vect x, \vect y)
     &= \arccos\left( \frac{\abs{\vect x^* \vect y}}{\sqrt{\vect x^* \vect x} \sqrt{\vect y^* \vect y}}\right) \\
@@ -131,7 +131,7 @@ we introduce the notion of \emph{angle} between vectors of $\complex^n$.
     \qquad \mat P_{\vect y} := \frac{\vect y \vect y^*}{\vect y^* \vect y}.
 \end{align*}
 This definition generalizes the familiar notion of angle for vectors in $\real^2$ or $\real^3$,
-and we note that the angle function satisfies $\angle(\e^{i \theta_1} \vect x, \e^{i \theta_2} \vect y) = \angle(\vect x, \vect y)$.
+and we note that the angle function satisfies $\angle(\e^{\i \theta_1} \vect x, \e^{\i \theta_2} \vect y) = \angle(\vect x, \vect y)$ as well as $\angle(\vect x, \vect y) \in [0, \pi/2]$.
 We can then prove the following convergence result.
 \begin{proposition}
     [Convergence of the power iteration]
@@ -150,27 +150,25 @@ We can then prove the following convergence result.
         \label{eq:power_iteration_iterate}
         \vect x_k
         = \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
-        = \e^{i \theta_k} \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}},
+        = \e^{\i \theta_k} \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_n^k \alpha_1} \vect v_n }{\norm*{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n}},
     \end{equation}
     where
     \[
-        \e^{i \theta_k} := \frac{\lambda_1^k \alpha_1}{\abs{\lambda_1^k \alpha_1}}.
+        \e^{\i \theta_k} := \frac{\lambda_1^k \alpha_1}{\abs{\lambda_1^k \alpha_1}}.
     \]
-    Clearly, it holds hat $\vect x_k \to \e^{i \theta_k} \vect v_1/ \norm{\vect v_1}$.
+    It follows from~\eqref{eq:power_iteration_iterate} that $\e^{-\i \theta_k} \vect x_k \to \vect v_1/ \norm{\vect v_1} = \vect v_1$ in the limit as $k \to \infty$,
+    where we employed the fact that $\norm{\vect v_1} = 1$.
     Using the definition of the angle between two vectors in $\complex^n$,
-    and the continuity of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
-    we calculate
+    and the continuity with respect to either argument of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
+    we obtain that
     \[
         \angle(\vect x_k, \vect v_1)
         = \arccos\left( \frac{\abs{\vect x_k^* \vect v_1}}{\sqrt{\vect x_k^* \vect x_k} \sqrt{\vect v_1^* \vect v_1}}\right)
-        = \arccos\left( \frac{\abs{\vect x_k^* \vect v_1}}{\sqrt{\vect v_1^* \vect v_1}} \right)
+        = \arccos\left(\abs{\vect x_k^* \vect v_1} \right)
         \xrightarrow[k \to \infty]{} \arccos(1) = 0,
     \]
     which concludes the proof.
 \end{proof}
-Since $\vect v_1$ is normalized,
-equation~\eqref{eq:power_iteration_iterate} implies that $\e^{-i \theta_k} \vect x_k \to \vect v_1$ in the limit as~$k \to \infty$.
-We say that $\vect x_k$ converges \emph{essentially} to $\vect v_1$.
 
 An inspection of the proof also reveals that the dominant term in the error,
 asymptotically in the limit as $k \to \infty$,
@@ -192,7 +190,6 @@ the corresponding eigenvalue is equal to~$\rho_{\mat A}(\vect v)$.
 In order to study the error on the eigenvalue~$\lambda_1$ for the power iteration,
 we assume for simplicity that $\mat A$ is Hermitian
 and that the eigenvectors $\vect v_1, \dotsc, \vect v_n$ are orthonormal.
-The convergence of the eigenvalue in this particular case is faster than for a general matrix in~$\complex^{n \times n}$.
 Substituting~\eqref{eq:power_iteration_iterate} in the Rayleigh quotient~\eqref{eq:rayleigh_quotient},
 we obtain
 \[
@@ -201,16 +198,30 @@ we obtain
     {1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 +  \dotsb +  \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2}.
 \]
 Therefore,
-we deduce
-\[
+by reducing to a common denominator we deduce
+\begin{align*}
     \abs{\rho_{\mat A}(\vect x_k) - \lambda_1}
-    \leq  \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_2 - \lambda_1} +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_n- \lambda_1}
+    &= \left\lvert \frac{\lambda_1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \lambda_2 +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \lambda_n}
+    {1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 +  \dotsb +  \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2} - \lambda_1 \right\rvert \\
+    &\leq  \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_2 - \lambda_1} +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_n- \lambda_1}
     = \mathcal O\left(\abs*{\frac{\lambda_2}{\lambda_1}}^{2k}\right).
-\]
+\end{align*}
+
+The convergence of the eigenvalue in the particular case of a Hermitian matrix is faster than for a general matrix in~$\complex^{n \times n}$.
 For general matrices,
 it is possible to show using a similar argument
 that the error is of order~$\mathcal O\bigl(\abs{\lambda_2/\lambda_1}^k\bigr)$
 in the limit as $k \to \infty$.
+
+\paragraph{Essential convergence.}
+It is useful at this point to introduce the concept of \emph{essential convergence}.
+A sequence~$(\vect x_k)$ in $\complex^n$ is said to \emph{converge essentially} to a vector~$\vect x_{\infty}$ if
+there exists a sequence of complex numbers~$\left(\e^{\i \phi_k}\right)$ such that
+the sequence $\left( \e^{\i \phi_k} \vect x_k \right)$ converges to $\vect x_{\infty}$.
+Equivalently, the sequence~$(\vect x_k)$ converges essentially to $\vect x_{\infty}$ if
+$\angle(\vect x_k, \vect x_{\infty})$ converges to 0.
+Proving this equivalence is the goal of~\cref{exercise:essential_convergence}.
+In this new terminology, \cref{proposition:convergence_of_the_power_iteration} states that the sequence~$(\vect x_k)$ obtained from the power iteration converges essentially to $\vect v_1$.
 
 \subsection{Inverse iteration}
 The power iteration is simple but enables to calculate only the dominant eigenvalue of the matrix~$\mat A$,
@@ -223,9 +234,9 @@ It is based on applying the power iteration to $(\mat A - \mu \mat I)^{-1}$,
 where $\mu \in \complex$ is a shift.
 The eigenvalues of $(\mat A - \mu \mat I)^{-1}$ are given by $(\lambda_1 - \mu)^{-1}, \dotsc, (\lambda_n - \mu)^{-1}$,
 with associated eigenvectors $\vect v_1, \dotsc, \vect v_n$.
-If $0 < \abs{\lambda_J - \mu} < \abs{\lambda_K - \mu}$ for all $j \neq i$,
+If $0 < \abs{\lambda_J - \mu} < \abs{\lambda_j - \mu}$ for all $j \neq J$,
 then the dominant eigenvalue of the matrix $(\mat A - \mu \mat I)^{-1}$ is $(\lambda_J - \mu)^{-1}$,
-and so the power iteration applied to this matrix yields an approximation of the eigenvector $\vect v_i$.
+and so the power iteration applied to this matrix yields an approximation of the eigenvector $\vect v_J$.
 In other words,
 the inverse iteration with shift~$\mu$ enables to calculate an approximation of the eigenvector of~$\mat A$ corresponding to the eigenvalue nearest~$\mu$.
 The inverse iteration is presented in~\cref{algo:inverse_iteration}.
@@ -248,6 +259,7 @@ and it is often preferable to solve a linear system at each iteration.
 An application of~\cref{proposition:convergence_of_the_power_iteration} immediately gives the following convergence result for the inverse iteration.
 \begin{proposition}
     [Convergence of the inverse iteration]
+    \label{proposition:inverse_iteration}
     Assume that $\mat A \in \complex^n$ is diagonalizable
     and that there exist $J$ and $K$ such that
     \[
@@ -264,12 +276,14 @@ An application of~\cref{proposition:convergence_of_the_power_iteration} immediat
         \angle(\vect x_k, \vect v_J) = \mathcal O \left( \abs*{\frac{\lambda_J - \mu}{\lambda_K - \mu}}^k \right).
     \]
 \end{proposition}
+\Cref{proposition:inverse_iteration} states that $\vect x_k$ converges essentially to~$\vect v_J$.
 Notice that the closer $\mu$ is to~$\lambda_J$,
 the faster the inverse iteration converges.
-With $\mu = 0$, the inverse iteration enables to calculate the eigenvalue of~$\mat A$ of smallest modulus.
+Note also that with $\mu = 0$,
+the inverse iteration enables to calculate the eigenvalue of~$\mat A$ of smallest modulus.
 
 \subsection{Rayleigh quotient iteration}
-Since the inverse iteration is fast when $\mu$ is close to an eigenvalue $\lambda_i$,
+Since the inverse iteration is fast when $\mu$ is close to an eigenvalue $\lambda_J$,
 it is natural to wonder whether the method can be improved by progressively updating $\mu$ as the simulation progresses.
 Specifically, an approximation of the eigenvalue associated with the current vector may be employed in place of~$\mu$.
 This leads to the Rayleigh quotient iteration,
@@ -308,14 +322,14 @@ Before we present the simultaneous iteration,
 we recall a statement concerning the $\mat Q \mat R$ decomposition of a matrix,
 which is related to the Gram--Schmidt orthonormalization process.
 We recall that the Gram--Schmidt method enables to construct,
-starting form an ordered set of $p$ vectors $\{\vect x_1, \dotsc, \vect x_p \}$ in $\complex^n$,
+starting form an ordered set of vectors $\{\vect x_1, \dotsc, \vect x_p \}$ in~$\complex^n$,
 a new set of vectors $\{\vect q_1, \dotsc, \vect q_p \}$
 which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the original vectors.
 \begin{proposition}
     [Reduced QR decomposition]
     Assume that $\mat X \in \complex^{n \times p}$ has linearly independent columns.
     Then there exist a matrix $\mat Q \in \complex^{n \times p}$ with orthonormal columns and
-    an upper triangular matrix~$\mat R$ such that the following factorization holds:
+    an upper triangular matrix~$\mat R \in \complex^{p \times p}$ such that the following factorization holds:
     \[
         \mat X = \mat Q \mat R.
     \]
@@ -325,36 +339,53 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     The decomposition is unique if we require that the diagonal elements of~$\mat R$ are real and positive.
 \end{proposition}
 \begin{proof}
-    [Sketch of the proof]
-    Let us denote the columns of $\mat Q$ by $\vect q_1, \dotsc, \vect q_p$ and the entries of $\mat R$ by
-    \[
-        \mat R =
+    The statement is clear when $p=1$.
+    Reasoning by induction,
+    we assume that the result is true up to $p-1$ and prove that it then also holds true for~$p$.
+    Let $\vect x_p$ denote the $p$-th column of $\mat X$,
+    By the induction hypothesis,
+    it holds that
+    \begin{equation}
+        \label{eq:qr_decomposition}
+        \mat X =
         \begin{pmatrix}
-            \alpha^1_1 & \alpha^2_1 & \hdots & \alpha^p_1 \\
-                       & \alpha^2_2 & \hdots & \alpha^p_2 \\
-                       &            & \ddots & \vdots \\
-                       & & & \alpha^p_p
+            \mat Q_{p-1} \mat R_{p-1} &
+            \vect x_p
+        \end{pmatrix},
+    \end{equation}
+    for a unique matrix $\mat Q \in \complex^{n \times (p-1)}$ with orthonormal columns and
+    a unique upper triangular matrix~$\mat R \in \complex^{(p-1) \times (p-1)}$ with positive real diagonal elements.
+    We wish to show that there is a unique normalized vector $\vect q \in \complex^n$ orthogonal to the columns of~$\mat Q_{p-1}$,
+    a unique vector $\vect r \in \complex^{n-1}$ and a unique scalar $r \in \real_{> 0}$ such that
+    \begin{equation}
+        \label{eq:qr_decomposition_second_expression}
+        \mat X =
+        \begin{pmatrix}
+            \mat Q_{p-1} & \vect q
+        \end{pmatrix}
+        \begin{pmatrix}
+            \mat R_{p-1} & \vect r \\
+            \vect 0_{p-1}^\t & r
         \end{pmatrix}.
-    \]
-    Expanding the matrix product and identifying columns of both sides,
-    we find that
-    \begin{align*}
-        \vect x_1 &= \alpha^1_1 \vect q_1 \\
-        \vect x_2 &= \alpha^2_1 \vect q_1 + \alpha^2_2 \vect q_2 \\
-        \vdots \\
-        \vect x_p &= \alpha^p_1 \vect q_1 + \alpha^p_2 \vect q_2 + \alpha^p_p \vect q_p.
-    \end{align*}
-    Under the restriction that the diagonal elements of $\mat R$ are real and positive,
-    the first equation enables to uniquely determines $\vect x_1$ and $\alpha^1_1 = \norm{\vect x_1}$.
-    Then, projecting both sides of the second equation onto $\Span \{ \vect q_1 \}$ and $\Span \{ \vect q_1 \}^\perp$,
-    we obtain
+    \end{equation}
+    Comparing the right-hand side of this equation with that of~\eqref{eq:qr_decomposition},
+    we obtain that
+    \begin{equation}
+        \label{eq:qr_decomposition_intermediate}
+        \vect x_p = \mat Q_{p-1} \vect r + \vect q r.
+    \end{equation}
+    Left-multiplying both sides by~$\mat Q_{p-1}^*$ and employing the orthogonality between~$\vect q$ and the columns of~$\mat Q_{p-1}$,
+    we deduce that necessarily
+    \(
+        \vect r = \mat Q_{p-1}^* \vect x_p.
+    \)
+    It then follows from~\eqref{eq:qr_decomposition_intermediate} that
     \[
-        \vect q_1^* \vect x_2 = \alpha_1^2, \qquad
-        \vect x_2 - (\vect q_1 \vect q_1^*) \vect x_2 = \alpha^2_2 \vect q_2.
+        r = \norm*{\vect x_p -  \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p}, \qquad
+        \vect q = \frac{1}{r} \left(\vect x_p - \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p\right).
     \]
-    The first equation gives $\alpha_1^2$,
-    and the second equation enables to calculate $\vect q_2$ and $\alpha^2_2$.
-    This process can be iterated $p$ times in order to fully construct the matrices~$\mat Q$ and~$\mat R$.
+    It is simple to check that $\vect q$ is indeed orthogonal to the columns of~$\mat Q$,
+    which concludes the proof.
 \end{proof}
 Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
 would be obtained by applying the Gram--Schmidt method to the columns of the matrix~$\mat X$.
@@ -373,7 +404,7 @@ In fact, the Gram--Schmidt process is one of several methods by which the $\mat 
 \end{algorithm}
 The simultaneous iteration method is presented in~\cref{algo:subspace_iteration}.
 Like the normalization in the power iteration~\cref{algo:power_iteration},
-the $\mat Q \mat R$ decomposition performed at each step enables to avoid overflow errors.
+the $\mat Q \mat R$ decomposition performed at each step in~\cref{algo:subspace_iteration} enables to avoid overflow errors.
 Notice that when $p = 1$,
 the simultaneous iteration reduces to the power iteration.
 We emphasize that
@@ -424,8 +455,8 @@ we begin by proving the following preparatory lemma.
 Before presenting the convergence theorem,
 we introduce the following terminology: we say that $\mat X_k \in \complex^{n \times p}$ converges essentially to a matrix $\mat X_{\infty}$
 if each column of $\mat X_k$ converges essentially to the corresponding column of $\mat X_{\infty}$.
-We recall that a vector sequence $(\vect x_k)_{k \geq 1}$ converges essentially to $\vect x_{\infty}$ if there exists $(\theta_k)_{k \geq 1}$
-such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty}$.
+% We recall that a vector sequence $(\vect x_k)_{k \geq 1}$ converges essentially to $\vect x_{\infty}$ if there exists $(\theta_k)_{k \geq 1}$
+% such that $(\e^{i \theta_k} \vect x_k)_{k \geq 1}$ converges to $\vect x_{\infty}$.
 We prove the convergence in the Hermitian case for simplicity.
 In the general case of~$\mat A \in \complex^{n \times n}$,
 it cannot be expected that~$\mat X_k$ converges essentially to $\mat V$,
@@ -437,8 +468,8 @@ see~\cite{MR3396212} for more information.
     [Convergence of the simultaneous iteration~\moreinfo]
     \label{theorem:convergence_subspace_iteration}
     Assume that $\mat A \in \complex^{n \times n}$ is Hermitian,
-    and that~$\mat X \in \complex^{n \times p}$ has linearly independent columns.
-    Assume also that the subspace spanned by the column of~$\mat X_0$ satisfies
+    that~$\mat X_0 \in \complex^{n \times p}$ has linearly independent columns,
+    and finally that the subspace spanned by the column of~$\mat X_0$ satisfies
     \begin{equation}
         \label{eq:assumption_subspace_iteration}
         \col(\mat X_0) \cap \Span \{ \vect v_{p+1}, \dotsc, \vect v_n \} = \varnothing.
@@ -479,10 +510,13 @@ see~\cite{MR3396212} for more information.
         \end{pmatrix}
         = \mat V_2 \mat B_2 \vect z.
     \]
-    implying that $\mat X_0 \vect z \in \col(\mat X_0)$ is a linear combination of the vectors in $\mat V_2 =
-    \begin{pmatrix}
-        \vect v_{p+1} & \hdots \vect v_n,
-    \end{pmatrix}$
+    implying that $\mat X_0 \vect z \in \col(\mat X_0)$ is a linear combination of the vectors in
+    \(
+        \mat V_2 =
+        \begin{pmatrix}
+            \vect v_{p+1} & \hdots \vect v_n
+        \end{pmatrix},
+    \)
     which contradicts the assumption.
     We also denote by $\mat D_1$ and $\mat D_2$ the $p \times p$ upper-left and the~$(n-p) \times (n-p)$ lower-right blocks of $\mat D$, respectively.
     From the expression of $\mat A^k \mat X_0$,
@@ -1261,11 +1295,13 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
 \end{exercise}
 
 \begin{exercise}
+    \label{exercise:essential_convergence}
     Assume that $(\vect x_k)_{k \geq 0}$ is a sequence of normalized vectors in $\complex^n$.
     Show that the following statements are equivalent:
     \begin{itemize}
         \item $(\vect x_k)_{k \geq 0}$ converges essentially to $\vect x_{\infty}$ in the limit as $k \to \infty$.
         \item The angle $\angle(\vect x_k, \vect x_{\infty})$ converges to zero in the limit as $k \to \infty$.
+        \item The projector $\mat P_{\vect x_k}$ converges to $\mat P_{y}$ in the limit as $k \to \infty$.
     \end{itemize}
 \end{exercise}
 
