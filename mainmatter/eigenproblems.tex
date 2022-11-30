@@ -161,12 +161,12 @@ We can then prove the following convergence result.
     Using the definition of the angle between two vectors in $\complex^n$,
     and the continuity with respect to either argument of the $\complex^n$ Euclidean inner product and of the $\arccos$ function,
     we obtain that
-    \[
+    \begin{align*}
         \angle(\vect x_k, \vect v_1)
-        = \arccos\left( \frac{\abs{\vect x_k^* \vect v_1}}{\sqrt{\vect x_k^* \vect x_k} \sqrt{\vect v_1^* \vect v_1}}\right)
-        = \arccos\left(\abs{\vect x_k^* \vect v_1} \right)
+        &= \arccos\left( \frac{\abs{\vect v_1^* \vect x_k}}{\sqrt{\vect v_1^* \vect v_1} \sqrt{\vect x_k^* \vect x_k}}\right) = \arccos\left(\abs{\vect v_1^* \vect x_k} \right) \\
+        &= \arccos\left( \abs*{\vect v_1^*\left(\e^{\i \theta_k}\vect x_k\right)} \right)
         \xrightarrow[k \to \infty]{} \arccos(1) = 0,
-    \]
+    \end{align*}
     which concludes the proof.
 \end{proof}
 
@@ -221,7 +221,8 @@ the sequence $\left( \e^{\i \phi_k} \vect x_k \right)$ converges to $\vect x_{\i
 Equivalently, the sequence~$(\vect x_k)$ converges essentially to $\vect x_{\infty}$ if
 $\angle(\vect x_k, \vect x_{\infty})$ converges to 0.
 Proving this equivalence is the goal of~\cref{exercise:essential_convergence}.
-In this new terminology, \cref{proposition:convergence_of_the_power_iteration} states that the sequence~$(\vect x_k)$ obtained from the power iteration converges essentially to $\vect v_1$.
+Reformulated in this new terminology,
+\cref{proposition:convergence_of_the_power_iteration} states that the sequence~$(\vect x_k)$ obtained from the power iteration converges essentially to $\vect v_1$.
 
 \subsection{Inverse iteration}
 The power iteration is simple but enables to calculate only the dominant eigenvalue of the matrix~$\mat A$,
@@ -1032,13 +1033,13 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
         \label{eq:equation_page_rank}
         \forall i \in V, \qquad
         r_i
-        = \sum_{j \in \text{neighbors}} \frac{r_j}{o_j}.
+        = \sum_{j \in \mathcal N(i)} \frac{r_j}{o_j}.
         % = \sum_{j=1}^{n} \frac{a_{ji}}{o_j} r_j
     \end{equation}
     where $o_j$ is the outdegree of vertex $j$,
     i.e.\ the number of edges leaving from~$j$.
-    The sum is over all the ``incoming'' neighbors of $i$,
-    which have an edge towards node $i$.
+    Here the sum is over the set of nodes $\mathcal N(i)$, which denotes all the ``incoming'' neighbors of $i$,
+    i.e.\ those that have an edge pointing towards node $i$.
     \begin{itemize}
         \item
             Read the Wikipedia page on \emph{PageRank} to familiarize yourself with the algorithm.
@@ -1050,7 +1051,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
                 \vect r =
                 \mat A^\t
                 \begin{pmatrix}
-                    \frac{1}{o_1} & & & \\
+                    \frac{1}{o_1} & &  \\
                                   & \ddots & \\
                                   & & \frac{1}{o_n}
                 \end{pmatrix}
@@ -1067,7 +1068,8 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
             You may use the fact that $\det(\mat B) = \det(\mat B^\t)$.
 
         \item
-            Show that 1 is an eigenvalue and that $\rho(\mat M) = 1$.
+            Using the previous items,
+            show that 1 is an eigenvalue and that $\rho(\mat M) = 1$.
             For the second part, find a subordinate matrix norm such that $\norm{\mat M}= 1$.
 
         \item
