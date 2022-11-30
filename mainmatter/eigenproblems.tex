@@ -637,7 +637,7 @@ we have
     (\mat Q_1 \dots \mat Q_k) \mat X_{k} = \mat A (\mat Q_1 \dots \mat Q_k),
 \]
 and so, introducing $\widetilde {\mat Q}_k = \mat Q_1 \dots \mat Q_k$
-and noting that $\mat X_k = \mat Q_{k+1} \mat R_{k+1}$,
+and noting that $\mat X_k = \mat Q_{k+1} \mat R_{k+1}$ by the algorithm,
 we deduce
 \[
     \widetilde {\mat Q}_{k+1} \mat R_{k+1} = \mat A \widetilde {\mat Q}_k.
@@ -645,7 +645,7 @@ we deduce
 This reveals that
 the matrix sequence $(\widetilde{\mat Q}_{k})_{k\geq 1}$ undergoes a simultaneous iteration and so,
 assuming that $\mat A$ is Hermitian with $n$~distinct nonzero eigenvalues,
-we deduce that $\mat Q_k \to \mat V$ essentially in the limit as $k \to \infty$,
+we deduce that $\widetilde{\mat Q}_k \to \mat V$ essentially in the limit as $k \to \infty$,
 by~\cref{theorem:convergence_subspace_iteration}.
 As a consequence, by~\eqref{eq:qr_iteration_equation},
 it holds that~$\mat X_k \to \mat V^* \mat X_0 \mat V = \mat D$;
@@ -1208,6 +1208,24 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     Let $\mat A \in \complex^{n \times n}$.
     Show that $\mathcal K_{n}(\mat A, \vect x)$ is the smallest invariant subspace of~$\mat A$ that contains $\vect x$.
 \end{exercise}
+
+\begin{compexercise}
+    Consider the matrix
+    \[
+        \mat M =
+        \begin{pmatrix}
+            0 & 1 & 2 & 0 \\
+            1 & 0 & 1 & 0 \\
+            2 & 1 & 0 & 2 \\
+            0 & 0 & 2 & 0
+        \end{pmatrix}
+    \]
+    \begin{itemize}
+        \item Find the dominant eigenvalue of~$\mat M$ by using the power iteration.
+        \item Find the eigenvalue of~$\mat M$ closest to 1 by using the inverse iteration.
+        \item Find the other two eigenvalues of~$\mat M$ by using a method of your choice.
+    \end{itemize}
+\end{compexercise}
 
 \begin{exercise}
     [A posteriori error bound]
