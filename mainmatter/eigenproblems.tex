@@ -331,9 +331,10 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     Assume that $\mat X \in \complex^{n \times p}$ has linearly independent columns.
     Then there exist a matrix $\mat Q \in \complex^{n \times p}$ with orthonormal columns and
     an upper triangular matrix~$\mat R \in \complex^{p \times p}$ such that the following factorization holds:
-    \[
+    \begin{equation}
+        \label{eq:qr}
         \mat X = \mat Q \mat R.
-    \]
+    \end{equation}
     This decomposition is known as a \emph{reduced $\mat Q \mat R$ decomposition} if $p < n$,
     or simply \emph{$\mat Q \mat R$ decomposition} if $p = n$,
     in which case $\mat X$ is a square matrix and $\mat Q$ is a unitary matrix.
@@ -342,35 +343,48 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
 \begin{proof}
     The statement is clear when $p=1$.
     Reasoning by induction,
-    we assume that the result is true up to $p-1$ and prove that it then also holds true for~$p$.
-    Let $\vect x_p$ denote the $p$-th column of $\mat X$,
-    By the induction hypothesis,
-    it holds that
-    \begin{equation}
-        \label{eq:qr_decomposition}
-        \mat X =
-        \begin{pmatrix}
-            \mat Q_{p-1} \mat R_{p-1} &
-            \vect x_p
-        \end{pmatrix},
-    \end{equation}
-    for a unique matrix $\mat Q \in \complex^{n \times (p-1)}$ with orthonormal columns and
-    a unique upper triangular matrix~$\mat R \in \complex^{(p-1) \times (p-1)}$ with positive real diagonal elements.
-    We wish to show that there is a unique normalized vector $\vect q \in \complex^n$ orthogonal to the columns of~$\mat Q_{p-1}$,
-    a unique vector $\vect r \in \complex^{n-1}$ and a unique scalar $r \in \real_{> 0}$ such that
+    we assume that the result is true up to $p-1$, and prove that it then also holds true for~$p$.
+    We wish to show that there is a unique matrix $\mat Q \in \complex^{n \times p}$ with orthonormal columns and
+    a unique upper triangular matrix~$\mat R \in \complex^{p \times p}$ with real and positive diagonal elements such that~\eqref{eq:qr} is satisfied.
+    To this end, we decompose the matrices $\mat Q$ and $\mat R$ as follows:
     \begin{equation}
         \label{eq:qr_decomposition_second_expression}
-        \mat X =
+        \mat Q =
         \begin{pmatrix}
             \mat Q_{p-1} & \vect q
-        \end{pmatrix}
+        \end{pmatrix},
+        \qquad
+        \mat R = 
         \begin{pmatrix}
             \mat R_{p-1} & \vect r \\
             \vect 0_{p-1}^\t & r
         \end{pmatrix}.
     \end{equation}
-    Comparing the right-hand side of this equation with that of~\eqref{eq:qr_decomposition},
-    we obtain that
+    Here $\mat Q_{p-1} \in \complex^{n \times (p-1)}$ is a matrix with orthonormal columns,
+    $\mat R \in \complex^{(p-1) \times (p-1)}$ is an upper triangular matrix with positive real diagonal elements,
+    $\vect q \in \complex^n$ is a normalized vector orthogonal to all the columns of~$\mat Q_{p-1}$,
+    $\vect r \in \complex^{n-1}$ is a vector
+    and $r \in \real_{>0}$ is a scalar.
+    Let us also denote by~$\mat X_{p-1} \in \complex^{n \times (p-1)}$ the matrix containing the $p-1$ first columns of~$\mat X$,
+    and by $\vect x_p \in \complex^n$ the $p$-th column of $\mat X$.
+    Substituting~\eqref{eq:qr_decomposition_second_expression} into~\eqref{eq:qr}, 
+    we then obtain
+    \begin{equation}
+        \label{eq:qr_decomposition}
+        \begin{pmatrix}
+            \mat X_{p-1} &
+            \vect x_p
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            \mat Q_{p-1} \mat R_{p-1} &
+            \mat Q_{p-1} \vect r + \vect q r
+        \end{pmatrix},
+    \end{equation}
+    By the induction hypothesis,
+    there exist a unique choice of matrices $\mat Q_{p-1}$ and $\mat R_{p-1}$ with the required structure such that $\mat X_{p-1} = \mat Q_{p-1} \mat R_{p-1}$.
+    Comparing the last column of both sides in~\eqref{eq:qr_decomposition},
+    we obtain
     \begin{equation}
         \label{eq:qr_decomposition_intermediate}
         \vect x_p = \mat Q_{p-1} \vect r + \vect q r.
@@ -382,11 +396,12 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     \)
     It then follows from~\eqref{eq:qr_decomposition_intermediate} that
     \[
-        r = \norm*{\vect x_p -  \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p}, \qquad
-        \vect q = \frac{1}{r} \left(\vect x_p - \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p\right).
+        \vect q = \frac{1}{r} \left(\vect x_p - \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p\right), \qquad
+        r = \norm*{\vect x_p -  \mat Q_{p-1} \mat Q_{p-1}^* \vect x_p}.
     \]
     It is simple to check that $\vect q$ is indeed orthogonal to the columns of~$\mat Q$,
     which concludes the proof.
+    Note that~$\mat Q_{p-1} \mat Q_{p-1}^* \vect x_p$ is the orthogonal projection of~$\vect x_p$ onto the subspace spanned by the column of~$\mat Q_{p-1}$.
 \end{proof}
 Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
 would be obtained by applying the Gram--Schmidt method to the columns of the matrix~$\mat X$.
@@ -1321,7 +1336,7 @@ Adapting the Arnoldi iteration to this setting leads to~\cref{algo:lanczos_metho
     \begin{itemize}
         \item $(\vect x_k)_{k \geq 0}$ converges essentially to $\vect x_{\infty}$ in the limit as $k \to \infty$.
         \item The angle $\angle(\vect x_k, \vect x_{\infty})$ converges to zero in the limit as $k \to \infty$.
-        \item The projector $\mat P_{\vect x_k}$ converges to $\mat P_{y}$ in the limit as $k \to \infty$.
+        \item The projector $\mat P_{\vect x_k}$ converges to $\mat P_{\vect x_{\infty}}$ in the limit as $k \to \infty$.
     \end{itemize}
 \end{exercise}
 
