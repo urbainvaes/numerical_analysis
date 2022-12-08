@@ -1,27 +1,10 @@
 \documentclass[11pt,a4paper,oneside]{book}
 
-% Packages and macros
 \input{preamble}
 \input{macros}
-
-% \includeonly{
-%     frontmatter/title,
-%     frontmatter/license,
-%     frontmatter/syllabus,
-%     frontmatter/acknowledgements,
-%     frontmatter/list_of_proofs,
-%     mainmatter/roundoff,
-%     mainmatter/interpolation_approximation,
-%     mainmatter/numerical_integration,
-%     mainmatter/matrices,
-%     mainmatter/julia,
-%     mainmatter/chebyshev,
-% }
-
 \begin{document}
 \dominitoc
 
-% Control whether full or chapter-only document is produced
 \newif\iftitleincluded\titleincludedfalse
 \include{frontmatter/title}
 
@@ -50,7 +33,5 @@
 \include{mainmatter/julia}
 \include{mainmatter/chebyshev}
 
-% References
 \include{mainmatter/references}%
-
 \end{document}
