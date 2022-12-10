@@ -9,7 +9,7 @@
 \usepackage{mathtools}
 \usepackage{enumitem}
 \usepackage[colorlinks=true]{hyperref}
-\usepackage{cleveref}
+\usepackage[capitalize,nameinlink]{cleveref}
 \usepackage{amssymb}
 \setlist[enumerate]{font=\bfseries}
 \theoremstyle{definition}
@@ -17,9 +17,14 @@
 \theoremstyle{remark}
 \newtheorem*{solution}{Solution}
 \input{../macros.tex}
+
+\theoremstyle{plain}% default
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+
 \begin{document}
 
-\title{Numerical Analysis: Final exam \\
+\title{ \vspace{-3cm} Numerical Analysis: Final Exam \\
 \small{(\textbf{50 marks}, only the 5 best questions count)}}
 \author{Urbain Vaes}
 \date{12 May 2022}
@@ -27,67 +32,226 @@
 
 \begin{question}
     [Floating point arithmetic, \textbf{10 marks}]
-    True or false? +1/-1
+    True or false? +1/0/-1
     \begin{enumerate}
         \item
             Let $(\placeholder)_3$ denote base 3 representation.
             It holds that
             \[
-                (120)_3 + (111)_3 = (1001)_3.
+                (222,222)_3 + (1)_3 = (1,000,000)_3.
             \]
+
         \item
-            Let $(\placeholder)_2$ denote binary representation.
+            Let $(\placeholder)_2$ denote base 2 representation.
             It holds that
             \[
-                (1000)_2 \times (0.1\overline{01})_2 = (101.\overline{01})_2.
+                3 \times (0.0101)_2 = (0.1111)_2.
             \]
-
-        \item
-            In Julia, \julia{Float64(.1) == Float32(.1)} always evaluates to \julia{true}.
-
-        \item
-            The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
-
-        \item
-            The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
-
-        \item
-            Let $\floating_{64} \subset \real$ denote the set of double-precision floating point numbers.
-            If $x \in \floating_{64}$, then~$x$ admits a finite decimal representation.
-
-        \item
-            Let $x$ be a real number. If $x \in \floating_{64}$, then $2x \in \floating_{64}$.
 
         \item
             The following equality holds
             \[
-                (0.\overline{101})_2 = \frac{7}{3}.
+                (0.\overline{011})_2 = \frac{3}{4}.
             \]
 
         \item
-            In Julia, \julia{256.0 + 2.0*eps(Float64) == 256.0} evaluates to \julia{true}.
+            The number $x = (d_1 d_2 d_3)_3$ for $d_1, d_2, d_3 \in \{0, 1, 2\}$ is a multiple of~$3$ if and only if~$d_3 = 0$.
 
         \item
-            The set~$\floating_{64}$ of double-precision floating point numbers contains twice as many real numbers
-            as the set~$\floating_{32}$ of single-precision floating point numbers.
+            In Julia, \julia{Float64(0.375) == Float32(0.375)} evaluates to \julia{true}.
+
+        \item
+            The value of the machine epsilon is the same for the single precision~($\floating_{32}$) and the double precision ($\floating_{64}$) formats.
+
+        \item
+            The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is equal to the machine epsilon.
+
+        \item
+            All the natural numbers can be represented exactly in the double precision floating point format~$\floating_{64}$.
+
+        \item
+            Machine addition in the $\floating_{64}$ format is associative but not commutative.
+
+        \item
+             In Julia \julia{exp(eps()) == 1 + eps()} evaluates to \julia{true}.
+             (Remember that, by default, rounding is to the nearest representable number).
+
+        \item
+             In Julia \julia{sqrt(1 + eps()) == 1 + eps()} evaluates to \julia{true}.
 
         \item
             Let $x$ and $y$ be two numbers in $\floating_{64}$.
-            The result of the machine addition $x \madd y$ is sometimes exact and sometimes not,
+            The result of the machine multiplication $x \mtimes y$ is sometimes exact and sometimes not,
             depending on the values of $x$ and $y$.
+
+        \item
+            In Julia, let \julia{f(x) = (x == x/100.0) ? x : f(x/100.0)}
+            \footnote{%
+                In Python, let \mintinline{python}{f = lambda x: x if x == x/100.0 else f(x/100.0)}
+            }.
+            Then \julia{f(3.0)} returns \julia{0.0}.
+
+
+        % \item
+        %     In a fixed point format with~$p$ bits, the set of real numbers that can be represented is of the form
+        %     \begin{align}
+        %         \Bigl\{ i \delta: i \in \nat \text{ and } -2^{p-1} \leq i \leq 2^{p-1} + 1 \Bigr\},
+        %     \end{align}
+        %     for some parameter $\delta \in \real$.
+        %     In such a format, the absolute spacing between successive numbers is constant.
+
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation, \textbf{10 marks}]
+    Let~$u$ denote the function
+    \begin{align*}
+        u\colon
+        [-1, 1] &\to \real; \\
+        x &\mapsto x^3.
+    \end{align*}
+    Let $p \colon [-1, 1] \to \real$ denote the interpolating polynomial of~$u$ at nodes $x_0 < x_1 < x_2$,
+    all contained in the interval $[-1, 1]$.
+    \begin{enumerate}
+        \itemsep0pt
+        \item
+            \mymarks{3}
+            Using a method of your choice,
+            calculate the interpolating polynomial $p$ in the particular case where
+            \begin{equation}
+                \label{eq:particular_case}
+                x_0 = -1, \qquad x_1 = 0, \qquad x_2 = 1.
+            \end{equation}
+
+        \item
+            \mymarks{3}
+            Let $e(x) := u(x) - p(x)$.
+            Prove that
+            \[
+                \forall x \in [0, 1], \qquad
+                e(x) = (x-x_0) (x-x_1) (x-x_2).
+            \]
+            We denote the maximum absolute value of the error over the interval $[-1, 1]$ by
+            \begin{equation}
+                \label{eq:max_error}
+                E := \max_{x \in [-1, 1]} \abs[\big]{e(x)}.
+            \end{equation}
+            Calculate the value of $E$ in the particular case~\eqref{eq:particular_case}.
+
+        \item
+            \mymarks{2}
+            We denote by
+            \[
+                T_3(x) := \cos\bigl(3 \arccos(x)\bigr)
+            \]
+            the Chebyshev polynomial of degree~3.
+            Show that
+            \[
+                T_3(x) = 4x^3 - 3x
+            \]
+            and calculate the roots~$z_0, z_1, z_2$ of $T_3$.
+
+        \item
+            \mymarks{2}
+            Find the expression of the maximum absolute error~$E$ given in~\eqref{eq:max_error}
+            in the case where interpolation nodes~$x_0, x_1, x_2$ are given by~$z_0, z_1, z_2$.
+
+        \item
+            \mybonus{2}
+            Show that the maximum absolute error~\eqref{eq:max_error},
+            viewed as a function of the interpolation nodes~$x_1, x_2, x_3$,
+            is minimized when $x_i = z_i$ for $i \in \{0, 1, 2\}$.
+
+            \textbf{Hint:} Reason by contradiction and notice that
+            \[
+                \bigl\lvert T_3(y) \bigr\rvert = 1
+                \qquad \text{ for $y \in \left\{-1, -\frac{1}{2}, \frac{1}{2}, 1 \right\}$  }.
+            \]
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Numerical integration, \textbf{10 marks}]
+    Let $u \colon [0, 1] \to \real$ be a function we wish to integrate and
+    \[
+        I := \int_{0}^{1} u(x) \, \d x.
+    \]
+    \begin{enumerate}
+        \item
+        \mymarks{3}
+        Consider the following integration rule:
+        \begin{equation}
+            \label{eq:newton_cotes}
+            I\approx w_1 u(0) + w_2 u(1).
+        \end{equation}
+        Find the weights $w_1, w_2 \in \real$ so that this integration rule has the highest possible degree of precision.
+        What is the degree of precision of the rule constructed?
+
+
+        \item
+        \mymarks{3}
+            Let $x_i = i/n$ for $i = 0, \dotsc, n$.
+            The composite trapezoidal rule is given by
+            \begin{equation}
+                \label{eq:composite_rule}
+                I
+                \approx \frac{1}{2n} \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr) =: \widehat I_n.
+            \end{equation}
+            Explain how this rule can be derived from~\eqref{eq:newton_cotes} (more precisely,
+            from a generalization of the rule~\eqref{eq:newton_cotes} to any interval).
+
+        \item
+        \mymarks{3}
+            Assume that $u \in C^2([0, 1])$.
+            Show that, for all $n \in \nat_{>0}$,
+            \begin{equation}
+                \label{eq:error_bound_trapezoidal}
+                \bigl\lvert I - \widehat I_n \bigr\rvert
+                \leq \frac{C_2}{12 n^2},
+                \qquad
+                C_2 := \sup_{\xi \in [a, b]} \abs*{u''(\xi)}.
+            \end{equation}
+            You may use~\cref{proposition:interpolation_error} at the end of this document for the interpolation error.
+        \item
+        \mymarks{1}
+        In this part of the question, we assume that $u$ is a quadratic polynomial.
+        It is possible to show that, in this case,
+        \[
+             I - \widehat I_n = - \frac{C_2}{12 n^2}.
+        \]
+        Explain how, given two approximations $\widehat I_n$ and $\widehat I_{2n}$ obtained with~\eqref{eq:composite_rule},
+        a better approximation of the integral~$I$ can be obtained by a linear combination of the form
+        \[
+            \alpha_1 \widehat I_n + \alpha_2 \widehat I_{2n}.
+        \]
+
+        \item
+        \mybonus{2}
+        Instead of~\eqref{eq:newton_cotes},
+        consider now a more general integration rule of the form
+        \begin{equation}
+            \label{eq:gauss_legendre}
+            \int_{0}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2).
+        \end{equation}
+        Find the weights $w_1, w_2 \in \real$ and the nodes $x_1, x_2 \in [0, 1]$ so that this integration rule has the highest possible degree of precision.
+        What is the degree of precision of the rule?
+
     \end{enumerate}
 \end{question}
 
 \newpage
 \begin{question}
     [Iterative method for linear systems, \textbf{10 marks}]
-    Assume that $\mat A \in \real^{n \times n}$ is a nonsingular matrix and that $\vect b \in \real^n$.
+    Assume that $\mat A \in \real^{n \times n}$ is a \emph{symmetric positive definite} matrix and that $\vect b \in \real^n$.
     We wish to solve the linear system
     \begin{equation}
         \label{eq:linear_system}
-        \mat A \vect x = \vect b
+        \mat A \vect x = \vect b,
     \end{equation}
-    using an iterative method where each iteration is of the form
+    and to this end we consider an iterative method where each iteration is of the form
     \begin{equation}
         \label{eq:iterative_scheme}
         \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
@@ -97,68 +261,66 @@
 
     \begin{enumerate}
         \item
-            (\textbf{3 marks})
+            \mymarks{3}
             Let $\vect e_k := \vect x_k - \vect x_*$,
             where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
             Prove that
             \[
+                \forall k \in \nat, \qquad
                 \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
             \]
 
         \item
-            (\textbf{3 marks})
-            Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
+            \mymarks{2}
+            We denote by $\norm{\placeholder}_{\mat A}$ the vector norm
+            \begin{equation}
+                \norm{\vect x}_{\mat A} := \sqrt{\vect x^\t \mat A \vect x},
+            \end{equation}
+            and we use the same notation for the induced matrix norm.
             Prove that
             \begin{equation}
                 \label{eq:inequality_interpolation}
                 \forall k \in \nat, \qquad
-                \norm{\vect e_k}_{\infty} \leq L^k \norm{\vect e_0}_{\infty}.
+                \norm{\vect e_k}_{\mat A} \leq L^k \norm{\vect e_0}_{\mat A},
+                \qquad L := \norm{\mat M^{-1} \mat N}_{\mat A}.
+            \end{equation}
+
+        \item 
+            \mymark
+            Is the condition~$\norm{\vect x}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0 \in \real^n$.
+
+        \item
+            \mymarks{3}
+            Show that
+            \begin{equation}
+                \label{eq:norm}
+                \norm{\mat M^{-1} \mat N \vect x}_{\mat A}^2
+                = \norm{\vect x}_{\mat A}^2 - \vect y^\t (\mat M^\t + \mat N) \vect y,
+                \qquad \vect y :=  \mat M^{-1} \mat A \vect x.
+            \end{equation}
+
+            \textbf{Hint: } Begin by eliminating~$\mat N$ from both sides of the equation by rewriting~$\mat N = \mat M - \mat A$.
+            Then substitute the expression of~$\vect y$ and expand both sides.
+
+
+        \item
+            \mymark
+            Show that, for the Gauss--Seidel method,
+            i.e.\ when $\mat M = \mat L + \mat D$ contains just the diagonal and lower triangular parts of~$\mat A$,
+            it holds that
+            \begin{equation}
+                \label{eq:gauss_seidel}
+                \mat M^\t + \mat N = \mat D.
             \end{equation}
 
         \item
-            (\textbf{1 mark})
-            Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
-            for convergence when $\vect x_0 \neq \vect x_*$?
-
-        \item
-            (\textbf{3 marks})
-            Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
+            \mybonus{2}
+            Deduce from~\eqref{eq:norm} and~\eqref{eq:gauss_seidel} that,
+            for the Gauss--Seidel method,
             \[
-                \forall i \in \{1, \dotsc, n\}, \qquad
-                \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
+                \norm{\mat M^{-1} \mat N}_{\mat A} < 1.
             \]
-            Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
-            i.e.\ when $\mat M$ contains just the diagonal of~$\mat A$.
-            You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
-            \[
-                \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
-            \]
-
-        \item
-            (\textbf{Bonus +1})
-            Write down a few iterations of the Jacobi method when
-            \[
-                \mat A =
-                \begin{pmatrix}
-                    1 & 2 \\
-                    0 & 1
-                \end{pmatrix},
-                \qquad
-                \vect b
-                \begin{pmatrix}
-                    1 \\
-                    1
-                \end{pmatrix},
-                \qquad
-                \vect x_0 =
-                \begin{pmatrix}
-                    0 \\
-                    0
-                \end{pmatrix}.
-            \]
-            Is the method convergent?
     \end{enumerate}
-\end{question}
 
 \newpage
 \begin{question}
@@ -278,124 +440,19 @@
 \end{question}
 
 
-\newpage
-\begin{question}
-    [Interpolation error, \textbf{10 marks}]
-    Let~$u$ denote the function
-    \begin{align*}
-        u\colon
-        &[0, 2\pi] \to \real; \\
-        &x \mapsto \cos(x).
-    \end{align*}
-    Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through at the nodes
-    \[
-        x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
-    \]
-    \begin{enumerate}
-        \item
-            (\textbf{3 marks})
-            Using a method of your choice,
-            calculate $p_n$ for $n = 2$.
-
-        \item
-            (\textbf{6 marks})
-            Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
-            Prove that
-            \[
-                \forall x \in [0, 2\pi], \qquad
-                \abs{e_n(x)}
-                \leq \frac{\lvert \omega_n(x) \rvert}{(n+1)!},
-            \]
-            where we introduced
-            \[
-                \omega_n(x) := \prod_{i=0}^{n} (x - x_i).
-            \]
-            \textbf{Hint:} You may find it useful to introduce the function
-            \[
-                g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
-            \]
-
-        \item
-            (\textbf{1 mark}) Does the maximum absolute error
-            \[
-                E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
-            \]
-            tend to zero in the limit as $n \to \infty$?
-    \end{enumerate}
-
-    \noindent (\textbf{Bonus +1}) Using the Gregory--Newton formula,
-    find a closed expression for the sum
-    \[
-        S(n) = \sum_{k=0}^{n} k^2.
-    \]
-\end{question}
 
 \newpage
-\begin{question}
-    [Numerical integration, \textbf{10 marks}]
-    Let $u \colon [0, 1] \to \real$ be a function we wish to integrate and
+\section*{Background}
+\begin{proposition}
+    \label{proposition:interpolation_error}
+    Assume that~$f\colon [a, b] \to \real$ is a function in $C^{2}([a, b])$ and let $\widehat f$ denote
+    the interpolation of~$f$ at two distinct interpolation nodes~$y_1, y_2$.
+    Then for all $y \in [a, b]$,
+    there exists~$\xi = \xi(y)$ in the interval~$[a, b]$ such that
     \[
-        I := \int_{0}^{1} u(x) \, \d x.
+        \forall y \in [a, b], \qquad
+        f(y) - \widehat f(y) = \frac{f''(\xi)}{2!} (y-y_1) (y - y_2).
     \]
-    \begin{enumerate}
-        \item
-        \mymarks{3}
-        Consider the following integration rule:
-        \begin{equation}
-            \label{eq:newton_cotes}
-            I\approx w_1 u(0) + w_2 u(1).
-        \end{equation}
-        Find the weights $w_1, w_2 \in \real$ so that this integration rule has the highest possible degree of precision.
-        What is the degree of precision of the rule constructed?
-
-
-        \item
-        \mymarks{3}
-            Let $x_i = i/n$ for $i = 0, \dotsc, n$. The composite trapezoidal rule is given by
-            \begin{equation}
-                \label{eq:composite_rule}
-                I 
-                \approx \frac{1}{2n} \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr) =: \widehat I_n,
-            \end{equation}
-            Derive this rule from~\eqref{eq:newton_cotes}.
-
-        \item
-        \mymarks{3}
-            Assume that $u \in C^2([0, 1])$.
-            Show that, for all $n \in \nat_{>0}$,
-            \begin{equation}
-                \label{eq:error_bound_trapezoidal}
-                \bigl\lvert I - \widehat I_n \bigr\rvert
-                \leq \frac{C_2}{12 n^2},
-                \qquad
-                C_2 := \sup_{\xi \in [a, b]} \abs*{u''(\xi)}.
-            \end{equation}
-
-        \item
-        \mymarks{1}
-        In this part of the question, we assume that $u$ is a quadratic polynomial.
-        It is possible to show that, in this case,
-        \[
-             I - \widehat I_n = - \frac{C_2}{12 n^2}.
-        \]
-        Explain how, given two approximations $\widehat I_n$ and $\widehat I_{2n}$ obtained with~\eqref{eq:composite_rule},
-        a better approximation of the integral~$I$ can be obtained by a linear combination of the form
-        \[
-            \alpha_1 \widehat I_n + \alpha_2 \widehat I_{2n}.
-        \]
-
-        \item
-        \mybonus{2}
-        Instead of~\eqref{eq:newton_cotes},
-        consider now a more general integration rule of the form
-        \begin{equation}
-            \label{eq:gauss_legendre}
-            \int_{0}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2).
-        \end{equation}
-        Find the weights $w_1, w_2 \in \real$ and the nodes $x_1, x_2 \in [0, 1]$ so that this integration rule has the highest possible degree of precision.
-        What is the degree of precision of the rule constructed?
-
-    \end{enumerate}
-\end{question}
+\end{proposition}
 
 \end{document}
