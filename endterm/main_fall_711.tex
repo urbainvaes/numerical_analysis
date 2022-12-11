@@ -17,10 +17,14 @@
 \theoremstyle{remark}
 \newtheorem*{solution}{Solution}
 \input{../macros.tex}
+% \usepackage{tikz-cd}
+% \usetikzlibrary{graphs,graphdrawing}
+% \usetikzlibrary{backgrounds}
 
 \theoremstyle{plain}% default
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
+\crefname{figure}{Figure}{Figures}
 
 \begin{document}
 
@@ -216,7 +220,7 @@
             \end{equation}
             You may use~\cref{proposition:interpolation_error} at the end of this document for the interpolation error.
         \item
-        \mymarks{1}
+        \mymark
         In this part of the question, we assume that $u$ is a quadratic polynomial.
         It is possible to show that, in this case,
         \[
@@ -285,9 +289,9 @@
                 \qquad L := \norm{\mat M^{-1} \mat N}_{\mat A}.
             \end{equation}
 
-        \item 
+        \item
             \mymark
-            Is the condition~$\norm{\vect x}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0 \in \real^n$.
+            Is the condition~$\norm{\vect x}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0 \in \real^n$?
 
         \item
             \mymarks{3}
@@ -299,7 +303,7 @@
                 \qquad \vect y :=  \mat M^{-1} \mat A \vect x.
             \end{equation}
 
-            \textbf{Hint: } Begin by eliminating~$\mat N$ from both sides of the equation by rewriting~$\mat N = \mat M - \mat A$.
+            \textbf{Hint: } Eliminate~$\mat N$ from both sides of the equation by rewriting~$\mat N = \mat M - \mat A$.
             Then substitute the expression of~$\vect y$ and expand both sides.
 
 
@@ -325,117 +329,159 @@
 \newpage
 \begin{question}
     [Nonlinear equations, \textbf{10 marks}]
-    Assume that $\vect x_* \in \real^n$ is a solution to the equation
-    \[
-        \vect F(\vect x) = \vect x,
-    \]
-    where $\vect F\colon \real^n \to \real^n$ is a smooth nonlinear function.
-    We consider the following fixed-point iterative method for approximating~$\vect x_*$:
+    We consider the following iterative method for calculating~$\sqrt[3]{2}$:
     \begin{equation}
-        \label{eq:fixed_point}
-        \vect x_{k+1} = \vect F(\vect x_k).
+        \label{eq:iteration}
+        x_{k+1} = F(x_k) :=  \omega x_k + (1 - \omega) \frac{2}{x_k^2},
     \end{equation}
+    with $\omega \in (0, 1)$ a fixed parameter.
     \begin{enumerate}
         \item
-            (\textbf{8 marks})
-            Assume in this part that $\vect F$ satisfies the local Lipschitz condition
+            \mymark
+            Show that $x_* := \sqrt[3]{2}$ is a fixed point of the iteration~\eqref{eq:iteration}.
+
+
+        \item
+            \mymarks{2}
+            Prove that if~$\omega \in \left(\frac{1}{3}, 1\right)$,
+            then~$x_*$ is locally exponentially stable.
+            You may take for granted~\cref{proposition:local_convergence} at the end of this document.
+
+
+        \item
+            \mymarks{2}
+            Write down, in the form
+            \[
+                x_{k+1} = \dots
+            \]
+            an iteration of the Newton--Raphson method when applied to the nonlinear equation
+            \[
+                f(x) := x^3 - 2 = 0.
+            \]
+            Show that the method obtained is a particular case of~\eqref{eq:iteration}.
+
+        \item
+            \mymark
+            Do you expect faster convergence of~\eqref{eq:iteration} with $\omega = \frac{1}{2}$ or with $\omega = \frac{2}{3}$?
+
+        \item
+            \mymarks{2}
+            Illustrate graphically a few iterations of the Newton--Raphson method when starting from~$x_0 = 2$.
+            You may either draw your own figure or draw on \cref{fig:nr} at the end of this document.
+
+        \item
+            \mymarks{2}
+            Write down the Newton--Raphson method in pseudocode,
+            with an appropriate stopping criterion.
+
+        \item
+            \mybonus{2}
+            Prove~\cref{proposition:local_convergence} in the appendix.
+            More precisely, show that the assumptions of the proposition imply that there is $\delta > 0$ and $L < 1$ such that the following local Lipschitz condition is satisfied:
             \begin{equation}
                 \label{eq:local_lipschitz}
-                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-                \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+                \forall x \in [x_* - \delta, x_* + \delta],
+                \qquad
+                \lvert F(x) - F(x_*) \rvert \leq L \abs{x - x_*}.
             \end{equation}
-            with $0 \leq L < 1$ and $\delta > 0$.
-            Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
-            Show that the following statements hold:
-            \begin{itemize}
-                \item (\textbf{2 marks}) There is no fixed point of $\vect F$ in $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
-                \item (\textbf{2 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
-                \item (\textbf{3 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
-                    \[
-                        \forall k \in \nat, \qquad
-                        \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
-                    \]
-            \end{itemize}
+            You can take for granted that~\eqref{eq:local_lipschitz} is a sufficient condition for local exponential stability.
 
-        \item
-            (\textbf{3 marks})
-            Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
-            \[
-                \vect f(\vect x) = \vect 0.
-            \]
+        % \item
+        %     \mymarks{2}
+        %     The quantity $\sqrt[3]{2}$
 
-        \item
-            (\textbf{Bonus +1})
-            Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
-            Show that if
-            \begin{equation*}
-                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
-                \norm[big]{\mat J_F(\vect x)} \leq L,
-            \end{equation*}
-            then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
+        % \item
+        %     \mymarks{2}
+
+        %     \[
+        %         F'(x) = \omega - (1-\omega) \frac{4}{x^3}
+        %         = \omega - 2(1 - \omega) = 3 \omega - 2
+        %     \]
+
+
     \end{enumerate}
 \end{question}
 
 \newpage
 
 \newpage
+
+\newpage
 \begin{question}
-    [Error estimate for eigenvalue problem, \textbf{10 marks}]
-    Let $\norm{\placeholder}$ denote the Euclidean norm,
-    and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
+    [Iterative methods for eigenvalue problems, \textbf{10 marks}]
+    Let $\norm{\placeholder}$ denote the Euclidean norm.
+    Assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular
+    and that all the eigenvalues of~$\mat A$ have different moduli:
+    \[
+        \lvert \lambda_1 \rvert
+        >
+        \lvert \lambda_2 \rvert
+        >
+        \dots
+        >
+        \lvert \lambda_n \rvert.
+    \]
 
     \begin{enumerate}
         \item
-            (\textbf{5 marks})
+            \mymarks{5}
             Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
             as well as the corresponding eigenvector.
-            Assume for simplicity that this eigenvalue and the corresponding eigenvector are unique.
 
         \item
-            (\textbf{1 mark})
-            Let $\mat M \in \real^{n \times n}$ denote a nonsingular symmetric matrix.
+            \mymarks{2}
+            Suppose that we have calculated the smallest eigenvalue in modulus $\lambda_n$ as well as the associated normalized eigenvector~$\vect v_n$.
+            We let
+            \[
+                \mat B := \mat A^{-1} - \frac{1}{\lambda_n} \vect v_n \vect v_n^\t.
+            \]
+            % Write down an expression for the eigenvalues of~$\mat B$ in terms of the eigenvalues of~$\mat A$.
+            If we apply the power iteration to this matrix,
+            what convergence can we expect?
+
+
+        \item
+            \mymarks{3}
+            The aim of this part is to provide an answer to the following question:
+            given an approximate eigenpair $(\widehat {\vect v}, \widehat \lambda)$,
+            what is the smallest perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
+            $(\widehat {\vect v}, \widehat \lambda)$ is an exact eigenpair, i.e.\ that
+            \[
+                (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v} \,?
+            \]
+            Assume that $\widehat {\vect v}$ is normalized and
+            let $\mathcal E = \Bigl\{\mat E \in \complex^{n \times n}: (\mat A + \mat E) \widehat {\vect v} = \widehat \lambda \widehat {\vect v} \Bigr\}$.
             Prove that
             \begin{equation}
-                \label{eq:intermediate_eigen}
-                \forall \vect x \in \real^n, \qquad
-                \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
+                \label{eq:kahan_parlett_jiang}
+                \min_{\mat E \in \mathcal E} \norm{\mat E} = \norm{\vect r} := \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}},
             \end{equation}
-            Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
-            % What is the connection between $\norm{\mat M^{-1}}$ and $\lambda_{\min}(\mat M)$?
-            % \footnote{Remember that the 2-norm of a Hermitian matrix coincides with its spectral radius.}
-            Deduce from~\eqref{eq:intermediate_eigen} that
-            \begin{equation}
-                \label{eq:bound_eigen}
-                \forall \vect x \in \real^n, \qquad
-                \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
-            \end{equation}
+            where $\norm{\placeholder}$ denotes both the Euclidean vector norm and the induced norm on matrices.
+            \textbf{Hint:} You may find it useful to proceed as follows:
+            \begin{itemize}
+                \item
+                    Show first that any $\mat E \in \mathcal E$ satisfies $\mat E \widehat {\vect v} = - \vect r$.
+
+                \item
+                    Deduce from the first item that
+                    \[
+                        \inf_{\mat E \in \mathcal E} \norm{\mat E} \geq \norm{\vect r}.
+                    \]
+
+                \item
+                    Find a rank one matrix $\mat E_*$ such that
+                    \(
+                    \norm{\mat E_*} = \norm{\vect r},
+                    \)
+                    and then conclude.
+                    Recall that any rank 1 matrix can be written in the form $\mat E_* = \vect u \vect w^*$,
+                    with norm $\norm{\vect u} \norm{\vect w}$.
+            \end{itemize}
 
         \item
-            (\textbf{4 marks})
-            Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
-            \begin{equation}
-                \label{eq:bound}
-                \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
-                \qquad \norm{\widehat {\vect v}} = 1.
-            \end{equation}
-            Using~\eqref{eq:bound_eigen},
-            prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
-            \[
-                \abs{\lambda - \widehat \lambda} \leq \varepsilon.
-            \]
-
-        \item
-            (\textbf{Bonus +1}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
-            equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
-            \[
-                \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
-            \]
-            \noindent{\textbf{Hint}:}
-            Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
-            \[
-                \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
-                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
-            \]
+            \mybonus{2}
+            Suppose that we have calculated~$\lambda_n$ and $\lambda_{n-1}$ together with the associated normalized eigenvectors.
+            Propose a method for calculating the third smallest eigenvalue in modulus~$\lambda_{n-2}$.
     \end{enumerate}
 \end{question}
 
@@ -454,5 +500,26 @@
         f(y) - \widehat f(y) = \frac{f''(\xi)}{2!} (y-y_1) (y - y_2).
     \]
 \end{proposition}
+
+\begin{proposition}
+    \label{proposition:local_convergence}
+    Assume that $F\colon \real \to \real$ is continuously differentiable,
+    and let $x_*$ be a fixed point of the iteration
+    \(
+        x_{k+1} = F(x_k).
+    \)
+    If
+    \[
+        \abs{F'(x_*)} < 1,
+    \]
+    then the fixed point $x_*$ is locally exponentially stable.
+\end{proposition}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{newton-raphson.pdf}
+    \caption{You can use this figure to illustrate the Newton--Raphson method.}%
+    \label{fig:nr}
+\end{figure}
 
 \end{document}
