@@ -121,7 +121,16 @@
     \begin{enumerate}
         \itemsep0pt
         \item
-            \mymarks{3}
+            \mymarks{2}
+            Let $e(x) := u(x) - p(x)$.
+            Prove that
+            \[
+                \forall x \in [0, 1], \qquad
+                e(x) = (x-x_0) (x-x_1) (x-x_2).
+            \]
+
+        \item
+            \mymarks{2}
             Using a method of your choice,
             calculate the interpolating polynomial $p$ in the particular case where
             \begin{equation}
@@ -129,15 +138,8 @@
                 x_0 = -1, \qquad x_1 = 0, \qquad x_2 = 1.
             \end{equation}
 
-        \item
-            \mymarks{3}
-            Let $e(x) := u(x) - p(x)$.
-            Prove that
-            \[
-                \forall x \in [0, 1], \qquad
-                e(x) = (x-x_0) (x-x_1) (x-x_2).
-            \]
-            We denote the maximum absolute value of the error over the interval $[-1, 1]$ by
+        \item \mymarks{2}
+            We denote the maximum absolute value of the error by
             \begin{equation}
                 \label{eq:max_error}
                 E := \max_{x \in [-1, 1]} \abs[\big]{e(x)}.
@@ -157,13 +159,15 @@
             \]
             and calculate the roots~$z_0, z_1, z_2$ of $T_3$.
 
+            \textbf{Hint:} Remember that $\cos (3 \theta) = \Re \left( \e^{\i 3\theta} \right) = \Re \bigl( \left(\e^{\i \theta} \right)^3 \bigr)$, where $\e^{i \theta} = \cos (\theta) + \i \sin (\theta)$.
+
         \item
             \mymarks{2}
             Find the expression of the maximum absolute error~$E$ given in~\eqref{eq:max_error}
             in the case where interpolation nodes~$x_0, x_1, x_2$ are given by~$z_0, z_1, z_2$.
 
         \item
-            \mybonus{2}
+            *\mybonus{2}
             Show that the maximum absolute error~\eqref{eq:max_error},
             viewed as a function of the interpolation nodes~$x_1, x_2, x_3$,
             is minimized when $x_i = z_i$ for $i \in \{0, 1, 2\}$.
@@ -216,7 +220,7 @@
                 \bigl\lvert I - \widehat I_n \bigr\rvert
                 \leq \frac{C_2}{12 n^2},
                 \qquad
-                C_2 := \sup_{\xi \in [a, b]} \abs*{u''(\xi)}.
+                C_2 := \sup_{\xi \in [0, 1]} \abs*{u''(\xi)}.
             \end{equation}
             You may use~\cref{proposition:interpolation_error} at the end of this document for the interpolation error.
         \item
@@ -233,7 +237,7 @@
         \]
 
         \item
-        \mybonus{2}
+        *\mybonus{2}
         Instead of~\eqref{eq:newton_cotes},
         consider now a more general integration rule of the form
         \begin{equation}
@@ -241,7 +245,7 @@
             \int_{0}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2).
         \end{equation}
         Find the weights $w_1, w_2 \in \real$ and the nodes $x_1, x_2 \in [0, 1]$ so that this integration rule has the highest possible degree of precision.
-        What is the degree of precision of the rule?
+        What is the degree of precision obtained?
 
     \end{enumerate}
 \end{question}
@@ -253,9 +257,9 @@
     We wish to solve the linear system
     \begin{equation}
         \label{eq:linear_system}
-        \mat A \vect x = \vect b,
+        \mat A \vect x = \vect b.
     \end{equation}
-    and to this end we consider an iterative method where each iteration is of the form
+    To this end we consider an iterative method where each iteration is of the form
     \begin{equation}
         \label{eq:iterative_scheme}
         \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
@@ -291,10 +295,10 @@
 
         \item
             \mymark
-            Is the condition~$\norm{\vect x}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0 \in \real^n$?
+            Is the condition~$\norm{\mat M^{-1} \mat N}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0$?
 
         \item
-            \mymarks{3}
+            *\mymarks{3}
             Show that
             \begin{equation}
                 \label{eq:norm}
@@ -310,7 +314,7 @@
         \item
             \mymark
             Show that, for the Gauss--Seidel method,
-            i.e.\ when $\mat M = \mat L + \mat D$ contains just the diagonal and lower triangular parts of~$\mat A$,
+            i.e.\ when $\mat M = \mat L + \mat D$ contains just the lower triangular and diagonal parts of~$\mat A$,
             it holds that
             \begin{equation}
                 \label{eq:gauss_seidel}
@@ -325,6 +329,7 @@
                 \norm{\mat M^{-1} \mat N}_{\mat A} < 1.
             \]
     \end{enumerate}
+\end{question}
 
 \newpage
 \begin{question}
@@ -340,6 +345,10 @@
             \mymark
             Show that $x_* := \sqrt[3]{2}$ is a fixed point of the iteration~\eqref{eq:iteration}.
 
+        \item
+            \mymarks{2}
+            Write down in pseudocode a numerical method based on the iteration~\eqref{eq:iteration}.
+            Use an appropriate stopping criterion that does not require the knowledge of~$\sqrt[3]{2}$.
 
         \item
             \mymarks{2}
@@ -347,35 +356,32 @@
             then~$x_*$ is locally exponentially stable.
             You may take for granted~\cref{proposition:local_convergence} at the end of this document.
 
-
-        \item
-            \mymarks{2}
-            Write down, in the form
-            \[
-                x_{k+1} = \dots
-            \]
-            an iteration of the Newton--Raphson method when applied to the nonlinear equation
-            \[
-                f(x) := x^3 - 2 = 0.
-            \]
-            Show that the method obtained is a particular case of~\eqref{eq:iteration}.
-
         \item
             \mymark
             Do you expect faster convergence of~\eqref{eq:iteration} with $\omega = \frac{1}{2}$ or with $\omega = \frac{2}{3}$?
 
         \item
             \mymarks{2}
-            Illustrate graphically a few iterations of the Newton--Raphson method when starting from~$x_0 = 2$.
-            You may either draw your own figure or draw on \cref{fig:nr} at the end of this document.
+            % Write down, in the form
+            % \[
+            %     x_{k+1} = \dots
+            % \]
+            Show that, in the particular case where $\omega = \frac{2}{3}$,
+            the iterative scheme~\eqref{eq:iteration} coincides with the Newton--Raphson method applied to
+            the nonlinear equation
+            \begin{equation}
+                \label{eq:nonlinear_equation}
+                f(x) = 0,
+            \end{equation}
+            for an appropriate function $f \colon \real \to \real$.
 
         \item
             \mymarks{2}
-            Write down the Newton--Raphson method in pseudocode,
-            with an appropriate stopping criterion.
+            Illustrate graphically a few iterations of the Newton--Raphson method for solving~\eqref{eq:nonlinear_equation} when starting from~$x_0 = 2$.
+            You may either draw your own figure or draw on \cref{fig:nr} at the end of this document.
 
         \item
-            \mybonus{2}
+            *\mybonus{2}
             Prove~\cref{proposition:local_convergence} in the appendix.
             More precisely, show that the assumptions of the proposition imply that there is $\delta > 0$ and $L < 1$ such that the following local Lipschitz condition is satisfied:
             \begin{equation}
@@ -384,21 +390,8 @@
                 \qquad
                 \lvert F(x) - F(x_*) \rvert \leq L \abs{x - x_*}.
             \end{equation}
-            You can take for granted that~\eqref{eq:local_lipschitz} is a sufficient condition for local exponential stability.
-
-        % \item
-        %     \mymarks{2}
-        %     The quantity $\sqrt[3]{2}$
-
-        % \item
-        %     \mymarks{2}
-
-        %     \[
-        %         F'(x) = \omega - (1-\omega) \frac{4}{x^3}
-        %         = \omega - 2(1 - \omega) = 3 \omega - 2
-        %     \]
-
-
+            You do not need to show that~\eqref{eq:local_lipschitz} is sufficient to guarantee local exponential stability;
+            this is taken for granted.
     \end{enumerate}
 \end{question}
 
@@ -409,8 +402,8 @@
 \newpage
 \begin{question}
     [Iterative methods for eigenvalue problems, \textbf{10 marks}]
-    Let $\norm{\placeholder}$ denote the Euclidean norm.
-    Assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular
+    Let $\norm{\placeholder}$ denote both the Euclidean norm on vectors and the induced matrix norm.
+    Assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular,
     and that all the eigenvalues of~$\mat A$ have different moduli:
     \[
         \lvert \lambda_1 \rvert
@@ -438,10 +431,11 @@
             % Write down an expression for the eigenvalues of~$\mat B$ in terms of the eigenvalues of~$\mat A$.
             If we apply the power iteration to this matrix,
             what convergence can we expect?
+            Justify your answer.
 
 
         \item
-            \mymarks{3}
+            *\mymarks{3}
             The aim of this part is to provide an answer to the following question:
             given an approximate eigenpair $(\widehat {\vect v}, \widehat \lambda)$,
             what is the smallest perturbation~$\mat E$ that we need to apply to $\mat A$ in order to guarantee that
@@ -454,22 +448,22 @@
             Prove that
             \begin{equation}
                 \label{eq:kahan_parlett_jiang}
-                \min_{\mat E \in \mathcal E} \norm{\mat E} = \norm{\vect r} := \norm{\mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}},
+                \min_{\mat E \in \mathcal E} \norm{\mat E} = \norm{\vect r}, \qquad \vect r := \mat A \widehat {\vect v} - \widehat \lambda \widehat {\vect v}.
             \end{equation}
-            where $\norm{\placeholder}$ denotes both the Euclidean vector norm and the induced norm on matrices.
             \textbf{Hint:} You may find it useful to proceed as follows:
             \begin{itemize}
                 \item
-                    Show first that any $\mat E \in \mathcal E$ satisfies $\mat E \widehat {\vect v} = - \vect r$.
+                    Show first that $\mat E \in \mathcal E$ if and only if $\mat E \widehat {\vect v} = - \vect r$.
 
                 \item
                     Deduce from the first item that
                     \[
-                        \inf_{\mat E \in \mathcal E} \norm{\mat E} \geq \norm{\vect r}.
+                        \forall \mat E \in \mathcal E, \qquad
+                        \norm{\mat E} \geq \norm{\vect r}.
                     \]
 
                 \item
-                    Find a rank one matrix $\mat E_*$ such that
+                    Find a rank one matrix $\mat E_* \in \mathcal E$ such that
                     \(
                     \norm{\mat E_*} = \norm{\vect r},
                     \)
@@ -481,23 +475,22 @@
         \item
             \mybonus{2}
             Suppose that we have calculated~$\lambda_n$ and $\lambda_{n-1}$ together with the associated normalized eigenvectors.
-            Propose a method for calculating the third smallest eigenvalue in modulus~$\lambda_{n-2}$.
+            Propose a method for calculating the third smallest eigenvalue in modulus,~$\lambda_{n-2}$.
     \end{enumerate}
 \end{question}
 
 
 
 \newpage
-\section*{Background}
+\section*{Auxiliary results}
 \begin{proposition}
     \label{proposition:interpolation_error}
     Assume that~$f\colon [a, b] \to \real$ is a function in $C^{2}([a, b])$ and let $\widehat f$ denote
     the interpolation of~$f$ at two distinct interpolation nodes~$y_1, y_2$.
-    Then for all $y \in [a, b]$,
-    there exists~$\xi = \xi(y)$ in the interval~$[a, b]$ such that
+    Then there exists~$\xi\colon [a, b] \to [a, b]$ such that
     \[
         \forall y \in [a, b], \qquad
-        f(y) - \widehat f(y) = \frac{f''(\xi)}{2!} (y-y_1) (y - y_2).
+        f(y) - \widehat f(y) = \frac{f''\bigl(\xi(y)\bigr)}{2} (y-y_1) (y - y_2).
     \]
 \end{proposition}
 
