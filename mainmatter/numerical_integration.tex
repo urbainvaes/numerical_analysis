@@ -152,12 +152,12 @@ Let us illustrate the composite approach with an example.
 To this end,
 we introduce a partition $a = x_0 < \dotsb < x_n = b$ of the interval $[a, b]$ and
 assume that the nodes are equidistant with $x_{i+1} - x_i = h$.
-Using~\eqref{eq:change_of_variable_equivalence},
+Using~\eqref{eq:change_of_variable_equivalence} with $a = x_i$ and $b = x_{i+1}$,
 we first generalize~\eqref{eq:trapezoidal_rule} to an interval~$[x_i, x_{i+1}]$ as follows:
 \[
     \int_{x_i}^{x_{i+1}} u(x) \, \d x
-    = \int_{-1}^{1} u \circ \zeta (y) \, \d y
-    \approx u \circ \zeta(-1)  + u \circ \zeta(1)
+    = \frac{h}{2} \int_{-1}^{1} u \circ \zeta (y) \, \d y
+    \approx \frac{h}{2} \bigl( u \circ \zeta(-1)  + u \circ \zeta(1) \bigr)
     = \frac{h}{2} \bigl(u(x_i) + u(x_{i+1})\bigr),
 \]
 where $\approx$ in this equation indicates approximation using the trapezoidal rule.
