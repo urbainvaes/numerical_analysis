@@ -28,12 +28,20 @@
 
 \begin{document}
 
-\title{ \vspace{-3cm} Numerical Analysis: Final Exam \\
+\title{Numerical Analysis: Final Exam \\
 \small{(\textbf{50 marks}, only the 5 best questions count)}}
 \author{Urbain Vaes}
 \date{12 May 2022}
 \maketitle
 
+\noindent You are allowed to use a calculator, but not \emph{Julia} or \emph{Python}.
+
+\section*{Academic integrity pledge}
+\noindent $\square$ \textcolor{blue}{I certify that I will not give or receive any unauthorized help on this exam, 
+and that all work will be my own. (Tick $\checkmark$ or copy on your answer sheet)}.
+
+
+\newpage
 \begin{question}
     [Floating point arithmetic, \textbf{10 marks}]
     True or false? +1/0/-1
@@ -123,7 +131,8 @@
         \item
             \mymarks{2}
             Let $e(x) := u(x) - p(x)$.
-            Prove that
+            Prove, without assuming any result shown in class,
+            that the interpolation error satisfies:
             \[
                 \forall x \in [0, 1], \qquad
                 e(x) = (x-x_0) (x-x_1) (x-x_2).
@@ -482,6 +491,7 @@
 
 
 \newpage
+
 \section*{Auxiliary results}
 \begin{proposition}
     \label{proposition:interpolation_error}
