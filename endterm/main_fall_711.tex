@@ -37,8 +37,8 @@
 \noindent You are allowed to use a calculator, but not \emph{Julia} or \emph{Python}.
 
 \section*{Academic integrity pledge}
-\noindent $\square$ \textcolor{blue}{I certify that I will not give or receive any unauthorized help on this exam, 
-and that all work will be my own. (Tick $\checkmark$ or copy on your answer sheet)}.
+\noindent $\square$ \textcolor{blue}{I certify that I will not give or receive any unauthorized help on this exam,
+and that all work will be my own. (Tick $\checkmark$ or copy the sentence on your answer sheet)}.
 
 
 \newpage
@@ -118,11 +118,9 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 \newpage
 \begin{question}
     [Interpolation, \textbf{10 marks}]
-    Let~$u$ denote the function
+    Let~$u\colon [-1, 1] \to \real$ be given by
     \begin{align*}
-        u\colon
-        [-1, 1] &\to \real; \\
-        x &\mapsto x^3.
+        u(x) = x^3.
     \end{align*}
     Let $p \colon [-1, 1] \to \real$ denote the interpolating polynomial of~$u$ at nodes $x_0 < x_1 < x_2$,
     all contained in the interval $[-1, 1]$.
@@ -157,23 +155,22 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 
         \item
             \mymarks{2}
-            We denote by
+            We denote by~$T_3 \colon [-1, 1] \to \real$ the Chebyshev polynomial given by
             \[
-                T_3(x) := \cos\bigl(3 \arccos(x)\bigr)
+                T_3(x) := \cos\bigl(3 \arccos(x)\bigr).
             \]
-            the Chebyshev polynomial of degree~3.
             Show that
             \[
                 T_3(x) = 4x^3 - 3x
             \]
             and calculate the roots~$z_0, z_1, z_2$ of $T_3$.
 
-            \textbf{Hint:} Remember that $\cos (3 \theta) = \Re \left( \e^{\i 3\theta} \right) = \Re \bigl( \left(\e^{\i \theta} \right)^3 \bigr)$, where $\e^{i \theta} = \cos (\theta) + \i \sin (\theta)$.
+            \textbf{Hint:} Note that $\cos (3 \theta) = \Re \left( \e^{\i 3\theta} \right) = \Re \bigl( \left(\e^{\i \theta} \right)^3 \bigr)$, where $\e^{i \theta} = \cos (\theta) + \i \sin (\theta)$.
 
         \item
             \mymarks{2}
-            Find the expression of the maximum absolute error~$E$ given in~\eqref{eq:max_error}
-            in the case where interpolation nodes~$x_0, x_1, x_2$ are given by~$z_0, z_1, z_2$.
+            Find the expression of the error~$e(x)$ and the maximum absolute error~$E$ given in~\eqref{eq:max_error}
+            in the case where the interpolation nodes~$x_0, x_1, x_2$ are given by~$z_0, z_1, z_2$.
 
         \item
             *\mybonus{2}
@@ -217,12 +214,13 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
                 I
                 \approx \frac{1}{2n} \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr) =: \widehat I_n.
             \end{equation}
-            Explain how this rule can be derived from~\eqref{eq:newton_cotes} (more precisely,
-            from a generalization of the rule~\eqref{eq:newton_cotes} to any interval).
+            Explain how this rule can be obtained by applying a generalization of the integration rule~\eqref{eq:newton_cotes} in each interval $[x_i, x_{i+1}]$.
+            % (more precisely
+            % from a generalization of the rule~\eqref{eq:newton_cotes} to any interval $[x_i, x_{i+1}]$).
 
         \item
         \mymarks{3}
-            Assume that $u \in C^2([0, 1])$.
+            Assume that $u \in C^2\bigl([0, 1]\bigr)$.
             Show that, for all $n \in \nat_{>0}$,
             \begin{equation}
                 \label{eq:error_bound_trapezoidal}
@@ -237,7 +235,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
         In this part of the question, we assume that $u$ is a quadratic polynomial.
         It is possible to show that, in this case,
         \[
-             I - \widehat I_n = - \frac{C_2}{12 n^2}.
+             I - \widehat I_n = - \frac{u''(0)}{12 n^2}.
         \]
         Explain how, given two approximations $\widehat I_n$ and $\widehat I_{2n}$ obtained with~\eqref{eq:composite_rule},
         a better approximation of the integral~$I$ can be obtained by a linear combination of the form
@@ -248,7 +246,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
         \item
         *\mybonus{2}
         Instead of~\eqref{eq:newton_cotes},
-        consider now a more general integration rule of the form
+        consider a more general integration rule of the form
         \begin{equation}
             \label{eq:gauss_legendre}
             \int_{0}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2).
@@ -277,6 +275,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
     and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
 
     \begin{enumerate}
+        \itemsep0pt
         \item
             \mymarks{3}
             Let $\vect e_k := \vect x_k - \vect x_*$,
@@ -304,7 +303,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 
         \item
             \mymark
-            Is the condition~$\norm{\mat M^{-1} \mat N}_{\mat A} < 1$ sufficient to ensure for convergence for all~$\vect x_0$?
+            Is the condition~$\norm{\mat M^{-1} \mat N}_{\mat A} < 1$ sufficient to ensure convergence for all~$\vect x_0$?
 
         \item
             *\mymarks{3}
@@ -318,7 +317,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 
             \textbf{Hint: } Eliminate~$\mat N$ from both sides of the equation by rewriting~$\mat N = \mat M - \mat A$.
             Then substitute the expression of~$\vect y$ and expand both sides.
-
+            Remember that a scalar quantity transposed is equal to itself.
 
         \item
             \mymark
@@ -356,8 +355,8 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 
         \item
             \mymarks{2}
-            Write down in pseudocode a numerical method based on the iteration~\eqref{eq:iteration}.
-            Use an appropriate stopping criterion that does not require the knowledge of~$\sqrt[3]{2}$.
+            Write down in pseudocode a computer program based on the iteration~\eqref{eq:iteration} for calculating~$\sqrt[3]{2}$.
+            Use an appropriate stopping criterion that does not require to know the value of~$\sqrt[3]{2}$.
 
         \item
             \mymarks{2}
@@ -383,11 +382,12 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
                 f(x) = 0,
             \end{equation}
             for an appropriate function $f \colon \real \to \real$.
+            % Write explicitly the definition of~$f(x)$.
 
         \item
             \mymarks{2}
             Illustrate graphically a few iterations of the Newton--Raphson method for solving~\eqref{eq:nonlinear_equation} when starting from~$x_0 = 2$.
-            You may either draw your own figure or draw on \cref{fig:nr} at the end of this document.
+            You may either create your own figure or write on \cref{fig:nr} at the end of this document.
 
         \item
             *\mybonus{2}
@@ -399,8 +399,8 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
                 \qquad
                 \lvert F(x) - F(x_*) \rvert \leq L \abs{x - x_*}.
             \end{equation}
-            You do not need to show that~\eqref{eq:local_lipschitz} is sufficient to guarantee local exponential stability;
-            this is taken for granted.
+            For completeness, one should then show that~\eqref{eq:local_lipschitz} is sufficient to guarantee local exponential stability,
+            but this is taken for granted here; you do not need to prove this.
     \end{enumerate}
 \end{question}
 
@@ -427,12 +427,13 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
     \begin{enumerate}
         \item
             \mymarks{5}
-            Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
+            Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus
             as well as the corresponding eigenvector.
 
         \item
             \mymarks{2}
-            Suppose that we have calculated the smallest eigenvalue in modulus $\lambda_n$ as well as the associated normalized eigenvector~$\vect v_n$.
+            Suppose that we have calculated the smallest eigenvalue in modulus $\lambda_n$,
+            as well as the associated normalized eigenvector~$\vect v_n$.
             We let
             \[
                 \mat B := \mat A^{-1} - \frac{1}{\lambda_n} \vect v_n \vect v_n^\t.
@@ -465,7 +466,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
                     Show first that $\mat E \in \mathcal E$ if and only if $\mat E \widehat {\vect v} = - \vect r$.
 
                 \item
-                    Deduce from the first item that
+                    Deduce from the previous item that
                     \[
                         \forall \mat E \in \mathcal E, \qquad
                         \norm{\mat E} \geq \norm{\vect r}.
@@ -484,7 +485,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
         \item
             \mybonus{2}
             Suppose that we have calculated~$\lambda_n$ and $\lambda_{n-1}$ together with the associated normalized eigenvectors.
-            Propose a method for calculating the third smallest eigenvalue in modulus,~$\lambda_{n-2}$.
+            Propose a method for calculating the third smallest eigenvalue in modulus, i.e.\ $\lambda_{n-2}$.
     \end{enumerate}
 \end{question}
 
@@ -506,8 +507,8 @@ and that all work will be my own. (Tick $\checkmark$ or copy on your answer shee
 
 \begin{proposition}
     \label{proposition:local_convergence}
-    Assume that $F\colon \real \to \real$ is continuously differentiable,
-    and let $x_*$ be a fixed point of the iteration
+    Assume that $F\colon (0, \infty) \to (0, \infty)$ is continuously differentiable,
+    and suppose that~$x_* \in (0, \infty)$ is a fixed point of the iteration
     \(
         x_{k+1} = F(x_k).
     \)
