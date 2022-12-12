@@ -994,11 +994,13 @@ The methods we consider are the following:
         The optimum value for $\alpha$ for solving~\eqref{eq:numerical_experiment} is given by~$\alpha_* = 2 \sqrt{2}$.
 
     \item
-        The Newton--Raphson method.
-
-    \item
-        The Babylonian method,
-        which is based on a fixed point iteration of the form~\eqref{eq:fixed_point} with
+        The Newton--Raphson method,
+        where each iteration is given by
+        \[
+            x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)} = x_k - \frac{x_k^2 - 2}{2x_k} = \frac{1}{2} \left(x_k + \frac{2}{x_k} \right)
+            =: F(x_k),
+        \]
+        with 
         \[
             F(x) = \frac{1}{2} \left(x + \frac{2}{x} \right).
         \]
@@ -1010,9 +1012,11 @@ The methods we consider are the following:
             \leq L (x - x_*)^2,
             \qquad L:= \sup_{\abs{x - x_*} \leq 1} \abs{F''(x)}.
         \]
-        Therefore,
-        the convergence is at least quadratic by~\eqref{eq:condition_quadratic_convergence}.
+        We deduce that the convergence is at least quadratic by~\eqref{eq:condition_quadratic_convergence}.
 \end{itemize}
+\begin{remark}
+    Note that the ancient Babylonian method coincides with the Newton--Raphson method applied to~\eqref{eq:numerical_experiment}.
+\end{remark}
 The following code implements these methods.
 Note that we use the arbitrary precision \julia{BigFloat} format with a precision we manually set to $2000$ bits,
 which enables using a very small~$\varepsilon$ in the stopping criterion.
@@ -1034,8 +1038,7 @@ function my_sqrt(a)
     # Uncomment desired line
     F(x) = x - f(x)/10      # Chord method
     # F(x) = x - f(x)/(2√a)   # Chord method with optimal α
-    # F(x) = 1/2 * (x + a/x)  # Babylonian
-    # F(x) = x - f(x)/fp(x)   # Newton Raphson
+    # F(x) = 1/2 * (x + a/x)  # Babylonian / Newton Raphson
 
     r, ε = 1, 1e-200
     while abs(f(r)) > ε
@@ -1058,27 +1061,27 @@ which is consistent with quadratic convergence.
     \centering
     \begin{tabular}{|c|c|c|c|c|}
          \hline
-         Method & Chord $\alpha = 10$ & Chord $\alpha = 2 \sqrt{2}$ & Newton--Raphson & Babylonian
+         Method & Chord $\alpha = 10$ & Chord $\alpha = 2 \sqrt{2}$ & Newton--Raphson
          \\ \hline
-         \# Iterations & \textbf{1357} & \textbf{8} & \textbf{9} & \textbf{9}
+         \# Iterations & \textbf{1357} & \textbf{8} & \textbf{9}
          \\ \hline
-         \# Correct digits $i = 1$ & 1 & 1 & 1 & 1
+         \# Correct digits $i = 1$ & 1 & 1 & 1
          \\ \hline
-         \# Correct digits $i = 2$ & 1 & 3 & 3 & 3
+         \# Correct digits $i = 2$ & 1 & 3 & 3
          \\ \hline
-         \# Correct digits $i = 3$ & 1 & 6 & 6 & 6
+         \# Correct digits $i = 3$ & 1 & 6 & 6
          \\ \hline
-         \# Correct digits $i = 4$ & 1 & 12 & 12 & 12
+         \# Correct digits $i = 4$ & 1 & 12 & 12
          \\ \hline
-         \# Correct digits $i = 5$ & 1 & 26 & 24 & 24
+         \# Correct digits $i = 5$ & 1 & 26 & 24
          \\ \hline
-         \# Correct digits $i = 6$ & 1 & 53 & 48 & 48
+         \# Correct digits $i = 6$ & 1 & 53 & 48
          \\ \hline
-         \# Correct digits $i = 7$ & 1 & 107 & 97 & 97
+         \# Correct digits $i = 7$ & 1 & 107 & 97 
          \\ \hline
-         \# Correct digits $i = 8$ & 1 & 214 & 196 & 196
+         \# Correct digits $i = 8$ & 1 & 214 & 196
          \\ \hline
-         \# Correct digits $i = 9$ & 1 & n/a & 392 & 392
+         \# Correct digits $i = 9$ & 1 & n/a & 392
          \\ \hline
     \end{tabular}
     \caption{%
