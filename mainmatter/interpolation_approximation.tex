@@ -986,8 +986,8 @@ we rewrite the function $J(\vect \alpha)$ in a simpler form:
 \begin{align*}
     J(\vect \alpha)
     &= \ip*{u - \sum_{j=0}^{m} \alpha_j \varphi_j,u - \sum_{k=0}^{m} \alpha_k \varphi_k} \\
-    &= \sum_{j=0}^{m} \sum_{k=0}^{m} \alpha_j \alpha_k \ip{\varphi_j,\varphi_k}- 2 \sum_{j=0}^{m} \alpha_j \ip{u,\varphi_j} - \ip{u,u}
-    = \vect \alpha^\t \mat G \vect \alpha - 2 \vect b^\t \vect \alpha - \ip{u,u},
+    &= \sum_{j=0}^{m} \sum_{k=0}^{m} \alpha_j \alpha_k \ip{\varphi_j,\varphi_k}- 2 \sum_{j=0}^{m} \alpha_j \ip{u,\varphi_j} + \ip{u,u}
+    = \vect \alpha^\t \mat G \vect \alpha - 2 \vect b^\t \vect \alpha + \ip{u,u},
 \end{align*}
 where we introduced
 \begin{equation}
