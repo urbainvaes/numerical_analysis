@@ -404,8 +404,9 @@ For example,
         For a matrix with real-valued entries,
         both functions deliver the same result.
     \item \julia{zeros(Int, 4, 5)} creates a $4\times 5$ matrix of zeros of type \julia{Int};
-    \item \julia{ones(2, 2)} creates a $2 \times 2$ matrix of ones;
-    \item \julia{range(0, 1, length=101)} creates an array of size 101 with elements evenly spaced between 0 and 1 included.
+    \item \julia{ones(2, 2)} creates a $2 \times 2$ matrix of ones of type \julia{Float64};
+    \item \julia{range(0, 1, length=101)}, or \julia{LinRange(0, 1, 101)},
+        creates an array of size 101 with elements evenly spaced between 0 and 1 included.
         More precisely, \julia{range} returns an array-like object,
         which can be converted to a vector using the \julia{collect} function.
     \item \julia{collect(reshape(1:9, 3, 3))} creates a $3 \times 3$ matrix with elements

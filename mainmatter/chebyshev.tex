@@ -17,8 +17,7 @@ the Chebyshev polynomials can be defined from
     T_n(x) = \cosh \bigl(n \arccosh(x)\bigr).
 \end{equation}
 where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$
-and $\arccosh = \cosh^{-1}$ is the inverse function,
-which is uniquely defined for the codomain~$[0, \infty)$.
+and $\arccosh\colon [1, \infty) \to [0, \infty)$ is the inverse function of $\cosh$.
 The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
 It is immediate to show from~\eqref{eq:chebyshev} that
 \begin{itemize}
@@ -202,7 +201,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
 \end{exercise}
 \begin{solution}
     Reasoning by contradiction,
-    we assume that $p$ satisfies
+    we assume that there exists $p \in \poly(n)$ that satisfies
     \[
         \sup_{x \in (-1, 1)} \lvert p(x) \rvert \leq 1
     \]
