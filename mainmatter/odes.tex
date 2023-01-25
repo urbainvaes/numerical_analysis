@@ -6,8 +6,12 @@
 This chapter concerns the numerical solution of ordinary differential equations (ODEs) of the following form:
 \begin{equation}
     \label{eq:ode}
-    \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \qquad
-    \vect x(t_0) = \vect x_0.
+    \left \{
+    \begin{aligned}
+        & \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
+        & \vect x(t_0) = \vect x_0.
+    \end{aligned}
+    \right.
 \end{equation}
 Here $\vect f\colon \real \times \real^n \to \real$ and $\vect x_0$ is the initial condition.
 Equations of this type
@@ -15,6 +19,9 @@ are the building blocks of a plethora mathematical models in science and enginee
 They have applications in celestial dynamics, molecular simulation and fluid mechanics, to mention just a few.
 Ordinary differential equations also arise after discretization of time-dependent partial differential equations,
 which are also ubiquitous in science.
+More often than not,
+it is not possible to find an explicit solution of~\eqref{eq:ode},
+and so one has to resort to numerical simulation.
 The rest of chapter is organized as follows:
 \begin{itemize}
     \item
@@ -22,6 +29,9 @@ The rest of chapter is organized as follows:
         we define precisely the notions of local and global solutions for the continuous-time problem~\eqref{eq:ode},
         and we recall fundamental results concerning the existence and uniqueness of a solution.
 
+    \item
+        In~\cref{sec:one-step_methods},
+        we analyze the so-called one-step numerical methods to solve~\eqref{eq:ode}.
 \end{itemize}
 
 \section{Analysis of the continuous problem}
@@ -217,7 +227,8 @@ We are now ready to prove uniqueness.
 
 \begin{corollary}
     [Maximal solutions]
-    Assume that $f$ is continuous in~$t$ and satisfies the Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
+    \label{corollary:maximal_solutions}
+    Assume that $f$ is continuous in~$t$ and satisfies the local Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
     Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
     \begin{itemize}
         \item
@@ -229,7 +240,7 @@ We are now ready to prove uniqueness.
 
         \item
             If $T_+$ is finite, then $\lim_{t \to T_+} \vecnorm[\big]{\vect x(t)} = \infty$,
-            and if $T_-$ is finite, 
+            and if $T_-$ is finite,
             then $\lim_{t \to T_-} \vecnorm[\big]{\vect x(t)} = \infty$.
     \end{itemize}
     The solution $\vect x_*$ is called the maximal solution of~\eqref{eq:ode_integral}.
@@ -241,9 +252,9 @@ We are now ready to prove uniqueness.
     Therefore $\mathcal I$ is of the form $(T_-, T_+)$,
     where $0 \leq T_- <  t_0 < T_+ \leq \infty$.
     In view of~\cref{theorem:uniqueness},
-    all the local solutions can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$. 
+    all the local solutions can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
     It remains to prove the third item.
-    To this end, suppose for contradiction that $T_+$ was finite and that 
+    To this end, suppose for contradiction that $T_+$ was finite and that
     there was $(t_n)_{n \in \nat}$ such that $t_n \to T_+$ and~
     \[
         K := \sup_{n \in \nat} \vecnorm{\vect x_*(t_n)} < \infty.
@@ -259,11 +270,151 @@ We are now ready to prove uniqueness.
     \]
     Consequently, \cref{theorem:existence} with $\mathcal T = \mathcal R = 1$ implies for all~$n$ the existence of a solution to
     \[
-        \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \qquad
-        \vect x(t_n) = \vect x_*(t_n).
+        \left \{
+        \begin{aligned}
+            & \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
+            & \vect x(t_n) = \vect x_*(t_n).
+        \end{aligned}
+        \right.
     \]
     over the time interval $[t_n - T, t_n + T]$, where $T > 0$ depends only on, $M$ and $L$.
-    But then, for~$n$ sufficiently large, 
-    this solution extends beyond $T_+$, 
+    But then, for~$n$ sufficiently large,
+    this solution extends beyond $T_+$,
     which is a contradiction.
+    An analogous reasoning can be employed for~$T_-$.
 \end{proof}
+\begin{example}
+    Consider the ODE
+    \[
+        \left \{
+        \begin{aligned}
+            & \dot x = x^2, \\
+            & x(0) = 1.
+        \end{aligned}
+        \right.
+    \]
+    The maximal solution is $x_* \colon (-\infty, 1) \to \real$ given by
+    \[
+        \vect x_*(t) = \sqrt{\frac{1}{1-t}}.
+    \]
+\end{example}
+
+In certain settings,
+it is possible to prove the maximal solution to~\eqref{eq:ode_integral} is globally defined.
+We discuss two important examples.
+\begin{itemize}
+    \item
+        The first case is when $\vect f\colon \real \times \real^n$ is globally Lipschitz in its second argument,
+        with a Lipschitz constant that depends continuously on the first argument.
+
+    \item
+        The second case is when $\vect f$ is independent of~$t$ and there is a function~$W \in C^1(\real^n)$ such that~$W(\vect x) \to \infty$ in the limit as $\vecnorm{\vect x} \to \infty$
+        and
+        \[
+            \forall \vect x \in \real^n, \qquad
+            \nabla W(\vect x) \cdot \vect f(\vect x) \leq c < \infty
+        \]
+        Such a function is called a \emph{Lyapunov function}.
+\end{itemize}
+The strategy of proof for global existence usually relies on an argument by contradiction.
+Consider for example the second setting.
+Since the assumptions of~\cref{corollary:maximal_solutions} are satisfied,
+there exists a maximal solution $\vect x_*\colon (T_-, T_+) \to \infty$.
+Assume for contradiction that~$T_+$ is finite.
+Then the third item in~\cref{corollary:maximal_solutions} implies that $\lim_{t \to T_+} \vecnorm{\vect x_*(t)} \to \infty$,
+and so~$W\bigl(\vect x_*(t)\bigr)$ blows up as~$t$ approaches $T^+$.
+On the other hand, we have
+\[
+    \frac{\d}{\d t} W\bigl(\vect x_*(t)\bigr) = \nabla W\bigl(\vect x_*(t)\bigr) \cdot \vect f\bigl(\vect x_*(t)\bigr) \leq c.
+\]
+Therefore $\lim_{t \to T_+} W\bigl(\vect x_*(t)\bigr) \leq W\bigl(\vect x_*(0)\bigr) + \lvert c \rvert (T_+ - t_0)$,
+which is a contradiction.
+
+\section{One-step methods}
+\label{sec:one-step_methods}
+From now on, we assume for simplicity that $t_0 = 0$,
+and we consider the initial value problem~\eqref{eq:ode} over the interval $[0, T]$.
+Most numerical methods for ODEs construct an approximation of the solution at discrete points:
+\[
+    \vect x_n \approx \vect x(t_n), \qquad n = 0, 1, 2, \dotsc.
+\]
+The discretization points $(t_n)_{n \in \nat}$ are commonly equidistant,
+i.e.~$t_n = n h$ where $h$ is the \emph{discretization step}.
+We begin in~\cref{sub:explicit_euler} by studying the simplest one-step method,
+and then in~\cref{sub:one_step_general} we briefly discuss more general methods.
+
+\subsection{Explicit Euler method}
+\label{sub:explicit_euler}
+Assume that~\eqref{eq:ode} has a unique solution~$\vect x(t)$ over the interval $[0, T]$.
+If $\vect x(t)$ is twice continuously differentiable,
+then by Taylor's formula,
+we have
+\[
+    \vect x(t + h) = \vect x(t) + h \vect f(t, \vect x) + \frac{h^2}{2} \vect x''(\xi),
+    \qquad \xi \in (t, t+h).
+\]
+This motivates a method known as the \emph{explicit Euler} or \emph{forward Euler} method:
+\[
+    \vect x_{n+1} = \vect x_{n} + h \vect f(t_n, \vect x_n),
+\]
+with the same initial condition as for the continuous equation~\eqref{eq:ode}.
+
+\begin{theorem}
+    [Convergence of the explicit Euler]
+    Assume there is $L \in \real_{>0}$ such that
+    \begin{equation}
+        \label{eq:global_lipschitz}
+        \forall (t, \vect x, \vect y) \in \real \times \real^n \times \real^n, \qquad
+        \vecnorm{\vect f(t, \vect x) - \vect f(t, \vect y)}
+        \leq L \vecnorm{\vect x - \vect y}.
+    \end{equation}
+    Suppose in addition that there exists a unique, twice continuously differentiable and globally defined solution to~\eqref{eq:ode},
+    and let
+    \[
+        M = \sup_{t \in [0,T]} \vecnorm{\vect x''(t)}
+    \]
+    Then the following error estimate holds:
+    \[
+        \forall n \in \nat,
+        \qquad
+        \vecnorm{\vect x(t_n) - \vect x_n}
+        \leq
+    \]
+\end{theorem}
+\begin{proof}
+    Notice that
+    \begin{align*}
+        \label{eq:error_propagation}
+        \vect x(t_{n}) - \vect x_{n-1}
+        &= \Bigl( \vect x(t_{n-1}) + h \, f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{h^2}{2} \vect x''(\xi) \Bigr)
+        - \Bigl( \vect x_n + h \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
+        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + h \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{h^2}{2} \vect x''(\xi).
+    \end{align*}
+    Let $\vect e_n = \vect x(t_n) - \vect x_n$.
+    The first term is the error at iteration~$n$,
+    and the second may be bounded from~\eqref{eq:global_lipschitz},
+    which gives
+    \begin{align*}
+        \vecnorm{\vect e_{n}}
+        &\leq (1 + hL) \vecnorm{\vect e_{n-1}}
+        + \frac{h^2}{2} M  \\
+        &\leq (1 + hL) \left( (1 + hL) \vecnorm{\vect e_{n-2}} + \frac{h^2}{2} M \right)
+        + \frac{h^2}{2} M \\
+        &\leq \dotsc
+        \leq (1 + hL)^{n} \vecnorm{\vect e_{0}} + \frac{h^2}{2} M \sum_{i=0}^{n-1} (1 + hL)^i.
+    \end{align*}
+    The first term is zero, and in order to bound the second term,
+    notice that
+    \[
+        \forall i \in \{0, \dotsc, n\}, \qquad
+        (1 + hL)^i \leq \bigl(\exp(hL)\bigr)^i \leq \e^{t_n L}.
+    \]
+    Therefore we have
+    \[
+        \vecnorm{\vect e_{n}}
+        \leq \e^{t_n L} (1 + hL)^{n} \vecnorm{\vect e_{0}}
+    \]
+\end{proof}
+
+\subsection{General one-step methods}
+\label{sub:one_step_general}
