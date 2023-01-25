@@ -194,9 +194,10 @@ and the linear function~$x$ to the constant function~$1$,
 suggesting a resemblance with the differentiation operator.
 In order to further understand this connection,
 let us define the \emph{falling power} of a real number $x$ as
-\[
+\begin{equation}
+    \label{eq:falling_powers}
     x^{\underline{k}} = x (x-1) (x-2) \dots (x-k+1).
-\]
+\end{equation}
 We then have that
 \begin{align}
     \nonumber
@@ -1128,6 +1129,7 @@ orthogonal polynomials have distinct real roots.
 \end{proof}
 
 Next, we show that orthogonal polynomials satisfy a three-term recurrence relation.
+
 \begin{proposition}
     \label{proposition:three_term_recurrence}
     Assume that $\varphi_0, \varphi_1, \dotsc$ are orthonormal polynomials
@@ -1503,10 +1505,10 @@ We will revisit this subject in~\cref{cha:quadrature}.
         In order to show this equation,
         it is sufficient to prove that for any $n_* \in \nat$,
         the two sides of~\eqref{eq:more_general_agreement_interpolation} coincide for every $n \in \{0, \dotsc, n_*\}$.
-        Since $n^{\underline p} = 0$ for all $n \in \{0, \dotsc, p-1\}$,
+        Since $n^{\underline p} = 0$ for all $n \in \{0, \dotsc, p-1\}$ by definition~\eqref{eq:falling_powers} of the falling powers,
         the right-hand side of~\eqref{eq:more_general_agreement_interpolation} coincides for all $n \in \{0, \dotsc, n_*\}$ with
         \[
-            g(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \frac{n^{\underline{2}}}{2!} + \dotsb + \Delta^{n_*} f(0) \frac{n^{\underline {n_*}}}{{n_*}!}.
+            g(n) = f(0) + \Delta f(0) n + \Delta^2 f(0) \, \frac{n^{\underline{2}}}{2!} + \dotsb + \Delta^{n_*} f(0) \, \frac{n^{\underline {n_*}}}{{n_*}!}.
         \]
         We recognize on the right-hand side Newton's expression of the interpolating polynomial through the points $\bigl(0, f(0)\bigr), \dotsc, \bigl(n_*, f(n_*)\bigr)$,
         and so $g(n) = f(n)$ for all $n \in \{0, \dotsc, n_*\}$,

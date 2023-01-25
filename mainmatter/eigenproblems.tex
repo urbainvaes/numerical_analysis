@@ -401,7 +401,7 @@ which are \emph{orthonormal} and span the same subspace of $\complex^n$ as the o
     \]
     It is simple to check that $\vect q$ is indeed orthogonal to the columns of~$\mat Q$,
     which concludes the proof.
-    Note that~$\mat Q_{p-1} \mat Q_{p-1}^* \vect x_p$ is the orthogonal projection of~$\vect x_p$ onto the subspace spanned by the column of~$\mat Q_{p-1}$.
+    Note that~$\mat Q_{p-1} \mat Q_{p-1}^* \vect x_p$ is the orthogonal projection of~$\vect x_p$ onto the subspace spanned by the columns of~$\mat Q_{p-1}$.
 \end{proof}
 Note that the columns of the matrix~$\mat Q$ of the decomposition coincide with the vectors that
 would be obtained by applying the Gram--Schmidt method to the columns of the matrix~$\mat X$.
@@ -886,7 +886,7 @@ we have
     \subset \mathcal K_{j+1}(\mat A, \vect u_1)
     = \mathcal K_j(\mat A, \vect u_1).
 \]
-Therefore, applying the Rayleigh--Ritz with $\mathcal U = \Span \{ \vect u_1, \dotsc, \vect u_j \}$ yields exact eigenpairs~\cref{proposition:invariant_subpsace_ritz}.
+Therefore, applying the Rayleigh--Ritz with $\mathcal U = \Span \{ \vect u_1, \dotsc, \vect u_j \}$ yields exact eigenpairs in view of~\cref{proposition:invariant_subpsace_ritz}.
 If the iteration does not break down then,
 by construction,
 the vectors $\{\vect u_1, \dotsc, \vect u_p\}$ at the end of the algorithm are orthonormal.

@@ -41,7 +41,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
 \begin{figure}
     \centering
     \begin{tikzpicture}
-        \begin{axis}[domain=-1:1,legend pos=outer north east, samples=500, width=\linewidth, height=.4\linewidth,cycle list name=exotic]
+        \begin{axis}[domain=-1:1,legend pos=outer north east, samples=500, width=.8\linewidth, height=.4\linewidth,cycle list name=exotic]
             \addplot +[mark=none, line width=2pt] {cos(0*acos(x))};
             \addplot +[mark=none, line width=2pt] {cos(1*acos(x))};
             \addplot +[mark=none, line width=2pt] {cos(2*acos(x))};

@@ -6,32 +6,42 @@
 \dominitoc
 
 \newif\iftitleincluded\titleincludedfalse
-\include{frontmatter/title}
-
+\newif\ifenpc\enpctrue
+\ifenpc
+\include{frontmatter/title_enpc}
 \frontmatter
 \include{frontmatter/license}
-\include{frontmatter/syllabus}
+\include{frontmatter/syllabus_enpc}
+\include{frontmatter/acknowledgements}
+\include{frontmatter/notations}
+\else
+\include{frontmatter/title_nyu}
+\frontmatter
+\include{frontmatter/license}
+\include{frontmatter/syllabus_nyu}
 \include{frontmatter/acknowledgements}
 \include{frontmatter/notations}
 \include{frontmatter/list_of_proofs}
+\fi
 
 \iftitleincluded
 \tableofcontents
 \fi
 
 \mainmatter
-\include{mainmatter/introduction}
-\include{mainmatter/roundoff}
-\include{mainmatter/interpolation_approximation}%
-\include{mainmatter/numerical_integration}%
-\include{mainmatter/linear_equations}
-\include{mainmatter/nonlinear_equations}
-\include{mainmatter/eigenproblems}
+% \include{mainmatter/introduction}
+% \include{mainmatter/roundoff}
+% \include{mainmatter/interpolation_approximation}
+% \include{mainmatter/numerical_integration}
+% \include{mainmatter/linear_equations}
+% \include{mainmatter/nonlinear_equations}
+% \include{mainmatter/eigenproblems}
+\include{mainmatter/odes}
 
 \appendix
 \include{mainmatter/matrices}
 \include{mainmatter/julia}
 \include{mainmatter/chebyshev}
 
-\include{mainmatter/references}%
+\include{mainmatter/references}
 \end{document}

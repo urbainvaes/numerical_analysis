@@ -48,20 +48,19 @@ The rest of this chapter is organized as follows.
     \item
         In \cref{sec:encoding_of_floating_point_numbers},
         we briefly present how floating point numbers are encoded
-        according to the IEEE 754 standard, widely accepted today.
+        according to the IEEE 754 standard, which is widely adopted today.
         We discuss also the encoding of special values such as \texttt{Inf}, \texttt{-Inf} and \texttt{NaN}.
 
     \item
         Finally, in \cref{sec:what_about_integer_formats},
         we present the standard integer formats and their encoding.
 \end{itemize}
-In order to completely describe floating-point arithmetic,
+In order to completely describe computer arithmetic,
 one would in principle need to also discuss the conversion mechanisms between different number formats,
 as well as a number of edge cases.
 % For instance, the reference IEEE 754 standard specifies that \texttt{NaN == NaN} must evaluate to \texttt{false},
 % which is somewhat arbitrary but may be useful in some situations.
-Needless to say,
-a comprehensive discussion of the subject is beyond the scope of this course;
+A comprehensive discussion of the subject is beyond the scope of this course;
 our aim in this chapter is only to introduce the key concepts.
 
 \section{Binary representation of real numbers}%
@@ -569,7 +568,7 @@ are determined from the following rules:
     \item Either $E > E_{\min}$ and $b_0 = 1$;
     \item Or $E = E_{\min}$, in which case the leading bit may be 0.
 \end{itemize}
-The following result proves that these rules define the exponent and significand uniquely.
+The following result proves that these rules enable to define the exponent and significand of a number in a set of floating point numbers uniquely.
 \begin{proposition}
     \label{prop:uniqueness_standard_representation}
     Assume that

@@ -270,52 +270,9 @@ For such a function, it is possible to prove that~\eqref{eq:fixed_point} has a u
     \end{equation}
 \end{theorem}
 \begin{proof}
-    We prove first existence of the fixed point,
-    then uniqueness, and finally~\eqref{eq:global_exp}.
-
-    \noindent\textbf{Existence.}
-    It holds that
-    \[
-        \norm[big]{\vect x_{k+2} - \vect x_{k+1}}
-        = \norm[big]{\vect F(\vect x_{k+1}) - \vect F(\vect x_k)}
-        \leq L\norm{\vect x_{k+1} - \vect x_k}
-        \leq \dots \leq L^{k+1} \norm{\vect x_{1} - \vect x_0}.
-    \]
-    Therefore, for any $n \geq m$,
-    we have by the triangle inequality
-    \begin{align*}
-        \norm{\vect x_{n} - \vect x_{m}}
-        &\leq \norm{\vect x_{n} - \vect x_{n-1}} + \dotsb + \norm{\vect x_{m+1} - \vect x_{m}} \\
-        &\leq (L^{n-1} + \dotsb + L^{m}) \norm{\vect x_{1} - \vect x_0}
-        \leq L^{m} (1 + L + \dotsb) \norm{\vect x_{1} - \vect x_0}
-        = \frac{L^{m}}{1-L} \norm{\vect x_{1} - \vect x_0}.
-    \end{align*}
-    It follows that the sequence $(\vect x_k)_{k\geq0}$ is Cauchy in $\real^n$,
-    implying by completeness that $\vect x_k \to \vect x_*$ in the limit as $k \to \infty$,
-    for some limit $\vect x_* \in \real^n$.
-    Being a contraction, the function $\vect F$ is continuous,
-    and so taking the limit~$k \to \infty$ in~\eqref{eq:fixed_point}, we obtain that
-    \[
-        \vect x_* = \lim_{k \to \infty} \vect x_{k+1}
-        = \lim_{k \to \infty} \vect F(\vect x_k)
-        = \vect F \left( \lim_{k \to \infty} \vect x_k \right)
-        = \vect F(\vect x_*).
-    \]
-    In other words, $\vect x_*$ is a fixed point of~$\vect F$.
-
-    \vspace{.2cm}
-    \noindent\textbf{Uniqueness.}
-    Assume that $\vect y_*$ is another fixed point.
-    Then,
-    \begin{equation*}
-        \norm[big]{\vect y_* - \vect x_{*}}
-        = \norm[big]{\vect F(\vect y_*) - \vect F(\vect x_{*})}
-        \leq L \norm{\vect y_* - \vect x_*},
-    \end{equation*}
-    which implies that $\vect y_* = \vect x_*$ since $L < 1$.
-
-    \vspace{.2cm}
-    \noindent\textbf{Global exponential convergence.}
+    Existence and uniqueness of the fixed point follows from the \emph{Banach fixed point theorem},
+    see~\cref{theorem:banach_fixed_point},
+    so here we show only global exponential convergence.
     Since $\vect F$ is a contraction,
     it holds that
     \begin{equation}
@@ -1000,7 +957,7 @@ The methods we consider are the following:
             x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)} = x_k - \frac{x_k^2 - 2}{2x_k} = \frac{1}{2} \left(x_k + \frac{2}{x_k} \right)
             =: F(x_k),
         \]
-        with 
+        with
         \[
             F(x) = \frac{1}{2} \left(x + \frac{2}{x} \right).
         \]
@@ -1077,7 +1034,7 @@ which is consistent with quadratic convergence.
          \\ \hline
          \# Correct digits $i = 6$ & 1 & 53 & 48
          \\ \hline
-         \# Correct digits $i = 7$ & 1 & 107 & 97 
+         \# Correct digits $i = 7$ & 1 & 107 & 97
          \\ \hline
          \# Correct digits $i = 8$ & 1 & 214 & 196
          \\ \hline

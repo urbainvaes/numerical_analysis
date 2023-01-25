@@ -130,16 +130,17 @@ there exist positive real numbers~$c_{\ell}$ and $c_u$ such that
     \leq \norm{\vect x}_{\beta}
     \leq c_u \norm{\vect x}_{\alpha}.
 \end{equation}
+As the terminology indicates, norm equivalence is an \emph{equivalence relation}.
 When working with norms on finite-dimensional vector spaces,
 it is important to keep in mind the following result.
-The proof is provided for information purposes.
+The proof is provided for information purposes only.
 \begin{proposition}
     Assume that $\mathcal X$ is a finite-dimensional vector space.
     Then all the norms defined on~$\mathcal X$ are pairwise equivalent.
 \end{proposition}
 \begin{proof}
     Let $(\vect e_1, \dotsc, \vect e_n)$ be a basis of $\mathcal X$.
-    Any $\vect x \in \mathcal X$ admits a unique representation in the basis as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
+    Any $\vect x \in \mathcal X$ admits a unique representation in this basis as $\vect x = \lambda_1 \vect e_1 + \dotsb + \lambda_n \vect e_n$.
     We will show that any norm $\norm{\placeholder}$ on~$\mathcal X$ is equivalent to the norm $\norm{\placeholder}_*$ given by
     \begin{equation}
         \label{eq:norm_star}
@@ -153,7 +154,7 @@ The proof is provided for information purposes.
         &\leq \Bigl(\abs{\lambda_1} + \dotsb + \abs{\lambda_n}\Bigr) \,
         \max \Bigl\{\norm{\vect e_1}, \dotsc, \norm{\vect e_n}\Bigr\} \\
         \label{eq:norm_equivalence_one}
-        &= \norm{\vect x}_* \max \Bigl\{\norm{\vect e_1}_{\alpha}, \dotsc, \norm{\vect e_n}\Bigr\}.
+        &= \norm{\vect x}_* \max \Bigl\{\norm{\vect e_1}, \dotsc, \norm{\vect e_n}\Bigr\}.
     \end{align}
     It remains to show that
     there exists a positive constant $\ell$ such that
@@ -166,7 +167,7 @@ The proof is provided for information purposes.
     To this end, we reason by contradiction.
     If this inequality were not true,
     then there would exist a sequence $(\vect x^{(i)})_{i \in \nat}$ such
-    that~$\norm{\vect x^{(i)}} \to 0$ as $i \to \infty$ but $\bigl\lvert \lambda_1^{(i)} \bigr\rvert + \dotsb + \bigl\lvert \lambda_n^{(i)} \bigr\rvert = 1$ for all~$i \in \nat$.
+    that~$\norm{\vect x^{(i)}} \to 0$ as $i \to \infty$ and $\norm{\vect x^{(i)}}_* = 1$ for all~$i \in \nat$.
     Since~$\lambda_1^{(i)} \in [-1, 1]$ for all~$i \in \nat$,
     we can extract a subsequence, still denoted by~$(\vect x^{(i)})_{i \in \nat}$ for simplicity,
     such that the corresponding coefficient $\lambda_1^{(i)}$ satisfies $\lambda_1^{(i)} \to \lambda_1^* \in [-1, 1]$,
@@ -207,13 +208,13 @@ if there exists $\vect x_* \in \mathcal X$ such that
     \norm{\vect x_n - \vect x_*} \to 0 \quad \text{ in the limit $n \to \infty$. }
 \]
 In this case,
-we write or $\lim_{n \to \infty} \vect x_n = \vect x_*$ or $\vect x_n \to \vect x_*$.
+we write $\lim_{n \to \infty} \vect x_n = \vect x_*$ or $\vect x_n \to \vect x_*$.
 \begin{definition}[Cauchy sequence]
     A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is said to be Cauchy if for every $\varepsilon > 0$,
     there exists $N \in \nat$ such that
     \[
         \forall m,n \geq N, \qquad
-        \norm{\vect x_n - \vect x_m} \geq \varepsilon.
+        \norm{\vect x_n - \vect x_m} \leq \varepsilon.
     \]
     The normed vector space $(\mathcal X, \norm{\placeholder})$ is called complete if every Cauchy sequences is convergent.
 \end{definition}
@@ -228,21 +229,23 @@ but the converse is not always true.
         \norm{f} = \int_{-1}^{1} \abs{f(x)} \, \d x.
     \]
     The sequence of functions $(f_n)_{n\geq 0}$ in~$\mathcal X$ given by
-    \[
+    \begin{equation}
+        \label{eq:example_non_complete}
         f_n(x) = x^{\frac{1}{2n+1}}
-    \]
+    \end{equation}
     is Cauchy but not convergent.
-    Indeed, assume by contradiction that there exists~$f_* \in C([-1, 1])$ such that
-    \[
+    Indeed, assume for contradiction that there exists~$f_* \in \mathcal X$ such that
+    \begin{equation}
+        \label{eq:example_non_complete_convergence}
         \norm{f_n - f_*} \xrightarrow[n \to \infty]{} 0.
-    \]
+    \end{equation}
     Then $f_*$ must necessarily coincide with sign function:
     \[
         {\rm sgn}(x)
         :=\begin{cases}
             -1 & \text{if } x < 0, \\
             0 & \text{if } x = 0, \\
-        1 & \text{if } x > 0. \end{cases}.
+        1 & \text{if } x > 0. \end{cases}
     \]
     However, this function is discontinuous,
     and so it does not belong to~$\mathcal X$,
@@ -263,6 +266,77 @@ This approach is used in~\cref{lemma:linear_inverse_neumann} and~\cref{exercise:
 \begin{exercise}
     Prove that every convergent sequence is Cauchy.
 \end{exercise}
+
+\section{Contraction mappings and the Banach fixed point theorem}
+Let $(\mathcal X, \norm{\placeholder})$ denote a normed space.
+A map $\phi\colon \mathcal X \to \mathcal X$ is called a contraction mapping if
+there is $L \in (0, 1)$ such that
+\[
+    \forall (x, y) \in \mathcal X \times \mathcal X, \qquad
+    \norm{\phi(x) - \phi(y)} \leq L \norm{x - y}.
+\]
+The importance of contraction mappings in this course stems from the following theorem.
+\begin{theorem}
+    [Banach fixed point theorem]
+    \label{theorem:banach_fixed_point}
+    Let $(\mathcal X, \norm{\placeholder})$ be a complete normed space,
+    and let~$\phi\colon \mathcal X \to \mathcal X$ be a contraction mapping.
+    Then $\phi$ has a unique fixed point in~$\mathcal X$.
+\end{theorem}
+\begin{proof}
+    We prove first existence and then uniqueness.
+
+    \noindent\textbf{Existence.}
+    Take $x_0 \in \mathcal X$,
+    and define the sequence $(x_k)_{k\in \nat}$ inductively by
+    \begin{equation}
+        \label{eq:inductive_sequence}
+        x_{k+1} = \phi(x_k).
+    \end{equation}
+    It holds that
+    \[
+        \norm[big]{x_{k+2} - x_{k+1}}
+        = \norm[big]{\phi(x_{k+1}) - \phi(x_k)}
+        \leq L\norm{x_{k+1} - x_k}
+        \leq \dots \leq L^{k+1} \norm{x_{1} - x_0}.
+    \]
+    Therefore, for any $n \geq m$,
+    we have by the triangle inequality
+    \begin{align*}
+        \norm{x_{n} - x_{m}}
+        &\leq \norm{x_{n} - x_{n-1}} + \dotsb + \norm{x_{m+1} - x_{m}} \\
+        &\leq (L^{n-1} + \dotsb + L^{m}) \norm{x_{1} - x_0}
+        \leq L^{m} (1 + L + \dotsb) \norm{x_{1} - x_0}
+        = \frac{L^{m}}{1-L} \norm{x_{1} - x_0}.
+    \end{align*}
+    It follows that the sequence $(x_k)_{k\geq0}$ is Cauchy in $\mathcal X$,
+    implying by completeness that $x_k \to x_*$ in the limit as $k \to \infty$,
+    for some limit $x_* \in \mathcal X$.
+    Being a contraction, the mapping $\phi$ is continuous,
+    and so taking the limit~$k \to \infty$ in~\eqref{eq:inductive_sequence}, we obtain that
+    \[
+        x_* = \lim_{k \to \infty} x_{k+1}
+        = \lim_{k \to \infty} \phi(x_k)
+        = \phi \left( \lim_{k \to \infty} x_k \right)
+        = \phi(x_*).
+    \]
+    In other words, $x_*$ is a fixed point of~$\phi$.
+
+    \vspace{.2cm}
+    \noindent\textbf{Uniqueness.}
+    Assume that $y_* \in \mathcal X$ is another fixed point.
+    Then,
+    \begin{equation*}
+        \norm[big]{y_* - x_{*}}
+        = \norm[big]{\phi(y_*) - \phi(x_{*})}
+        \leq L \norm{y_* - x_*},
+    \end{equation*}
+    which implies that $y_* = x_*$ since $L < 1$.
+\end{proof}
+\begin{remark}
+    % Notice that the vector space structure is not employed in the proof of~\cref{theorem:banach_fixed_point}.
+    The Banach fixed point theorem holds also in complete metric spaces.
+\end{remark}
 
 \section{Vector norms}%
 \label{sub:vector_norms}
@@ -613,9 +687,9 @@ we recall and prove the Courant--Fisher theorem.
     \]
 \end{theorem}
 \begin{proof}
-    Let $\vect v_1, \dotsc, \vect v_n$ be orthonormalized eigenvectors associated with the eigenvalues $\lambda_1, \dotsc, \lambda_n$.
-    Let $\mathcal S_k = \Span \{ \vect v_1, \dotsc, \vect v_k \}$.
-    Any $\vect x \in \mathcal S_k$ may be expressed as~$\vect x = \alpha_1 \vect v_1 + \dotsb + \alpha_k \vect v_k$,
+    Let $\vect v_1, \dotsc, \vect v_n$ be normalized and pairwise orthogonal eigenvectors associated with the eigenvalues $\lambda_1, \dotsc, \lambda_n$,
+    and let $\mathcal S_k = \Span \{ \vect v_1, \dotsc, \vect v_k \}$.
+    Any $\vect x \in \mathcal S_k$ may be expressed as a linear combination~$\vect x = \alpha_1 \vect v_1 + \dotsb + \alpha_k \vect v_k$,
     and so
     \[
         \forall \vect x \in \mathcal S_k, \qquad
