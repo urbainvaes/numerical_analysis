@@ -1,0 +1,269 @@
+\chapter{Numerical ordinary differential equations}
+\label{cha:odep}
+\minitoc
+
+\section*{Introduction}
+This chapter concerns the numerical solution of ordinary differential equations (ODEs) of the following form:
+\begin{equation}
+    \label{eq:ode}
+    \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \qquad
+    \vect x(t_0) = \vect x_0.
+\end{equation}
+Here $\vect f\colon \real \times \real^n \to \real$ and $\vect x_0$ is the initial condition.
+Equations of this type
+are the building blocks of a plethora mathematical models in science and engineering.
+They have applications in celestial dynamics, molecular simulation and fluid mechanics, to mention just a few.
+Ordinary differential equations also arise after discretization of time-dependent partial differential equations,
+which are also ubiquitous in science.
+The rest of chapter is organized as follows:
+\begin{itemize}
+    \item
+        In \cref{sec:existence},
+        we define precisely the notions of local and global solutions for the continuous-time problem~\eqref{eq:ode},
+        and we recall fundamental results concerning the existence and uniqueness of a solution.
+
+\end{itemize}
+
+\section{Analysis of the continuous problem}
+A differentiable function $\vect x\colon I \to \real^n$,
+where $I$ denotes an interval of $\real$ containing $t_0$,
+is a solution of~\eqref{eq:ode} to $\vect x(t_0) = \vect x_0$ and the equation~\eqref{eq:ode} is satisfied for all~$t \in I$.
+The solution is called global if~$I = \real$,
+and local otherwise.
+
+\paragraph{Integral formulation.}
+If $\vect x$ is a solution to~\eqref{eq:ode},
+then it holds that
+\begin{equation}
+    \label{eq:ode_integral}
+    \forall  t \in I, \qquad
+    \vect x(t) = \vect x_0 + \int_{t_0}^{t} \vect f\bigl(s, \vect x(s)\bigr) \, \d s.
+\end{equation}
+The converse statement is not true in general,
+because a solution to~\eqref{eq:ode_integral} need not necessarily be differentiable.
+However, if the integral formulation~\eqref{eq:ode_integral} holds,
+then necessarily $\vect x$ is absolutely continuous
+and~\eqref{eq:ode} is satisfied for almost every~$t$.
+Additionally, if~\eqref{eq:ode_integral} is satisfied and the function~$\vect f$ is continuous,
+then the function~$s \mapsto \vect f\bigl(s, \vect x(s)\bigr)$ is continuous,
+and so~\eqref{eq:ode} is satisfied for all $t \in I$ by the fundamental theorem of analysis.
+
+\label{sec:existence}
+\begin{theorem}
+    [Existence of a solution]
+    \label{theorem:existence}
+    Let $\vect x_0 \in \real^n$ and let $\Omega_{\mathcal T, \mathcal R}$ denote the set
+    \[
+        \bigl\{(t, \vect x) \in \real \times \real^n: \abs{t-t_0} \leq \mathcal T \text{ and } \vecnorm{\vect x - \vect x_0} \leq \mathcal R \bigr\},
+    \]
+    Assume that the following conditions are satisfied:
+    \begin{itemize}
+        \item
+            The function $\vect f$ is uniformly bounded on~$\Omega_{\mathcal T, \mathcal R}$:
+            \begin{equation}
+                \label{eq:boundedness_ode}
+                \forall (t, \vect x) \in \Omega_{\mathcal T, \mathcal R}, \qquad
+                \vecnorm{\vect f(t, \vect x)} \leq M.
+            \end{equation}
+
+        \item
+            The function $\vect f$ satisfies the following Lipschitz condition:
+            there is $L > 0$ such that
+            \begin{equation}
+                \label{eq:local_lipschitz_ode}
+                \forall \bigl((t, \vect x_1), (t, \vect x_2)\bigr) \in \Omega_{\mathcal T, \mathcal R} \times \Omega_{\mathcal T, \mathcal R}, \qquad
+                \vecnorm{ \vect f(t, \vect x_1) - \vect f(t, \vect x_2) } \leq L \vecnorm{\vect x_1 - \vect x_2}.
+            \end{equation}
+    \end{itemize}
+    Then there exists $T \in (0, \mathcal T]$ depending on $\mathcal R$, $M$ and $L$ such that
+    the differential equation~\eqref{eq:ode_integral} has a local solution $\vect x\colon [t_0 - T, t_0 + T] \to \real^n$.
+\end{theorem}
+\begin{proof}
+    Fix $T \in (0, \mathcal T]$ and let $I = [t_0 - T, t_0 + T]$.
+    Let also $\mathcal X$ denote the following subset of continuous functions defined from~$I$ to $\real^n$:
+    \[
+    \mathcal X := \left\{ \vect x\in C\left(I, \real^n\right) : \sup_{t \in I} \norm[\big]{\vect x(t) - \vect x_0} \leq \mathcal R \right\}
+    \]
+    The set~$\mathcal X$ endowed with supremum metric is a closed subset of~$C(I, \real^n)$.
+    Since $\mathcal X$ is a closed subset of a complete metric space,
+    it is itself complete.
+    Let $\Phi \colon \mathcal X \to C(I, \real^n)$ denote the mapping
+    \[
+        \Phi(\vect x) \colon  t \mapsto  \vect x_0 + \int_{0}^{t} \vect f\bigl(s, \vect x(s)\bigr) \, \d s.
+    \]
+    The right-hand side, being the integral of a bounded function,
+    is indeed a continuous function.
+    We will show that, for~$T$ sufficiently small,
+    \begin{itemize}
+        \item the mapping $\Phi$ maps $\mathcal X$ into $\mathcal X$;
+        \item the mapping $\Phi$ is a contraction.
+    \end{itemize}
+    From~\eqref{eq:boundedness_ode},
+    it follows that
+    \[
+        \forall \vect x \in \mathcal X, \qquad
+        \forall t \in I, \qquad
+        \vecnorm*{\Phi(\vect x)(t) - \vect x_0} = \vecnorm*{ \int_{t_0}^{t} \vect f\bigl(s, \vect x(s)\bigr) \, \d s }
+        \leq M T.
+    \]
+    On the other hand, from the Lipschitz condition~\eqref{eq:local_lipschitz_ode},
+    it holds that
+    \[
+        \forall (\vect x, \vect v) \in \mathcal X \times \mathcal X, \qquad
+        \norm{\Phi(\vect x) - \Phi(\vect v)} \leq 2 L T.
+    \]
+    Therefore, it suffices to take $T \leq \min \left\{ \mathcal T, \frac{\mathcal R}{M}, \frac{2}{L} \right\}$ to ensure that the above conditions are satisfied.
+    For a value of~$T$ in this range,
+    the Banach fixed point theorem, \cref{theorem:banach_fixed_point},
+    gives the existence of a unique fixed point~$\vect x_* \in \mathcal X$ of~$\Phi$.
+    Since a fixed point of~$\Phi$ is a solution to~\eqref{eq:ode_integral},
+    the statement is proved.
+\end{proof}
+It may seem at first glance that uniqueness of the solution to~\eqref{eq:ode_integral} follows from the uniqueness of the fixed point guaranteed by~\cref{theorem:banach_fixed_point}.
+However, this theorem implies uniqueness \emph{only in the set~$\mathcal X$},
+a property known as~\emph{conditional uniqueness}.
+In order to prove that the solution is unique over the full space $C([t_0-T, t_0+T], \real^n)$,
+additional arguments are required.
+A simple approach is to rely on Gr\"onwall's lemma.
+\begin{lemma}
+    [Gr\"onwall's lemma, simplified integral form]
+    Suppose that $u \colon [t_0-T, t_0+T] \to \real_{\geq 0}$ is continuous, nonnegative, and satisfies
+    \begin{equation}
+        \label{eq:gronwall_condition}
+        \forall t \in [t_0, t_0+T], \qquad
+        u(t) \leq \alpha + \int_{t_0}^{t} \beta(s) \, u(s) \, \d s,
+    \end{equation}
+    where $\alpha \geq 0$ and $\beta\colon [t_0, t_0 + T] \to \real_{\geq 0}$ is continuous and nonnegative.
+    Then
+    \begin{equation}
+        \label{eq:gronwall}
+        \forall t \in [t_0, t_0+T], \qquad
+        u(t) \leq \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right).
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    Assume first that~$\alpha > 0$,
+    so that the logarithm in~\eqref{eq:intermediate_gronwall} is well-defined.
+    By the fundamental theorem of calculus and~\eqref{eq:gronwall_condition},
+    it holds that
+    \[
+        \frac{\d}{\d t} \left( \alpha + \int_{t_0}^{t} \beta(s) \, u(s) \, \d s \right)
+        \leq \beta(t) \left( \alpha + \int_{t_0}^{t} \beta(s) \, u(s) \, \d s \right)
+    \]
+    Therefore we have
+    \begin{equation}
+        \label{eq:intermediate_gronwall}
+        \frac{\d}{\d t} \log \left( \alpha + \int_{t_0}^{t} \beta(s) \, u(s) \, \d s \right) \leq \beta(t),
+    \end{equation}
+    and after integrating and exponentiating,
+    we obtain
+    \[
+        \alpha + \int_{t_0}^{t} \beta(s) \, u(s) \, \d s
+        \leq \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right)
+    \]
+    The statement then follows by using~\eqref{eq:gronwall_condition} again.
+    If~\eqref{eq:gronwall_condition} is satisfied for~$\alpha = 0$,
+    then this condition is also satisfied for all $\alpha > 0$.
+    Therefore~\eqref{eq:gronwall} also holds for all~$\alpha > 0$,
+    and taking the limit $\alpha \to 0$ in this equation,
+    we obtain the statement.
+\end{proof}
+Note that the estimate~\eqref{eq:gronwall} is sharp,
+since the function $v \colon [t_0, t_0 + T]$ given by
+\[
+    v(t) = \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right)
+\]
+satisfies~\eqref{eq:gronwall_condition} with inequality.
+We are now ready to prove uniqueness.
+\begin{theorem}
+    [Uniqueness of the solution]
+    \label{theorem:uniqueness}
+    Let $\vect x_0 \in \real^n$ and let
+    \[
+        \Omega_{\mathcal T, \mathcal R}
+        \bigl\{(t, \vect x) \in \real \times \real^n: \abs{t - t_0} \leq \mathcal T \text{ and } \vecnorm{\vect x - \vect x_0} \leq \mathcal R \bigr\},
+    \]
+    Assume that for all $\mathcal T \in \real_{>0}$ and $\mathcal R \in \real_{>0}$,
+    there is $L_{\mathcal T,  \mathcal R}$ such that
+    \begin{equation}
+        \label{eq:local_lipschitz_uniqueness}
+        \forall \bigl((t, \vect x_1), (t, \vect x_2)\bigr) \in \Omega_{\mathcal T, \mathcal R} \times \Omega_{\mathcal T, \mathcal R}, \qquad
+        \vecnorm{ \vect f(t, \vect x_1) - \vect f(t, \vect x_2) } \leq L_{\mathcal T, \mathcal R} \vecnorm{\vect x_1 - \vect x_2}.
+    \end{equation}
+    Then if $\vect x_1$ and $\vect x_2$ in $C\bigl([t_0 - T, t_0 + T], \real^n\bigr)$ are local solutions to~\eqref{eq:ode_integral},
+    it holds that $\vect x_1 = \vect x_2$.
+\end{theorem}
+\begin{proof}
+    Let~$I = [t_0 - T, t_0 + T]$ and
+    \[
+        R := \max \left\{ \sup_{t \in I} \norm{\vect x_1(t) - \vect x_0},   \sup_{t \in I} \norm{\vect x_1(t) - \vect x_0} \right\} < \infty,
+    \]
+    If $\vect x_1$ and $\vect x_2$ are solutions,
+    then
+    \[
+        \forall t \in [t_0 - T, t_0 + T], \qquad
+        \vect x_1(t) - \vect x_2(t) = \int_{t_0}^{t} \Bigl( f\bigl(s, \vect x_1(s)\bigr) - f\bigl(s, \vect x_2(s)\bigr) \Bigr)  \, \d s.
+    \]
+    Taking the norm and using~\eqref{eq:local_lipschitz_uniqueness},
+    we obtain
+    \[
+        \forall t \in [t_0, t_0 + T], \qquad
+        \vecnorm{\vect x_1(t) - \vect x_2(t)} \leq L_{T,R} \int_{t_0}^{t} \vecnorm{\vect x_1(s) - \vect x_2(s)} \, \d s
+    \]
+    Using Gr\"onwall's lemma,
+    we deduce that~$\vect x_1(t) = \vect x_2(t)$ for all $t \in [t_0, t_0 + T]$.
+    A similar argument can be employed to show that $\vect x_1 = \vect x_2$ on $[t_0 - T, t_0]$.
+\end{proof}
+
+\begin{corollary}
+    [Maximal solutions]
+    Assume that $f$ is continuous in~$t$ and satisfies the Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
+    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
+    \begin{itemize}
+        \item
+            there exists a solution $\vect x_* \colon (T_-, T_+) \to \real^n$ to~\eqref{eq:ode_integral};
+
+        \item
+            if $\vect x\colon I \to \real^n$ is a local solution of~\eqref{eq:ode_integral},
+            then $I \subset (T_-, T_+)$ and $\vect x(t) = \vect x_*(t)$ for all $t \in I$.
+
+        \item
+            If $T_+$ is finite, then $\lim_{t \to T_+} \vecnorm[\big]{\vect x(t)} = \infty$,
+            and if $T_-$ is finite, 
+            then $\lim_{t \to T_-} \vecnorm[\big]{\vect x(t)} = \infty$.
+    \end{itemize}
+    The solution $\vect x_*$ is called the maximal solution of~\eqref{eq:ode_integral}.
+\end{corollary}
+\begin{proof}
+    Let $\mathcal I$ denote the union of all the open intervals~$I$ such that there exists a solution in~$C(I, \real^n)$ to~\eqref{eq:ode_integral}.
+    The open set $\mathcal I$ is connected and, by~\cref{theorem:existence},
+    it contains a neighborhood of~$t_0$.
+    Therefore $\mathcal I$ is of the form $(T_-, T_+)$,
+    where $0 \leq T_- <  t_0 < T_+ \leq \infty$.
+    In view of~\cref{theorem:uniqueness},
+    all the local solutions can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$. 
+    It remains to prove the third item.
+    To this end, suppose for contradiction that $T_+$ was finite and that 
+    there was $(t_n)_{n \in \nat}$ such that $t_n \to T_+$ and~
+    \[
+        K := \sup_{n \in \nat} \vecnorm{\vect x_*(t_n)} < \infty.
+    \]
+    Since $f$ is continuous,
+    there is $M$ such that $\lvert f(t, \vect x) \rvert$ is uniformly bounded from above by~$M$ for all $(t, \vect x) \in [T_- - 1, T_+ + 1] \times B_{K+1}(\vect 0)$.
+    Furthermore, by the assumption~\eqref{eq:local_lipschitz_uniqueness},
+    there is $L$ such that for all $t \in [T_- - 1, T_+ + 1]$,
+    the following Lipschitz condition holds:
+    \[
+        \forall (\vect x_1, \vect x_2) \in  \times B_{K+1}(\vect 0) \times B_{K+1}(\vect 0), \qquad
+        \vecnorm{ \vect f(t, \vect x_1) - \vect f(t, \vect x_2) } \leq L \vecnorm{\vect x_1 - \vect x_2}.
+    \]
+    Consequently, \cref{theorem:existence} with $\mathcal T = \mathcal R = 1$ implies for all~$n$ the existence of a solution to
+    \[
+        \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \qquad
+        \vect x(t_n) = \vect x_*(t_n).
+    \]
+    over the time interval $[t_n - T, t_n + T]$, where $T > 0$ depends only on, $M$ and $L$.
+    But then, for~$n$ sufficiently large, 
+    this solution extends beyond $T_+$, 
+    which is a contradiction.
+\end{proof}
