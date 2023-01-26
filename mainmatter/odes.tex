@@ -228,8 +228,9 @@ We are now ready to prove uniqueness.
 \begin{corollary}
     [Maximal solutions]
     \label{corollary:maximal_solutions}
-    Assume that $f$ is continuous in~$t$ and satisfies the local Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
-    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
+    Assume that $\vect f$ is continuous in~$t$ and satisfies the local Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
+    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and 
+    the following properties are satisfied.
     \begin{itemize}
         \item
             there exists a solution $\vect x_* \colon (T_-, T_+) \to \real^n$ to~\eqref{eq:ode_integral};
@@ -259,7 +260,7 @@ We are now ready to prove uniqueness.
     \[
         K := \sup_{n \in \nat} \vecnorm{\vect x_*(t_n)} < \infty.
     \]
-    Since $f$ is continuous,
+    Since $\vect f$ is continuous,
     there is $M$ such that $\lvert f(t, \vect x) \rvert$ is uniformly bounded from above by~$M$ for all $(t, \vect x) \in [T_- - 1, T_+ + 1] \times B_{K+1}(\vect 0)$.
     Furthermore, by the assumption~\eqref{eq:local_lipschitz_uniqueness},
     there is $L$ such that for all $t \in [T_- - 1, T_+ + 1]$,
@@ -300,15 +301,26 @@ We are now ready to prove uniqueness.
 \end{example}
 
 In certain settings,
-it is possible to prove the maximal solution to~\eqref{eq:ode_integral} is globally defined.
-We discuss two important examples.
+it is possible to prove the maximal solution to~\eqref{eq:ode_integral} is globally defined for any initial condition.
+We discuss a few important examples.
 \begin{itemize}
     \item
         The first case is when $\vect f\colon \real \times \real^n$ is globally Lipschitz in its second argument,
         with a Lipschitz constant that depends continuously on the first argument.
 
     \item
-        The second case is when $\vect f$ is independent of~$t$ and there is a function~$W \in C^1(\real^n)$ such that~$W(\vect x) \to \infty$ in the limit as $\vecnorm{\vect x} \to \infty$
+        The second case,
+        generalizing the first, 
+        is when the growth of~$\vect f(t, \placeholder)$ is at most affine:
+        \[
+            \forall (t, \vect x) \in \real \times \real^n, \qquad
+            \vecnorm{ \vect f(t, \vect x) } \leq C(t) + L(t) \vecnorm{ \vect x },
+        \]
+        with continuous constants~$C(t)$ and $L(t)$.
+        Note that 
+
+    \item
+        The third case is when $\vect f$ is independent of~$t$ and there is a function~$W \in C^1(\real^n)$ such that~$W(\vect x) \to \infty$ in the limit as $\vecnorm{\vect x} \to \infty$
         and
         \[
             \forall \vect x \in \real^n, \qquad
@@ -317,7 +329,7 @@ We discuss two important examples.
         Such a function is called a \emph{Lyapunov function}.
 \end{itemize}
 The strategy of proof for global existence usually relies on an argument by contradiction.
-Consider for example the second setting.
+Consider for example the third setting.
 Since the assumptions of~\cref{corollary:maximal_solutions} are satisfied,
 there exists a maximal solution $\vect x_*\colon (T_-, T_+) \to \infty$.
 Assume for contradiction that~$T_+$ is finite.
@@ -330,6 +342,36 @@ On the other hand, we have
 Therefore $\lim_{t \to T_+} W\bigl(\vect x_*(t)\bigr) \leq W\bigl(\vect x_*(0)\bigr) + \lvert c \rvert (T_+ - t_0)$,
 which is a contradiction.
 
+% \paragraph{Lyapunov stability.}
+% Before we move to the study of numerical schemes for SDEs,
+% we introduce one last important concept: that of \emph{Lyapunov stability}.
+% To precisely define this concept,
+% Suppose that the assumptions of~\cref{corollary:maximal_solutions} are satisfied and
+% consider the differential equation~\eqref{eq:ode} over an interval~$[-T, T]$,
+% with $T_- < -T < T < T_+$, and the following perturbation thereof:
+% \begin{equation}
+%     \label{eq:ode_perturbed}
+%     \left \{
+%     \begin{aligned}
+%         & \dot {\vect x_{\delta}}(t) = \vect f\bigl(t, \vect x(t)\bigr) + \vect \delta\bigl(t, \vect x(t)\bigr), \\
+%         & \vect x_{\delta}(t_0) = \vect x_0 + \vect \delta_0.
+%     \end{aligned}
+%     \right.
+% \end{equation}
+% Roughly speaking, Lyapunov stability is a property of the differential equation which
+% guarantees that the solution to the perturbed equation~\eqref{eq:ode_perturbed} remains close to that of the unperturbed equation~\eqref{eq:ode}
+% when the perturbation is small.
+% \begin{definition}
+%     [Stability in the sense of Lyapunov]
+%     Equation~\eqref{eq:ode} is stable in the sense of Lyapunov if there is $C = C(T)$ such that
+%     for all~$\varepsilon > 0$ and all $\vect \delta \colon \real \times \real^n \to \real$ continuous and bounded and all $\vect \delta_0$ with 
+%     \[
+%         \sup_{(t, \vect x) \in [-T, T] \times \real^d} \vecnorm{ \vect \delta(t, \vect x)} \leq \varepsilon
+%         \quad \text{ and } \quad
+%         \vecnorm{\vect \delta_0} \leq \varepsilon
+%     \]
+% \end{definition}
+
 \section{One-step methods}
 \label{sec:one-step_methods}
 From now on, we assume for simplicity that $t_0 = 0$,
@@ -339,29 +381,31 @@ Most numerical methods for ODEs construct an approximation of the solution at di
     \vect x_n \approx \vect x(t_n), \qquad n = 0, 1, 2, \dotsc.
 \]
 The discretization points $(t_n)_{n \in \nat}$ are commonly equidistant,
-i.e.~$t_n = n h$ where $h$ is the \emph{discretization step}.
-We begin in~\cref{sub:explicit_euler} by studying the simplest one-step method,
-and then in~\cref{sub:one_step_general} we briefly discuss more general methods.
+i.e.~$t_n = n \Delta$ where $\Delta$ is the \emph{discretization step}.
+We begin in~\cref{sub:explicit_euler} and~\cref{sub:implicit_euler} by studying the simplest one-step methods,
+and then in~\cref{sub:one_step_general} we discuss more general methods.
 
-\subsection{Explicit Euler method}
+\subsection{Forward Euler method}
 \label{sub:explicit_euler}
 Assume that~\eqref{eq:ode} has a unique solution~$\vect x(t)$ over the interval $[0, T]$.
 If $\vect x(t)$ is twice continuously differentiable,
 then by Taylor's formula,
 we have
+\begin{equation}
+    \label{eq:taylor_forward}
+    \vect x(t + \Delta) = \vect x(t) + \Delta \vect f(t, \vect x) + \frac{\Delta^2}{2} \vect x''(\xi),
+    \qquad \xi \in (t, t+\Delta).
+\end{equation}
+This motivates a method known as the \emph{forward} or \emph{explicit} Euler method:
 \[
-    \vect x(t + h) = \vect x(t) + h \vect f(t, \vect x) + \frac{h^2}{2} \vect x''(\xi),
-    \qquad \xi \in (t, t+h).
-\]
-This motivates a method known as the \emph{explicit Euler} or \emph{forward Euler} method:
-\[
-    \vect x_{n+1} = \vect x_{n} + h \vect f(t_n, \vect x_n),
+    \vect x_{n+1} = \vect x_{n} + \Delta \vect f(t_n, \vect x_n),
 \]
 with the same initial condition as for the continuous equation~\eqref{eq:ode}.
 
 \begin{theorem}
-    [Convergence of the explicit Euler]
-    Assume there is $L \in \real_{>0}$ such that
+    [Convergence of the forward Euler method]
+    \label{theorem:forward_euler}
+    Assume that there is $L \in \real_{>0}$ such that
     \begin{equation}
         \label{eq:global_lipschitz}
         \forall (t, \vect x, \vect y) \in \real \times \real^n \times \real^n, \qquad
@@ -374,47 +418,136 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
         M = \sup_{t \in [0,T]} \vecnorm{\vect x''(t)}
     \]
     Then the following error estimate holds:
-    \[
-        \forall n \in \nat,
+    \begin{equation}
+        \label{eq:error_bound_forward_euler}
+        \forall n \in \left\{0, 1, \dotsc, \floor*{\frac{T}{\Delta}} \right\},
         \qquad
         \vecnorm{\vect x(t_n) - \vect x_n}
         \leq
-    \]
+        \frac{\Delta M}{2} \left( \frac{\e^{L t_n} - 1}{L} \right).
+    \end{equation}
 \end{theorem}
 \begin{proof}
     Notice that
     \begin{align*}
         \label{eq:error_propagation}
-        \vect x(t_{n}) - \vect x_{n-1}
-        &= \Bigl( \vect x(t_{n-1}) + h \, f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{h^2}{2} \vect x''(\xi) \Bigr)
-        - \Bigl( \vect x_n + h \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
-        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + h \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{h^2}{2} \vect x''(\xi).
+        \vect x(t_{n}) - \vect x_{n}
+        &= \Bigl( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\xi) \Bigr)
+        - \Bigl( \vect x_n + \Delta \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
+        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\xi_n),
     \end{align*}
-    Let $\vect e_n = \vect x(t_n) - \vect x_n$.
+    for some $\xi_n \in (t_{n-1}, t_n)$.
+    Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\xi_n)$.
     The first term is the error at iteration~$n$,
     and the second may be bounded from~\eqref{eq:global_lipschitz},
     which gives
     \begin{align*}
         \vecnorm{\vect e_{n}}
-        &\leq (1 + hL) \vecnorm{\vect e_{n-1}}
-        + \frac{h^2}{2} M  \\
-        &\leq (1 + hL) \left( (1 + hL) \vecnorm{\vect e_{n-2}} + \frac{h^2}{2} M \right)
-        + \frac{h^2}{2} M \\
-        &\leq \dotsc
-        \leq (1 + hL)^{n} \vecnorm{\vect e_{0}} + \frac{h^2}{2} M \sum_{i=0}^{n-1} (1 + hL)^i.
+        &\leq (1 + \Delta L) \vecnorm{\vect e_{n-1}}
+        + \vecnorm{\vect \varepsilon_n}.
     \end{align*}
-    The first term is zero, and in order to bound the second term,
-    notice that
-    \[
-        \forall i \in \{0, \dotsc, n\}, \qquad
-        (1 + hL)^i \leq \bigl(\exp(hL)\bigr)^i \leq \e^{t_n L}.
-    \]
-    Therefore we have
+    The structure of this equation is important,
+    as it appears in the analysis of all one-step methods for ODEs.
+    The first term is an amplification of the error at the previous iteration,
+    and the second term is an upper bound on the additional error introduced at step~$n$.
+    Applying this inequality to the previous time steps, we obtain
+    \begin{align*}
+        \vecnorm{\vect e_{n}}
+        &\leq (1 + \Delta L) \Bigl( (1 + \Delta L) \vecnorm{\vect e_{n-2}} + \vecnorm{\vect \varepsilon_{n-1}} \Bigr) + \vecnorm{\vect \varepsilon_{n}} \\
+        &\leq \dotsc
+        \leq (1 + \Delta L)^{n} \vecnorm{\vect e_{0}} + \sum_{i=1}^{n} (1 + \Delta L)^{n-i} \vecnorm{\vect \varepsilon_{i}}.
+    \end{align*}
+    Since $\vecnorm{\vect \varepsilon_i} \leq \Delta^2M/2$,
+    we have by using the formula for geometric series that
     \[
         \vecnorm{\vect e_{n}}
-        \leq \e^{t_n L} (1 + hL)^{n} \vecnorm{\vect e_{0}}
+        \leq (1 + \Delta L)^{n} \vecnorm{\vect e_{0}} + \frac{(1+\Delta L)^{n} - 1}{\Delta L} \left( \frac{\Delta^2 M}{2} \right).
     \]
+    The first term is zero because $\vecnorm{\vect e_{0}} = 0$.
+    Using the bound $(1+\Delta L)^n \leq \bigl(\exp(\Delta L)\bigr)^n = \e^{L t_n}$ in the second term and rearranging,
+    we finally obtain the statement~\eqref{eq:error_bound_forward_euler}.
+\end{proof}
+
+\subsection{Backward Euler method}
+\label{sub:implicit_euler}
+If we apply the Taylor expansion~\eqref{eq:taylor_forward} backward around~$t + \Delta$ instead of forward around~$t$,
+we obtain
+\[
+    \label{eq:taylor_forward}
+    \vect x(t) = \vect x(t + \Delta) - \Delta \vect f(t + \Delta, \vect x) + \frac{\Delta^2}{2} \vect x''(\xi),
+    \qquad \xi \in (t, t+\Delta).
+\]
+This motivates the so-called \emph{backward} or \emph{implicit} Euler method:
+\begin{equation}
+    \label{eq:backward_euler}
+    \vect x_{n+1} = \vect x_{n} + \Delta \vect f(t_n, \vect x_{n+1}).
+\end{equation}
+Observe that the right-hand side depends on $\vect x_{n+1}$.
+Therefore, given $t_n$ and $\vect x_n$,
+this is a nonlinear equation for the unknown $\vect x_{n+1}$,
+which can be solved using any of the methods studied in~\cref{cha:solution_of_nonlinear_systems}.
+Finding a solution to~\eqref{eq:backward_euler} amounts to finding a fixed point of the function
+\[
+    \vect y \mapsto \vect F(\vect y) := \vect x_{n} + \Delta \vect f(t_n, \vect y)
+\]
+A priori, the existence and uniqueness of such a fixed point is not guaranteed.
+We proved in~\cref{theorem:exponential_convergence_fixed_point} that a sufficient condition for these to hold is
+that~$\vect F$ is globally Lipschitz with a constant strictly less than 1,
+which holds if and only if the function~$\vect y \mapsto \vect f(t_n, \vect y)$ is globally Lipschitz with a constant strictly less than $1/\Delta$.
+If the condition~\eqref{eq:global_lipschitz} holds, for example,
+then the backward Euler method~\eqref{eq:backward_euler} is guaranteed to be well defined for $\Delta < \frac{1}{L}$.
+\Cref{theorem:exponential_convergence_fixed_point} also ensures that, if~$\vect F$ is locally Lipschitz with a constant less than~$1$,
+then the fixed by using the iteration
+\begin{equation}
+    \label{eq:fixed_point_ode}
+    \vect y_{k+1} = \vect F(\vect y_k).
+\end{equation}
+and there is exponential convergence~$\vect y_k \to \vect x_{n+1}$ in the limit as $k \to \infty$.
+A natural starting point for~\eqref{eq:fixed_point_ode} is~$\vect y_0 = \vect x_n$.
+Using a reasoning similar to that employed for proving~\cref{theorem:forward_euler},
+we can prove the following result.
+\begin{theorem}
+    [Convergence of the backward Euler method]
+    Under the same assumptions as in~\cref{theorem:forward_euler} and if $\Delta < \frac{1}{L}$,
+    then the following error estimate holds:
+    \begin{equation}
+        \label{eq:estimate_backward_euler}
+        \forall n \in \left\{0, 1, \dotsc, \floor*{\frac{T}{\Delta}} \right\},
+        \qquad
+        \vecnorm{\vect x(t_n) - \vect x_n}
+        \leq
+        \frac{\Delta M}{2} \left( \frac{\left( \frac{1}{1 - \Delta L} \right)^n - 1}{L} \right).
+    \end{equation}
+\end{theorem}
+\begin{proof}
+    The proof is left as an exercise.
+    Note that, if $\Delta < \frac{1}{2L}$,
+    then
+    \begin{align*}
+         \frac{1}{1 - \Delta L}
+         &= 1 + \Delta L + (\Delta L)^2 + (\Delta L)^3 + (\Delta L)^4 \dotsc \\
+         &\leq 1 + \Delta L + (\Delta L)^2 + \frac{1}{2} (\Delta L)^2 + \frac{1}{4} (\Delta L)^2 + \dotsc \\
+         &\leq 1 + \Delta L + 2 (\Delta L)^2 \leq \exp\bigl(\Delta L + (\Delta L)^2\bigr),
+     \end{align*}
+     and so the error estimate~\eqref{eq:estimate_backward_euler} gives
+     \[
+        \vecnorm{\vect x(t_n) - \vect x_n}
+        \leq
+        \frac{\Delta M}{2} \left( \frac{\exp(L t_n + \Delta L^2 t_n) - 1}{L} \right),
+     \]
+     which makes it clear that the right-hand side of~\eqref{eq:estimate_backward_euler} is close to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
 \end{proof}
 
 \subsection{General one-step methods}
 \label{sub:one_step_general}
+In general, one-step methods to solve differential equations are those that can be written abstractly as
+\[
+    \vect x_{n+1} = \vect x_n + \Delta \vect \Phi_{\Delta}(t_n, \vect x_n).
+\]
+where $\vect \Phi_{\Delta}\colon \real \times \real^n \to \real^n$ is such that
+\[
+    \Phi_{\Delta}(t, \vect x)
+    \approx \frac{1}{\Delta} \int_{t}^{t+\Delta} \vect f\bigl(s, \vect x^{t, \vect x}(s)\bigr) \, \d s
+    = \frac{\vect x^{t, \vect x}(t + \Delta) - \vect x}{\Delta}.
+\]
+Here $\vect x^{t, \vect x}$ denotes the solution to the differential equation~\eqref{eq:ode} with initial condition $\vect x(s) = \vect x$.
