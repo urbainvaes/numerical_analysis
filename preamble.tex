@@ -37,7 +37,8 @@
 
 % Colors
 \definecolor{lightblue}{HTML}{f1f8fb}
-\definecolor{lightgreen}{HTML}{f1faf8}
+\definecolor{lightgreen}{HTML}{f1fbf4}
+\definecolor{lightindigo}{HTML}{f3f1fb}
 \definecolor{darkgray}{HTML}{555555}
 \definecolor{darkblue}{HTML}{315a88}
 \definecolor{lightred}{HTML}{f8f6ee}
@@ -75,13 +76,31 @@
     \end{mdframed}
 }
 
+\newenvironment{remarkframe}
+{%
+    \begin{mdframed}[
+        leftmargin=0cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightindigo,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
 \newenvironment{solutionframe}
 {%
     \begin{mdframed}[
         leftmargin=1cm,
         skipabove=.3cm,
         linecolor=blue,
-        backgroundcolor=Apricot!7,
+        backgroundcolor=lightgreen,
         linewidth=0pt,
         innerleftmargin=.5em,
         innerrightmargin=.5em,
@@ -224,7 +243,7 @@
 \colorlet{examplecolor}{lightblue}
 \colorlet{definitioncolor}{lightblue}
 \colorlet{notationcolor}{lightblue}
-\colorlet{remarkcolor}{lightblue}
+\colorlet{remarkcolor}{lightindigo}
 \newenvironment{theorem}
    {\colorlet{shadecolor}{theoremcolor}\begin{myframe}\begin{prototheorem}}
    {\end{prototheorem}\end{myframe}}
@@ -247,8 +266,8 @@
    {\colorlet{shadecolor}{notationcolor}\begin{shaded}\begin{protonotation}}
    {\end{protonotation}\end{shaded}}
 \newenvironment{remark}
-   {\colorlet{shadecolor}{remarkcolor}\begin{myframe}\begin{protoremark}}
-   {\end{protoremark}\end{myframe}}
+   {\begin{remarkframe}\begin{protoremark}}
+   {\end{protoremark}\end{remarkframe}}
 \newenvironment{exercise}
    {\colorlet{shadecolor}{white}\begin{protoexercise}}
    {\end{protoexercise}}
