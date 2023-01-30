@@ -37,7 +37,7 @@ The rest of chapter is organized as follows:
 \section{Analysis of the continuous problem}
 A differentiable function $\vect x\colon I \to \real^n$,
 where $I$ denotes an interval of $\real$ containing $t_0$,
-is a solution of~\eqref{eq:ode} to $\vect x(t_0) = \vect x_0$ and the equation~\eqref{eq:ode} is satisfied for all~$t \in I$.
+is a solution of~\eqref{eq:ode} if $\vect x(t_0) = \vect x_0$ and the equation~\eqref{eq:ode} is satisfied for all~$t \in I$.
 The solution is called global if~$I = \real$,
 and local otherwise.
 
@@ -50,7 +50,7 @@ then it holds that
     \vect x(t) = \vect x_0 + \int_{t_0}^{t} \vect f\bigl(s, \vect x(s)\bigr) \, \d s.
 \end{equation}
 The converse statement is not true in general,
-because a solution to~\eqref{eq:ode_integral} need not necessarily be differentiable.
+because a solution to~\eqref{eq:ode_integral} need not necessarily be differentiable everywhere.
 However, if the integral formulation~\eqref{eq:ode_integral} holds,
 then necessarily $\vect x$ is absolutely continuous
 and~\eqref{eq:ode} is satisfied for almost every~$t$.
@@ -119,8 +119,8 @@ and so~\eqref{eq:ode} is satisfied for all $t \in I$ by the fundamental theorem 
     On the other hand, from the Lipschitz condition~\eqref{eq:local_lipschitz_ode},
     it holds that
     \[
-        \forall (\vect x, \vect v) \in \mathcal X \times \mathcal X, \qquad
-        \norm{\Phi(\vect x) - \Phi(\vect v)} \leq 2 L T.
+        \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
+        \norm{\Phi(\vect x) - \Phi(\vect y)} \leq 2 L T.
     \]
     Therefore, it suffices to take $T \leq \min \left\{ \mathcal T, \frac{\mathcal R}{M}, \frac{2}{L} \right\}$ to ensure that the above conditions are satisfied.
     For a value of~$T$ in this range,
@@ -183,7 +183,7 @@ since the function $v \colon [t_0, t_0 + T]$ given by
 \[
     v(t) = \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right)
 \]
-satisfies~\eqref{eq:gronwall_condition} with inequality.
+satisfies~\eqref{eq:gronwall_condition} with equality.
 We are now ready to prove uniqueness.
 \begin{theorem}
     [Uniqueness of the solution]
@@ -229,7 +229,7 @@ We are now ready to prove uniqueness.
     [Maximal solutions]
     \label{corollary:maximal_solutions}
     Assume that $\vect f$ is continuous in~$t$ and satisfies the local Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
-    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and 
+    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
     the following properties are satisfied.
     \begin{itemize}
         \item
@@ -253,7 +253,8 @@ We are now ready to prove uniqueness.
     Therefore $\mathcal I$ is of the form $(T_-, T_+)$,
     where $0 \leq T_- <  t_0 < T_+ \leq \infty$.
     In view of~\cref{theorem:uniqueness},
-    all the local solutions can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
+    all the local solutions coincide where they are defined,
+    and so they can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
     It remains to prove the third item.
     To this end, suppose for contradiction that $T_+$ was finite and that
     there was $(t_n)_{n \in \nat}$ such that $t_n \to T_+$ and~
@@ -278,10 +279,10 @@ We are now ready to prove uniqueness.
         \end{aligned}
         \right.
     \]
-    over the time interval $[t_n - T, t_n + T]$, where $T > 0$ depends only on, $M$ and $L$.
+    over the time interval $[t_n - T, t_n + T]$, where $T > 0$ depends only on $M$ and $L$, and not on~$n$.
     But then, for~$n$ sufficiently large,
     this solution extends beyond $T_+$,
-    which is a contradiction.
+    which contradicts the maximality of~$\mathcal I$.
     An analogous reasoning can be employed for~$T_-$.
 \end{proof}
 \begin{example}
@@ -310,14 +311,13 @@ We discuss a few important examples.
 
     \item
         The second case,
-        generalizing the first, 
+        generalizing the first,
         is when the growth of~$\vect f(t, \placeholder)$ is at most affine:
         \[
             \forall (t, \vect x) \in \real \times \real^n, \qquad
             \vecnorm{ \vect f(t, \vect x) } \leq C(t) + L(t) \vecnorm{ \vect x },
         \]
         with continuous constants~$C(t)$ and $L(t)$.
-        Note that 
 
     \item
         The third case is when $\vect f$ is independent of~$t$ and there is a function~$W \in C^1(\real^n)$ such that~$W(\vect x) \to \infty$ in the limit as $\vecnorm{\vect x} \to \infty$
@@ -364,7 +364,7 @@ which is a contradiction.
 % \begin{definition}
 %     [Stability in the sense of Lyapunov]
 %     Equation~\eqref{eq:ode} is stable in the sense of Lyapunov if there is $C = C(T)$ such that
-%     for all~$\varepsilon > 0$ and all $\vect \delta \colon \real \times \real^n \to \real$ continuous and bounded and all $\vect \delta_0$ with 
+%     for all~$\varepsilon > 0$ and all $\vect \delta \colon \real \times \real^n \to \real$ continuous and bounded and all $\vect \delta_0$ with
 %     \[
 %         \sup_{(t, \vect x) \in [-T, T] \times \real^d} \vecnorm{ \vect \delta(t, \vect x)} \leq \varepsilon
 %         \quad \text{ and } \quad
@@ -374,16 +374,20 @@ which is a contradiction.
 
 \section{One-step methods}
 \label{sec:one-step_methods}
-From now on, we assume for simplicity that $t_0 = 0$,
-and we consider the initial value problem~\eqref{eq:ode} over the interval $[0, T]$.
+From now on, we assume for simplicity that $t_0 = 0$ and that
+the initial value problem~\eqref{eq:ode} admits a unique solution over the interval $[0, T]$.
 Most numerical methods for ODEs construct an approximation of the solution at discrete points:
 \[
     \vect x_n \approx \vect x(t_n), \qquad n = 0, 1, 2, \dotsc.
 \]
 The discretization points $(t_n)_{n \in \nat}$ are commonly equidistant,
 i.e.~$t_n = n \Delta$ where $\Delta$ is the \emph{discretization step}.
+Sometimes, it is useful to employ a variable time step,
+but for simplicity we assume throughout this section that the time step is fixed.
 We begin in~\cref{sub:explicit_euler} and~\cref{sub:implicit_euler} by studying the simplest one-step methods,
-and then in~\cref{sub:one_step_general} we discuss more general methods.
+and then in~\cref{sub:one_step_general} we present a general approach to the analysis of one-step methods.
+Finally, in~\cref{sub:other_one_step},
+we present other widely used one-step methods in applications.
 
 \subsection{Forward Euler method}
 \label{sub:explicit_euler}
@@ -393,8 +397,8 @@ then by Taylor's formula,
 we have
 \begin{equation}
     \label{eq:taylor_forward}
-    \vect x(t + \Delta) = \vect x(t) + \Delta \vect f(t, \vect x) + \frac{\Delta^2}{2} \vect x''(\xi),
-    \qquad \xi \in (t, t+\Delta).
+    \vect x(t + \Delta) = \vect x(t) + \Delta \vect f(t, \vect x) + \frac{\Delta^2}{2} \vect x''(\tau),
+    \qquad \tau \in (t, t+\Delta).
 \end{equation}
 This motivates a method known as the \emph{forward} or \emph{explicit} Euler method:
 \[
@@ -430,14 +434,13 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
 \begin{proof}
     Notice that
     \begin{align*}
-        \label{eq:error_propagation}
         \vect x(t_{n}) - \vect x_{n}
-        &= \Bigl( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\xi) \Bigr)
+        &= \Bigl( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\tau) \Bigr)
         - \Bigl( \vect x_n + \Delta \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
-        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\xi_n),
+        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n),
     \end{align*}
-    for some $\xi_n \in (t_{n-1}, t_n)$.
-    Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\xi_n)$.
+    for some $\tau_n \in (t_{n-1}, t_n)$.
+    Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\tau_n)$.
     The first term is the error at iteration~$n$,
     and the second may be bounded from~\eqref{eq:global_lipschitz},
     which gives
@@ -451,12 +454,14 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
     The first term is an amplification of the error at the previous iteration,
     and the second term is an upper bound on the additional error introduced at step~$n$.
     Applying this inequality to the previous time steps, we obtain
-    \begin{align*}
+    \begin{align}
+        \nonumber
         \vecnorm{\vect e_{n}}
         &\leq (1 + \Delta L) \Bigl( (1 + \Delta L) \vecnorm{\vect e_{n-2}} + \vecnorm{\vect \varepsilon_{n-1}} \Bigr) + \vecnorm{\vect \varepsilon_{n}} \\
+        \label{eq:sum_local_and_accumulation}
         &\leq \dotsc
         \leq (1 + \Delta L)^{n} \vecnorm{\vect e_{0}} + \sum_{i=1}^{n} (1 + \Delta L)^{n-i} \vecnorm{\vect \varepsilon_{i}}.
-    \end{align*}
+    \end{align}
     Since $\vecnorm{\vect \varepsilon_i} \leq \Delta^2M/2$,
     we have by using the formula for geometric series that
     \[
@@ -470,17 +475,18 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
 
 \subsection{Backward Euler method}
 \label{sub:implicit_euler}
-If we apply the Taylor expansion~\eqref{eq:taylor_forward} backward around~$t + \Delta$ instead of forward around~$t$,
-we obtain
+If we apply the Taylor expansion~\eqref{eq:taylor_forward} backward around~$t + \Delta$,
+instead of forward around~$t$,
+then we obtain
 \[
-    \label{eq:taylor_forward}
-    \vect x(t) = \vect x(t + \Delta) - \Delta \vect f(t + \Delta, \vect x) + \frac{\Delta^2}{2} \vect x''(\xi),
-    \qquad \xi \in (t, t+\Delta).
+    \label{eq:taylor_backward}
+    \vect x(t) = \vect x(t + \Delta) - \Delta \vect f(t + \Delta, \vect x) + \frac{\Delta^2}{2} \vect x''(\tau),
+    \qquad \tau \in (t, t+\Delta).
 \]
 This motivates the so-called \emph{backward} or \emph{implicit} Euler method:
 \begin{equation}
     \label{eq:backward_euler}
-    \vect x_{n+1} = \vect x_{n} + \Delta \vect f(t_n, \vect x_{n+1}).
+    \vect x_{n+1} = \vect x_{n} + \Delta \vect f(t_{n+1}, \vect x_{n+1}).
 \end{equation}
 Observe that the right-hand side depends on $\vect x_{n+1}$.
 Therefore, given $t_n$ and $\vect x_n$,
@@ -496,19 +502,23 @@ that~$\vect F$ is globally Lipschitz with a constant strictly less than 1,
 which holds if and only if the function~$\vect y \mapsto \vect f(t_n, \vect y)$ is globally Lipschitz with a constant strictly less than $1/\Delta$.
 If the condition~\eqref{eq:global_lipschitz} holds, for example,
 then the backward Euler method~\eqref{eq:backward_euler} is guaranteed to be well defined for $\Delta < \frac{1}{L}$.
-\Cref{theorem:exponential_convergence_fixed_point} also ensures that, if~$\vect F$ is locally Lipschitz with a constant less than~$1$,
-then the fixed by using the iteration
+\Cref{theorem:exponential_convergence_fixed_point} also ensures that, if~$\vect F$ is globally Lipschitz with a constant less than~$1$,
+then the fixed point can be approximated by using the iteration
 \begin{equation}
     \label{eq:fixed_point_ode}
     \vect y_{k+1} = \vect F(\vect y_k).
 \end{equation}
 and there is exponential convergence~$\vect y_k \to \vect x_{n+1}$ in the limit as $k \to \infty$.
 A natural starting point for~\eqref{eq:fixed_point_ode} is~$\vect y_0 = \vect x_n$.
+An alternative approach to~\eqref{eq:fixed_point_ode},
+which is faster in principle but must be initialized sufficiently close to the fixed point,
+is to use Newton--Raphson's method.
+
 Using a reasoning similar to that employed for proving~\cref{theorem:forward_euler},
 we can prove the following result.
 \begin{theorem}
     [Convergence of the backward Euler method]
-    Under the same assumptions as in~\cref{theorem:forward_euler} and if $\Delta < \frac{1}{L}$,
+    If the assumptions of~\cref{theorem:forward_euler} hold and $\Delta < \frac{1}{L}$,
     then the following error estimate holds:
     \begin{equation}
         \label{eq:estimate_backward_euler}
@@ -516,11 +526,13 @@ we can prove the following result.
         \qquad
         \vecnorm{\vect x(t_n) - \vect x_n}
         \leq
-        \frac{\Delta M}{2} \left( \frac{\left( \frac{1}{1 - \Delta L} \right)^n - 1}{L} \right).
+        \frac{\Delta M}{2} \left( \frac{\left( \frac{1}{1 - \Delta L} \right)^n - (1 - \Delta L)}{L} \right).
     \end{equation}
 \end{theorem}
 \begin{proof}
     The proof is left as an exercise.
+\end{proof}
+\begin{remark}
     Note that, if $\Delta < \frac{1}{2L}$,
     then
     \begin{align*}
@@ -536,18 +548,313 @@ we can prove the following result.
         \frac{\Delta M}{2} \left( \frac{\exp(L t_n + \Delta L^2 t_n) - 1}{L} \right),
      \]
      which makes it clear that the right-hand side of~\eqref{eq:estimate_backward_euler} is close to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
-\end{proof}
+\end{remark}
 
 \subsection{General one-step methods}
 \label{sub:one_step_general}
 In general, one-step methods to solve differential equations are those that can be written abstractly as
-\[
+\begin{equation}
+    \label{eq:general_one_step}
     \vect x_{n+1} = \vect x_n + \Delta \vect \Phi_{\Delta}(t_n, \vect x_n).
-\]
-where $\vect \Phi_{\Delta}\colon \real \times \real^n \to \real^n$ is such that
+\end{equation}
+where $\vect \Phi_{\Delta}\colon \real \times \real^n \to \real^n$ is a function such that
 \[
-    \Phi_{\Delta}(t, \vect x)
+    \vect \Phi_{\Delta}(t, \vect x)
     \approx \frac{1}{\Delta} \int_{t}^{t+\Delta} \vect f\bigl(s, \vect x^{t, \vect x}(s)\bigr) \, \d s
     = \frac{\vect x^{t, \vect x}(t + \Delta) - \vect x}{\Delta}.
 \]
 Here $\vect x^{t, \vect x}$ denotes the solution to the differential equation~\eqref{eq:ode} with initial condition $\vect x(s) = \vect x$.
+The main goal of this section is to establish general conditions,
+known as \emph{consistency} and \emph{stability} of the numerical method,
+under which the numerical scheme~\eqref{eq:general_one_step} is convergent.
+As we observed in the proof of~\cref{theorem:forward_euler},
+more specifically in equation~\eqref{eq:sum_local_and_accumulation},
+the error at the final iteration for the forward Euler method is a sum of local errors,
+each amplified by a factor which decreases as the number of iterations left to reach the final time decreases.
+\emph{Consistency} of a numerical method enables to control the size of local errors when they arise,
+while~\emph{stability} enables to control their growth.
+
+Note that both the forward and the backward Euler methods may be recast in the form~\eqref{eq:general_one_step}.
+For the forward Euler method we have $\Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
+while the backward Euler method, the function $\vect \Phi_{\Delta}$ is defined implicitly as the function which to~$(t, \vect x)$ associates the solution~$\vect \phi \in \real^n$ to the equation
+\[
+    \vect \phi = \vect f(t + \Delta, \vect x + \Delta \vect \phi).
+\]
+\subsubsection*{Local truncation error and consistency}%
+The local truncation error is the residual error obtained when substituting the exact solution of the differential equation in~\eqref{eq:general_one_step}:
+\[
+    \vect \eta_{n+1} := \frac{\vect x(t_{n+1}) - \vect x(t_n)}{\Delta} + \vect \Phi_{\Delta}\bigl(t_n, \vect x(t_n)\bigr).
+\]
+Since there is a division by~$\Delta$, the local truncation error has the same physical dimension as that of $\dot{\vect x}$,
+and so it should be viewed as an error \emph{per time unit}.
+
+\begin{definition}
+    [Consistency]
+    A numerical method is consistent if
+    \[
+        \lim_{\Delta \to 0} \left( \max_{1 \leq n \leq N} \vecnorm {\vect \eta_n} \right) = 0, \qquad N = \floor*{\frac{T}{\Delta}}.
+    \]
+    It is consistent with order~$p$ if there exists~$C$ such that
+    \[
+        \forall \Delta > 0, \qquad
+         \max_{1 \leq n \leq N} \vecnorm {\vect \eta_n} \leq C \Delta^p.
+    \]
+\end{definition}
+Proving the consistency of a numerical method is usually achieved on a case-by-case basis by application of Taylor's formula.
+
+\subsubsection*{Stability}%
+\label{ssub:Stability}
+The stability of a numerical method qualifies its sensitivity to perturbations.
+Roughly speaking, it expresses that small perturbation of the right-hand side of~\eqref{eq:general_one_step} lead to small perturbations of the numerical solution.
+\begin{definition}
+    [Stability]
+    A numerical method of the form~\eqref{eq:general_one_step} is stable if there exists a constant~$S(T) > 0$ independent of $\Delta$ such that for all sequence~$(\vect y_n)_{1\leq n \leq N}$ satisfying
+    \begin{equation}
+        \label{eq:general_one_step_perturbed}
+        \vect y_{n+1} = \vect y_n + \Delta \vect \Phi_{\Delta}(t_n, \vect y_n) + \Delta \vect \delta_n, \qquad \vect y_0 = \vect x_0,
+    \end{equation}
+    it holds that
+    \begin{equation}
+        \label{eq:stability_numerical_method}
+        \max_{1\leq n \leq N} \vecnorm{ \vect x_n - \vect y_n } \leq S(T) \Delta \sum_{n=1}^{N} \vecnorm{ \vect \delta_n }.
+    \end{equation}
+\end{definition}
+It is convenient to introduce the following norms for sequences of vectors $(\vect u_{n})_{1 \leq n \leq N}$:
+\[
+    \norm{\vect u_{\placeholder}}_{\ell^1_T} = \sum_{n=1}^{N} \vecnorm{\vect u_{n}},
+    \qquad
+    \norm{\vect u_{\placeholder}}_{\ell^{\infty}_T} = \max_{1\leq n \leq N} \vecnorm{\vect u_{n}},
+\]
+With these notations, equation~\eqref{eq:stability_numerical_method} may be rewritten compactly as follows:
+\[
+    \norm{ \vect x_{\placeholder} - \vect y_{\placeholder} }_{\ell^{\infty}_T} \leq S(T) \Delta \norm{ \vect \delta_{\placeholder} }_{\ell^{1}_T}
+\]
+One could argue that this equation is neater than~\eqref{eq:stability_numerical_method};
+it bounds the norm of just one mathematical object, namely the sequence $(\vect x_n - \vect y_n)_{1\leq n \leq N}$,
+by a norm of another object, namely the sequence $(\vect \delta_n)_{1\leq n \leq N}$.
+Arguments for proving that a numerical scheme is stable often rely on some form of Lipschitz continuity.
+If the function $\Phi_{\Delta}(t, \vect y)$ is globally Lipschitz continuous with respect to~$\vect y$,
+then stability is particularly simple to prove,
+as we now demonstrate.
+
+\begin{proposition}
+    Assume that there is $L_{\Phi} > 0$ such that for all $t \in [0, T]$ and $\Delta > 0$,
+    the function $\Phi_{\Delta}(t, \placeholder)$ is globally Lipschitz continuous with constant~$L_{\Phi}$.
+\end{proposition}
+\begin{proof}
+    By~\eqref{eq:general_one_step} and~\eqref{eq:general_one_step_perturbed},
+    it holds that
+    \[
+        \vect x_{n} - \vect y_{n}
+        = \vect x_{n-1} - \vect y_{n-1}
+        + \Delta \Bigl( \vect \Phi_{\Delta}(t_{n-1}, \vect x_{n-1}) - \vect \Phi_{\Delta}(t_{n-1}, \vect y_{n-1}) \Bigr)
+        - \Delta \vect \delta_{n}.
+    \]
+    Taking the Euclidean norm and employing the Lipschitz continuity assumption,
+    we obtain
+    \[
+        \vecnorm{ \vect x_{n} - \vect y_{n} }
+        = (1 + \Delta L_{\Phi}) \vecnorm{ \vect x_{n-1} - \vect y_{n-1} }
+        + \Delta \vecnorm{ \vect \delta_{n} }.
+    \]
+    By a reasoning similar to that in the proof of~\cref{theorem:forward_euler},
+    we then obtain
+    \[
+        \vecnorm{ \vect x_{n} - \vect y_{n} }
+        \leq (1 + \Delta L_{\Phi})^{n} \vecnorm{ \vect x_{0} - \vect y_{0} } + \sum_{i=1}^{n} (1 + \Delta L_{\Phi})^{n-i} \Delta \vecnorm{\vect \delta_{i}}
+        \leq 0 + \e^{L_{\Phi} t_n} \Delta \sum_{i=1}^{n}\vecnorm{\vect \delta_{i}}.
+    \]
+    We conclude that~\eqref{eq:stability_numerical_method} is satisfied with~$S(T) = \e^{L_{\Phi} T}$.
+\end{proof}
+
+\subsubsection*{Convergence}%
+We are now ready to prove that consistency and stability of the numerical~\eqref{eq:general_one_step} together imply convergence,
+in the sense that
+\[
+    \lim_{\Delta \to 0} \left( \max_{1 \leq n \leq N}  \vecnorm{ \vect x(t_n) - \vect x_n } \right) = 0, \qquad  N = \floor*{\frac{T}{\Delta}}.
+\]
+This result is an instance of the \emph{Lax equivalence theorem},
+a pillar of numerical analysis.
+
+\begin{theorem}
+    [Consistence and stability imply convergence]
+    \label{theorem:lax_convergence}
+    Assume that the one-step numerical method~\eqref{eq:general_one_step} is consistent and stable.
+    Then the method is also convergent.
+\end{theorem}
+\begin{proof}
+By definition of the local truncation error, it holds that
+\[
+    \vect x(t_{n+1}) = \vect x(t_n) + \Delta \vect \Phi_{\Delta}\bigl(t_n, \vect x(t_n)\bigr) + \Delta \vect \eta_{n+1}.
+\]
+Therefore, the sequence $\bigl(\vect x(t_n)\bigr)_{1 \leq n \leq N}$ satisfies~\eqref{eq:general_one_step_perturbed} with $\vect \delta_n = \vect \eta_n$,
+and so the stability estimate~\eqref{eq:stability_numerical_method} implies that
+\[
+    \max_{1\leq n \leq N} \vecnorm{ \vect x(t_n) - \vect x_n } \leq S(T) \Delta \sum_{n=1}^{N} \vecnorm{ \vect \eta_n }.
+\]
+By consistency, the right-hand side converges to zero in the limit as~$\Delta \to 0$,
+which concludes the proof.
+\end{proof}
+
+\begin{remark}
+    If we assume in \cref{theorem:lax_convergence} that the method is consistent with order~$p$,
+    then by adapting the proof,
+    we find that the error satisfies
+    \[
+        \max_{1\leq n \leq N} \vecnorm{ \vect x(t_n) - \vect x_n } \leq C S(T) \Delta^p.
+    \]
+\end{remark}
+
+\subsection{Widely used one-step methods}
+\label{sub:other_one_step}
+In this section, we motivate some of the other widely-used one-step methods,
+namely methods of Taylor and Runge--Kutta type.
+We assume in this section that the equation~\eqref{eq:ode} admits a unique smooth solution over the interval~$[0, T]$.
+
+\subsubsection*{Taylor methods}%
+In order to construct a method with a smaller local truncation error than that of the forward Euler method,
+a Taylor expansion of higher order than~\eqref{eq:taylor_forward} can be employed:
+\begin{equation}
+    \label{eq:taylor_high_order}
+    \vect x(t + \Delta) = \vect x(t)
+    + \Delta \vect x'(t)
+    + \dotsb
+    + \frac{\Delta^p}{p!} \vect x^{(p)}(t)
+    + \frac{\Delta^{p+1}}{(p+1)!} \vect x^{(p+1)}(\tau),
+    \qquad \tau \in (t, t + \Delta).
+\end{equation}
+If $\vect x\colon [0, T] \to \real$ is a smooth solution to~\eqref{eq:ode},
+then the time derivatives of~$\vect x$ can be obtained by differentiation of~\eqref{eq:ode}:
+\[
+    \vect x'(t) = \vect f\bigl(t, \vect x(t)\bigr),
+    \qquad
+    \vect x''(t) = \partial_t \vect f\bigl(t, \vect x(t)\bigr)
+    + \nabla_{\vect x} \vect f\bigl( t, \vect x(t) \bigr) \cdot \vect f\left(t, \vect x(t)\right),
+    \qquad
+    \dotsc
+\]
+In general, it is immediate to show inductively that $\vect x^{(p)}(t) = \vect f^{(p-1)}\bigl(t, \vect x(t)\bigr)$,
+where the functions~$\vect f^{(p)}\colon \real \times \real^n \to \real$ are defined recursively from the following equation:
+\[
+    \vect f^{(p+1)} = \partial_t \vect f^{(p)}\bigl(t, \vect x(t)\bigr) + \nabla_{\vect x} \vect f^{(p)}\bigl( t, \vect x(t) \bigr) \cdot \vect f\left(t, \vect x(t)\right).
+\]
+The Taylor expansion~\eqref{eq:taylor_high_order} motivates the so-called Taylor methods for integrating~\eqref{eq:ode} numerically,
+which are based on the following iteration:
+\begin{equation}
+    \label{eq:taylor_scheme}
+    \vect x_{n+1} = \vect x_n + \Delta \vect T^{p}_{\Delta}\bigl(t_n, \vect x_n\bigr),
+\end{equation}
+where
+\[
+    \vect T^p_{\Delta}(t, \vect x)
+    := \vect f(t, \vect x) + \frac{\Delta}{2!} \vect f^{(1)}(t, \vect x)
+    + \dotsb + \frac{\Delta^{p-1}}{p!} \vect f^{(p-1)}(t, \vect x).
+\]
+The Taylor scheme~\eqref{eq:taylor_scheme} with $p = 1$ is the forward Euler scheme.
+Note that, for any~$p$,
+this scheme may be rewritten as
+\[
+    % \label{eq:taylor_scheme}
+    \vect x_{n+1} = \vect x_n
+    + \Delta \frac{\d \vect x^{t_n, \vect x_n}}{\d t} (t_n)
+    + \dotsb
+    + \frac{\Delta^p}{p!} \frac{\d^p \vect x^{t_n, \vect x_n}}{\d t^{p}} \vect (t_n).
+\]
+
+
+\subsubsection*{Runge--Kutta methods}%
+% Like Taylor methods, Runge--Kutta methods enjoy a local truncation error of high order,
+Runge--Kutta methods resemble Taylor methods,
+but they do not require to calculate the derivatives of the function~$\vect f$.
+This is achieved by approximating the derivatives in Taylor methods by difference quotients.
+Consider for example the Taylor method of order $p = 2$:
+\begin{equation}
+    \label{eq:taylor_order_2}
+    \vect x_{n+1} = \vect x_n
+    + \Delta \frac{\d \vect x^{t_n, \vect x_n}}{\d t} (t_n)
+    + \frac{\Delta^2}{2!} \frac{\d^2 \vect x^{t_n, \vect x_n}}{\d t^{2}} \vect (t_n).
+\end{equation}
+Substituting the approximation
+\begin{align}
+    \nonumber
+    \frac{\d^2 \vect x^{t_n, \vect x_n}}{\d t^{2}} \vect (t_n)
+    &\approx \frac{1}{\Delta} \left( \frac{\d \vect x^{t_n, \vect x_n}}{\d t} \vect (t_n + \Delta) - \frac{\d \vect x^{t_n, \vect x_n}}{\d t}(t_n) \right) \\
+    \nonumber
+    &= \frac{1}{\Delta} \Bigl( \vect f \bigl( t_{n+1}, \vect x^{t_n, \vect x_n}(t_{n+1}) \bigr) - \vect f \bigl( t_{n}, \vect x_n \bigr) \Bigr) \\
+    \label{eq:approx_heun}
+    &\approx \frac{1}{\Delta} \Bigl( \vect f \bigl( t_{n+1}, \vect x_n + \Delta \vect f(t_n, \vect x_n) \bigr) - \vect f \bigl( t_{n}, \vect x_n \bigr) \Bigr)
+\end{align}
+in~\eqref{eq:taylor_order_2},
+we obtain an explicit method known as \emph{Heun's method}:
+\[
+    \vect x_{n+1} = \vect x_n
+    + \frac{\Delta}{2}\vect f(t_n, \vect x_n)
+    + \frac{\Delta}{2} \vect f \bigl( t_{n+1}, \vect x_n + \Delta \vect f(t_n, \vect x_n) \bigr).
+    % =: \vect x_n + \vect K^2_{\Delta}(t_n, \vect x_n)
+\]
+It is possible to show that
+% $\vect K^2_{\Delta}(t_n, \vect x_n) = \vect T^2_{\Delta}(t_n, \vect x_n) + \bigo(\Delta^2)$, and so
+the local truncation error for this method also scales as~$\Delta^2$.
+Heun's method is a particular instance of a Runge--Kuta method.
+In general, an explicit Runge--Kutta method with~$s$ stages is of the form
+\begin{align*}
+    \vect x_{n+1} &= \vect x_n + \Delta \sum_{i=1}^s b_i \vect k_i \\
+    \vect k_1 &= f(t_n, \vect x_n),  \\
+    \vect k_2 &= f\bigl(t_n + c_2 \Delta, \vect x_n+\Delta(a_{21} \vect k_1)\bigr), \\
+    \vect k_3 &= f\bigl(t_n + c_3 \Delta, \vect x_n+\Delta(a_{31} \vect k_1 + a_{32} \vect k_2)\bigr), \\
+              &\;\;\vdots \\
+    \vect k_i &= f\left(t_n + c_i \Delta, \vect x_n + \Delta \sum_{j = 1}^{i-1} a_{ij} k_j\right),
+\end{align*}
+with appropriate coefficients $c_i$ and $a_{ij}$.
+Heun's iteration can be recast in this form as follows:
+\begin{align*}
+    \vect x_{n+1} &= \vect x_n + \frac{\Delta}{2}(\vect k_1 + \vect k_2) \\
+    \vect k_1 &= \vect f(t_n, \vect x_n)  \\
+    \vect k_2 &= \vect f \bigl( t_{n} + \Delta, \vect x_n + \Delta \vect k_1 \bigr).
+\end{align*}
+The approach we employed to construct Heun's method may be generalized to higher orders.
+For example, the most widely known Runge--Kutta method
+approximates the Taylor method of order $p=4$ with the following iteration:
+\begin{align*}
+    \vect x_{n+1} &= \vect x_n + \frac{\Delta}{6}(\vect k_1 + 2 \vect k_2 + 2 \vect k_3 + \vect k_4), \\
+     \vect k_1 &= \vect f(t_n, \vect x_n), \qquad
+               && \vect k_2 = \vect f\left(t_n + \frac{\Delta}{2}, \vect x_n + \Delta\frac{\vect k_1}{2}\right), \\
+     \vect k_3 &= \vect f\left(t_n + \frac{\Delta}{2}, \vect x_n + \Delta\frac{\vect k_2}{2}\right), \qquad
+               && \vect k_4 = \vect f\left(t_n + \Delta, \vect x_n + \Delta \vect k_3\right).
+\end{align*}
+The local truncation error for this method scales as~$\Delta^4$.
+The systematic derivation of Runge--Kutta methods is cumbersome,
+and this issue is not addressed in this course.
+
+\begin{remark}
+    Explicit Runge--Kutta methods of a given order are not uniquely defined.
+    For example, if we employ instead of~\eqref{eq:approx_heun} the approximation
+    \[
+        \frac{\d^2 \vect x^{t_n, \vect x_n}}{\d t^{2}} \vect (t_n)
+        \approx \frac{2}{\Delta} \left( \vect f \left(t_n + \frac{\Delta}{2}, \vect x_n + \frac{\Delta}{2} \vect f(t_n, \vect x_n) \right) - \vect f \bigl( t_{n}, \vect x_n \bigr) \right),
+    \]
+    then we obtain by substitution in~\eqref{eq:taylor_order_2} the so-called \emph{explicit midpoint method},
+    which is also a Runge--Kutta method of order 2:
+    \begin{align*}
+        \vect x_{n+1} &= \vect x_n + \Delta \vect f \left( t_{n} + \frac{1}{2}\Delta, \vect x_n + \frac{\Delta}{2} \vect f(t_n, \vect x_n) \right).
+    \end{align*}
+\end{remark}
+
+The class of Runge--Kutta methods is very wide and also includes implicit schemes,
+of which we give a few examples:
+\begin{itemize}
+    \item 
+        The Crank--Nicolson method:
+        \begin{equation}
+            \label{eq:crank_nicolson}
+            \vect x_{n+1} = \vect x_n + \frac{\Delta}{2} \bigl( f(t_n, \vect x_n) + f(t_{n+1}, \vect x_{n+1}) \bigr).
+        \end{equation}
+
+    \item
+        The implicit midpoint method:
+        \[
+            \vect x_{n+1} = \vect x_n + \Delta  f\left(t_n + \frac{\Delta}{2}, \frac{\vect x_n + \vect x_{n+1}}{2} \right).
+        \]
+\end{itemize}
+
+
