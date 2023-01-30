@@ -423,7 +423,7 @@ should behave as follows:
     \item
         \textbf{Infinities}:
         If the real number $x$ is larger than the largest representable number in the format,
-        that is larger than or equal to $x_{\max} = 2^{E_{\max}} (2 - 2^{-p-1})$,
+        that is larger than or equal to $x_{\max} = 2^{E_{\max}} (2 - \varepsilon)$,
         then there are two cases,
         \begin{itemize}
             \item If $x < 2^{E_{\max}} (2 - 2^{-p})$, then $x_{\max}$ is delivered;
@@ -1091,7 +1091,7 @@ such as \julia{2^64} evaluating to 0.
     \[
         \left\lvert f'(x) - \frac{f(x + \delta) - f(x)}{\delta} \right\rvert
         = \frac{\delta}{2} \lvert f''(\xi) \rvert
-        = \frac{\delta}{2} \lvert f''(x) \rvert + \mathcal O(\delta^2).
+        = \frac{\delta}{2} \lvert f''(x) \rvert + \bigo(\delta^2).
     \]
 
     \paragraph{Bounding the second term in~\eqref{eq:triangle_inequality_derivative} -- the roundoff error.}
@@ -1141,7 +1141,7 @@ such as \julia{2^64} evaluating to 0.
         \nonumber
         &\leq \delta^{-1} \varepsilon \Bigl( \bigl\lvert f(x + \delta) \bigr\rvert + \bigl\lvert f(x) \bigr\rvert  \Bigr) \\
         \label{eq:num_diff_1}
-        &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \mathcal O(\varepsilon).
+        &= 2 \delta^{-1} \varepsilon \abs{f(x)} + \bigo(\varepsilon).
     \end{align}
     Using Taylor's theorem and then the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $+$),
     we then bound the first term on right-hand side of~\eqref{eq:numerical_differentiation_big_triangle} as
@@ -1151,7 +1151,7 @@ such as \julia{2^64} evaluating to 0.
         &= \delta^{-1} \left\lvert f'(\xi) \bigl( (x + \delta) - (x \madd \delta)  \bigr) \right\rvert \\
         \label{eq:num_diff_2}
         &\leq \delta^{-1} \varepsilon \lvert f'(\xi) \rvert \lvert x + \delta \rvert
-        = \delta^{-1} \varepsilon \lvert f'(x) x \rvert  + \mathcal O(\varepsilon).
+        = \delta^{-1} \varepsilon \lvert f'(x) x \rvert  + \bigo(\varepsilon).
     \end{align}
     Combining~\eqref{eq:num_diff_1} and~\eqref{eq:num_diff_2},
     we have that
@@ -1160,7 +1160,7 @@ such as \julia{2^64} evaluating to 0.
         \delta^{-1}
         \left\lvert \bigl( f(x+ \delta) - f(x) \bigr)
         - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
-        = \mathcal O(\delta^{-1} \varepsilon).
+        = \bigo(\delta^{-1} \varepsilon).
     \end{equation}
     Next, using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and
     then~\eqref{eq:numerical_differentiation_term1},
@@ -1170,8 +1170,8 @@ such as \julia{2^64} evaluating to 0.
         &\delta^{-1} \left\lvert \bigl( \widehat f(x \madd \delta) - \widehat f(x) \bigr)  - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr)  \right\rvert \\
         \label{eq:numerical_differentiation_term2}
         &\qquad \leq \delta^{-1} \varepsilon \lvert\widehat f(x \madd \delta) - \widehat f(x)\rvert
-        = \delta^{-1} \varepsilon  \underbrace{\lvert f(x + \delta) - f(x)\rvert}_{= \mathcal O(\delta)} +  \mathcal O (\delta^{-1} \varepsilon^2)
-        = \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
+        = \delta^{-1} \varepsilon  \underbrace{\lvert f(x + \delta) - f(x)\rvert}_{= \bigo(\delta)} +  \bigo (\delta^{-1} \varepsilon^2)
+        = \bigo\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \end{align}
     Notice that this term is smaller than the first three in~\eqref{eq:numerical_differentiation_big_triangle} when $\delta \ll 1$.
     We deduce by a triangle inequality from~\eqref{eq:numerical_differentiation_term1} and~\eqref{eq:numerical_differentiation_term2} that
@@ -1179,7 +1179,7 @@ such as \julia{2^64} evaluating to 0.
         \label{eq:intermedia_numerical_derivative}
         \delta^{-1} \left\lvert \bigl( f(x + \delta) - f(x) \bigr)
         - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) \right\rvert
-        &= \mathcal O(\delta^{-1} \varepsilon).
+        &= \bigo(\delta^{-1} \varepsilon).
     \end{align*}
     Finally, using the third inequality in~\eqref{eq:inequalities_numerical_differentiation} together with this equation,
     we bound the fifth term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
@@ -1187,16 +1187,16 @@ such as \julia{2^64} evaluating to 0.
         &\left\lvert \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) / \delta
         - \bigl( \widehat f(x \madd \delta) \msub \widehat f(x) \bigr) \mdiv \delta \right\rvert \\
         &\qquad \leq \varepsilon \bigl\lvert  \widehat f(x \madd \delta) \msub \widehat f(x) \bigr \rvert / \delta
-        = \frac{\varepsilon}{\delta} \underbrace{ \bigl\lvert  f(x + \delta) - f(x) \bigr \rvert }_{\mathcal O(\delta)}
-        +\, \mathcal O(\delta^{-1} \varepsilon^2)
-        = \mathcal O(\varepsilon + \delta^{-1} \varepsilon^2).
+        = \frac{\varepsilon}{\delta} \underbrace{ \bigl\lvert  f(x + \delta) - f(x) \bigr \rvert }_{\bigo(\delta)}
+        +\, \bigo(\delta^{-1} \varepsilon^2)
+        = \bigo(\varepsilon + \delta^{-1} \varepsilon^2).
     \end{align*}
     This term is also negligible in front of the other dominant contributions to the roundoff error given in~\eqref{eq:num_diff_1} and~\eqref{eq:num_diff_2}.
     Going back to~\eqref{eq:numerical_differentiation_big_triangle},
     we conclude that
     \[
         \left\lvert \frac{f(x + \delta) - f(x)}{\delta} - \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta \right\rvert
-        \leq \delta^{-1} \varepsilon \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x)x \rvert \Bigr) + \mathcal O\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
+        \leq \delta^{-1} \varepsilon \Bigl( 2 \lvert f(x) \rvert + \lvert f'(x)x \rvert \Bigr) + \bigo\left(\varepsilon + \delta^{-1} \varepsilon^2\right).
     \]
     \paragraph{Concluding the proof.}
     Going back to~\eqref{eq:triangle_inequality_derivative},

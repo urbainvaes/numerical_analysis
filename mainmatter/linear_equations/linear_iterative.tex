@@ -244,8 +244,8 @@ The updates for each of the entries of $\vect x^{(k+1)}$ are independent,
 and so the Jacobi method lends itself well to parallel implementation.
 The computational cost of one iteration,
 measured in number of floating point operations required,
-scales as $\mathcal O(n^2)$ if~$\mat A$ is a full matrix,
-or $\mathcal O(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per row on average.
+scales as $\bigo(n^2)$ if~$\mat A$ is a full matrix,
+or $\bigo(nk)$ if~$\mat A$ is a sparse matrix with $k$ nonzero elements per row on average.
 It is simple to prove the convergence of Jacobi's method is the case where $\mat A$ is diagonally dominant.
 \begin{proposition}
     \label{proposition:linear_convergence_jacobi}

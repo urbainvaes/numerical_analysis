@@ -175,7 +175,7 @@ asymptotically in the limit as $k \to \infty$,
 is the one with coefficient $\frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1}$.
 Therefore, we deduce that
 \[
-    \angle(\vect x_k, \vect v_1) = \mathcal O \left( \abs*{\frac{\lambda_2}{\lambda_1}}^k \right).
+    \angle(\vect x_k, \vect v_1) = \bigo \left( \abs*{\frac{\lambda_2}{\lambda_1}}^k \right).
 \]
 The convergence is slow if $\abs{\lambda_2/\lambda_1}$ is close to one,
 and fast if $\abs{\lambda_2} \ll \abs{\lambda_1}$.
@@ -204,13 +204,13 @@ by reducing to a common denominator we deduce
     &= \left\lvert \frac{\lambda_1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \lambda_2 +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \lambda_n}
     {1 + \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 +  \dotsb +  \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2} - \lambda_1 \right\rvert \\
     &\leq  \abs*{ \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_2 - \lambda_1} +  \dotsb + \abs*{ \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} }^2 \abs{\lambda_n- \lambda_1}
-    = \mathcal O\left(\abs*{\frac{\lambda_2}{\lambda_1}}^{2k}\right).
+    = \bigo\left(\abs*{\frac{\lambda_2}{\lambda_1}}^{2k}\right).
 \end{align*}
 
 The convergence of the eigenvalue in the particular case of a Hermitian matrix is faster than for a general matrix in~$\complex^{n \times n}$.
 For general matrices,
 it is possible to show using a similar argument
-that the error is of order~$\mathcal O\bigl(\abs{\lambda_2/\lambda_1}^k\bigr)$
+that the error is of order~$\bigo\bigl(\abs{\lambda_2/\lambda_1}^k\bigr)$
 in the limit as $k \to \infty$.
 
 \paragraph{Essential convergence.}
@@ -274,7 +274,7 @@ An application of~\cref{proposition:convergence_of_the_power_iteration} immediat
     \]
     More precisely,
     \[
-        \angle(\vect x_k, \vect v_J) = \mathcal O \left( \abs*{\frac{\lambda_J - \mu}{\lambda_K - \mu}}^k \right).
+        \angle(\vect x_k, \vect v_J) = \bigo \left( \abs*{\frac{\lambda_J - \mu}{\lambda_K - \mu}}^k \right).
     \]
 \end{proposition}
 \Cref{proposition:inverse_iteration} states that $\vect x_k$ converges essentially to~$\vect v_J$.
@@ -612,7 +612,7 @@ In addition to this convergence result,
 it is possible to show that the error satisfies
 \[
     \angle \Bigl(\col(\mat X_k), \col(\mat V_1)\Bigr)
-    = \mathcal O \left( \abs*{\frac{\lambda_{p+1}}{\lambda_p}}^k \right).
+    = \bigo \left( \abs*{\frac{\lambda_{p+1}}{\lambda_p}}^k \right).
 \]
 Here,
 the angle between two subspaces $\mathcal A$ and $\mathcal B$ of $\complex^n$ is defined as
@@ -958,7 +958,7 @@ In practice, the larger the dimension~$p$ of the subspace~$\mathcal U$ employed 
 the more memory is required for storing an orthonormal basis of~$\mathcal U$.
 In addition, for large values of~$p$,
 computing the reduced matrix~\eqref{eq:reduced_matrix_arnoldi} and its eigenpairs becomes computationally expensive;
-the computational cost of computing the matrix~$\mat H$ scales as $\mathcal O(p^2)$.
+the computational cost of computing the matrix~$\mat H$ scales as $\bigo(p^2)$.
 To remedy these potential issues,
 the algorithm can be restarted periodically.
 For example, \cref{algo:arnoldi_power} can be employed as an alternative to the power iteration

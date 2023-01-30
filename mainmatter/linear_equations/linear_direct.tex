@@ -389,12 +389,12 @@ The computational cost of the algorithm,
 measured as the number of floating point operations (flops) required,
 is dominated by the Gaussian transformations,
 in line 9 in the above code.
-All the other operations amount to a computational cost scaling as $\mathcal O(n^2)$,
+All the other operations amount to a computational cost scaling as $\bigo(n^2)$,
 which is negligible compared to the cost of the $\mat L \mat U$ factorization when $n$ is large.
 This factorization requires
 \[
     \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
-    = \frac{2}{3} n^3 + \mathcal O(n^2) \quad \mathrm{flops}.
+    = \frac{2}{3} n^3 + \bigo(n^2) \quad \mathrm{flops}.
 \]
 
 \subsection{Backward and forward substitution}%
@@ -700,12 +700,12 @@ this phenomenon is called \emph{fill-in}.
 \subsubsection{Reducing the bandwidth: the Cuthill--McKee algorithm~\moreinfo}%
 \label{ssub:reducing_the_bandwidth_the_cuthill_mckee_algorithm}
 
-The computational cost of calculating the $\mat L \mat U$ or Cholesky decomposition of a matrix with bandwidth $k$ scales as $\mathcal O(n k^2)$,
-which is much better than the general scaling $\mathcal O(n^3)$ if $k \ll n$.
+The computational cost of calculating the $\mat L \mat U$ or Cholesky decomposition of a matrix with bandwidth $k$ scales as $\bigo(n k^2)$,
+which is much better than the general scaling $\bigo(n^3)$ if $k \ll n$.
 In applications, the bandwidth $k$ is often related to the matrix size $n$.
-For example, if~$\mat A$ arises from the discretization of the Laplacian operator, then $k = \mathcal O(\sqrt{n})$
+For example, if~$\mat A$ arises from the discretization of the Laplacian operator, then $k = \bigo(\sqrt{n})$
 provided that a good ordering of the vertices is employed.
-In this case, the computational cost scales as $\mathcal O(n^2)$.
+In this case, the computational cost scales as $\bigo(n^2)$.
 
 Since a narrow band is associated with a lower computational cost of the $\mat L \mat U$ decomposition,
 it is natural to wonder whether the bandwidth of a matrix $\mat A$ can be reduced.

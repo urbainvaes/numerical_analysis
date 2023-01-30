@@ -220,8 +220,8 @@ we obtain
 which concludes the proof.
 \end{proof}
 
-The integration error therefore scales as~$\mathcal O(h^2)$.
-(Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\mathcal O(h^2)$,
+The integration error therefore scales as~$\bigo(h^2)$.
+(Strictly speaking, we have shown only that the integration error admits an upper bound that scales at $\bigo(h^2)$,
 but it turns out that the dependence on~$h$ of this bound is optimal).
 
 \paragraph{Composite Simpson rule.}
@@ -319,7 +319,7 @@ as we illustrate formally hereafter for the composite Simpson rule.
 
 Suppose that $\widehat I_{2h}$ and $\widehat I_{h}$ are two approximations of the integral,
 calculated using the composite Simpson rule with step size $2h$ and $h$, respectively.
-If we assume that the error proportionally to~$\mathcal O(h^4)$ as~\eqref{eq:scaling_error} suggests,
+If we assume that the error proportionally to~$\bigo(h^4)$ as~\eqref{eq:scaling_error} suggests,
 then it holds approximately that
 \begin{equation}
     \label{eq:relation_errors}
@@ -418,7 +418,7 @@ and that we have access to evaluations of $J$ at $h, h/2, h/4, h/8 \dotsc$.
 If $J$ extends to a smooth function over $[0, H]$,
 then by Taylor expansion it holds that
 \[
-    J(\eta) = J(0) + J'(0) \eta + J''(0) \frac{\eta^2}{2} + J^{(3)}(0) \frac{\eta^3}{3!} + \dotsb + J^{(k)}(0) \frac{\eta^k}{k!} + \mathcal O(\eta^{k+1}).
+    J(\eta) = J(0) + J'(0) \eta + J''(0) \frac{\eta^2}{2} + J^{(3)}(0) \frac{\eta^3}{3!} + \dotsb + J^{(k)}(0) \frac{\eta^k}{k!} + \bigo(\eta^{k+1}).
 \]
 
 \paragraph{Elimination of the linear error term.}
@@ -426,11 +426,11 @@ Let us assume that $J'(0) \neq 0$,
 so that the leading order term after the constant $J(0)$ scales as~$\eta$.
 Then we have
 \begin{align*}
-    J(h) &= J(0) + J'(0) h + \mathcal O(h^2) \\
-    J(h/2) &= J(0) + J'(0) \frac{h}{2} + \mathcal O(h^2).
+    J(h) &= J(0) + J'(0) h + \bigo(h^2) \\
+    J(h/2) &= J(0) + J'(0) \frac{h}{2} + \bigo(h^2).
 \end{align*}
 We now ask the following question:
-can we combine linearly $J(h)$ and $J(h/2)$ in order to construct an approximation $J_1(h/2)$ of~$J(0)$ with an error scaling as $\mathcal O(h^2)$?
+can we combine linearly $J(h)$ and $J(h/2)$ in order to construct an approximation $J_1(h/2)$ of~$J(0)$ with an error scaling as $\bigo(h^2)$?
 Employing the ansatz
 \(
     J_1(h/2) = \alpha J(h) + \beta J(h/2),
@@ -438,7 +438,7 @@ Employing the ansatz
 we calculate
 \begin{equation}
     \label{eq:expansion_richardson}
-    J_1(h/2) = (\alpha + \beta) J(0) + J'(0) h \left(\alpha + \frac{1 - \alpha}{2}\right) + \mathcal O(h^2).
+    J_1(h/2) = (\alpha + \beta) J(0) + J'(0) h \left(\alpha + \frac{1 - \alpha}{2}\right) + \bigo(h^2).
 \end{equation}
 Since we want this expression to approximate $J(0)$ for small~$h$,
 we need to impose that $\alpha + \beta = 1$.
@@ -463,18 +463,18 @@ the approximation $J_1(h/2)$ is simply the $y$ intercept of the straight line pa
 If we had tracked the coefficient of $h^2$ in the previous paragraph,
 we would have obtained instead of~\eqref{eq:expansion_richardson} the following equation:
 \[
-    J_1(h/2) = J(0) - J^{(2)}(0) \frac{h^2}{4} + \mathcal O(h^3).
+    J_1(h/2) = J(0) - J^{(2)}(0) \frac{h^2}{4} + \bigo(h^3).
 \]
 Provided that we have access also to $J(h/4)$,
 we can also calculate
 \[
-   J_1(h/4) = 2J(h/4) - J(h/2) = J(0) - J^{(3)}(0) \frac{h^2}{16} + \mathcal O(h^3).
+   J_1(h/4) = 2J(h/4) - J(h/2) = J(0) - J^{(3)}(0) \frac{h^2}{16} + \bigo(h^3).
 \]
 At this point,
 it is natural to wonder whether we can combine $J_1(h/2)$ and $J_1(h/4)$ in order to produce an even better approximation of $J(0)$.
 Applying the same reasoning as in the previous section leads us to introduce
 \[
-    J_2(h/4) = \frac{4 J_1(h/4) - J_1(h/2)}{4 - 1} = J(0) + \mathcal O(h^3).
+    J_2(h/4) = \frac{4 J_1(h/4) - J_1(h/2)}{4 - 1} = J(0) + \bigo(h^3).
 \]
 This is an exact approximation of $J(0)$ if $J$ is a quadratic polynomial,
 indicating that $J_2(h/4)$ is simply the $y$ intercept of the quadratic polynomial interpolating the function~$J$ through the three points
@@ -483,14 +483,14 @@ $\bigl(h/4, J(h/4)\bigr)$, $\bigl(h/2, J(h/2)\bigr)$ and $\bigl(h, J(h)\bigr)$.
 \paragraph{Elimination of higher order terms.}
 The procedure above can be repeated in order to eliminate terms of higher and higher orders.
 The following schematic illustrates,
-for example, the calculation of an approximation $J_3(h/8) = J(0) + \mathcal O(h^4)$.
+for example, the calculation of an approximation $J_3(h/8) = J(0) + \bigo(h^4)$.
 \[
     \begin{tikzcd}[cramped, sep=small]
         J(h) \arrow[dr]  \\
         J(h/2) \arrow[r] \arrow[dr] & J_1(h/2) \arrow[dr]  \\
         J(h/4) \arrow[r] \arrow[dr] & J_1(h/4) \arrow[r] \arrow[dr] & J_2(h/4) \arrow[dr]  \\
         J(h/8) \arrow[r] & J_1(h/8) \arrow[r] & J_2(h/8) \arrow[r] & J_3(h/8) \\
-        \mathcal O(h) & \mathcal O(h^2) & \mathcal O(h^3) & \mathcal O(h^4).
+        \bigo(h) & \bigo(h^2) & \bigo(h^3) & \bigo(h^4).
     \end{tikzcd}
 \]
 Here, the last row indicates the scaling of the error with respect to the parameter $h$ in the limit as~$h \to 0$.
@@ -522,8 +522,8 @@ Constructing the functions in Julia can be achieved in just a few lines of code.
 \paragraph{Generalization.}
 Sometimes,
 it is known a priori that the Taylor development of the function~$J$ around zero contains only even powers of~$h$.
-In this case, the Richardson extrapolation procedure can be slightly modified in order to produce approximations with errors scaling as~$\mathcal O(h^4)$,
-then~$\mathcal O(h^6)$, then~$\mathcal O(h^8)$, etc.
+In this case, the Richardson extrapolation procedure can be slightly modified in order to produce approximations with errors scaling as~$\bigo(h^4)$,
+then~$\bigo(h^6)$, then~$\bigo(h^8)$, etc.
 This procedure is illustrated below:
 \[
     \begin{tikzcd}[cramped, sep=small]
@@ -531,7 +531,7 @@ This procedure is illustrated below:
         J(h/2) \arrow[r] \arrow[dr] & J_1(h/2) \arrow[dr]  \\
         J(h/4) \arrow[r] \arrow[dr] & J_1(h/4) \arrow[r] \arrow[dr] & J_2(h/4) \arrow[dr]  \\
         J(h/8) \arrow[r] & J_1(h/8) \arrow[r] & J_2(h/8) \arrow[r] & J_3(h/8) \\
-        \mathcal O(h^2) & \mathcal O(h^4) & \mathcal O(h^6) & \mathcal O(h^8).
+        \bigo(h^2) & \bigo(h^4) & \bigo(h^6) & \bigo(h^8).
     \end{tikzcd}
 \]
 This time, the linear combinations required for populating this table are given by
@@ -551,7 +551,7 @@ It is possible to show, see for example~\cite[Property 9.3]{MR2265914},
 that~$J(h)$ may be expanded as follows:
 \[
     \forall k \in \nat, \qquad
-    J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^{2k} + \mathcal O(h^{2k+2}).
+    J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^{2k} + \bigo(h^{2k+2}).
 \]
 Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of the integral with increasing accuracy.
 The convergence of Romberg's method for calculating the integral~\eqref{eq:integral_example} is illustrated in~\cref{fig:romberg}.
@@ -901,7 +901,7 @@ is a $(1 - \alpha)$ confidence interval for $I$.
 \end{exercise}
 
 \begin{exercise}
-    Use Romberg's method to construct an integration rule with an error term scaling as~$\mathcal O(h^4)$.
+    Use Romberg's method to construct an integration rule with an error term scaling as~$\bigo(h^4)$.
     Is there a link between the method you obtained and another integration rule seen in class?
 \end{exercise}
 

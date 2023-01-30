@@ -262,7 +262,7 @@ Notice that when falling powers are employed as polynomial basis,
 the matrix in~\eqref{eq:linear_system_interpolation} is lower triangular,
 and so the algorithm described in~\cref{example:gregory_newton} could be replaced by the forward substitution method.
 Whereas the coefficients of the Lagrange interpolant can be obtained immediately from the values of~$u$ at the nodes,
-calculating the coefficients of the expansion in~\eqref{eq:gregory_newton} requires $\mathcal O(n^2)$ operations.
+calculating the coefficients of the expansion in~\eqref{eq:gregory_newton} requires $\bigo(n^2)$ operations.
 However, Gregory--Newton interpolation has several advantages over Lagrange interpolation:
 \begin{itemize}
     \item
