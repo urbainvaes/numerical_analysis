@@ -1118,9 +1118,9 @@ we prove the convergence of the Adams--Bashforth method under a Lipschitz condit
 
 \subsection{Adams--Moulton methods}
 The Adams--Moulton methods are very similar to their Adams--Bashforth cousins.
-The only difference is that the former are obtained by interpolating the function $t \mapsto \vect f\bigl(t, \vect x(t)\bigr)$ in~\eqref{eq:adams_bashforth_intro} at the nodes
-$t_{n-k+1}, \dotsc, t_{n+1}$,
-which leads to the method
+The only difference is that the former are obtained by interpolating the function $t \mapsto \vect f\bigl(t, \vect x(t)\bigr)$ in~\eqref{eq:adams_bashforth_intro} at nodes shifted forward by~$\Delta$,
+i.e. at the nodes $t_{n-k+1}, \dotsc, t_{n+1}$.
+This leads to the method
 \begin{equation}
     \label{eq:adams_moulton}
     \vect x_{n+1} = \vect x_n + \Delta \sum_{i=-1}^{k-1} b_i \vect f\bigl(t_{n-i}, \vect x_{n-i}\bigr),
