@@ -553,7 +553,7 @@ we can prove the following result.
      in absolute and relative terms, to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
 \end{remark}
 
-\subsection{General one-step methods}
+\subsection{Analysis of general one-step methods}
 \label{sub:one_step_general}
 In general, one-step methods to solve differential equations are of the abstract form
 \begin{equation}
@@ -881,12 +881,12 @@ at the cost of a more difficult initialization.
 In this section we focus on~\emph{linear} multistep methods of the form
  \begin{align}
      \nonumber
-     \vect x_{n+1}  &= a_1 \vect x_n + a_2 \vect x_{n-1} + \dotsb + a_k \vect x_{n-k+1} \\
+     \vect x_{n+1}  &= a_0 \vect x_n + a_1 \vect x_{n-1} + \dotsb + a_{k} \vect x_{n-k} \\
      \label{eq:linear_mulitstep}
-                    &\qquad + \Delta \Bigl( b_0 \vect f(t_{n+1}, \vect x_{n+1}) + b_1 \vect f(t_{n}, \vect x_{n}) + \dotsb + b_k \vect f(t_{n-k+1}, \vect x_{n-k+1}) \Bigr).
+                    &\qquad + \Delta \Bigl( b_{-1} \vect f(t_{n+1}, \vect x_{n+1}) + b_0 \vect f(t_{n}, \vect x_{n}) + \dotsb + b_k \vect f(t_{n-k}, \vect x_{n-k}) \Bigr).
 \end{align}
-This equation defines an explicit method if $b_0 = 0$,
-and an implicit method if $b_0 \neq 0$.
+This equation defines an explicit method if $b_{-1} = 0$,
+and an implicit method if $b_{-1} \neq 0$.
 Note that explicit methods of the form~\eqref{eq:linear_mulitstep} require only one additional evaluation~$f(t_{n}, \vect x_{n})$ per iteration.
 When~$b_0 \neq 0$, the iteration~\eqref{eq:linear_mulitstep} is a nonlinear equation for the unknown~$\vect x_{n+1}$,
 which must itself be solved by resorting to a numerical method.
@@ -902,9 +902,9 @@ the local truncation error for~\eqref{eq:linear_mulitstep} is defined as the res
 \begin{align}
     \nonumber
     \Delta \vect \eta_{n+1}
-        &:= \vect x(t_n + \Delta) - a_1 \vect x(t_n) - a_2 \vect x(t_n - \Delta) - \dotsb - a_k \vect x\bigl(t_n - (k-1) \Delta\bigr) \\
+        &:= \vect x(t_n + \Delta) - a_0 \vect x(t_n) - a_1 \vect x(t_n - \Delta) - \dotsb - a_k \vect x(t_n - k \Delta) \\
         \label{eq:truncation_multistep}
-        & \qquad- \Delta \Bigl( b_0 \vect x'(t_n + \Delta) + b_1 \vect x'(t_n) + \dotsb + b_k \vect x'\bigl(t_n - (k-1) \Delta\bigr) \Bigr).
+        & \qquad- \Delta \Bigl( b_{-1} \vect x'(t_n + \Delta) + b_0 \vect x'(t_n) + \dotsb + b_k \vect x'(t_n - k \Delta) \Bigr).
 \end{align}
 The multistep method~\eqref{eq:linear_mulitstep} is of order~$p$ if the maximum local truncation error
 over all the discretization points, in norm, scales as~$\bigo(\Delta^p)$.
@@ -962,38 +962,195 @@ The following result is useful for estimating the order of consistency of a line
 \end{proof}
 \begin{example}
     In the one-dimensional setting,
-    we wish to find parameters $a_1$, $a_2$ and~$b_1$ such that the order of consistency 
+    we wish to find parameters $a_0$, $a_1$ and~$b_1$ such that the order of consistency
     of the following multistep scheme is as high as possible:
      \[
-         x_{n+1}  = a_1 x_n + a_2 x_{n-1} + b_1 \Delta f(t_{n}, x_{n}).
+         x_{n+1}  = a_0 x_n + a_2 x_{n-1} + b_0 \Delta f(t_{n}, x_{n}).
     \]
     Substituting $x(t) = 1$ in the formula~\eqref{eq:truncation_multistep} for the local truncation error,
     we obtain
     \[
-        \eta_{n+1} = x(t_n + \Delta) - a_1 x(t_n) - a_2 x(t_n - \Delta) - b_1 \Delta x'(t_n)
-        = 1 - a_1 - a_2.
+        \eta_{n+1} = x(t_n + \Delta) - a_0 x(t_n) - a_1 x(t_n - \Delta) - b_0 \Delta x'(t_n)
+        = 1 - a_0 - a_1.
     \]
-    Therefore $a_2 = (1 - a_1)$.
-    Next, substituting $x(t) = t - t_n$,
+    Therefore $a_1 = (1 - a_0)$.
+    Next, substituting $x(t) = t - t_n$ in~\eqref{eq:truncation_multistep},
     we obtain
     \[
-        \eta_{n+1} = \Delta (2 - a_1 - b_1),
+        \eta_{n+1} = \Delta (2 - a_0 - b_0),
     \]
-    which gives $b_1 = 2 - a_1$.
+    which gives $b_0 = 2 - a_0$.
     Finally, substituting $x(t) = (t-t_n)^2$,
     we obtain
     \[
-        \eta_{n+1} = \Delta^2 a_1.
+        \eta_{n+1} = \Delta^2 a_0,
     \]
+    and so $a_0 = 1$.
     We conclude that the best parameters,
     leading to a local truncation error scaling as~$\bigo(\Delta^2)$,
-    are given by~$a_1 = 0$, $a_2 = 1$ and $b_1 = 2$.
+    are given by~$a_0 = 0$, $a_1 = 1$ and $b_0 = 2$.
     The resulting method reads
     \[
          x_{n+1} = x_{n-1} + 2 \Delta f(t_{n}, x_{n}),
     \]
-    and is known as the midpoint multistep method.
+    and is known as the \emph{multistep midpoint method}.
 \end{example}
+We now present two widely used systematic approaches for constructing multistep methods,
+known as the Adams--Bashforth and Adams--Moulton approaches.
+
+\subsection{Adams--Bashforth methods}
+Let $\vect x\colon [0, T] \to \real^n$ denote the exact solution to the differential equation~\eqref{eq:ode}.
+Integrating this equation between $t_n$ and $t_{n+1}$,
+we obtain
+\begin{equation}
+    \label{eq:adams_bashforth_intro}
+    \vect x(t_{n+1}) = \vect x(t_n) + \int_{t_n}^{t_{n+1}} \vect f\bigl(t, \vect x(t)\bigr) \, \d t.
+\end{equation}
+The key idea of the Adams--Bashforth method is to approximate the function $t \mapsto \vect f\bigl(t, \vect x(t)\bigr)$ by the interpolating polynomial~$\widehat {\vect f}$ of degree $k$ at the nodes
+$t_{n-k}, \dotsc, t_n$:
+\begin{equation}
+    \label{eq:interpolation}
+    \widehat {\vect f}(t) = \sum_{i=0}^{k} \vect f\bigl(t_{n-i}, \vect x(t_{n-i})\bigr) L_i(t),
+    \qquad L_i(t) := \prod_{\substack{j=0 \\ j\neq i}}^{k} \frac{t - t_{n-j}}{t_{n-i} - t_{n-j}}.
+\end{equation}
+Substituting this approximation in~\eqref{eq:adams_bashforth_intro},
+we obtain
+\[
+    \vect x(t_{n+1}) \approx \vect x(t_n) + \sum_{i=0}^{k} \vect f\bigl(t_{n-i}, \vect x(t_{n-i})\bigr) \int_{t_n}^{t_{n+1}} L_i(t)\, \d t.
+\]
+This motivates the following \emph{Adams--Bashforth} numerical scheme:
+\begin{equation}
+    \label{eq:adams_bashforth}
+    \vect x_{n+1} = \vect x_n + \Delta \sum_{i=0}^{k} b_i \vect f\bigl(t_{n-i}, \vect x_{n-i}\bigr),
+    \qquad b_i := \int_{0}^{1} \prod_{\substack{j=0 \\ j\neq i}}^{k} \frac{s + j}{-i + j} \, \d s.
+\end{equation}
+Since the Lagrange polynomials $(L_i)_{0\leq i\leq k}$ depend on~$k$,
+so do the coefficients $b_i$.
+However, these are independent of~$\Delta$,
+and so they can be tabulated.
+The value of these coefficients for the first few Adams--Bashforth methods are collated in~\cref{table:adams_bashforth}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+         \hline \phantom{$\Big($}
+             $i$ & $0$ & $1$ & $2$ & $3$
+         \\ \hline \phantom{$\Big($}
+             $k=0$ & $1$ & & &
+         \\ \hline \phantom{$\Big($}
+             $k=1$ & $\frac{3}{4}$ & $-\frac{1}{4}$ & &
+         \\ \hline \phantom{$\Big($}
+             $k=2$ & $\frac{23}{12}$ & $-\frac{16}{12}$ & $\frac{5}{12}$ &
+         \\ \hline \phantom{$\Big($}
+             $k=3$ & $\frac{55}{24}$ & $-\frac{59}{24}$ & $\frac{37}{24}$ & $-\frac{9}{24}$
+         \\ \hline
+    \end{tabular}
+    \caption{%
+        Coefficients $(b_i)_{0 \leq i \leq k}$ of the Adams--Bashforth methods.
+    }
+    \label{table:adams_bashforth}
+\end{table}
+
+\paragraph{Local truncation error.}
+Applying \cref{theorem:interpolation_error} for the interpolation error component-wise,
+we obtain
+\[
+    \forall t \in [0, T], \qquad \vecnorm*{\vect x'(t) - \widehat {\vect f}(t)}_{\infty}
+    \leq \frac{\lvert t- t_{n-k} \rvert \dotsb \lvert t - t_n \rvert}{(k+1)!} \sup_{t \in [0, T]} \vecnorm*{\vect x^{(k+2)}(t)}_{\infty},
+\]
+where $\widehat {\vect f}$ is the function defined in~\eqref{eq:interpolation}.
+Since
+\[
+    \Delta \vect \eta_{n+1}
+    = \vect x(t_{n+1}) - \vect x(t_n) - \Delta \sum_{i=0}^{k} b_i \vect f\bigl(t_{n-i}, \vect x(t_{n-i})\bigr)
+    = \int_{t_n}^{t_{n+1}} \Bigl(\vect x'(t) - \widehat{\vect f}(t)\Bigr) \, \d t,
+\]
+we deduce that
+\begin{equation}
+    \label{eq:truncation_adams_bashforth}
+    \vecnorm{\vect \eta_{n+1}} \leq C_k M_{k+2} \Delta^{k+1},
+    \qquad M_{k+2} := \sup_{t \in [0, T]} \vecnorm*{\vect x^{(k+2)}(t)}_{\infty},
+\end{equation}
+for an appropriate numerical constant~$C_k$ independent of~$n$ and the problem data.
+Therefore the Adams--Bashforth method~\eqref{eq:adams_bashforth} is consistent with order~$k+1$.
+
+\paragraph{Convergence.}
+Using a reasoning similar to that in the proof of~\cref{theorem:forward_euler},
+we prove the convergence of the Adams--Bashforth method under a Lipschitz condition for the function~$\vect f$.
+\begin{theorem}
+    \label{theorem:adams_bashforth}
+    Assume that the solution $\vect x\colon [0, T] \to \real^n$ to~\eqref{eq:ode} is $k+2$ times continuously differentiable
+    and that the global Lipschitz condition~\eqref{eq:global_lipschitz} is satisfied.
+    Suppose also that
+    \[
+        \forall i \in \{0, \dotsc, k\}, \qquad
+        \vecnorm{\vect x(t_i) - \vect x_i}
+        \leq \delta.
+    \]
+    Then the following error estimate holds for the Adams--Bashforth method~\eqref{eq:adams_bashforth}:
+    \begin{equation}
+        \label{eq:error_bound_forward_euler}
+        \forall n \in \left\{0, 1, \dotsc, \floor*{\frac{T}{\Delta}} \right\},
+        \qquad
+        \vecnorm{\vect x(t_n) - \vect x_n}
+        \leq
+        \delta \e^{L B} + C_k M_{k+2} \Delta^{k+1} \left( \frac{\e^{LB t_n} - 1}{LB} \right),
+    \end{equation}
+    where $C_k$ and $M_{k+2}$ are the constants from~\eqref{eq:truncation_adams_bashforth},
+    and with $B := \abs{b_0} + \dotsb + \abs{b_k}$.
+\end{theorem}
+\begin{proof}
+    Let $\vect e_n := \vect x(t_{n+1}) - \vect x_{n+1}$.
+    From the equation
+    \[
+        \vect x(t_{n+1}) - \vect x_{n+1} =
+        \vect x(t_{n}) - \vect x_n + \Delta \sum_{i=0}^{k} b_i \Bigl( \vect f\bigl(t_{n-i}, \vect x(t_{n-i})\bigr) -  \vect f\bigl(t_{n-i}, \vect x_{n-i}\bigr) \Bigr)
+        + \Delta \vect \eta_{n+1},
+    \]
+    which is valid for $n \geq k$,
+    we deduce that
+    \[
+        \max\Bigl\{\vecnorm{\vect e_{0}},  \dotsc  , \vecnorm{\vect e_{n+1}} \Bigr\} \leq \left(1 + \Delta L B\right) \max\Bigl\{\vecnorm{\vect e_{0}},  \dotsc  , \vecnorm{\vect e_{n}} \Bigr\} + C_k M_{k+2} \Delta^{k+2}.
+    \]
+    Since $\max\Bigl\{\vecnorm{\vect e_{0}},  \dotsc  , \vecnorm{\vect e_{k}} \Bigr\} \leq \delta$ by assumption,
+    the statement easily follows.
+\end{proof}
+
+\subsection{Adams--Moulton methods}
+The Adams--Moulton methods are very similar to their Adams--Bashforth cousins.
+The only difference is that the former are obtained by interpolating the function $t \mapsto \vect f\bigl(t, \vect x(t)\bigr)$ in~\eqref{eq:adams_bashforth_intro} at the nodes
+$t_{n-k+1}, \dotsc, t_{n+1}$,
+which leads to the method
+\begin{equation}
+    \label{eq:adams_moulton}
+    \vect x_{n+1} = \vect x_n + \Delta \sum_{i=-1}^{k-1} b_i \vect f\bigl(t_{n-i}, \vect x_{n-i}\bigr),
+    \qquad b_i := \int_{0}^{1} \prod_{\substack{j=-1 \\ j\neq i}}^{k-1} \frac{s + j}{-i + j} \, \d s.
+\end{equation}
+Unlike the Adams--Bashforth methods, which are \emph{explicit},
+the Adams--Moulton methods are \emph{implicit}.
+The value of the coefficients for the first few Adams--Moulton methods are collated in~\cref{table:adams_moulton}.
+Notice that, for~$k = 0$, the Adams--Moulton method coincides with the backward Euler method,
+and for $k =1$ it coincides with the Crank--Nicolson method.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+         \hline \phantom{$\Big($}
+             $i$ & $-1$ & $0$ & $1$ & $2$
+         \\ \hline \phantom{$\Big($}
+             $k=0$ & $1$ & & &
+         \\ \hline \phantom{$\Big($}
+             $k=1$ & $\frac{1}{2}$ & $\frac{1}{2}$ & &
+         \\ \hline \phantom{$\Big($}
+             $k=2$ & $\frac{5}{12}$ & $\frac{8}{12}$ & $-\frac{1}{12}$ &
+         \\ \hline \phantom{$\Big($}
+             $k=3$ & $\frac{9}{24}$ & $\frac{19}{24}$ & $-\frac{5}{24}$ & $\frac{1}{24}$
+         \\ \hline
+    \end{tabular}
+    \caption{%
+        Coefficients $(b_i)_{0 \leq i \leq k}$ of the Adams--Moulton methods.
+    }
+    \label{table:adams_moulton}
+\end{table}
 
 \section{Absolute stability}
 \label{sec:absolute_stability}
