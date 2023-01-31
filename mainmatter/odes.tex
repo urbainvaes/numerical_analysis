@@ -8,7 +8,7 @@ This chapter concerns the numerical solution of ordinary differential equations 
     \label{eq:ode}
     \left \{
     \begin{aligned}
-        & \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
+        & \vect x'(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
         & \vect x(t_0) = \vect x_0.
     \end{aligned}
     \right.
@@ -274,7 +274,7 @@ We are now ready to prove uniqueness.
     \[
         \left \{
         \begin{aligned}
-            & \dot {\vect x}(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
+            & \vect x'(t) = \vect f\bigl(t, \vect x(t)\bigr), \\
             & \vect x(t_n) = \vect x_*(t_n).
         \end{aligned}
         \right.
@@ -290,7 +290,7 @@ We are now ready to prove uniqueness.
     \[
         \left \{
         \begin{aligned}
-            & \dot x = x^2, \\
+            & x'(t) = x(t)^2, \\
             & x(0) = 1.
         \end{aligned}
         \right.
@@ -339,7 +339,7 @@ On the other hand, we have
 \[
     \frac{\d}{\d t} W\bigl(\vect x_*(t)\bigr) = \nabla W\bigl(\vect x_*(t)\bigr) \cdot \vect f\bigl(\vect x_*(t)\bigr) \leq c.
 \]
-Therefore $\lim_{t \to T_+} W\bigl(\vect x_*(t)\bigr) \leq W\bigl(\vect x_*(0)\bigr) + \lvert c \rvert (T_+ - t_0)$,
+Therefore $\lim_{t \to T_+} W\bigl(\vect x_*(t)\bigr) \leq W\bigl(\vect x_*(t_0)\bigr) + \lvert c \rvert (T_+ - t_0)$,
 which is a contradiction.
 
 % \paragraph{Lyapunov stability.}
@@ -383,9 +383,11 @@ Most numerical methods for ODEs construct an approximation of the solution at di
 The discretization points $(t_n)_{n \in \nat}$ are commonly equidistant,
 i.e.~$t_n = n \Delta$ where $\Delta$ is the \emph{discretization step}.
 Sometimes, it is useful to employ a variable time step,
-but for simplicity we assume throughout this section that the time step is fixed.
+but we assume throughout this section that the time step is fixed, for simplicity.
 We begin in~\cref{sub:explicit_euler} and~\cref{sub:implicit_euler} by studying the simplest one-step methods,
-and then in~\cref{sub:one_step_general} we present a general approach to the analysis of one-step methods.
+namely the forward and backward Euler methods.
+Then, in~\cref{sub:one_step_general},
+we present a general approach to the analysis of one-step methods.
 Finally, in~\cref{sub:other_one_step},
 we present other widely used one-step methods in applications.
 
@@ -405,6 +407,7 @@ This motivates a method known as the \emph{forward} or \emph{explicit} Euler met
     \vect x_{n+1} = \vect x_{n} + \Delta \vect f(t_n, \vect x_n),
 \]
 with the same initial condition as for the continuous equation~\eqref{eq:ode}.
+The convergence of this method can be proved under a global Lipschitz assumption on the function~$\vect f$.
 
 \begin{theorem}
     [Convergence of the forward Euler method]
@@ -416,7 +419,7 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
         \vecnorm{\vect f(t, \vect x) - \vect f(t, \vect y)}
         \leq L \vecnorm{\vect x - \vect y}.
     \end{equation}
-    Suppose in addition that there exists a unique, twice continuously differentiable and globally defined solution to~\eqref{eq:ode},
+    Suppose in addition that there exists a unique, twice continuously differentiable of~\eqref{eq:ode} over the interval~$[0, T]$,
     and let
     \[
         M = \sup_{t \in [0,T]} \vecnorm{\vect x''(t)}
@@ -435,7 +438,7 @@ with the same initial condition as for the continuous equation~\eqref{eq:ode}.
     Notice that
     \begin{align*}
         \vect x(t_{n}) - \vect x_{n}
-        &= \Bigl( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\tau) \Bigr)
+        &= \left( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n) \right)
         - \Bigl( \vect x_n + \Delta \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
         &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n),
     \end{align*}
@@ -497,7 +500,7 @@ Finding a solution to~\eqref{eq:backward_euler} amounts to finding a fixed point
     \vect y \mapsto \vect F(\vect y) := \vect x_{n} + \Delta \vect f(t_n, \vect y)
 \]
 A priori, the existence and uniqueness of such a fixed point is not guaranteed.
-We proved in~\cref{theorem:exponential_convergence_fixed_point} that a sufficient condition for these to hold is
+We proved in~\cref{theorem:exponential_convergence_fixed_point} that a sufficient condition for these properties to hold is
 that~$\vect F$ is globally Lipschitz with a constant strictly less than 1,
 which holds if and only if the function~$\vect y \mapsto \vect f(t_n, \vect y)$ is globally Lipschitz with a constant strictly less than $1/\Delta$.
 If the condition~\eqref{eq:global_lipschitz} holds, for example,
@@ -546,12 +549,13 @@ we can prove the following result.
         \leq
         \frac{\Delta M}{2} \left( \frac{\exp(L t_n + \Delta L^2 t_n) - 1}{L} \right),
      \]
-     which makes it clear that the right-hand side of~\eqref{eq:estimate_backward_euler} is close to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
+     which makes it clear that the right-hand side of~\eqref{eq:estimate_backward_euler} is close,
+     in absolute and relative terms, to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
 \end{remark}
 
 \subsection{General one-step methods}
 \label{sub:one_step_general}
-In general, one-step methods to solve differential equations are those that can be written abstractly as
+In general, one-step methods to solve differential equations are of the abstract form
 \begin{equation}
     \label{eq:general_one_step}
     \vect x_{n+1} = \vect x_n + \Delta \vect \Phi_{\Delta}(t_n, \vect x_n).
@@ -565,18 +569,18 @@ where $\vect \Phi_{\Delta}\colon \real \times \real^n \to \real^n$ is a function
 \end{equation}
 Here $\vect x^{t, \vect x}$ denotes the solution to the differential equation~\eqref{eq:ode} with initial condition $\vect x(s) = \vect x$.
 The main goal of this section is to establish general conditions,
-known as \emph{consistency} and \emph{stability} of the numerical method,
+known as \emph{consistency} and \emph{stability},
 under which the numerical scheme~\eqref{eq:general_one_step} is convergent.
-As we observed in the proof of~\cref{theorem:forward_euler},
-more specifically in equation~\eqref{eq:sum_local_and_accumulation},
+As we observed in the proof of~\cref{theorem:forward_euler}
+-- specifically in equation~\eqref{eq:sum_local_and_accumulation} --
 the error at the final iteration for the forward Euler method is a sum of local errors,
 each amplified by a factor depending to the number of iterations left to reach the final time.
 \emph{Consistency} of a numerical method enables to control the size of local errors when they arise,
 while~\emph{stability} enables to control their growth.
 
 Note that both the forward and the backward Euler methods may be recast in the form~\eqref{eq:general_one_step}.
-For the forward Euler method we have $\Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
-while the backward Euler method, the function $\vect \Phi_{\Delta}$ is defined implicitly as the function which to~$(t, \vect x)$ associates the solution~$\vect \phi \in \real^n$ to the equation
+For the forward Euler method $\Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
+while for the backward Euler method, the function $\vect \Phi_{\Delta}$ is defined implicitly as the function which to~$(t, \vect x)$ associates the solution~$\vect \phi \in \real^n$ to the equation
 \[
     \vect \phi = \vect f(t + \Delta, \vect x + \Delta \vect \phi).
 \]
@@ -585,7 +589,7 @@ The local truncation error is the residual error obtained when substituting the 
 \[
     \vect \eta_{n+1} := \frac{\vect x(t_{n+1}) - \vect x(t_n)}{\Delta} + \vect \Phi_{\Delta}\bigl(t_n, \vect x(t_n)\bigr).
 \]
-Since there is a division by~$\Delta$, the local truncation error has the same physical dimension as that of $\dot{\vect x}$,
+Since there is a division by~$\Delta$, the local truncation error has the same physical dimension as that of $\vect x'$,
 and so it should be viewed as an error \emph{per time unit}.
 
 \begin{definition}
@@ -630,7 +634,7 @@ With these notations, equation~\eqref{eq:stability_numerical_method} may be rewr
     \norm{ \vect x_{\placeholder} - \vect y_{\placeholder} }_{\ell^{\infty}_T} \leq S(T) \Delta \norm{ \vect \delta_{\placeholder} }_{\ell^{1}_T}
 \]
 One could argue that this equation is neater than~\eqref{eq:stability_numerical_method};
-it bounds the norm of just one mathematical object, namely the sequence $(\vect x_n - \vect y_n)_{1\leq n \leq N}$,
+it bounds a norm of just one mathematical object, namely the sequence $(\vect x_n - \vect y_n)_{1\leq n \leq N}$,
 by a norm of another object, namely the sequence $(\vect \delta_n)_{1\leq n \leq N}$.
 Arguments for proving that a numerical scheme is stable often rely on some form of Lipschitz continuity.
 If the function $\Phi_{\Delta}(t, \vect y)$ is globally Lipschitz continuous with respect to~$\vect y$,
@@ -654,7 +658,7 @@ as we now demonstrate.
     we obtain
     \[
         \vecnorm{ \vect x_{n} - \vect y_{n} }
-        = (1 + \Delta L_{\Phi}) \vecnorm{ \vect x_{n-1} - \vect y_{n-1} }
+        \leq (1 + \Delta L_{\Phi}) \vecnorm{ \vect x_{n-1} - \vect y_{n-1} }
         + \Delta \vecnorm{ \vect \delta_{n} }.
     \]
     By a reasoning similar to that in the proof of~\cref{theorem:forward_euler},
@@ -674,7 +678,7 @@ in the sense that
     \lim_{\Delta \to 0} \left( \max_{1 \leq n \leq N}  \vecnorm{ \vect x(t_n) - \vect x_n } \right) = 0, \qquad  N = \floor*{\frac{T}{\Delta}}.
 \]
 This result is an instance of the \emph{Lax equivalence theorem},
-a pillar of numerical analysis.
+a pillar of numerical analysis with far-reaching applications.
 
 \begin{theorem}
     [Consistence and stability imply convergence]
@@ -703,11 +707,13 @@ which concludes the proof.
     \[
         \max_{1\leq n \leq N} \vecnorm{ \vect x(t_n) - \vect x_n } \leq C S(T) \Delta^p.
     \]
+    In this setting,
+    the numerical scheme is said to be \emph{convergent with order~$p$}.
 \end{remark}
 
 \subsection{Widely used one-step methods}
 \label{sub:other_one_step}
-In this section, we motivate some of the other widely-used one-step methods,
+In this section, we motivate and describe some of the other widely-used one-step methods,
 namely methods of Taylor and Runge--Kutta type.
 We assume in this section that the equation~\eqref{eq:ode} admits a unique smooth solution over the interval~$[0, T]$.
 
@@ -750,9 +756,8 @@ where
     := \vect f(t, \vect x) + \frac{\Delta}{2!} \vect f^{(1)}(t, \vect x)
     + \dotsb + \frac{\Delta^{p-1}}{p!} \vect f^{(p-1)}(t, \vect x).
 \]
-The Taylor scheme~\eqref{eq:taylor_scheme} with $p = 1$ is the forward Euler scheme.
 Note that, for any~$p$,
-this scheme may be rewritten as
+the Taylor scheme~\eqref{eq:taylor_scheme} may be rewritten as
 \[
     % \label{eq:taylor_scheme}
     \vect x_{n+1} = \vect x_n
@@ -760,6 +765,7 @@ this scheme may be rewritten as
     + \dotsb
     + \frac{\Delta^p}{p!} \frac{\d^p \vect x^{t_n, \vect x_n}}{\d t^{p}} \vect (t_n).
 \]
+For~$p=1$, this scheme coincides with the forward Euler scheme.
 
 
 \subsubsection*{Runge--Kutta methods}%
@@ -822,11 +828,11 @@ approximates the Taylor method of order $p=4$ with the following iteration:
      \vect k_3 &= \vect f\left(t_n + \frac{\Delta}{2}, \vect x_n + \Delta\frac{\vect k_2}{2}\right), \qquad
                && \vect k_4 = \vect f\left(t_n + \Delta, \vect x_n + \Delta \vect k_3\right).
 \end{align*}
-The local truncation error for this method scales as~$\Delta^4$.
-When~$\vect f(t, \vect x) = \vect f(t)$,
-this method is coincide with Simpson's formula~\eqref{eq:simpsons} for the approximation of the integral in~\eqref{eq:one_step_integral}.
+The local truncation error for this method scales as~$\Delta^4$ and,
+when~$\vect f(t, \vect x) = \vect f(t)$,
+this method coincides with Simpson's formula~\eqref{eq:simpsons} for the approximation of the integral in~\eqref{eq:one_step_integral}.
 The systematic derivation of Runge--Kutta methods is cumbersome,
-and so we do not address it in this course.
+and so we do not address this issue in this course.
 
 \begin{remark}
     Explicit Runge--Kutta methods of a given order are not uniquely defined.
@@ -844,7 +850,7 @@ and so we do not address it in this course.
 
 \subsubsection*{Implicit methods}%
 To conclude this section,
-we mention two common implicit methods with a better order of consistence than that of the backward Euler method.
+we mention two common implicit methods with a better order of convergence than that of the backward Euler method.
 \begin{itemize}
     \item
         The Crank--Nicolson method:
@@ -852,6 +858,8 @@ we mention two common implicit methods with a better order of consistence than t
             \label{eq:crank_nicolson}
             \vect x_{n+1} = \vect x_n + \frac{\Delta}{2} \bigl( f(t_n, \vect x_n) + f(t_n + \Delta, \vect x_{n+1}) \bigr).
         \end{equation}
+        When $\vect f$ is independent of~$\vect x$ and depends only on~$t$,
+        this method coincides with the trapezoidal rule for numerical integration.
 
     \item
         The implicit midpoint method:
@@ -865,10 +873,10 @@ Implicit methods often enjoy better stability than their explicit counterparts.
 This subject is further discussed in~\cref{sec:absolute_stability}.
 
 \section{Multistep methods}
-The idea of multistep methods is to use, 
-in the construction of a new iterate
+The idea of multistep methods is to use,
+in the construction of a new iterate,
 information from previous iterations.
-This enables to construct more economical numerical methods than one-step methods for the same order of convergence,
+This degree of freedom enables to construct more economical numerical methods than one-step methods for the same order of convergence,
 at the cost of a more difficult initialization.
 In this section we focus on~\emph{linear} multistep methods of the form
  \begin{align}
@@ -879,7 +887,7 @@ In this section we focus on~\emph{linear} multistep methods of the form
 \end{align}
 This equation defines an explicit method if $b_0 = 0$,
 and an implicit method if $b_0 \neq 0$.
-Explicit methods of the form~\eqref{eq:linear_mulitstep} require only one additional evaluation~$f(t_{n}, \vect x_{n})$ per iteration.
+Note that explicit methods of the form~\eqref{eq:linear_mulitstep} require only one additional evaluation~$f(t_{n}, \vect x_{n})$ per iteration.
 When~$b_0 \neq 0$, the iteration~\eqref{eq:linear_mulitstep} is a nonlinear equation for the unknown~$\vect x_{n+1}$,
 which must itself be solved by resorting to a numerical method.
 
@@ -889,7 +897,7 @@ the values $\vect x_0, \dotsc, \vect x_{k-1}$ are required.
 These can be calculated by using a one-step method with an order of convergence matching that of the multistep method.
 
 \paragraph{Local truncation error.}
-Similarly to the setting of one-step methods,
+Consistently with the setting of one-step methods,
 the local truncation error for~\eqref{eq:linear_mulitstep} is defined as the residual error left when the exact solution is substituted in the numerical scheme:
 \begin{align}
     \nonumber
@@ -898,27 +906,39 @@ the local truncation error for~\eqref{eq:linear_mulitstep} is defined as the res
         \label{eq:truncation_multistep}
         & \qquad- \Delta \Bigl( b_0 \vect x'(t_n + \Delta) + b_1 \vect x'(t_n) + \dotsb + b_k \vect x'\bigl(t_n - (k-1) \Delta\bigr) \Bigr).
 \end{align}
-The multistep method~\eqref{eq:linear_mulitstep} is of order~$p$ if the maximum of the local truncation error
-over all the discretization points scales as~$\bigo(\Delta^p)$.
-The following result is useful for constructing multistep methods.
+The multistep method~\eqref{eq:linear_mulitstep} is of order~$p$ if the maximum local truncation error
+over all the discretization points, in norm, scales as~$\bigo(\Delta^p)$.
+The following result is useful for estimating the order of consistency of a linear multistep method.
 \begin{proposition}
-    The linear multistep method~\eqref{eq:linear_mulitstep} is of order~$p$ if and only if
-    the local truncation error is everywhere zero when the exact solution $\vect x(t)$ is of the form
+    The linear multistep method~\eqref{eq:linear_mulitstep} is consistent with order~$p$ for any smooth $\vect x\colon [0, T] \to \real^n$ if and only if
+    the local truncation error~\eqref{eq:truncation_multistep} is everywhere zero when~$\vect x(t)$ is of the form
     \begin{equation}
         \label{eq:polynomial_form}
-        \vect x(t) = \vect e t^{q}, \qquad q \in \{1, \dotsc, p\},  \qquad \vect e \in \real^n.
+        \vect x(t) = \vect e t^{q}, \qquad q \in \{0, \dotsc, p\},  \qquad \vect e \in \real^n.
     \end{equation}
 \end{proposition}
+% Before presenting the proof,
+% we note that the right-hand side of~\eqref{eq:truncation_multistep} is linear in~$\vect x$.
+% Therefore, if the local truncation error is zero for any monomial~$\vect x(t)$,
+% then it is also zero for any polynomial
 \begin{proof}
-    Assume that the method is of order~$p$, fix $q \in \{1, \dotsc, p\}$ and $\vect e \in \real^n$,
+    Assume that the method is consistent with order~$p$, fix $q \in \{1, \dotsc, p\}$ and $\vect e \in \real^n$,
     and let $\vect x(t) = \vect e t^{q}$.
-    Then the right-hand side of~\eqref{eq:truncation_multistep},
-    viewed as a function of~$\Delta$ for fixed~$t_n$,
-    is a polynomial of degree as most~$p$ which scales as~$\bigo(\Delta^{p+1})$.
-    Therefore, it holds necessarily that~$\vect \eta_{n+1} = 0$.
+    Fix also $t \in [0, T]$ and consider the function $\vect \xi\colon \{\Delta : t/\Delta \in \nat_{> 0}\} \to \real^n$ given by
+    \begin{align}
+        \nonumber
+        \Delta \vect \xi(\Delta) = \Delta \vect \eta_{(t/\Delta) +1}
+            &= \vect x(t + \Delta) - a_1 \vect x(t) - a_2 \vect x(t - \Delta) - \dotsb - a_k \vect x\bigl(t - (k-1) \Delta\bigr) \\
+            \label{eq:truncation_multistep}
+            & \qquad- \Delta \Bigl( b_0 \vect x'(t + \Delta) + b_1 \vect x'(t) + \dotsb + b_k \vect x'\bigl(t - (k-1) \Delta\bigr) \Bigr).
+    \end{align}
+    The quantity $\vect \xi(\Delta)$ should be understood as the local truncation error at~$t$ for time step $\Delta$.
+    Each entry of $\vect \xi$, viewed as a function of~$\Delta$,
+    is a polynomial of degree at most~$p$ scaling as~$\bigo(\Delta^{p+1})$.
+    Therefore, it holds necessarily that~$\vect \xi(\Delta) = 0$.
 
     Conversely, assume that the right-hand side of~\eqref{eq:truncation_multistep} is equal to zero for any function of the form~\eqref{eq:polynomial_form}.
-    If~$\vect x(t)$ denote a smooth solution of~\eqref{eq:ode},
+    If~$\vect x(t)$ denotes a smooth solution of~\eqref{eq:ode},
     then by Taylor's theorem there is $C > 0$ independent of $t_n$ such that
     \[
         \forall t \in [0, T], \qquad
@@ -929,24 +949,25 @@ The following result is useful for constructing multistep methods.
         \end{aligned}
         \right. ,
         \qquad
-        \vect y(t) := \vect x(t_n) + \sum_{i=1}^{p} \vect e_i (t-t_n)^i
+        \vect y(t) := \vect x(t_n) + \sum_{i=1}^{p} \vect e_i (t-t_n)^i,
     \]
-    for appropriate vectors $\vect e_i \in \real^n$.
+    for appropriate vectors $\vect e_i \in \real^n$ depending on~$t_n$.
     Substituting $\vect x(t) = \vect y(t) + \bigl(\vect x(t) - \vect y(t)\bigr)$ in the right-hand side of~\eqref{eq:truncation_multistep},
     we obtain
     \[
         \Delta \vecnorm{\vect \eta_{n+1}} = \bigo(\Delta^{p+1}) + \Delta \bigo(\Delta^p) = \bigo(\Delta^{p+1}),
     \]
     with the constant implicit in the big~$\bigo$ notation independent of~$n$.
+    This concludes the proof.
 \end{proof}
 \begin{example}
-    In the one-dimensional setting~$n = 1$,
-    consider for example a multistep scheme of the form
+    In the one-dimensional setting,
+    we wish to find parameters $a_1$, $a_2$ and~$b_1$ such that the order of consistency 
+    of the following multistep scheme is as high as possible:
      \[
          x_{n+1}  = a_1 x_n + a_2 x_{n-1} + b_1 \Delta f(t_{n}, x_{n}).
     \]
-    We wish to find the parameters $a_1$, $a_2$ and $b_1$ so that the order of consistency is as high as possible.
-    Substituting $x(t) = 1$ in formula~\eqref{eq:truncation_multistep} for the local error,
+    Substituting $x(t) = 1$ in the formula~\eqref{eq:truncation_multistep} for the local truncation error,
     we obtain
     \[
         \eta_{n+1} = x(t_n + \Delta) - a_1 x(t_n) - a_2 x(t_n - \Delta) - b_1 \Delta x'(t_n)
@@ -965,7 +986,7 @@ The following result is useful for constructing multistep methods.
         \eta_{n+1} = \Delta^2 a_1.
     \]
     We conclude that the best parameters,
-    leading to a local truncation error scaling as~$\bigo(\Delta^2)$, 
+    leading to a local truncation error scaling as~$\bigo(\Delta^2)$,
     are given by~$a_1 = 0$, $a_2 = 1$ and $b_1 = 2$.
     The resulting method reads
     \[
