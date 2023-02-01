@@ -1,5 +1,5 @@
 \chapter{Numerical ordinary differential equations}
-\label{cha:odep}
+\label{cha:ode}
 \minitoc
 
 \section*{Introduction}
@@ -31,7 +31,17 @@ The rest of chapter is organized as follows:
 
     \item
         In~\cref{sec:one-step_methods},
-        we analyze the so-called one-step numerical methods to solve~\eqref{eq:ode}.
+        we analyze the so-called \emph{one-step} numerical methods to solve~\eqref{eq:ode}.
+        We emphasize in particular the concepts of \emph{consistency}, \emph{stability} and \emph{convergence}.
+
+    \item
+        In~\cref{sec:multistep_methods},
+        we present \emph{multistep} methods to solve~\eqref{eq:ode},
+        and discuss their drawbacks and advantages compared to one-step methods.
+
+    \item
+        Finally, in~\cref{sec:absolute_stability},
+        we introduce the concept of \emph{absolute stability} and discuss its relevance in the context of \emph{stiff} differential equations.
 \end{itemize}
 
 \section{Analysis of the continuous problem}
@@ -552,6 +562,13 @@ we can prove the following result.
      which makes it clear that the right-hand side of~\eqref{eq:estimate_backward_euler} is close,
      in absolute and relative terms, to that of~\eqref{eq:error_bound_forward_euler} when $\Delta \ll 1$.
 \end{remark}
+At this point, the reader may be wondering why one would use the backward Euler method instead of the forward Euler method,
+given that both methods have same order of convergence but iterations of the former are more computationally costly.
+The reason is that the backward Euler method,
+like many implicit methods,
+is more \emph{stable} than its forward counterpart.
+Implicit methods are especially attractive in the context of~\emph{stiff} equations.
+We shall elaborate on this subject in~\cref{sec:absolute_stability}.
 
 \subsection{Analysis of general one-step methods}
 \label{sub:one_step_general}
@@ -735,14 +752,14 @@ the time derivatives of~$\vect x$ can be obtained by differentiation of~\eqref{e
     \vect x'(t) = \vect f\bigl(t, \vect x(t)\bigr),
     \qquad
     \vect x''(t) = \partial_t \vect f\bigl(t, \vect x(t)\bigr)
-    + \nabla_{\vect x} \vect f\bigl( t, \vect x(t) \bigr) \cdot \vect f\left(t, \vect x(t)\right),
+    + \Bigl( \vect f\left(t, \vect x(t)\right) \cdot \nabla_{\vect x} \Bigr) \vect f\bigl( t, \vect x(t) \bigr),
     \qquad
     \dotsc
 \]
 In general, it is immediate to show inductively that $\vect x^{(p)}(t) = \vect f^{(p-1)}\bigl(t, \vect x(t)\bigr)$,
 where the functions~$\vect f^{(p)}\colon \real \times \real^n \to \real$ are defined recursively from the following equation:
 \[
-    \vect f^{(p+1)} = \partial_t \vect f^{(p)}\bigl(t, \vect x(t)\bigr) + \nabla_{\vect x} \vect f^{(p)}\bigl( t, \vect x(t) \bigr) \cdot \vect f\left(t, \vect x(t)\right).
+    \vect f^{(p+1)} = \partial_t \vect f^{(p)}\bigl(t, \vect x(t)\bigr) + \Bigl( \vect f\left(t, \vect x(t)\right) \cdot \nabla_{\vect x} \Bigr) \vect f^{(p)}\bigl( t, \vect x(t) \bigr).
 \]
 The Taylor expansion~\eqref{eq:taylor_high_order} motivates the so-called Taylor methods for integrating~\eqref{eq:ode} numerically,
 which are based on the following iteration:
@@ -873,6 +890,7 @@ Implicit methods often enjoy better stability than their explicit counterparts.
 This subject is further discussed in~\cref{sec:absolute_stability}.
 
 \section{Multistep methods}
+\label{sec:multistep_methods}
 The idea of multistep methods is to use,
 in the construction of a new iterate,
 information from previous iterations.
@@ -1119,7 +1137,7 @@ we prove the convergence of the Adams--Bashforth method under a Lipschitz condit
 \subsection{Adams--Moulton methods}
 The Adams--Moulton methods are very similar to their Adams--Bashforth cousins.
 The only difference is that the former are obtained by interpolating the function $t \mapsto \vect f\bigl(t, \vect x(t)\bigr)$ in~\eqref{eq:adams_bashforth_intro} at nodes shifted forward by~$\Delta$,
-i.e. at the nodes $t_{n-k+1}, \dotsc, t_{n+1}$.
+i.e.\ at the nodes $t_{n-k+1}, \dotsc, t_{n+1}$.
 This leads to the method
 \begin{equation}
     \label{eq:adams_moulton}
@@ -1154,5 +1172,261 @@ and for $k =1$ it coincides with the Crank--Nicolson method.
 
 \section{Absolute stability}
 \label{sec:absolute_stability}
+To conclude this chapter,
+we introduce the notion of \emph{absolute stability} and explain its relevance.
+Absolute stability is a property of a numerical method in relation to the model equation
+\begin{equation}
+    \label{eq:model_equation}
+    \left\{
+    \begin{aligned}
+        x'(t) &= \lambda x(t), \\
+        x(0) &= 1.
+    \end{aligned}
+    \right.
+\end{equation}
+A numerical scheme for approximating~\eqref{eq:model_equation} is called \emph{absolutely stable} if
+\begin{equation}
+    \label{eq:convergence_absolute_stability}
+    \lvert x_n \rvert \to 0 \qquad \text{ in the limit as } n \to \infty.
+\end{equation}
+where $(x_n)_{n=0, 1, \dotsc}$ denotes the numerical solution to~\eqref{eq:model_equation}.
+Whether a numerical method is absolutely stable depends on the parameters~$\lambda$ and $\Delta$.
+\begin{example}
+    \label{example:absolute_stability_euler}
+    The forward Euler method for~\eqref{eq:model_equation} reads
+    \[
+        x_{n+1} = x_n + \Delta \lambda x_n = (1 + \Delta \lambda) x_n.
+    \]
+    Therefore $x_n \to 0$ if and only if~$|1 + \Delta \lambda| \leq 1$.
+\end{example}
+As \cref{example:absolute_stability_euler} illustrates,
+whether absolute stability holds for the forward Euler methods depends only the value of the product $\Delta \lambda \in \complex$.
+This dependence on $\lambda$ and $\Delta$ only through the product $\Delta \lambda$ holds in fact generally.
+Indeed, all the numerical schemes we considered in this chapter are invariant under linear time rescaling of the ordinary differential equation:
+the numerical solution of the rescaled equation, when the time step is rescaled by the same factor,
+coincides with the discrete function obtained by linear rescaling of the numerical solution to the original equation.
+This motivates the definition of \emph{absolute stability region} as
+\[
+    \mathcal A := \{ z \in \complex : \text{\eqref{eq:convergence_absolute_stability}  holds if $\Delta \lambda = z$} \} \subset \complex.
+\]
+The exact solution to the model equation~\eqref{eq:model_equation} diverges to $\infty$ as $t \to \infty$ if $\Re(\lambda) > 0$,
+and it converges to $0$ if~$\Re(\lambda) < 0$.
+Numerical schemes which exhibit a similar property at the discrete level are called \emph{A-stable}.
+More precisely, a numeric method is A-stable if the absolute stability region $\mathcal A$ contains the left half-plane,
+i.e.\ if
+\[
+    \{ z \in \complex : \Re(z) < 0 \} \subset \mathcal A.
+\]
+Before investigating whether the numerical schemes introduced previously in this chapter are absolutely stable,
+we address the following natural question:
+why focus on the simple model equation~\eqref{eq:model_equation}?
+We provide a couple of motivations:
+% and is absolute stability of a numerical method useful outside of more general settings?
+\begin{itemize}
+    \item
+        First, note that equations of the form~\eqref{eq:model_equation} are more relevant in science than might appear at first glance.
+        Indeed, when discretizing in space a linear parabolic partial differential equation,
+        one often obtains a linear differential equation of the form
+        \[
+            \vect x'(t) = \mat A \vect x,
+        \]
+        where $\mat A \in \complex^{n \times n}$.
+        If the matrix $\mat A = \mat Q \mat D \mat Q^*$ is diagonalizable,
+        then the vector $\vect z(t) := \mat Q^* \vect x(t)$ satisfies the differential equation
+        \[
+            \vect z'(t) = \mat D \vect z.
+        \]
+        In other words, each component of~$\vect z$ satisfies an ordinary differential equation of the same form as the model equation~\eqref{eq:model_equation}.
+        In applications, the components of~$\vect z$ often encode the amplitudes of Fourier modes of the solution to the partial differential equation,
+        and for dissipative equations all the eigenvalues of~$\mat A$ have a negative real part.
+        However, the spectral radius of~$\mat A$ usually diverges as the number of discretization points increases.
+        In this context, A-stability is particularly attractive,
+        as it ensures that the numerical approximation remains well-behaved as the number of discretization points increases.
 
+    \item
+        Second, the model equation~\eqref{eq:model_equation} may be viewed as a linearized approximation of a more interesting equation.
+        Consider, for example, the following one-dimensional autonomous differential equation:
+        \begin{equation}
+            \label{eq:nonlinear_autonomous}
+            \left\{
+            \begin{aligned}
+                x'(t) &= f\bigl(x(t)\bigr), \\
+                x(0) &= x_0.
+            \end{aligned}
+            \right.
+        \end{equation}
+        Assume that $f(x_*)= 0$ for some $x_* \in \real$.
+        Such a point is called a \emph{critical point} of the differential equation.
+        If $f'(x_*) < 0$,
+        then by a result $x_*$ is an attractor of the equation,
+        in the sense that $x(t) \to x_*$ provided that $x(0)$ is sufficiently close to $x_*$.
+        This result, which is the counterpart of~\cref{proposition:local_convergence} for differential equations,
+        is a particular case of a theorem due to Poincaré and Lyapunov;
+        see~\cite[Theorem 7.1]{MR1422255}.
+        If $\lvert x_0 - x_* \rvert$ is sufficiently small,
+        then the solution to~\eqref{eq:nonlinear_autonomous} is expected to be close,
+        at least for small times,
+        to that of the linearized equation
+        \begin{equation}
+            \label{eq:linearized}
+            \left\{
+            \begin{aligned}
+                y'(t) &= f'\bigl(x_*\bigr) \bigl(y(t) - x_*\bigr), \\
+                y(0) &= x_0,
+            \end{aligned}
+            \right.
+        \end{equation}
+        which is of the form~\eqref{eq:model_equation}.
+        Often, studying the linearized equation~\eqref{eq:linearized} enables to gain insight into the behavior of the original equation~\eqref{eq:nonlinear_autonomous},
+        and analyzing the performance of a numerical method for the linearized equation~\eqref{eq:linearized} is useful
+        to inform the choice of a numerical scheme for~\eqref{eq:nonlinear_autonomous}.
 
+    \item
+        More generally, if~$x(t)$ and $x_{\varepsilon}(t)$ are respectively the solutions to
+        \begin{equation}
+            \label{eq:multiscale_autonomous}
+            \left\{
+            \begin{aligned}
+                x'(t) &= f\bigl(x(t)\bigr), \\
+                x(0) &= x_0 + \varepsilon,
+            \end{aligned}
+            \right.
+            \qquad
+            \text{ and }
+            \qquad
+            \left\{
+            \begin{aligned}
+                x_{\varepsilon}'(t) &= f\bigl(x_{\varepsilon}(t)\bigr), \\
+                x_{\varepsilon}(0) &= x_0 + \varepsilon,
+            \end{aligned}
+            \right.
+        \end{equation}
+        then the difference $e(t) := x_{\varepsilon}(t) - x(t)$ satisfies the equation
+        \begin{equation}
+            \label{eq:ode_error_equation}
+            \begin{aligned}
+                e'(t) &= f\bigl(x_{\varepsilon}(t)\bigr) - f\bigl(x(t)\bigr) \approx \partial_x f\bigl(t,x(t)\bigr) e(t), \\
+                e(0) &= \varepsilon,
+            \end{aligned}
+        \end{equation}
+        which looks similar to~\eqref{eq:model_equation} with $\partial_x f\bigl(t,x(t)\bigr)$ in place of $\lambda$.
+        At a given time~$t$,
+        the solutions tend to converge if~$\partial_x f\bigl(t, x(t)\bigr) < 0$,
+        and diverge if $\partial_x f\bigl(t, x(t)\bigr) > 0$.
+        Testing absolute stability with $\lambda = \partial_x f\bigl(t, x(t)\bigr)$ enables to determine whether this property holds true also at the discrete level.
+        Although this statement is difficult to state precisely and prove generally,
+        we illustrate its validity for the forward Euler method in~\cref{example:perturbed_forward_euler}.
+\end{itemize}
+
+\begin{example}
+    \label{example:perturbed_forward_euler}
+    Let $(x_n)$ and $(x_n^{\varepsilon})$ denote the numerical solutions obtained by applying the forward Euler method to the differential equations in~\eqref{eq:multiscale_autonomous}.
+    If $\varepsilon \ll 1$,
+    then
+    \begin{align*}
+        x_{n+1}^{\varepsilon} - x_{n+1}
+        &= x_{n}^{\varepsilon} - x_{n}
+        + \Delta f(t_n, x^{\varepsilon}_n) - \Delta f(t_n, x_n) \\
+        &\approx x_{n}^{\varepsilon} - x_{n} + \Delta \partial_x f(t_n, x_n) (x_{n}^{\varepsilon} - x_{n})
+        = \bigl(1 + \Delta \partial_x f(t_n, x_n) \bigr) (x_{n}^{\varepsilon} - x_{n}).
+    \end{align*}
+    Therefore, the numerical solutions $(x^{\varepsilon}_n)$ and $(x_n)$ tend to become closer if
+    \[
+        \Delta \partial_x f(t_n, x_n) \in \mathcal A.
+    \]
+\end{example}
+
+The absolute stability regions of the forward and backward Euler methods are illustrated in green in~\cref{fig:stab_region_euler}.
+For the forward Euler method,
+absolute stability holds if and only if~$|1 + \Delta \lambda| < 1$,
+as we proved in~\cref{example:absolute_stability_euler}.
+A similar reasoning gives that the absolute stability region for backward Euler method is given by  $\{z \in \complex : |1 - z|^{-1} < 1\}$.
+The backward Euler method is A-stable but the forward Euler method is not.
+Notice that, if the time step is sufficiently large,
+then the backward Euler method is absolutely stable even for values of $\lambda$ with a positive real part,
+for which exact solutions to the model equation are divergent.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.49\linewidth]{figures/stability_forward Euler.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/stability_backward Euler.pdf}
+    \caption{Absolute stability regions for the forward (left) and backward (right) Euler methods.}%
+    \label{fig:stab_region_euler}
+\end{figure}
+
+\begin{example}
+    [Absolute stability region of the Taylor methods]
+    When applied to~\eqref{eq:model_equation},
+    the Taylor method of order~$p$ given in~\eqref{eq:taylor_scheme} reads
+    \[
+        x_{n+1} = \left(1 + \Delta \lambda + \frac{\Delta^2 \lambda^2}{2} + \dotsb + \frac{\Delta^p \lambda^p}{p!} \right) x_n.
+    \]
+    Thus, the absolute stability region is given by
+    \[
+        \left\{ z \in \complex : \left\lvert 1 + z + \frac{z^2}{2} + \dotsb + \frac{z^p}{p!} \right\rvert < 1 \right\}.
+    \]
+    This region is illustrated for various values of~$p$ in~\cref{fig:stab_taylor}.
+    We observe that the absolute stability region grows as $p$ increases.
+\end{example}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.70\linewidth]{figures/stability_Taylor_methods.pdf}
+    \caption{Stability regions for the first few Taylor methods.}%
+    \label{fig:stab_taylor}
+\end{figure}
+
+\subsection*{Stiff differential equations}
+A differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix~$\mat J_f\bigl(t, \vect x(t)\bigr)$ has at least one eigenvalue with a large negative real part in some part of the domain~$[0, T]$.
+In the one-dimensional setting,
+the solutions to stiff differential equations which are close at the initial time tend to converge quickly to each other,
+in view of~\eqref{eq:ode_error_equation}.
+This is illustrated in~\cref{example:stiff_ode}.
+
+\begin{example}
+    [Stiff differential equation]
+    \label{example:stiff_ode}
+    Consider the following equation~\cite[Chapter 4]{Legat}:
+    \begin{equation}
+        \label{eq:stiff_ode}
+        \left\{
+        \begin{aligned}
+            x'(t) &= - \alpha \bigl(x(t) - \sin(t) \bigr) + \cos(t) \\
+            x(0) &= x_0
+        \end{aligned}
+        \right.
+    \end{equation}
+    The exact solution to this equation is given by
+    \[
+        x(t) = \sin(t) + x_0 \, \e^{-\alpha t}.
+    \]
+    When $\alpha$ is large,
+    the distance between the solution and the function $t \mapsto \sin(t)$ converges to zero very quickly,
+    regardless of the initial condition.
+    This behavior is illustrated in~\cref{fig:stiff_ode}.
+\end{example}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.49\linewidth]{figures/ode_stiff_2.pdf}
+    \includegraphics[width=0.49\linewidth]{figures/ode_stiff_5.pdf}
+    \caption{Solutions to~\eqref{eq:stiff_ode} for various initial conditions when $\alpha = 2$ (left) and $\alpha = 5$ (right).}%
+    \label{fig:stiff_ode}
+\end{figure}
+
+\section{Exercises}
+
+\begin{exercise}
+    Show that the absolute stability region of the Crank--Nicolson method~\eqref{eq:crank_nicolson} is given by the left half-plane;
+    see~\cref{fig:stab_region_crank_nicolson}.
+\end{exercise}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/stability_Crank-Nicolson.pdf}
+    \caption{Absolute stability regions for the Crank Nicolson method.}%
+    \label{fig:stab_region_crank_nicolson}
+\end{figure}
+
+\begin{exercise}
+    Calculate the absolute stability region for Gear's method.
+\end{exercise}
