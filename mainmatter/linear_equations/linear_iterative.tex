@@ -47,7 +47,7 @@ for any initial guess~$\vect x^{(0)}$.
 \begin{proposition}
     [Convergence]
     \label{proposition:linear_convergence}
-    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial guess~$\vect x^{(0)}$
+    The splitting method~\eqref{eq:linear_system_iterative_method} converges for any initial~$\vect x^{(0)}$
     if and only if $\rho(\mat M^{-1} \mat N) < 1$.
     In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
     \begin{equation}
@@ -394,6 +394,7 @@ which concerns a general splitting $\mat A = \mat M - \mat N$.
 
 As a corollary,
 we obtain a sufficient condition for the convergence of the relaxation method.
+
 \begin{corollary}
     \label{corollary:convergence_relaxation}
     Assume that $\mat A$ is Hermitian and positive definite.
@@ -425,6 +426,7 @@ Note that \cref{corollary:convergence_relaxation} implies as a particular case
 the convergence of the Gauss--Seidel method when $\mat A$ is Hermitian and positive definite.
 The condition $\omega \in (0, 2)$ is in fact necessary for the convergence of the relaxation method,
 not only in the case of a Hermitian positive definite matrix $\mat A$ but in general.
+
 \begin{proposition}
     [Necessary condition for the convergence of the relaxation method]
     \label{proposition:necessary_sor}
@@ -1166,7 +1168,7 @@ The following result characterizes precisely the subspace $\mathcal B_{k+1}$.
         \vect r^{(k+1)}
         = \vect r^{(k)} - \omega_k \mat A \left( \vect r^{(k)} - \sum_{i=0}^{k-1} \frac{\vect d_i^\t \mat A \vect r^{(k)}}{\vect d_i^\t \mat A \vect d_i} \vect d_i \right).
     \]
-     By~\eqref{eq:conjugate_gradient_equality_span} and the induction hypothesis, 
+     By~\eqref{eq:conjugate_gradient_equality_span} and the induction hypothesis,
     the bracketed expression on the right-hand side belongs to $\mathcal B_{k+1}$,
     so the inclusion~$\subset$ in~\eqref{eq:conjugate_gradient_krylov} is clear.
     The inclusion $\supset$ then follows from the fact the dimension of the subspace
@@ -1182,7 +1184,7 @@ In fact, it turns out that only the last term in the sum is nonzero,
 and so the cost of calculating a new direction does not grow with the iteration index~$k$.
 Indeed, notice that if $i \leq k-2$, then
 \[
-    \vect d_i^\t \mat A \vect r^{(k)} 
+    \vect d_i^\t \mat A \vect r^{(k)}
     = (\mat A \vect d_i)^\t \mat A \vect r^{(k)}
     = 0,
 \]
@@ -1216,7 +1218,7 @@ To conclude this section, we study the convergence of the method.
     [Convergence of the conjugate gradient method]
     \label{theorem:convergence_conjugate_gradient}
     The error for the conjugate gradient method,
-    measured as 
+    measured as
     \[
         E_{k} := (\vect x^{(k)} - \vect x_*)^\t  \mat A (\vect x^{(k)} - \vect x_*),
     \]
@@ -1295,7 +1297,7 @@ However, it is possible to derive from this equation an error estimate with an e
 where $\lambda_1$ and $\lambda_n$ are the minimum and maximum eigenvalues of $\mat A$.
 Notice that
 \[
-    \Bigl\{ 1 + \lambda q_k: q_k \in \poly(k) \Bigr\} 
+    \Bigl\{ 1 + \lambda q_k: q_k \in \poly(k) \Bigr\}
     = \Bigl\{p_k : p_k \in \poly(k+1) \text{ and } p_k(0) = 1 \Bigr\}
 \]
 Therefore, it follows from~\cref{exercise:conjugate_gradient_chebyshev} that the right-hand side is minimized when

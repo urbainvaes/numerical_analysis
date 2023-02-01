@@ -1,5 +1,6 @@
 \chapter{Numerical ordinary differential equations}
 \label{cha:ode}
+
 \minitoc
 
 \section*{Introduction}
@@ -26,7 +27,7 @@ The rest of chapter is organized as follows:
 \begin{itemize}
     \item
         In \cref{sec:existence},
-        we define precisely the notions of local and global solutions for the continuous-time problem~\eqref{eq:ode},
+        we define the concepts of local and global solutions for the continuous-time problem~\eqref{eq:ode},
         and we recall fundamental results concerning the existence and uniqueness of a solution.
 
     \item
@@ -595,7 +596,7 @@ each amplified by a factor depending to the number of iterations left to reach t
 \emph{Consistency} of a numerical method enables to control the size of local errors when they arise,
 while~\emph{stability} enables to control their growth.
 
-Note that both the forward and the backward Euler methods may be recast in the form~\eqref{eq:general_one_step}.
+We emphasize that both the forward and the backward Euler methods may be recast in the form~\eqref{eq:general_one_step}.
 For the forward Euler method $\Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
 while for the backward Euler method, the function $\vect \Phi_{\Delta}$ is defined implicitly as the function which to~$(t, \vect x)$ associates the solution~$\vect \phi \in \real^n$ to the equation
 \[
@@ -1092,8 +1093,8 @@ for an appropriate numerical constant~$C_k$ independent of~$n$ and the problem d
 Therefore the Adams--Bashforth method~\eqref{eq:adams_bashforth} is consistent with order~$k+1$.
 
 \paragraph{Convergence.}
-Using a reasoning similar to that in the proof of~\cref{theorem:forward_euler},
-we prove the convergence of the Adams--Bashforth method under a Lipschitz condition for the function~$\vect f$.
+By using a reasoning similar to that in the proof of~\cref{theorem:forward_euler},
+we can prove a convergence result of the Adams--Bashforth method.
 \begin{theorem}
     \label{theorem:adams_bashforth}
     Assume that the solution $\vect x\colon [0, T] \to \real^n$ to~\eqref{eq:ode} is $k+2$ times continuously differentiable
