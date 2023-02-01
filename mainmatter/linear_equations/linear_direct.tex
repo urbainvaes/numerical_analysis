@@ -735,51 +735,64 @@ Consider, for example,
 the following graph and renumbering:
 
 \hspace{-.5cm}
-\begin{minipage}{.24\textwidth}
-    \begin{tikzpicture}
-        \footnotesize
-        \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
-            graph [spring layout] { A [as=1] -- B [as=2] -- C [as=3] -- D [as=4] -- D [as=4] -- E [as=5] -- F [as=6] -- G [as=7] -- H [as=8] -- A };
-    \end{tikzpicture}
+\begin{minipage}{.4\textwidth}
+    \centering
+    \vspace{.5cm}
+    \resizebox{.8\textwidth}{!}{%
+        \begin{tikzpicture}
+            \footnotesize
+            \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+                graph [spring layout] { A [as=1] -- B [as=2] -- C [as=3] -- D [as=4] -- D [as=4] -- E [as=5] -- F [as=6] -- G [as=7] -- H [as=8] -- A };
+        \end{tikzpicture}
+    }
+    \vspace{.5cm}
 \end{minipage}
-\hspace{-.5cm}
-\begin{minipage}{.48\textwidth}
-    \scriptsize%
+\hspace{.1cm}
+\begin{minipage}{.1\textwidth}
+    \centering
     \[
-        \begin{pmatrix}
-            1 & 1 &   &   &   &   &   & {\color{red} 1} \\
-            1 & 1 & 1 &   &   &   &   &   \\
-              & 1 & 1 & 1 &   &   &   &   \\
-              &   & 1 & 1 & 1 &   &   &   \\
-              &   &   & 1 & 1 & 1 &   &   \\
-              &   &   &   & 1 & 1 & 1 &   \\
-              &   &   &   &   & 1 & 1 & 1 \\
-            {\color{red} 1} &   &   &   &   &   & 1 & 1 \\
-        \end{pmatrix}
-        \rightarrow
-        \begin{pmatrix}
-            1 & 1 & 1 &   &   &   &   &   \\
-            1 & 1 &   & 1 &   &   &   &   \\
-            1 &   & 1 &   & 1 &   &   &   \\
-              & 1 &   & 1 &   & 1 &   &   \\
-              &   & 1 &   & 1 &   & 1 &   \\
-              &   &   & 1 &   & 1 &   & 1 \\
-              &   &   &   & 1 &   & 1 & 1 \\
-              &   &   &   &   & 1 & 1 & 1 \\
-        \end{pmatrix}
+        \text{\huge$ \rightarrow $}
     \]
 \end{minipage}
-\hspace{1.5cm}
-\begin{minipage}{.24\textwidth}
-\begin{tikzpicture}
-    \footnotesize
-    \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
-        graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
-\end{tikzpicture}
+\hspace{.7cm}
+\begin{minipage}{.4\textwidth}
+    \centering
+    \vspace{.5cm}
+    \resizebox{.8\textwidth}{!}{%
+        \begin{tikzpicture}
+            \footnotesize
+            \path [graphs/.cd, nodes={shape=circle, fill=blue!40, draw=none},  empty nodes]
+                graph [spring layout] { A [as=1] -- B [as=2]  -- C [as=4]  -- D [as=6] -- E [as=8]  -- F [as=7]  -- G [as=5] -- H [as=3] -- A };
+        \end{tikzpicture}
+    }
+    \vspace{.5cm}
 \end{minipage}
-
-\vspace{.2cm}
-\noindent Here we also wrote the adjacency matrices associated to the graphs.
+The associated adjacency matrices are given by:
+\[
+    \begin{pmatrix}
+        1 & 1 &   &   &   &   &   & {\color{red} 1} \\
+        1 & 1 & 1 &   &   &   &   &   \\
+          & 1 & 1 & 1 &   &   &   &   \\
+          &   & 1 & 1 & 1 &   &   &   \\
+          &   &   & 1 & 1 & 1 &   &   \\
+          &   &   &   & 1 & 1 & 1 &   \\
+          &   &   &   &   & 1 & 1 & 1 \\
+        {\color{red} 1} &   &   &   &   &   & 1 & 1 \\
+    \end{pmatrix}
+    \qquad
+    \text{\huge$ \rightarrow $}
+    \qquad
+    \begin{pmatrix}
+        1 & 1 & 1 &   &   &   &   &   \\
+        1 & 1 &   & 1 &   &   &   &   \\
+        1 &   & 1 &   & 1 &   &   &   \\
+          & 1 &   & 1 &   & 1 &   &   \\
+          &   & 1 &   & 1 &   & 1 &   \\
+          &   &   & 1 &   & 1 &   & 1 \\
+          &   &   &   & 1 &   & 1 & 1 \\
+          &   &   &   &   & 1 & 1 & 1 \\
+    \end{pmatrix}
+\]
 We assume that the nodes are all self-connected,
 although this is not depicted,
 and so the diagonal entries of the adjacency matrices are equal to 1.
