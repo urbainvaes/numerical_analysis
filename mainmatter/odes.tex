@@ -943,13 +943,12 @@ The following result is useful for estimating the order of consistency of a line
     Assume that the method is consistent with order~$p$, fix $q \in \{1, \dotsc, p\}$ and $\vect e \in \real^n$,
     and let $\vect x(t) = \vect e t^{q}$.
     Fix also $t \in [0, T]$ and consider the function $\vect \xi\colon \{\Delta : t/\Delta \in \nat_{> 0}\} \to \real^n$ given by
-    \begin{align}
+    \begin{align*}
         \nonumber
         \Delta \vect \xi(\Delta) = \Delta \vect \eta_{(t/\Delta) +1}
             &= \vect x(t + \Delta) - a_1 \vect x(t) - a_2 \vect x(t - \Delta) - \dotsb - a_k \vect x\bigl(t - (k-1) \Delta\bigr) \\
-            \label{eq:truncation_multistep}
             & \qquad- \Delta \Bigl( b_0 \vect x'(t + \Delta) + b_1 \vect x'(t) + \dotsb + b_k \vect x'\bigl(t - (k-1) \Delta\bigr) \Bigr).
-    \end{align}
+    \end{align*}
     The quantity $\vect \xi(\Delta)$ should be understood as the local truncation error at~$t$ for time step $\Delta$.
     Each entry of $\vect \xi$, viewed as a function of~$\Delta$,
     is a polynomial of degree at most~$p$ scaling as~$\bigo(\Delta^{p+1})$.
@@ -1106,14 +1105,14 @@ we prove the convergence of the Adams--Bashforth method under a Lipschitz condit
         \leq \delta.
     \]
     Then the following error estimate holds for the Adams--Bashforth method~\eqref{eq:adams_bashforth}:
-    \begin{equation}
-        \label{eq:error_bound_forward_euler}
+    \begin{equation*}
+        % \label{eq:error_bound_adams_bashforth}
         \forall n \in \left\{0, 1, \dotsc, \floor*{\frac{T}{\Delta}} \right\},
         \qquad
         \vecnorm{\vect x(t_n) - \vect x_n}
         \leq
         \delta \e^{L B} + C_k M_{k+2} \Delta^{k+1} \left( \frac{\e^{LB t_n} - 1}{LB} \right),
-    \end{equation}
+    \end{equation*}
     where $C_k$ and $M_{k+2}$ are the constants from~\eqref{eq:truncation_adams_bashforth},
     and with $B := \abs{b_0} + \dotsb + \abs{b_k}$.
 \end{theorem}
@@ -1331,9 +1330,10 @@ We provide a couple of motivations:
         = \bigl(1 + \Delta \partial_x f(t_n, x_n) \bigr) (x_{n}^{\varepsilon} - x_{n}).
     \end{align*}
     Therefore, the numerical solutions $(x^{\varepsilon}_n)$ and $(x_n)$ tend to become closer if
-    \[
+    \begin{equation}
+        \label{eq:stability_nonlinear}
         \Delta \partial_x f(t_n, x_n) \in \mathcal A.
-    \]
+    \end{equation}
 \end{example}
 
 The absolute stability regions of the forward and backward Euler methods are illustrated in green in~\cref{fig:stab_region_euler}.
@@ -1400,7 +1400,7 @@ This is illustrated in~\cref{example:stiff_ode}.
     \[
         x(t) = \sin(t) + x_0 \, \e^{-\alpha t}.
     \]
-    When $\alpha$ is large,
+    When $\alpha \in \real$ is large,
     the distance between the solution and the function $t \mapsto \sin(t)$ converges to zero very quickly,
     regardless of the initial condition.
     This behavior is illustrated in~\cref{fig:stiff_ode}.
@@ -1413,6 +1413,53 @@ This is illustrated in~\cref{example:stiff_ode}.
     \label{fig:stiff_ode}
 \end{figure}
 
+In the rest of this section,
+we use the differential equation~\eqref{eq:stiff_ode} as a guiding example.
+For this problem, we have $\partial_x f(t, x) = \alpha$.
+Therefore, in view of~\eqref{eq:stability_nonlinear},
+we expect that the forward Euler scheme is non-divergent if $|1 - \alpha \Delta| < 1$,
+i.e.\ if
+\[
+    \Delta < \Delta_* ~= \frac{2}{\alpha}.
+\]
+It turns out that this prediction is precise,
+as is depicted in~\cref{fig:forward_euler_stiff}.
+Note that the if the equation is very stiff,
+that is to say if $\alpha \gg 1$,
+then a very small time step is required to ensure stability.
+
+In contrast to the backward Euler scheme,
+the forward Euler scheme is stable regardless of the time step.
+Since the right-hand side of~\eqref{eq:stiff_ode} is linear in~$x$,
+the value of the iterate~$x_{n+1}$ can be calculated explicitly from~$x_n$:
+\[
+    x_{n+1} = \frac{x_n + \Delta \alpha \sin(t_{n+1}) + \Delta \cos(t_{n+1})}{1 + \Delta \alpha}.
+\]
+Numerical approximations obtained using this scheme are illustrated in~\cref{fig:backward_euler_stiff}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\linewidth]{figures/stiff_forward_euler_0_7.pdf}
+    \includegraphics[width=0.48\linewidth]{figures/stiff_forward_euler_0_97.pdf}
+    \includegraphics[width=0.48\linewidth]{figures/stiff_forward_euler_1_00.pdf}
+    \includegraphics[width=0.48\linewidth]{figures/stiff_forward_euler_1_03.pdf}
+    \caption{%
+        Numerical approximations of the solution to~\eqref{eq:stiff_ode} with $\alpha = 10$ obtained with the forward Euler method,
+        for four different values of $\Delta$.
+    }%
+    \label{fig:forward_euler_stiff}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.48\linewidth]{figures/stiff_backward_euler_0_5.pdf}
+    \includegraphics[width=0.48\linewidth]{figures/stiff_backward_euler_2_0.pdf}
+    \caption{%
+        Numerical approximations of the solution to~\eqref{eq:stiff_ode} with $\alpha = 10$ obtained with the backward Euler method,
+        for two different values of $\Delta$.
+    }%
+    \label{fig:backward_euler_stiff}
+\end{figure}
 \section{Exercises}
 
 \begin{exercise}
