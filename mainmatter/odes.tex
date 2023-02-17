@@ -68,6 +68,8 @@ and~\eqref{eq:ode} is satisfied for almost every~$t$.
 Additionally, if~\eqref{eq:ode_integral} is satisfied and the function~$\vect f$ is continuous,
 then the function~$s \mapsto \vect f\bigl(s, \vect x(s)\bigr)$ is continuous,
 and so~\eqref{eq:ode} is satisfied for all $t \in I$ by the fundamental theorem of analysis.
+We now focus on the integral formulation~\eqref{eq:ode_integral},
+and begin by establishing existence of a local solution.
 
 \label{sec:existence}
 \begin{theorem}
@@ -137,7 +139,7 @@ and so~\eqref{eq:ode} is satisfied for all $t \in I$ by the fundamental theorem 
     For a value of~$T$ in this range,
     the Banach fixed point theorem, \cref{theorem:banach_fixed_point},
     gives the existence of a unique fixed point~$\vect x_* \in \mathcal X$ of~$\Phi$.
-    Since a fixed point of~$\Phi$ is a solution to~\eqref{eq:ode_integral},
+    Since a fixed point of~$\Phi$ is a solution to~\eqref{eq:ode_integral} in view of the definition of~$\Phi$,
     the statement is proved.
 \end{proof}
 It may seem at first glance that uniqueness of the solution to~\eqref{eq:ode_integral} follows from the uniqueness of the fixed point guaranteed by~\cref{theorem:banach_fixed_point}.
@@ -183,9 +185,10 @@ A simple approach is to rely on Gr\"onwall's lemma.
         \leq \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right)
     \]
     The statement then follows by using~\eqref{eq:gronwall_condition} again.
+    Assume next that $\alpha = 0$.
     If~\eqref{eq:gronwall_condition} is satisfied for~$\alpha = 0$,
     then this condition is also satisfied for all $\alpha > 0$.
-    Therefore~\eqref{eq:gronwall} also holds for all~$\alpha > 0$,
+    Therefore the conclusion~\eqref{eq:gronwall} holds for all~$\alpha > 0$,
     and taking the limit $\alpha \to 0$ in this equation,
     we obtain the statement.
 \end{proof}
@@ -195,7 +198,7 @@ since the function $v \colon [t_0, t_0 + T]$ given by
     v(t) = \alpha \exp \left( \int_{t_0}^{t} \beta(s) \, \d s \right)
 \]
 satisfies~\eqref{eq:gronwall_condition} with equality.
-We are now ready to prove uniqueness.
+We are now ready to prove uniqueness under an appropriate condition.
 \begin{theorem}
     [Uniqueness of the solution]
     \label{theorem:uniqueness}
@@ -215,12 +218,13 @@ We are now ready to prove uniqueness.
     it holds that $\vect x_1 = \vect x_2$.
 \end{theorem}
 \begin{proof}
+    Suppose that $\vect x_1$ and $\vect x_2$ are solutions to~\eqref{eq:ode_integral}.
     Let~$I = [t_0 - T, t_0 + T]$ and
     \[
-        R := \max \left\{ \sup_{t \in I} \norm{\vect x_1(t) - \vect x_0},   \sup_{t \in I} \norm{\vect x_1(t) - \vect x_0} \right\} < \infty,
+        R := \max \left\{ \sup_{t \in I} \norm{\vect x_1(t) - \vect x_0},   \sup_{t \in I} \norm{\vect x_2(t) - \vect x_0} \right\} < \infty,
     \]
-    If $\vect x_1$ and $\vect x_2$ are solutions,
-    then
+    Since $\vect x_1$ and $\vect x_2$ are solutions,
+    it holds that
     \[
         \forall t \in [t_0 - T, t_0 + T], \qquad
         \vect x_1(t) - \vect x_2(t) = \int_{t_0}^{t} \Bigl( f\bigl(s, \vect x_1(s)\bigr) - f\bigl(s, \vect x_2(s)\bigr) \Bigr)  \, \d s.
@@ -248,7 +252,7 @@ We are now ready to prove uniqueness.
 
         \item
             if $\vect x\colon I \to \real^n$ is a local solution of~\eqref{eq:ode_integral},
-            then $I \subset (T_-, T_+)$ and $\vect x(t) = \vect x_*(t)$ for all $t \in I$.
+            then $I \subset (T_-, T_+)$ and $\vect x(t) = \vect x_*(t)$ for all~$t \in I$.
 
         \item
             If $T_+$ is finite, then $\lim_{t \to T_+} \vecnorm[\big]{\vect x(t)} = \infty$,
@@ -278,7 +282,7 @@ We are now ready to prove uniqueness.
     there is $L$ such that for all $t \in [T_- - 1, T_+ + 1]$,
     the following Lipschitz condition holds:
     \[
-        \forall (\vect x_1, \vect x_2) \in  \times B_{K+1}(\vect 0) \times B_{K+1}(\vect 0), \qquad
+        \forall (\vect x_1, \vect x_2) \in  B_{K+1}(\vect 0) \times B_{K+1}(\vect 0), \qquad
         \vecnorm{ \vect f(t, \vect x_1) - \vect f(t, \vect x_2) } \leq L \vecnorm{\vect x_1 - \vect x_2}.
     \]
     Consequently, \cref{theorem:existence} with $\mathcal T = \mathcal R = 1$ implies for all~$n$ the existence of a solution to
@@ -312,6 +316,7 @@ We are now ready to prove uniqueness.
     \]
 \end{example}
 
+\paragraph{Existence of a unique global solution.}
 In certain settings,
 it is possible to prove the maximal solution to~\eqref{eq:ode_integral} is globally defined for any initial condition.
 We discuss a few important examples.
@@ -450,8 +455,8 @@ The convergence of this method can be proved under a global Lipschitz assumption
     \begin{align*}
         \vect x(t_{n}) - \vect x_{n}
         &= \left( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n) \right)
-        - \Bigl( \vect x_n + \Delta \, f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
-        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n),
+        - \Bigl( \vect x_{n-1} + \Delta \, \vect f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
+        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - \vect f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n),
     \end{align*}
     for some $\tau_n \in (t_{n-1}, t_n)$.
     Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\tau_n)$.
@@ -505,13 +510,13 @@ This motivates the so-called \emph{backward} or \emph{implicit} Euler method:
 Observe that the right-hand side depends on $\vect x_{n+1}$.
 Therefore, given $t_n$ and $\vect x_n$,
 this is a nonlinear equation for the unknown $\vect x_{n+1}$,
-which can be solved using any of the methods studied in~\cref{cha:solution_of_nonlinear_systems}.
+which can be solved by using any of the methods studied in~\cref{cha:solution_of_nonlinear_systems}.
 Finding a solution to~\eqref{eq:backward_euler} amounts to finding a fixed point of the function
 \[
-    \vect y \mapsto \vect F(\vect y) := \vect x_{n} + \Delta \vect f(t_n, \vect y)
+    \vect y \mapsto \vect F(\vect y) := \vect x_{n} + \Delta \vect f(t_n, \vect y).
 \]
 A priori, the existence and uniqueness of such a fixed point is not guaranteed.
-We proved in~\cref{theorem:exponential_convergence_fixed_point} that a sufficient condition for these properties to hold is
+We proved in~\cref{theorem:exponential_convergence_fixed_point} that a sufficient condition for these two properties to hold is
 that~$\vect F$ is globally Lipschitz with a constant strictly less than 1,
 which holds if and only if the function~$\vect y \mapsto \vect f(t_n, \vect y)$ is globally Lipschitz with a constant strictly less than $1/\Delta$.
 If the condition~\eqref{eq:global_lipschitz} holds, for example,
@@ -524,7 +529,7 @@ then the fixed point can be approximated by using the iteration
 \end{equation}
 and there is exponential convergence~$\vect y_k \to \vect x_{n+1}$ in the limit as $k \to \infty$.
 A natural starting point for~\eqref{eq:fixed_point_ode} is~$\vect y_0 = \vect x_n$.
-An alternative approach to~\eqref{eq:fixed_point_ode} is to use Newton--Raphson's method,
+An alternative approach to~\eqref{eq:fixed_point_ode} is to use Newton--Raphson's method directly for~\eqref{eq:backward_euler},
 which is faster in principle but must be initialized sufficiently close to the fixed point.
 
 Using a reasoning similar to that employed for proving~\cref{theorem:forward_euler},
@@ -596,8 +601,8 @@ each amplified by a factor depending to the number of iterations left to reach t
 \emph{Consistency} of a numerical method enables to control the size of local errors when they arise,
 while~\emph{stability} enables to control their growth.
 
-We emphasize that both the forward and the backward Euler methods may be recast in the form~\eqref{eq:general_one_step}.
-For the forward Euler method $\Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
+We emphasize that both the forward and the backward Euler methods can be recast in the form~\eqref{eq:general_one_step}.
+For the forward Euler method $\vect \Phi_{\Delta}(t, \vect x) = \vect f(t, \vect x)$,
 while for the backward Euler method, the function $\vect \Phi_{\Delta}$ is defined implicitly as the function which to~$(t, \vect x)$ associates the solution~$\vect \phi \in \real^n$ to the equation
 \[
     \vect \phi = \vect f(t + \Delta, \vect x + \Delta \vect \phi).
@@ -633,7 +638,7 @@ Roughly speaking, it expresses that small perturbation of the right-hand side of
     A numerical method of the form~\eqref{eq:general_one_step} is stable if there exists a constant~$S(T) > 0$ independent of $\Delta$ such that for all sequence~$(\vect y_n)_{1\leq n \leq N}$ satisfying
     \begin{equation}
         \label{eq:general_one_step_perturbed}
-        \vect y_{n+1} = \vect y_n + \Delta \vect \Phi_{\Delta}(t_n, \vect y_n) + \Delta \vect \delta_n, \qquad \vect y_0 = \vect x_0,
+        \vect y_{n+1} = \vect y_n + \Delta \vect \Phi_{\Delta}(t_n, \vect y_n) + \Delta \vect \delta_{n+1}, \qquad \vect y_0 = \vect x_0,
     \end{equation}
     it holds that
     \begin{equation}
@@ -655,13 +660,14 @@ One could argue that this equation is neater than~\eqref{eq:stability_numerical_
 it bounds a norm of just one mathematical object, namely the sequence $(\vect x_n - \vect y_n)_{1\leq n \leq N}$,
 by a norm of another object, namely the sequence $(\vect \delta_n)_{1\leq n \leq N}$.
 Arguments for proving that a numerical scheme is stable often rely on some form of Lipschitz continuity.
-If the function $\Phi_{\Delta}(t, \vect y)$ is globally Lipschitz continuous with respect to~$\vect y$,
+If the function $\vect \Phi_{\Delta}(t, \vect y)$ is globally Lipschitz continuous with respect to~$\vect y$,
 then stability is particularly simple to prove,
 as we now demonstrate.
 
 \begin{proposition}
     Assume that there is $L_{\Phi} > 0$ such that for all $t \in [0, T]$ and $\Delta > 0$,
-    the function $\Phi_{\Delta}(t, \placeholder)$ is globally Lipschitz continuous with constant~$L_{\Phi}$.
+    the function $\vect \Phi_{\Delta}(t, \placeholder)$ is globally Lipschitz continuous with constant~$L_{\Phi}$.
+    Then the one-step method~\eqref{eq:general_one_step} is stable.
 \end{proposition}
 \begin{proof}
     By~\eqref{eq:general_one_step} and~\eqref{eq:general_one_step_perturbed},
@@ -894,7 +900,7 @@ This subject is further discussed in~\cref{sec:absolute_stability}.
 \label{sec:multistep_methods}
 The idea of multistep methods is to use,
 in the construction of a new iterate,
-information from previous iterations.
+information from not only the current but also previous iterations.
 This degree of freedom enables to construct more economical numerical methods than one-step methods for the same order of convergence,
 at the cost of a more difficult initialization.
 In this section we focus on~\emph{linear} multistep methods of the form
@@ -906,13 +912,14 @@ In this section we focus on~\emph{linear} multistep methods of the form
 \end{align}
 This equation defines an explicit method if $b_{-1} = 0$,
 and an implicit method if $b_{-1} \neq 0$.
-Note that explicit methods of the form~\eqref{eq:linear_mulitstep} require only one additional evaluation~$f(t_{n}, \vect x_{n})$ per iteration.
-When~$b_0 \neq 0$, the iteration~\eqref{eq:linear_mulitstep} is a nonlinear equation for the unknown~$\vect x_{n+1}$,
+Note that explicit methods of the form~\eqref{eq:linear_mulitstep} require only one additional evaluation~$f(t_{n}, \vect x_{n})$ per iteration,
+in contrast with Runge--Kutta methods.
+When~$b_{-1} \neq 0$, the iteration~\eqref{eq:linear_mulitstep} is a nonlinear equation for the unknown~$\vect x_{n+1}$,
 which must itself be solved by resorting to a numerical method.
 
 \paragraph{Initialization.}
 In order to initiate the numerical method~\eqref{eq:linear_mulitstep},
-the values $\vect x_0, \dotsc, \vect x_{k-1}$ are required.
+the values $\vect x_0, \dotsc, \vect x_{k}$ are required.
 These can be calculated by using a one-step method with an order of convergence matching that of the multistep method.
 
 \paragraph{Local truncation error.}
@@ -925,7 +932,7 @@ the local truncation error for~\eqref{eq:linear_mulitstep} is defined as the res
         \label{eq:truncation_multistep}
         & \qquad- \Delta \Bigl( b_{-1} \vect x'(t_n + \Delta) + b_0 \vect x'(t_n) + \dotsb + b_k \vect x'(t_n - k \Delta) \Bigr).
 \end{align}
-The multistep method~\eqref{eq:linear_mulitstep} is of order~$p$ if the maximum local truncation error
+The multistep method~\eqref{eq:linear_mulitstep} is said to be of order~$p$ if the maximum local truncation error
 over all the discretization points, in norm, scales as~$\bigo(\Delta^p)$.
 The following result is useful for estimating the order of consistency of a linear multistep method.
 \begin{proposition}
@@ -1070,7 +1077,7 @@ The value of these coefficients for the first few Adams--Bashforth methods are c
 \end{table}
 
 \paragraph{Local truncation error.}
-Applying \cref{theorem:interpolation_error} for the interpolation error component-wise,
+Assuming $\vect x \in C^{k+2}\bigl([0, T], \real^n\bigr)$ and applying \cref{theorem:interpolation_error} for the interpolation error component-wise,
 we obtain
 \[
     \forall t \in [0, T], \qquad \vecnorm*{\vect x'(t) - \widehat {\vect f}(t)}_{\infty}
@@ -1089,7 +1096,7 @@ we deduce that
     \vecnorm{\vect \eta_{n+1}} \leq C_k M_{k+2} \Delta^{k+1},
     \qquad M_{k+2} := \sup_{t \in [0, T]} \vecnorm*{\vect x^{(k+2)}(t)}_{\infty},
 \end{equation}
-for an appropriate numerical constant~$C_k$ independent of~$n$ and the problem data.
+for an appropriate numerical constant~$C_k$ independent of~$n$ and of the problem data.
 Therefore the Adams--Bashforth method~\eqref{eq:adams_bashforth} is consistent with order~$k+1$.
 
 \paragraph{Convergence.}
@@ -1118,6 +1125,7 @@ we can prove a convergence result of the Adams--Bashforth method.
     and with $B := \abs{b_0} + \dotsb + \abs{b_k}$.
 \end{theorem}
 \begin{proof}
+    [Sketch of proof]
     Let $\vect e_n := \vect x(t_{n+1}) - \vect x_{n+1}$.
     From the equation
     \[
@@ -1258,14 +1266,13 @@ We provide a couple of motivations:
         Assume that $f(x_*)= 0$ for some $x_* \in \real$.
         Such a point is called a \emph{critical point} of the differential equation.
         If $f'(x_*) < 0$,
-        then by a result $x_*$ is an attractor of the equation,
+        then $x_*$ is an attractor of the equation,
         in the sense that $x(t) \to x_*$ provided that $x(0)$ is sufficiently close to $x_*$.
         This result, which is the counterpart of~\cref{proposition:local_convergence} for differential equations,
         is a particular case of a theorem due to Poincaré and Lyapunov;
         see~\cite[Theorem 7.1]{MR1422255}.
         If $\lvert x_0 - x_* \rvert$ is sufficiently small,
-        then the solution to~\eqref{eq:nonlinear_autonomous} is expected to be close,
-        at least for small times,
+        then the solution to~\eqref{eq:nonlinear_autonomous} is expected to be close
         to that of the linearized equation
         \begin{equation}
             \label{eq:linearized}
@@ -1311,7 +1318,9 @@ We provide a couple of motivations:
         \end{equation}
         which looks similar to~\eqref{eq:model_equation} with $\partial_x f\bigl(t,x(t)\bigr)$ in place of $\lambda$.
         At a given time~$t$,
-        the solutions tend to converge if~$\partial_x f\bigl(t, x(t)\bigr) < 0$,
+        the solutions tend to converge 
+        % -- i.e. get closer to each other -- 
+        if~$\partial_x f\bigl(t, x(t)\bigr) < 0$,
         and diverge if $\partial_x f\bigl(t, x(t)\bigr) > 0$.
         Testing absolute stability with $\lambda = \partial_x f\bigl(t, x(t)\bigr)$ enables to determine whether this property holds true also at the discrete level.
         Although this statement is difficult to state precisely and prove generally,

@@ -12,42 +12,43 @@ Plots.default(fontfamily="Computer Modern",
               label=nothing,
               grid=true)
 
-# name = "backward Euler"
-# fun(z) = abs(1 / (1 - z))
-# xlims = (-1, 5)
-# ylims = (-2, 2)
+name = "backward Euler"
+fun(z) = abs(1 / (1 - z))
+xlims = (-1, 5)
+ylims = (-2, 2)
 
 # name = "Crank-Nicolson"
 # fun(z) = abs((1 + z/2)/(1 - z/2))
 # xlims = (-3, 3)
 # ylims = (-2, 2)
 
-name = "forward Euler"
-xlims = (-5, 1)
-ylims = (-2, 2)
+# name = "forward Euler"
+# xlims = (-5, 1)
+# ylims = (-2, 2)
 
-name = "Taylor2"
-xlims = (-6, 2)
-ylims = (-4, 4)
+# name = "Taylor2"
+# xlims = (-6, 2)
+# ylims = (-4, 4)
 
-name = "Taylor3"
-xlims = (-6, 2)
-ylims = (-4, 4)
+# name = "Taylor3"
+# xlims = (-6, 2)
+# ylims = (-4, 4)
 
-name = "Taylor4"
-xlims = (-6, 2)
-ylims = (-3.5, 3.5)
+# name = "Taylor4"
+# xlims = (-6, 2)
+# ylims = (-3.5, 3.5)
 
-fun = Dict(
-    "forward Euler" => z -> abs(1 + z),
-    "Taylor2" => z -> abs(1 + z + z^2/2),
-    "Taylor3" => z -> abs(1 + z + z^2/2 + z^3/6),
-    "Taylor4" => z -> abs(1 + z + z^2/2 + z^3/6 + z^4/24))
+# fun = Dict(
+#     "forward Euler" => z -> abs(1 + z),
+#     "Taylor2" => z -> abs(1 + z + z^2/2),
+#     "Taylor3" => z -> abs(1 + z + z^2/2 + z^3/6),
+#     "Taylor4" => z -> abs(1 + z + z^2/2 + z^3/6 + z^4/24))
 
 x = LinRange(xlims..., 100)
 y = LinRange(ylims..., 100) 
 z = x' .+ im*y
-fun_plot = fun["Taylor4"].(z)
+# fun_plot = fun["Taylor4"].(z)
+fun_plot = fun.(z)
 
 Plots.contourf(x, y, fun_plot, 
                title="Stability region for the $name method",
@@ -57,6 +58,11 @@ Plots.contourf(x, y, fun_plot,
                xlabel=L"\Re(\Delta \lambda)",
                ylabel=L"\Im(\Delta \lambda)",
                colorbar=:none)
+Plots.contour!(x, y, fun_plot, color=:green, levels=[1])
+Plots.vline!([0], color=:gray) 
+Plots.hline!([0], color=:gray) 
+Plots.plot!(xlims=xlims, ylims=ylims)
+Plots.savefig("stability_$name.pdf")
 
 for key in keys(fun)
     fun_plot = fun[key].(z)

@@ -1,0 +1,21 @@
+/*-- scss:rules --*/
+
+div.theorem {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+}
+
+div.theorem::before {
+    margin-top: .2em;
+    margin-bottom: 0em;  
+    padding: 0em 0em;
+    color: blue;
+    content: "Theorem: ";
+}

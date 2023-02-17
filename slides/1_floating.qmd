@@ -1,0 +1,171 @@
+---
+title: "Floating point arithmetic"
+author: ""
+institution: ""
+format:
+    revealjs:
+        theme: [serif, custom.scss]
+        chalkboard: true
+        transition: convex
+        navigation-mode: vertical
+        callout-appearance: default
+---
+
+# Problèmes
+
+- Indentation des environnement imbriqués
+
+- Définition de nouveaux environnements
+
+- .smaller ne fonctionne pas avec les icônes des call-out
+
+- Relance le kernel à chaque fois
+
+- Slide sans titre = pas possible?
+
+# Motivations: can you explain this?
+
+:::: {.columns}
+::: {.column width="50%"}
+:::{.callout-note icon=false}
+## Theorem (Cauchy--Lipschitz)
+There exits
+$$
+\int_0^1 = 2
+$$
+:::
+:::
+
+::: {.column width="50%"}
+::: {.theorem}
+Does this work?
+:::
+:::
+::::
+
+$$
+\begin{align}
+     a &= b \\
+     c &= d
+\end{align}
+$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+:::{.callout-tip}
+## Hello
+Can you explain this?
+:::
+:::
+
+::: {.column width="50%"}
+:::{.callout-caution collapse="true"}
+## Click to expand
+hello
+:::
+:::
+
+::::
+
+:::{.callout-tip collapse="true"}
+## Additional Resources
+
+-   Resource 1
+
+-   Resource 2
+:::
+
+
+## Can you explain this
+
+::: {.callout-caution collapse="true"}
+## Expand To Learn About Collapse
+
+This is an example of a 'folded' caution callout that can be expanded by the user. You can use `collapse="true"` to collapse it by default or `collapse="false"` to make a collapsible callout that is expanded by default.
+:::
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+First col
+
+::: {.fragment .highlight-red}
+Why is this slow
+:::
+
+:::
+
+::: {.column width="50%"}
+
+- Second col
+
+- Another thing
+:::
+
+::::
+
+
+## Getting up
+
+::: {.hidden}
+$$
+ \def\d{{\mathrm d}}
+$$
+:::
+
+$$
+    \int_0^1 f(x) \, \d x
+$$
+
+## Getting up
+
+- Turn off alarm test?
+- Get out of bed
+- Wow, this is fast
+
+```{julia}
+#| echo: true
+#| eval: false
+
+s1 = sum(1/n for n in 1:10000)
+s2 = sum(1/n for n in 10000:-1:1)
+println(s1, " ", s2)
+```
+
+```{julia}
+#| echo: true
+#| eval: false
+
+julia> sum(1/n for n in 1:10000)
+9.787606036044348
+
+julia> sum(1/n for n in 10000:-1:1)
+9.787606036044386
+```
+
+## Test plotly
+
+```{julia}
+#| echo: true
+#| eval: false
+println("Hello, world")
+# import plotly.express as px
+# df = px.data.iris()
+# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
+# fig.show()
+```
+
+## Going to sleep {.smaller}
+
+
+For another demonstration, hello @fig-polar.
+
+```{julia}
+#| label: fig-polar
+#| fig-cap: "Test"
+
+using Plots
+Plots.plot(x -> cos(x) * cos(2x), background_color=:transparent, foreground_color=:black, linewidth=3, label=nothing)
+```
