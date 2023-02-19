@@ -1,0 +1,275 @@
+\chapter{Optimization}%
+\label{cha:Optimization}
+
+We focus in this chapter on optimization problems of the following form:
+\begin{equation}
+    \label{eq:optimization}
+    \text{ Find $\argmin_{\vect x \in V} J(\vect x)$},
+\end{equation}
+where $V$ is a given subset of $\real^n$ and $J\colon V \to \real$ is a given \emph{objective function}.
+    % \text{ Find $u \in V \subset \real^n$ such that $J(u) \leq J(v)$ for all $v \in V$ },
+We came across several examples of such problems earlier in these notes:
+\begin{itemize}
+    \item
+        In \cref{cha:interpolation_and_approximation},
+        in the context of least-squares approximation,
+        we considered the problem of minimizing
+        \[
+            J(\vect \alpha) = \frac{1}{2} \norm{ \mat A \vect x - \vect b }.
+        \]
+
+    \item
+        In \cref{cha:solution_of_linear_systems},
+        in the context of linear systems,
+        we observed that solving the linear system~$\mat A \vect x = \vect b$,
+        if the matrix $\mat A$ is symmetric and positive definite,
+        amounts to finding the minimizer of the functional
+        \[
+            J(\vect x)  = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+        \]
+\end{itemize}
+When $V = \real^n$,
+equation~\eqref{eq:optimization} is an \emph{unconstrained} optimization problem,
+and when $V \subsetneq \real^n$,
+equation~\eqref{eq:optimization} is a \emph{constrained} optimization problem.
+The set~$V$ is often an intersection of sets of the form
+\[
+    \bigl\{ \vect x \in \real^n : \phi(x) \leq 0 \bigr\},
+    \qquad
+    \text{ or }
+    \qquad
+    \bigl\{ \vect x \in \real^n : \phi(x) = 0 \bigr\},
+\]
+where $\phi\colon \real^n \to \real^m$.
+Constraints of the former form are called \emph{inequality constraints},
+while constraints of the latter form are called \emph{equality constraints}.
+Optimization is a vast field,
+and in this chapter we will place ourselves in the simplest settings and focus on the simplest methods.
+We begin by defining the notions of~\emph{convexity}, \emph{strict convexity} and \emph{strong convexity}.
+
+\begin{definition}
+    [Convexity]
+    Assume that $J\colon V \to \real$.
+    \begin{itemize}
+        \item
+            The function~$J$ is said to be convex if
+            \begin{equation}
+                \label{eq:convexity}
+                \forall (\vect x, \vect y) \in V \times V,
+                \qquad \forall \theta \in [0, 1],
+                \qquad
+                J\bigl(\theta \vect x + (1 - \theta) \vect y\bigr)
+                \leq \theta J(\vect x) + (1 - \theta) J(\vect y).
+            \end{equation}
+
+        \item
+            The function~$J$ is called \emph{strictly convex} if~\eqref{eq:convexity} holds with strict inequality
+            if $\vect x \neq \vect y$ and~$\theta \in (0, 1)$.
+
+        \item
+            The function~$J$ is called \emph{strongly convex} with parameter~$\alpha > 0$ if
+            for all $(\vect x, \vect y) \in V \times V$ and for all~$\theta \in [0, 1]$,
+            \begin{equation}
+                \label{eq:strong_convexity}
+                J\bigl(\theta \vect x + (1 - \theta) \vect y\bigr)
+                \leq \theta J(\vect x) + (1 - \theta) J(\vect y)
+                - \frac{\alpha}{2} \theta (1 - \theta) \norm{\vect x - \vect y}^2.
+            \end{equation}
+    \end{itemize}
+\end{definition}
+
+When function~$J$ is differentiable,
+convexity, strict convexity and strong convexity can be characterized in terms of the gradient~$\nabla J$.
+We prove this only for strong convexity.
+\begin{proposition}
+    A function~$J\colon \real^n \to \real$ is strongly convex with parameter~$\alpha$ if and only if
+    \begin{equation}
+        \label{eq:strong_convex_eq1}
+        \forall (\vect x, \vect y) \in \real^n \times \real^n,
+        \qquad J(\vect x) \geq J(\vect y) + \ip[\big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2,
+    \end{equation}
+    or, equivalently,
+    \begin{equation}
+        \label{eq:strong_convex_eq2}
+        \forall (\vect x, \vect y) \in \real^n \times \real^n,
+        \qquad \ip[\big]{\nabla J(\vect x) - \nabla J(\vect y), \vect x - \vect y}
+        \geq \alpha \norm{\vect x - \vect y}^2.
+    \end{equation}
+\end{proposition}
+\begin{proof}
+    We divide the proof into items to clarify the structure.
+    \begin{itemize}
+        \item
+    We begin by proving that \textbf{\eqref{eq:strong_convexity} $\Rightarrow$~\eqref{eq:strong_convex_eq1}}.
+    Rearranging~\eqref{eq:strong_convexity}, we have
+    \[
+        \frac{J\bigl( \vect y + \theta (\vect x - \vect y) \bigr) - J(\vect y)}{\theta}
+        \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2} (1 - \theta) \norm{\vect x - \vect y}^2.
+    \]
+    Taking the limit~$\theta \to 0$,
+    we deduce that
+    \[
+        \ip[\big]{\nabla J(\vect y), \vect x - \vect y}
+        \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2}  \norm{\vect x - \vect y}^2.
+    \]
+    This gives~\eqref{eq:strong_convex_eq1} after rearranging.
+
+    \item
+    Next, we prove that \textbf{\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convex_eq2}}.
+    Assuming that~\eqref{eq:strong_convex_eq1} holds and applying this inequality first to~$(\vect x, \vect y)$ and then to~$(\vect y, \vect x)$,
+    we obtain
+    \begin{align*}
+        J(\vect x) &\geq J(\vect y) + \ip[\big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2 \\
+        J(\vect y) &\geq J(\vect x) + \ip[\big]{\nabla J(\vect x), \vect y - \vect x} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2.
+    \end{align*}
+    Adding these equations and rearranging,
+    we deduce~\eqref{eq:strong_convex_eq2}.
+
+    \item
+    We next prove that~\eqref{eq:strong_convex_eq2} $\Rightarrow$~\eqref{eq:strong_convex_eq1}.
+    Suppose that~\eqref{eq:strong_convex_eq2} holds and
+    take $(\vect x, \vect y) \in \real^n \times \real^n$.
+    Using the fundamental theorem of analysis and~\eqref{eq:strong_convex_eq2},
+    we have
+    \begin{align*}
+        J(\vect x)
+        &=  J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J\bigl(\vect y + \theta (\vect x - \vect y) \bigr), \vect x - \vect y} \, \d \theta \\
+        &\geq J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \alpha \theta \norm{\vect x - \vect y}^2 \, \d \theta \\
+        &= J(\vect y) \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2.
+    \end{align*}
+
+    \item
+        It remain to prove the implication~\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convexity}.
+        To this end, suppose that~\eqref{eq:strong_convex_eq1} holds,
+        take $(\vect x, \vect y) \in \real^n \times \real^n$
+        and let $\vect z = \theta \vect x + (1 - \theta) \vect y$.
+        Using~\eqref{eq:strong_convex_eq1} successively with $(\vect x, \vect z)$ and~$(\vect y, \vect z)$,
+        we deduce
+        \begin{align*}
+            J(\vect x) &\geq J(\vect z) + \ip[\big]{\nabla J(\vect z), \vect x - \vect z} + \frac{\alpha}{2} \norm{\vect x - \vect z}^2, \\
+            J(\vect y) &\geq J(\vect z) + \ip[\big]{\nabla J(\vect z), \vect y - \vect z} + \frac{\alpha}{2} \norm{\vect y - \vect z}^2.
+        \end{align*}
+        Combining these inequalities,
+        we deduce that
+        \begin{align*}
+            \theta J(\vect x) + (1 - \theta) J(\vect y)
+            &\geq J(\vect z) + \ip[\Big]{\nabla J(\vect z), \theta(\vect x - \vect z) + (1 - \theta) (\vect y - \vect z)} \\
+            &\qquad + \frac{\alpha \theta}{2} \norm{\vect x - \vect z}^2 + \frac{\alpha(1 - \theta)}{2}  \norm{\vect y - \vect z}^2 \\
+            &= J(\vect z) + 0 + \frac{\alpha}{2} \theta (1-\theta) \norm{\vect x - \vect y}^2,
+        \end{align*}
+        where we used that $\theta(\vect x - \vect z) + (1 - \theta) (\vect y - \vect z) = \theta \vect x + (1 - \theta) \vect y - \vect z = 0$.
+        Rearranging gives~\eqref{eq:strong_convexity}.
+    \end{itemize}
+\end{proof}
+% The subject of optimization is vast, and we intentionally restrict our attention
+
+\section{Unconstrained optimization}
+We begin this section by establishing conditions under which the optimization problem~\eqref{eq:optimization} admits a unique solution,
+in the particular case where $V = \real^n$.
+We first prove existence of a global minimizer under appropriate conditions.
+\begin{proposition}
+    [Existence of a global minimizer]
+    \label{proposition:existence_minimizer}
+    Suppose that $J \colon \real^n \to \real$ is continuous and coercive,
+    the latter meaning that $J(\vect x) \to \infty$ when $\norm{\vect x} \to \infty$.
+    Then there exists a global minimizer of~$J$.
+\end{proposition}
+\begin{proof}
+    Let $(\vect x_n)_{n \in \nat}$ be a minimizing sequence of~$J$,
+    i.e.\ a sequence in $\real^n$ such that
+    \[
+        J(\vect x_n) \to \inf_{\vect x \in \real^n} J(\vect x) \quad \text{ as $n \to \infty$}.
+    \]
+    By coercivity, the sequence~$(\vect x_n)$ is bounded,
+    because otherwise it would hold that $J(\vect x_n)~\to~\infty$.
+    Therefore, since closed bounded sets in~$\real^n$ are compact,
+    there is a subsequence $(\vect x_{n_k})_{k \in \nat}$ converging to some $\vect x_* \in \real^n$.
+    Since $J$ is continuous, we have that
+    \[
+        J(\vect x_*) = \lim_{k \to \infty} J(\vect x_{n_k}) = \inf_{\vect x \in \real^n} J(\vect x).
+    \]
+    We conclude that $\vect x_*$ is a minimizer of $J$.
+\end{proof}
+\begin{remark}
+    We relied crucially in the proof of~\cref{proposition:existence_minimizer} on the fact that bounded closed sets in $\real^n$ are finite dimensional.
+    In the infinite-dimensional setting,
+    coercivity and continuity alone are not sufficient to guarantee the existence of a minimizer.
+\end{remark}
+Uniqueness of the minimizer can be established under a strict convexity assumption.
+
+\begin{proposition}
+    [Uniqueness of the minimizer]
+    If $J$ is strictly convex,
+    then there exists at most one global minimizer.
+\end{proposition}
+\begin{proof}
+    Suppose by contradiction that there were two minimizers~$\vect x_*$ and~$\vect y_*$.
+    Then by strict convexity we have
+    \[
+        J \left( \frac{\vect x_* + \vect y_*}{2} \right)
+        < \frac{1}{2} \bigl( J(\vect x_*) + J(\vect y_*) \bigr) = J(\vect x_*),
+    \]
+    which is a contradiction.
+\end{proof}
+
+\paragraph{Steepest descent method.}
+We encountered the steepest descent method in the context of linear equations in~\cref{cha:solution_of_linear_systems}.
+In this section, we study the more general version of the steepest method with \emph{fixed step} given in~\cref{algo:steepest_descent_method_optimization}.
+\begin{algorithm}
+\caption{Steepest descent method}%
+\label{algo:steepest_descent_method_optimization}%
+\begin{algorithmic}[1]
+    \State Pick $\lambda$, and initial $\vect x_0$.
+    \For {$k \in \{0, 1, \dotsc\}$}
+        \State $\vect d_k \gets \nabla J(\vect x_k)$
+        \State $\vect x_{k+1} \gets \vect x_{k} - \lambda \vect d_k$
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+
+In practice, \cref{algo:steepest_descent_method_optimization} must be supplemented with an appropriate stopping criterion.
+This could be, for example, a criterion of the form $\norm{\vect x_{k+1} - \vect x_k} \leq \varepsilon$,
+or $\bigl\lvert J(\vect x_{k+1}) - J(\vect x_k) \bigr\rvert \leq \varepsilon$.
+It is sometimes also useful to use a normalized criterion of the form $\norm{\vect x_{k+1} - \vect x_k} \leq \varepsilon \norm{\vect x_0}.$
+Note that the steepest descent method may be viewed as a fixed point iteration for the function
+\begin{equation}
+    \label{eq:fixed_point_gradient_descent}
+    \vect F_{\lambda}(\vect x) = \vect x - \lambda \nabla J(\vect x).
+\end{equation}
+A fixed point of this functional is a solution to the nonlinear equation $\nabla J(\vect x) = 0$.
+We shall now prove the convergence of the steepest descent under appropriate assumptions on the function~$J$.
+\begin{theorem}
+    [Convergence of the steepest descent method]
+    \label{theorem:convergence_steepest_descent_optimization}
+    Suppose that $J \in C^1(\real^n)$ is strongly convex with parameter~$\alpha$ and that
+    its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz with parameter~$L$:
+    \[
+        \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
+        \norm{J(\vect x) - J(\vect y)} \leq L \norm{\vect x - \vect y}.
+    \]
+    Then provided that
+    \[
+        0 < \lambda < \frac{2 \alpha}{L},
+    \]
+    the steepest descent method with fixed step is convergent.
+    More precisely,
+    there exists $\rho \in (0, 1)$ such that for all~$k \geq 0$
+    \[
+        \norm{\vect x_k - \vect x_*} \leq \rho^k \norm{\vect x_k - \vect x_*}.
+    \]
+    % In other words, $\vect x_*$ is a globally exponentially stable fixed point for the fixed point iteration based oneq:fixed_point_gradient_descent
+\end{theorem}
+\begin{proof}
+    By the Banach fixed point theorem,
+    see~\cref{theorem:banach_fixed_point},
+    it is sufficient to prove that $\vect F_{\lambda}$ defined in~\eqref{eq:fixed_point_gradient_descent} is a contraction with constant $\rho \in (0, 1)$.
+    We have
+    \begin{align*}
+        \norm{ \vect F_{\lambda}(\vect x) - \vect F_{\lambda}(\vect y) }^2
+        &= \norm*{ \vect x - \vect y - \lambda \bigl(\nabla J(\vect x) - \nabla J(\vect y) \bigr) }^2 \\
+        &= \norm{\vect x - \vect y}^2 - 2 \lambda \ip[\big]{\vect x - \vect y, \nabla J(\vect x) - \nabla J(\vect y)} + \lambda^2 \norm{\nabla J(\vect x) - \nabla J(\vect y)}^2.
+    \end{align*}
+\end{proof}
+
+\section{Gradient descent method with projection}
+

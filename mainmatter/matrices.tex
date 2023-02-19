@@ -93,7 +93,7 @@ which is the goal of \cref{exercise:triangle_inequality}.
     [Cauchy--Schwarz inequality]
     \label{proposition:cauchy_shwartz}
     Let $\mathcal X$ be an inner product space.
-    It holds that
+    Then
     \begin{equation}
         \label{eq:cauchy_shwartz}
         \forall  (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
@@ -248,12 +248,11 @@ but the converse is not always true.
         1 & \text{if } x > 0. \end{cases}
     \]
     However, this function is discontinuous,
-    and so it does not belong to~$\mathcal X$,
-    which is a contradiction.
+    which contradicts the statement that~$f_* \in \mathcal X$.
 \end{example}
 
 In this course,
-all the spaces encountered are complete.
+all the vector spaces encountered are complete.
 For example,
 \begin{itemize}
     \item $\real^n$ with any vector norm is complete.
@@ -268,7 +267,7 @@ This approach is used in~\cref{lemma:linear_inverse_neumann} and~\cref{theorem:b
 \end{exercise}
 
 \section{Contraction mappings and the Banach fixed point theorem}
-Let $(\mathcal X, \norm{\placeholder})$ denote a normed space.
+Let $(\mathcal X, \norm{\placeholder})$ denote a normed vector space.
 A map $\phi\colon \mathcal X \to \mathcal X$ is called a contraction mapping if
 there is a constant $L \in (0, 1)$ such that
 \[
@@ -296,10 +295,10 @@ The importance of contraction mappings in this course stems from the following t
     \end{equation}
     It holds that
     \[
-        \norm[big]{x_{k+2} - x_{k+1}}
-        = \norm[big]{\phi(x_{k+1}) - \phi(x_k)}
-        \leq L\norm{x_{k+1} - x_k}
-        \leq \dots \leq L^{k+1} \norm{x_{1} - x_0}.
+        \norm[big]{x_{k+1} - x_{k}}
+        = \norm[big]{\phi(x_{k}) - \phi(x_{k-1})}
+        \leq L\norm{x_{k} - x_{k-1}}
+        \leq \dots \leq L^{k} \norm{x_{1} - x_0}.
     \]
     Therefore, for any $n \geq m$,
     we have by the triangle inequality
