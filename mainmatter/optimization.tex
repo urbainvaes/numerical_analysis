@@ -1,6 +1,8 @@
 \chapter{Optimization}%
 \label{cha:Optimization}
 
+\minitoc
+
 We focus in this chapter on optimization problems of the following form:
 \begin{equation}
     \label{eq:optimization}
@@ -15,14 +17,14 @@ We came across several examples of such problems earlier in these notes:
         in the context of least-squares approximation,
         we considered the problem of minimizing
         \[
-            J(\vect \alpha) = \frac{1}{2} \norm{ \mat A \vect x - \vect b }.
+            J(\vect \alpha) = \frac{1}{2} \norm{ \mat A \vect x - \vect b }^2.
         \]
 
     \item
         In \cref{cha:solution_of_linear_systems},
-        in the context of linear systems,
-        we observed that solving the linear system~$\mat A \vect x = \vect b$,
-        if the matrix $\mat A$ is symmetric and positive definite,
+        we observed,
+        if $\mat A$ is a symmetric and positive definite matrix,
+        then solving the linear system~$\mat A \vect x = \vect b$
         amounts to finding the minimizer of the functional
         \[
             J(\vect x)  = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
@@ -32,7 +34,8 @@ When $V = \real^n$,
 equation~\eqref{eq:optimization} is an \emph{unconstrained} optimization problem,
 and when $V \subsetneq \real^n$,
 equation~\eqref{eq:optimization} is a \emph{constrained} optimization problem.
-The set~$V$ is often an intersection of sets of the form
+In practice,
+the set~$V$ is often an intersection of sets of the form
 \[
     \bigl\{ \vect x \in \real^n : \phi(x) \leq 0 \bigr\},
     \qquad
@@ -40,12 +43,31 @@ The set~$V$ is often an intersection of sets of the form
     \qquad
     \bigl\{ \vect x \in \real^n : \phi(x) = 0 \bigr\},
 \]
-where $\phi\colon \real^n \to \real^m$.
+for appropriate $\phi\colon \real^n \to \real^m$.
 Constraints of the former form are called \emph{inequality constraints},
 while constraints of the latter form are called \emph{equality constraints}.
-Optimization is a vast field,
-and in this chapter we will place ourselves in the simplest settings and focus on the simplest methods.
-We begin by defining the notions of~\emph{convexity}, \emph{strict convexity} and \emph{strong convexity}.
+Our aim in this chapter is to give a brief introduction to numerical optimization.
+We focus on the simplest method,
+namely the \emph{steepest descent method} with fixed step.
+The rest of this chapter is organized as follows:
+\begin{itemize}
+    \item
+        We begin in~\cref{sec:convexity} by defining the notions of~\emph{convexity}, \emph{strict convexity} and \emph{strong convexity},
+        which play an important role in optimization.
+
+    \item
+        Then, in~\cref{sec:unconstrained_optimization},
+        we analyze the steepest descent method with fixed step in the setting of unconstrained optimization.
+        To this end, we first establish conditions under which~\eqref{eq:optimization} is well posed.
+
+    \item
+        Finally, in~\cref{sec:constrained_optimization},
+        we extend the steepest descent method to the case of optimization with constraints.
+\end{itemize}
+
+
+\section{Definition and characterization of convexity}
+\label{sec:convexity}
 
 \begin{definition}
     [Convexity]
@@ -78,9 +100,10 @@ We begin by defining the notions of~\emph{convexity}, \emph{strict convexity} an
     \end{itemize}
 \end{definition}
 
-When function~$J$ is differentiable,
+When the function~$J$ is differentiable,
 convexity, strict convexity and strong convexity can be characterized in terms of the gradient~$\nabla J$.
 We prove this only for strong convexity.
+
 \begin{proposition}
     A function~$J\colon \real^n \to \real$ is strongly convex with parameter~$\alpha$ if and only if
     \begin{equation}
@@ -139,7 +162,7 @@ We prove this only for strong convexity.
     \end{align*}
 
     \item
-        It remain to prove the implication~\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convexity}.
+        It remains to prove the implication~\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convexity}.
         To this end, suppose that~\eqref{eq:strong_convex_eq1} holds,
         take $(\vect x, \vect y) \in \real^n \times \real^n$
         and let $\vect z = \theta \vect x + (1 - \theta) \vect y$.
@@ -160,19 +183,21 @@ We prove this only for strong convexity.
         where we used that $\theta(\vect x - \vect z) + (1 - \theta) (\vect y - \vect z) = \theta \vect x + (1 - \theta) \vect y - \vect z = 0$.
         Rearranging gives~\eqref{eq:strong_convexity}.
     \end{itemize}
+    Note that this proof can easily be adapted in order to obtain characterizations in terms of $\nabla J$ of convexity and strict convexity.
 \end{proof}
 % The subject of optimization is vast, and we intentionally restrict our attention
 
 \section{Unconstrained optimization}
-We begin this section by establishing conditions under which the optimization problem~\eqref{eq:optimization} admits a unique solution,
-in the particular case where $V = \real^n$.
+\label{sec:unconstrained_optimization}
+Throughout this section $V = \real^n$.
+We begin by establishing conditions under which the optimization problem~\eqref{eq:optimization} admits a unique solution in this setting.
 We first prove existence of a global minimizer under appropriate conditions.
 \begin{proposition}
     [Existence of a global minimizer]
     \label{proposition:existence_minimizer}
     Suppose that $J \colon \real^n \to \real$ is continuous and coercive,
     the latter meaning that $J(\vect x) \to \infty$ when $\norm{\vect x} \to \infty$.
-    Then there exists a global minimizer of~$J$.
+    Then there exists a global minimizer of~$J$ in $\real^n$.
 \end{proposition}
 \begin{proof}
     Let $(\vect x_n)_{n \in \nat}$ be a minimizing sequence of~$J$,
@@ -191,7 +216,7 @@ We first prove existence of a global minimizer under appropriate conditions.
     We conclude that $\vect x_*$ is a minimizer of $J$.
 \end{proof}
 \begin{remark}
-    We relied crucially in the proof of~\cref{proposition:existence_minimizer} on the fact that bounded closed sets in $\real^n$ are finite dimensional.
+    We relied crucially in the proof of~\cref{proposition:existence_minimizer} on the fact that bounded closed sets in $\real^n$ are compact.
     In the infinite-dimensional setting,
     coercivity and continuity alone are not sufficient to guarantee the existence of a minimizer.
 \end{remark}
@@ -199,6 +224,7 @@ Uniqueness of the minimizer can be established under a strict convexity assumpti
 
 \begin{proposition}
     [Uniqueness of the minimizer]
+    \label{proposition:uniqueness_minimizer}
     If $J$ is strictly convex,
     then there exists at most one global minimizer.
 \end{proposition}
@@ -241,22 +267,24 @@ We shall now prove the convergence of the steepest descent under appropriate ass
 \begin{theorem}
     [Convergence of the steepest descent method]
     \label{theorem:convergence_steepest_descent_optimization}
-    Suppose that $J \in C^1(\real^n)$ is strongly convex with parameter~$\alpha$ and that
-    its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz with parameter~$L$:
+    Suppose that $J$ is differentiable, strongly convex with parameter~$\alpha$,
+    and that its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz continuous with parameter~$L$:
     \[
         \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
         \norm{J(\vect x) - J(\vect y)} \leq L \norm{\vect x - \vect y}.
     \]
     Then provided that
-    \[
+    \begin{equation}
+        \label{eq:condition_time_step}
         0 < \lambda < \frac{2 \alpha}{L},
-    \]
+    \end{equation}
     the steepest descent method with fixed step is convergent.
     More precisely,
     there exists $\rho \in (0, 1)$ such that for all~$k \geq 0$
-    \[
-        \norm{\vect x_k - \vect x_*} \leq \rho^k \norm{\vect x_k - \vect x_*}.
-    \]
+    \begin{equation}
+        \label{eq:exponential_convergence}
+        \norm{\vect x_k - \vect x_*} \leq \rho^k \norm{\vect x_0 - \vect x_*}.
+    \end{equation}
     % In other words, $\vect x_*$ is a globally exponentially stable fixed point for the fixed point iteration based oneq:fixed_point_gradient_descent
 \end{theorem}
 \begin{proof}
@@ -267,9 +295,173 @@ We shall now prove the convergence of the steepest descent under appropriate ass
     \begin{align*}
         \norm{ \vect F_{\lambda}(\vect x) - \vect F_{\lambda}(\vect y) }^2
         &= \norm*{ \vect x - \vect y - \lambda \bigl(\nabla J(\vect x) - \nabla J(\vect y) \bigr) }^2 \\
-        &= \norm{\vect x - \vect y}^2 - 2 \lambda \ip[\big]{\vect x - \vect y, \nabla J(\vect x) - \nabla J(\vect y)} + \lambda^2 \norm{\nabla J(\vect x) - \nabla J(\vect y)}^2.
+        &= \norm{\vect x - \vect y}^2 - 2 \lambda \ip[\big]{\vect x - \vect y, \nabla J(\vect x) - \nabla J(\vect y)} + \lambda^2 \norm{\nabla J(\vect x) - \nabla J(\vect y)}^2 \\
+        &\leq (1 - 2 \alpha \lambda + \lambda^2 L) \norm{\vect x - \vect y}^2.
     \end{align*}
+    Therefore, $\vect F_{\lambda}$ is globally Lipschitz continuous with constant $\rho = \sqrt{1 - 2 \alpha \lambda + \lambda^2 L}$,
+    which is less than 1 if and only~\eqref{eq:condition_time_step} is satisfied.
+    The bound~\eqref{eq:exponential_convergence} then follows easily.
 \end{proof}
 
-\section{Gradient descent method with projection}
+\begin{remark}
+    [Convergence speed]
+    The choice of~$\lambda$ minimizing the Lipschitz constant~$\rho$ is given by $\lambda_* = \frac{\alpha}{L^2}$,
+    which corresponds to $\rho_* = 1 - \left(\frac{\alpha}{L}\right)^2$.
+    Often, in practice, it holds that $\alpha \ll L$,
+    in which case the convergence is steepest descent method with fixed step is slow.
+\end{remark}
 
+\section{Constrained optimization}
+\label{sec:constrained_optimization}
+
+In this section,
+we assume that $V \subset \real^n$.
+We begin by establishing well-posedness of the optimization problem~\eqref{eq:optimization} in this setting.
+
+\begin{proposition}
+    [Well posedness of~\eqref{eq:optimization} in the constrained setting]
+    \label{proposition:well-posedness_constrained}
+    The two items below concern existence and uniqueness respectively.
+    \begin{itemize}
+        \item
+            Suppose that~$V \subset \real^n$ is \emph{closed} and that $J \colon V \to \real$ is continuous and coercive.
+            Then there exists a global minimizer of~$J$ in $V$.
+
+        \item
+            Suppose that $V \subset \real^n$ is \emph{convex} and that $J\colon V \to \real$ is strictly convex.
+            Then there exists at most one global minimizer.
+    \end{itemize}
+\end{proposition}
+\begin{proof}
+    The proof is very similar to those of~\cref{proposition:existence_minimizer} and~\cref{proposition:uniqueness_minimizer},
+    and so we leave it to the reader.
+    Note that the set~$V$ should be closed to ensure existence,
+    and convex to guarantee uniqueness.
+    These assumptions are clearly satisfied when $V = \real^n$,
+    so~\cref{proposition:well-posedness_constrained} generalizes \cref{proposition:existence_minimizer,proposition:uniqueness_minimizer}.
+\end{proof}
+
+The following theorem establishes a characterization of the minimizer when $J$ is differentiable.
+\begin{theorem}
+    [Euler--Lagrange conditions]
+    \label{theorem:euler_lagrange}
+    Suppose that $J\colon V \to \real^n$ is differentiable and
+    that $V \subset \real^n$ is closed and convex.
+    Then the following statements hold.
+    \begin{itemize}
+        \item
+            If $\vect x_*$ is a local minimizer of~$J$,
+            then
+            \begin{equation}
+                \label{eq:euler_lagrange}
+                \forall \vect y \in V,
+                \qquad \ip{\nabla J(\vect x_*), \vect y - \vect x_*} \geq 0.
+            \end{equation}
+
+        \item
+            Conversely, if~\eqref{eq:euler_lagrange} is satisfied and~$J$ is convex,
+            then~$\vect x_*$ is a global minimizer of~$J$.
+    \end{itemize}
+\end{theorem}
+\begin{proof}
+    Suppose that $\vect x_*$ is a local minimizer of $J$.
+    This means that there exists~$\delta > 0$ such that
+    \[
+        \forall \vect y \in B_{\delta}(\vect x_*) \cap V, \qquad
+        J(\vect y) \leq J(\vect x_*).
+    \]
+    Therefore $J(\vect x_*) \leq J\bigl((1-t)\vect x_* + t \vect y\bigr)$ for all $t \in [0, 1]$ sufficiently small.
+    But then
+    \[
+        \ip{\nabla J(\vect x_*), \vect y - \vect x_*}
+        = \lim_{t \to 0} \frac{ J\bigl((1-t)\vect x_* + t \vect y\bigr)  - J(\vect x_*)}{t} \geq 0.
+        % 0 \leq \frac{\d}{\d t} \Bigl( J\bigl((1-t)\vect x_* + t \vect y\bigr) \Bigr) \Big\vert_{t=0} = \ip{\nabla J(\vect x_*), \vect y - \vect x_*}.
+    \]
+    Conversely, suppose that~\eqref{eq:euler_lagrange} is satisfied and that~$J$ is convex.
+    Then~\eqref{eq:strong_convex_eq1} holds with $\alpha = 0$,
+    and so we deduce that $\vect x_*$ is a global minimizer.
+\end{proof}
+
+The steepest descent~\cref{algo:steepest_descent_method_optimization} can be extended to a class of optimization problems with constraints by introducing an additional projection step.
+In order to precisely formulate the algorithm,
+we begin by introducing the projection operator.
+
+\begin{proposition}
+    [Projection on a closed convex set]
+    Suppose that $V$ is a closed convex subset of~$\real^n$.
+    Then for all $\vect x \in \real^n$ there a unique $\Pi_V \vect x \in V$,
+    called the orthogonal projection of~$\vect x$ onto~$V$,
+    such that
+    \[
+        \norm{\Pi_V \vect x - \vect x} = \inf_{\vect y \in V} \norm{\vect y - \vect x}.
+    \]
+\end{proposition}
+\begin{proof}
+    The functional $J_{\vect x}(\vect y) = \norm{\vect y - \vect x}^2$ is strongly convex,
+    and so~\cref{proposition:well-posedness_constrained} immediately implies the existence and uniqueness of~$\Pi_V \vect  x$.
+\end{proof}
+
+\begin{remark}
+    In view of~\cref{theorem:euler_lagrange},
+    the projection~$\Pi_V \vect x$ is the unique element of~$V$ which satisfies
+    \begin{equation}
+        \label{eq:euler_lagrange_projection}
+        \forall \vect y \in V,
+        \qquad \ip{\Pi_V \vect x - \vect x, \vect y - \Pi_V\vect x} \geq 0.
+    \end{equation}
+\end{remark}
+
+We are now ready to present the steepest descent method with projection:
+see~\cref{algo:steepest_descent_method_optimization_projection}.
+Like~\cref{algo:steepest_descent_method_optimization},
+the steepest descent with projection may be viewed as a fixed point iteration,
+this time for the function:
+\[
+    \vect F_{\lambda}(\vect x) := \Pi_V\bigl(\vect x - \lambda \nabla J(\vect x)\bigr)
+\]
+Under the assumption that~$J$ is convex,
+a fixed point of this function is a solution of the constrained optimization problem~\eqref{eq:optimization}.
+Indeed if~$\vect F_{\lambda}(\vect x_*) = \vect x_*$,
+then $\vect x_* \in V$ by definition of~$\Pi_V$ and, by~\eqref{eq:euler_lagrange_projection},
+\[
+    % \norm{\lambda \nabla J(\vect x_*)} = \inf_{\vect y \in V} \norm{\vect y - \vect x + \lambda \nabla J(\vect x)} 
+    \forall \vect y \in V,
+    \qquad \ip{\lambda \nabla J(\vect x_*), \vect y - \vect x_*} \geq 0.
+\]
+Therefore, using~\cref{theorem:euler_lagrange} and assuming that~$J$ is convex,
+we obtain that $\vect x_*$ is a global minimizer of~$J$.
+We now prove the convergence of the method.
+\begin{algorithm}
+\caption{Steepest descent with projection}%
+\label{algo:steepest_descent_method_optimization_projection}%
+\begin{algorithmic}[1]
+    \State Pick $\lambda$, and initial $\vect x_0$.
+    \For {$k \in \{0, 1, \dotsc\}$}
+        \State $\vect d_k \gets \nabla J(\vect x_k)$
+        \State $\vect x_{k+1} \gets \Pi_V(\vect x_{k} - \lambda \vect d_k)$
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}
+    [Convergence of steepest descent with projection]
+    \label{theorem:convergence_steepest_descent_optimization}
+    Suppose that $J$ is differentiable, strongly convex with parameter~$\alpha$,
+    and that its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz continuous with parameter~$L$.
+    Assume also that $V \subset \real^n$ is closed and convex.
+    Then provided that
+    \begin{equation}
+        \label{eq:condition_time_step}
+        0 < \lambda < \frac{2 \alpha}{L},
+    \end{equation}
+    the steepest descent method with fixed step is convergent.
+    More precisely,
+    there exists $\rho \in (0, 1)$ such that for all~$k \geq 0$
+    \begin{equation}
+        \label{eq:exponential_convergence}
+        \norm{\vect x_k - \vect x_*} \leq \rho^k \norm{\vect x_0 - \vect x_*}.
+    \end{equation}
+    % In other words, $\vect x_*$ is a globally exponentially stable fixed point for the fixed point iteration based oneq:fixed_point_gradient_descent
+\end{theorem}
+\begin{proof}
+\end{proof}
