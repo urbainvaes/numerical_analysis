@@ -416,15 +416,15 @@ see~\cref{algo:steepest_descent_method_optimization_projection}.
 Like~\cref{algo:steepest_descent_method_optimization},
 the steepest descent with projection may be viewed as a fixed point iteration,
 this time for the function:
-\[
+\begin{equation}
+    \label{eq:constrained_fixed_point}
     \vect F_{\lambda}(\vect x) := \Pi_V\bigl(\vect x - \lambda \nabla J(\vect x)\bigr)
-\]
+\end{equation}
 Under the assumption that~$J$ is convex,
 a fixed point of this function is a solution of the constrained optimization problem~\eqref{eq:optimization}.
 Indeed if~$\vect F_{\lambda}(\vect x_*) = \vect x_*$,
 then $\vect x_* \in V$ by definition of~$\Pi_V$ and, by~\eqref{eq:euler_lagrange_projection},
 \[
-    % \norm{\lambda \nabla J(\vect x_*)} = \inf_{\vect y \in V} \norm{\vect y - \vect x + \lambda \nabla J(\vect x)} 
     \forall \vect y \in V,
     \qquad \ip{\lambda \nabla J(\vect x_*), \vect y - \vect x_*} \geq 0.
 \]
@@ -445,23 +445,37 @@ We now prove the convergence of the method.
 
 \begin{theorem}
     [Convergence of steepest descent with projection]
-    \label{theorem:convergence_steepest_descent_optimization}
+    \label{theorem:convergence_steepest_descent_optimization_constraint}
     Suppose that $J$ is differentiable, strongly convex with parameter~$\alpha$,
     and that its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz continuous with parameter~$L$.
     Assume also that $V \subset \real^n$ is closed and convex.
     Then provided that
     \begin{equation}
-        \label{eq:condition_time_step}
+        \label{eq:condition_time_step_constroined}
         0 < \lambda < \frac{2 \alpha}{L},
     \end{equation}
     the steepest descent method with fixed step is convergent.
     More precisely,
     there exists $\rho \in (0, 1)$ such that for all~$k \geq 0$
-    \begin{equation}
-        \label{eq:exponential_convergence}
+    \begin{equation*}
         \norm{\vect x_k - \vect x_*} \leq \rho^k \norm{\vect x_0 - \vect x_*}.
-    \end{equation}
-    % In other words, $\vect x_*$ is a globally exponentially stable fixed point for the fixed point iteration based oneq:fixed_point_gradient_descent
+    \end{equation*}
 \end{theorem}
 \begin{proof}
+    We already showed in the proof of~\cref{theorem:convergence_steepest_descent_optimization} that the mapping $\vect x \mapsto \vect x - \lambda \nabla J(\vect x)$ is a contraction if and only if~$\lambda$ satisfies~\eqref{eq:condition_time_step_constroined}.
+    In order to prove that~$\vect F_{\lambda}$ given in~\eqref{eq:constrained_fixed_point} is a contraction,
+    it is sufficient to prove that $\Pi_V \colon \real^n \to V$ satisfies the following equation:
+    \[
+        \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
+        \norm{\Pi_V \vect x - \Pi_V \vect y} \leq \norm{\vect x - \vect y}.
+    \]
+    To this end, take $(\vect x, \vect y) \in \real^n \times \real^n$ and let $\vect \delta = \Pi_V \vect x - \Pi_V \vect y$.
+    By~\eqref{eq:euler_lagrange_projection},
+    it holds that
+    \begin{align*}
+        \norm{\vect \delta}^2
+        &= \ip{\vect \delta, \Pi_V \vect x - \vect x} + \ip{\vect \delta, \vect x - \vect y} + \ip{\vect \delta, \vect y - \Pi_V \vect y} \\
+        &\leq \ip{\vect \delta, \vect x - \vect y} \leq \norm{\vect \delta} \norm{\vect x - \vect y},
+    \end{align*}
+    which enables to conclude.
 \end{proof}
