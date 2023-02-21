@@ -753,7 +753,7 @@ integer formats do not provide special values like \julia{Inf} and \julia{NaN}.
 The number delivered by the machine when a calculation exceeds the maximum representable value in the format,
 called the \emph{overflow behavior}, generally depends on the programming language.
 
-Since overflow behavior of integer numbers is not universal across programming languages,
+Since the overflow behavior of integer format is not universal across programming languages,
 a detailed discussion is of little interest.
 We only mention that Julia uses a \emph{wraparound} behavior,
 where $N_{\max} + 1$ silently returns $N_{\min}$ and,
@@ -1065,16 +1065,16 @@ such as \julia{2^64} evaluating to 0.
     and explain the result.
 \end{compexercise}
 \begin{solution}
-    We assume that $\delta \in \floating_{64}$ for simplicity
+    We assume that $\delta \in \floating_{64}$ for simplicity.
     This is not a restrictive assumption
-    as~$\delta$ can only take floating point values in computer code.
+    as~$\delta$ can only take floating point values in computer programs.
     The proof is rather technical, and so it is given for information purposes only.
     We rewrite $d(\delta)$ mathematically as
     \[
         d(\delta) = \Bigl(\widehat f(x \madd \delta) \msub \widehat f(x)\Bigr) \mdiv \delta,
     \]
     where $\widehat f(x) = {\rm fl} \bigl(f(x)\bigr)$.
-    We wish to bound $\abs{d(\delta) - f'(x)}$.
+    We wish to bound $\abs{f'(x) - d(\delta)}$.
     By the triangle inequality,
     \begin{equation}
         \label{eq:triangle_inequality_derivative}
@@ -1119,19 +1119,19 @@ such as \julia{2^64} evaluating to 0.
     \end{equation}
     while the two other terms account for the roundoff errors associated to the machine subtraction and division operators,
     respectively.
-    We will show that the dominant contributions in~\eqref{eq:numerical_differentiation_big_triangle} are the first three terms;
+    We will show that the dominant terms in~\eqref{eq:numerical_differentiation_big_triangle} are the first three;
     the latter two are negligible in comparison.
     Employing~\cref{prop:relative_error_and_machine_epsilon} with $x = f(a)$,
-    $x = a \pm b$ and $x = a/b$,
-    we deduce that the following inequalities:
+    with $x = a \pm b$ and with $x = a/b$,
+    we deduce that the following inequalities are satisfied:
     \begin{align}
         \label{eq:inequalities_numerical_differentiation}
         &\left\lvert \widehat f(a) - f(a) \right\rvert \leq \varepsilon \lvert f(a) \rvert,
-        \qquad \lvert (a\pm b) - (a \, \widehat \pm\, b) \rvert \leq \varepsilon \abs{a-b},
+        \qquad \lvert (a\pm b) - (a \, \widehat \pm\, b) \rvert \leq \varepsilon \abs{a\pm b},
         \qquad \abs{a/b - a \mdiv b} \leq \varepsilon \lvert a/b \rvert.
     \end{align}
     The first two inequalities are valid for all~$(a, b) \in \floating_{64} \times \floating_{64}$,
-    while the third one is valid for all~$(a, b) \in \floating_{64} \times \floating_{64} \backslash \{0\}$.
+    while the third inequality is valid for all~$(a, b) \in \floating_{64} \times \floating_{64} \backslash \{0\}$.
     The first inequality in~\eqref{eq:inequalities_numerical_differentiation}
     can be employed in order to bound the second and third term on the right-hand side of~\eqref{eq:numerical_differentiation_big_triangle}:
     \begin{align}
@@ -1154,13 +1154,11 @@ such as \julia{2^64} evaluating to 0.
         = \delta^{-1} \varepsilon \lvert f'(x) x \rvert  + \bigo(\varepsilon).
     \end{align}
     Combining~\eqref{eq:num_diff_1} and~\eqref{eq:num_diff_2},
-    we have that
+    we obtain that the expression in~\eqref{eq:bound_above_first_three_terms} scales as $\delta^{-1} \varepsilon$:
     \begin{equation}
         \label{eq:numerical_differentiation_term1}
-        \delta^{-1}
-        \left\lvert \bigl( f(x+ \delta) - f(x) \bigr)
-        - \bigl(  \widehat f(x \madd \delta) - \widehat f(x) \bigr) \right\rvert
-        = \bigo(\delta^{-1} \varepsilon).
+        \left\lvert \frac{f(x+\delta) - f(x) }{\delta} - \frac{ \widehat f(x\madd\delta) - \widehat f(x) }{\delta} \right\rvert
+         = \bigo(\delta^{-1} \varepsilon).
     \end{equation}
     Next, using the second inequality in~\eqref{eq:inequalities_numerical_differentiation} (with $-$) and
     then~\eqref{eq:numerical_differentiation_term1},
