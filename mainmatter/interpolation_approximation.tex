@@ -335,7 +335,43 @@ In general, divided differences are defined recursively as follows:
     \label{eq:definition_divided_difference}
     [u_{0}, u_{2}, \dotsc, u_{d}] := \frac{[u_{1}, \dotsc, u_{d}] - [u_{0}, \dotsc, u_{d-1}]}{x_{d}-x_{0}}, \qquad [u_i] = u_i.
 \end{equation}
-It is possible to find an expression for the coefficients of the interpolating polynomials in terms of these divided differences.
+
+Let us start by observing that our divided differences coincide
+with the coefficients in~\eqref{eq:gregory_newton}.
+
+\begin{lemma}
+    \label{lemma:gregory_newton_with_divided_differences}
+    Assume that $(0, u_0), \dotsc, (n, u_n) \in \real^2$.
+    Then, provided that $(i, k) \in \nat^2$ satisfies $i + k \leq n$,
+    we have
+    \[
+        \frac 1 {k!} \Delta^k u(i) = [u_i, \dotsc, u_{i + k}].
+    \]
+\end{lemma}
+\begin{proof}
+    The result is clearly true for $k = 0$,
+    and we shall assume by induction that it holds for $k - 1$.
+    Using our induction hypothesis, we get
+    \begin{align*}
+        \frac 1 {k!} \Delta^k u(i)
+        &= \frac 1 k \left(\frac 1 {(k - 1)!} \Delta^{k - 1} u(i + 1) - \frac 1 {(k - 1)!} \Delta^{k - 1} u(i)\right)\\
+        &= \frac 1 k \left([u_{i + 1}, \dotsc, u_{i + k}] - [u_i, \dotsc, u_{i + k - 1}]\right).
+    \end{align*}
+    By our definition of divided differences in~\eqref{eq:definition_divided_difference},
+    it follows that we have
+    \begin{align*}
+        \frac 1 {k!} \Delta^k u(i)
+        = \frac 1 k (\underbrace{x_{i + k} - x_i}_{i + k - i}) [u_i, \dotsc, u_{i + k}]
+        = [u_i, \dotsc, u_{i + k}],
+    \end{align*}
+    which allows us to conclude the proof.
+\end{proof}
+
+In light of Lemma~\ref{lemma:gregory_newton_with_divided_differences},
+the reader will not be surprised that
+the coefficients in the $\varphi_0, \dotsc, \varphi_n$ basis in~\eqref{eq:basis_newton}
+are given by the divided differences.
+
 \begin{proposition}
     Assume that $(x_0, u_0), \dotsc, (x_n, u_n)$ are $n+1$ points in the plane with distinct abcissae.
     Then the interpolating polynomial of degree $n$ may be expressed as
