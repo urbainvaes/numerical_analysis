@@ -3,13 +3,13 @@
 
 \minitoc
 
-We focus in this chapter on optimization problems of the following form:
+In this chapter, we focus on optimization problems of the following form:
 \begin{equation}
     \label{eq:optimization}
-    \text{ Find $\argmin_{\vect x \in V} J(\vect x)$},
+    \text{Find} \quad \argmin_{\vect x \in \mathcal K} J(\vect x),
 \end{equation}
-where $V$ is a given subset of $\real^n$ and $J\colon V \to \real$ is a given \emph{objective function}.
-    % \text{ Find $u \in V \subset \real^n$ such that $J(u) \leq J(v)$ for all $v \in V$ },
+where $\mathcal K$ is a given subset of $\real^n$ and $J\colon \mathcal K \to \real$ is a given \emph{objective function}.
+% \text{ Find $u \in \mathcal K \subset \real^n$ such that $J(u) \leq J(v)$ for all $v \in \mathcal K$ },
 We came across several examples of such problems earlier in these notes:
 \begin{itemize}
     \item
@@ -30,12 +30,12 @@ We came across several examples of such problems earlier in these notes:
             J(\vect x)  = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
         \]
 \end{itemize}
-When $V = \real^n$,
+When $\mathcal K = \real^n$,
 equation~\eqref{eq:optimization} is an \emph{unconstrained} optimization problem,
-and when $V \subsetneq \real^n$,
+and when~$\mathcal K \subsetneq \real^n$,
 equation~\eqref{eq:optimization} is a \emph{constrained} optimization problem.
 In practice,
-the set~$V$ is often an intersection of sets of the form
+the set~$\mathcal K$ is often an intersection of sets of the form
 \[
     \bigl\{ \vect x \in \real^n : \phi(x) \leq 0 \bigr\},
     \qquad
@@ -65,19 +65,26 @@ The rest of this chapter is organized as follows:
         we extend the steepest descent method to the case of optimization with constraints.
 \end{itemize}
 
+\begin{remark}
+    For generality, we could consider the setting where the set~$\mathcal K$ in~\eqref{eq:optimization} is a subset of some finite dimensional or infinite dimensional vector space~$V$.
+    An optimization problem over (a subset of) a finite dimensional vector space of dimension~$n$ can always be recast as an optimization problem over (a subset of) $\real^n$
+    -- the type we study in this chapter -- by fixing a basis.
+    The case of an infinite dimensional vector space, however,
+    is more delicate, and we do not address it here.
+\end{remark}
 
 \section{Definition and characterization of convexity}
 \label{sec:convexity}
 
 \begin{definition}
     [Convexity]
-    Assume that $J\colon V \to \real$.
+    Assume that $J\colon \mathcal K \to \real$.
     \begin{itemize}
         \item
             The function~$J$ is said to be convex if
             \begin{equation}
                 \label{eq:convexity}
-                \forall (\vect x, \vect y) \in V \times V,
+                \forall (\vect x, \vect y) \in \mathcal K \times \mathcal K,
                 \qquad \forall \theta \in [0, 1],
                 \qquad
                 J\bigl(\theta \vect x + (1 - \theta) \vect y\bigr)
@@ -90,7 +97,7 @@ The rest of this chapter is organized as follows:
 
         \item
             The function~$J$ is called \emph{strongly convex} with parameter~$\alpha > 0$ if
-            for all $(\vect x, \vect y) \in V \times V$ and for all~$\theta \in [0, 1]$,
+            for all $(\vect x, \vect y) \in \mathcal K \times \mathcal K$ and for all~$\theta \in [0, 1]$,
             \begin{equation}
                 \label{eq:strong_convexity}
                 J\bigl(\theta \vect x + (1 - \theta) \vect y\bigr)
@@ -100,9 +107,10 @@ The rest of this chapter is organized as follows:
     \end{itemize}
 \end{definition}
 
-When the function~$J$ is differentiable,
-convexity, strict convexity and strong convexity can be characterized in terms of the gradient~$\nabla J$.
-We prove this only for strong convexity.
+If the function~$J$ is differentiable,
+then convexity, strict convexity and strong convexity can be characterized in terms of the gradient~$\nabla J$.
+We illustrate this for strong convexity,
+noting that a characterization of convexity is obtained by substituting~$\alpha = 0$ in the following result.
 
 \begin{proposition}
     A function~$J\colon \real^n \to \real$ is strongly convex with parameter~$\alpha$ if and only if
@@ -120,50 +128,26 @@ We prove this only for strong convexity.
     \end{equation}
 \end{proposition}
 \begin{proof}
-    We divide the proof into items to clarify the structure.
+    For clarity, we divide the proof into items and prove one implication per item.
     \begin{itemize}
         \item
-    We begin by proving that \textbf{\eqref{eq:strong_convexity} $\Rightarrow$~\eqref{eq:strong_convex_eq1}}.
-    Rearranging~\eqref{eq:strong_convexity}, we have
-    \[
-        \frac{J\bigl( \vect y + \theta (\vect x - \vect y) \bigr) - J(\vect y)}{\theta}
-        \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2} (1 - \theta) \norm{\vect x - \vect y}^2.
-    \]
-    Taking the limit~$\theta \to 0$,
-    we deduce that
-    \[
-        \ip[\big]{\nabla J(\vect y), \vect x - \vect y}
-        \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2}  \norm{\vect x - \vect y}^2.
-    \]
-    This gives~\eqref{eq:strong_convex_eq1} after rearranging.
+            \eqref{eq:strong_convexity} $\Rightarrow$~\eqref{eq:strong_convex_eq1}.
+            Rearranging~\eqref{eq:strong_convexity}, we have
+            \[
+                \frac{J\bigl( \vect y + \theta (\vect x - \vect y) \bigr) - J(\vect y)}{\theta}
+                \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2} (1 - \theta) \norm{\vect x - \vect y}^2.
+            \]
+            Taking the limit~$\theta \to 0$,
+            we deduce that
+            \[
+                \ip[\big]{\nabla J(\vect y), \vect x - \vect y}
+                \leq  J(\vect x)  - J(\vect y)  - \frac{\alpha}{2}  \norm{\vect x - \vect y}^2.
+            \]
+            This gives~\eqref{eq:strong_convex_eq1} after rearranging.
 
     \item
-    Next, we prove that \textbf{\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convex_eq2}}.
-    Assuming that~\eqref{eq:strong_convex_eq1} holds and applying this inequality first to~$(\vect x, \vect y)$ and then to~$(\vect y, \vect x)$,
-    we obtain
-    \begin{align*}
-        J(\vect x) &\geq J(\vect y) + \ip[\big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2 \\
-        J(\vect y) &\geq J(\vect x) + \ip[\big]{\nabla J(\vect x), \vect y - \vect x} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2.
-    \end{align*}
-    Adding these equations and rearranging,
-    we deduce~\eqref{eq:strong_convex_eq2}.
-
-    \item
-    We next prove that~\eqref{eq:strong_convex_eq2} $\Rightarrow$~\eqref{eq:strong_convex_eq1}.
-    Suppose that~\eqref{eq:strong_convex_eq2} holds and
-    take $(\vect x, \vect y) \in \real^n \times \real^n$.
-    Using the fundamental theorem of analysis and~\eqref{eq:strong_convex_eq2},
-    we have
-    \begin{align*}
-        J(\vect x)
-        &=  J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J\bigl(\vect y + \theta (\vect x - \vect y) \bigr), \vect x - \vect y} \, \d \theta \\
-        &\geq J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \alpha \theta \norm{\vect x - \vect y}^2 \, \d \theta \\
-        &= J(\vect y) \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2.
-    \end{align*}
-
-    \item
-        It remains to prove the implication~\eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convexity}.
-        To this end, suppose that~\eqref{eq:strong_convex_eq1} holds,
+        \eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convexity}.
+        To prove this implication, suppose that~\eqref{eq:strong_convex_eq1} holds,
         take $(\vect x, \vect y) \in \real^n \times \real^n$
         and let $\vect z = \theta \vect x + (1 - \theta) \vect y$.
         Using~\eqref{eq:strong_convex_eq1} successively with $(\vect x, \vect z)$ and~$(\vect y, \vect z)$,
@@ -176,20 +160,43 @@ We prove this only for strong convexity.
         we deduce that
         \begin{align*}
             \theta J(\vect x) + (1 - \theta) J(\vect y)
-            &\geq J(\vect z) + \ip[\Big]{\nabla J(\vect z), \theta(\vect x - \vect z) + (1 - \theta) (\vect y - \vect z)} \\
+            &\geq J(\vect z) + \ip[\Big]{\nabla J(\vect z), \theta \vect x + (1 - \theta) \vect y - \vect z} \\
             &\qquad + \frac{\alpha \theta}{2} \norm{\vect x - \vect z}^2 + \frac{\alpha(1 - \theta)}{2}  \norm{\vect y - \vect z}^2 \\
-            &= J(\vect z) + 0 + \frac{\alpha}{2} \theta (1-\theta) \norm{\vect x - \vect y}^2,
+            &= J(\vect z) + 0 + \frac{\alpha}{2} \theta (1-\theta) \norm{\vect x - \vect y}^2.
         \end{align*}
-        where we used that $\theta(\vect x - \vect z) + (1 - \theta) (\vect y - \vect z) = \theta \vect x + (1 - \theta) \vect y - \vect z = 0$.
         Rearranging gives~\eqref{eq:strong_convexity}.
+
+    \item
+        \eqref{eq:strong_convex_eq1} $\Rightarrow$~\eqref{eq:strong_convex_eq2}.
+        Assuming that~\eqref{eq:strong_convex_eq1} holds and applying this inequality first to~$(\vect x, \vect y)$ and then to~$(\vect y, \vect x)$,
+        we obtain
+        \begin{align*}
+            J(\vect x) &\geq J(\vect y) + \ip[\big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2 \\
+            J(\vect y) &\geq J(\vect x) + \ip[\big]{\nabla J(\vect x), \vect y - \vect x} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2.
+        \end{align*}
+        Adding these equations and rearranging,
+        we deduce~\eqref{eq:strong_convex_eq2}.
+
+    \item
+        \eqref{eq:strong_convex_eq2} $\Rightarrow$~\eqref{eq:strong_convex_eq1}.
+        Suppose that~\eqref{eq:strong_convex_eq2} holds and
+        take $(\vect x, \vect y) \in \real^n \times \real^n$.
+        Using the fundamental theorem of analysis and~\eqref{eq:strong_convex_eq2},
+        we have
+        \begin{align*}
+            J(\vect x)
+            &=  J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J\bigl(\vect y + \theta (\vect x - \vect y) \bigr), \vect x - \vect y} \, \d \theta \\
+            &\geq J(\vect y) + \int_{0}^{1} \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \alpha \theta \norm{\vect x - \vect y}^2 \, \d \theta \\
+            &= J(\vect y) + \ip[\Big]{\nabla J(\vect y), \vect x - \vect y} + \frac{\alpha}{2} \norm{\vect x - \vect y}^2,
+        \end{align*}
+        which gives~\eqref{eq:strong_convex_eq1}.
     \end{itemize}
-    Note that this proof can easily be adapted in order to obtain characterizations in terms of $\nabla J$ of convexity and strict convexity.
+    We have proved all the implications required to conclude the proof.
 \end{proof}
-% The subject of optimization is vast, and we intentionally restrict our attention
 
 \section{Unconstrained optimization}
 \label{sec:unconstrained_optimization}
-Throughout this section $V = \real^n$.
+Throughout this section $\mathcal K = \real^n$.
 We begin by establishing conditions under which the optimization problem~\eqref{eq:optimization} admits a unique solution in this setting.
 We first prove existence of a global minimizer under appropriate conditions.
 \begin{proposition}
@@ -220,6 +227,7 @@ We first prove existence of a global minimizer under appropriate conditions.
     In the infinite-dimensional setting,
     coercivity and continuity alone are not sufficient to guarantee the existence of a minimizer.
 \end{remark}
+
 Uniqueness of the minimizer can be established under a strict convexity assumption.
 
 \begin{proposition}
@@ -238,9 +246,31 @@ Uniqueness of the minimizer can be established under a strict convexity assumpti
     which is a contradiction.
 \end{proof}
 
+Finally, before introducing the steepest descent algorithm,
+we recall the following standard result from analysis,
+the proof of which is left as an exercise.
+
+\begin{theorem}
+    [Euler condition]
+    \label{theorem:euler}
+    Suppose that $J\colon \real^n \to \real$ is differentiable.
+    \begin{itemize}
+        \item
+            If $\vect x_*$ is a local minimizer of~$J$,
+            then
+            \(
+                \label{eq:critical_point}
+                \nabla J(\vect x_*) = 0.
+            \)
+
+        \item
+            If $J$ is convex,
+            then~$\nabla J(\vect x_*) = 0$ if and only if~$\vect x_*$ is a global minimizer.
+    \end{itemize}
+\end{theorem}
+
 \paragraph{Steepest descent method.}
-We encountered the steepest descent method in the context of linear equations in~\cref{cha:solution_of_linear_systems}.
-In this section, we study the more general version of the steepest method with \emph{fixed step} given in~\cref{algo:steepest_descent_method_optimization}.
+In this section, we study the more general version of the steepest descent with \emph{fixed step} given in~\cref{algo:steepest_descent_method_optimization}.
 \begin{algorithm}
 \caption{Steepest descent method}%
 \label{algo:steepest_descent_method_optimization}%
@@ -253,26 +283,32 @@ In this section, we study the more general version of the steepest method with \
 \end{algorithmic}
 \end{algorithm}
 
+\begin{remark}
+    We encountered the steepest descent with fixed step for a quadratic objective function when we
+    analyzed Richardson's method for solving linear equations in~\cref{cha:solution_of_linear_systems}.
+\end{remark}
+
 In practice, \cref{algo:steepest_descent_method_optimization} must be supplemented with an appropriate stopping criterion.
 This could be, for example, a criterion of the form $\norm{\vect x_{k+1} - \vect x_k} \leq \varepsilon$,
 or $\bigl\lvert J(\vect x_{k+1}) - J(\vect x_k) \bigr\rvert \leq \varepsilon$.
 It is sometimes also useful to use a normalized criterion of the form $\norm{\vect x_{k+1} - \vect x_k} \leq \varepsilon \norm{\vect x_0}.$
-Note that the steepest descent method may be viewed as a fixed point iteration for the function
+The steepest descent method may be viewed as a fixed point iteration for the function
 \begin{equation}
     \label{eq:fixed_point_gradient_descent}
     \vect F_{\lambda}(\vect x) = \vect x - \lambda \nabla J(\vect x).
 \end{equation}
-A fixed point of this functional is a solution to the nonlinear equation $\nabla J(\vect x) = 0$.
+A point $\vect x_* \in \real^n$ is a fixed point of this functional if and only if~$\vect x_*$ is a solution to the nonlinear equation $\nabla J(\vect x_*) = 0$.
 We shall now prove the convergence of the steepest descent under appropriate assumptions on the function~$J$.
 \begin{theorem}
     [Convergence of the steepest descent method]
     \label{theorem:convergence_steepest_descent_optimization}
     Suppose that $J$ is differentiable, strongly convex with parameter~$\alpha$,
     and that its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz continuous with parameter~$L$:
-    \[
+    \begin{equation}
+        \label{eq:lipschitz_gradient}
         \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
-        \norm{J(\vect x) - J(\vect y)} \leq L \norm{\vect x - \vect y}.
-    \]
+        \norm{\nabla J(\vect x) - \nabla J(\vect y)} \leq L \norm{\vect x - \vect y}.
+    \end{equation}
     Then provided that
     \begin{equation}
         \label{eq:condition_time_step}
@@ -288,19 +324,27 @@ We shall now prove the convergence of the steepest descent under appropriate ass
     % In other words, $\vect x_*$ is a globally exponentially stable fixed point for the fixed point iteration based oneq:fixed_point_gradient_descent
 \end{theorem}
 \begin{proof}
-    By the Banach fixed point theorem,
-    see~\cref{theorem:banach_fixed_point},
-    it is sufficient to prove that $\vect F_{\lambda}$ defined in~\eqref{eq:fixed_point_gradient_descent} is a contraction with constant $\rho \in (0, 1)$.
+    Under the assumptions of the theorem,
+    there exists a unique global minimizer of~$J$,
+    which is the unique fixed point of~$\vect F_{\lambda}$.
+    We begin by proving that $\vect F_{\lambda}$ defined in~\eqref{eq:fixed_point_gradient_descent} is globally Lipschitz continuous.
     We have
     \begin{align*}
         \norm{ \vect F_{\lambda}(\vect x) - \vect F_{\lambda}(\vect y) }^2
         &= \norm*{ \vect x - \vect y - \lambda \bigl(\nabla J(\vect x) - \nabla J(\vect y) \bigr) }^2 \\
         &= \norm{\vect x - \vect y}^2 - 2 \lambda \ip[\big]{\vect x - \vect y, \nabla J(\vect x) - \nabla J(\vect y)} + \lambda^2 \norm{\nabla J(\vect x) - \nabla J(\vect y)}^2 \\
-        &\leq (1 - 2 \alpha \lambda + \lambda^2 L) \norm{\vect x - \vect y}^2.
+        &\leq (1 - 2 \alpha \lambda + \lambda^2 L) \norm{\vect x - \vect y}^2,
     \end{align*}
-    Therefore, $\vect F_{\lambda}$ is globally Lipschitz continuous with constant $\rho = \sqrt{1 - 2 \alpha \lambda + \lambda^2 L}$,
+    where we employed~\eqref{eq:strong_convex_eq2} for the second term and~\eqref{eq:lipschitz_gradient} for the third term.
+    Thus, $\vect F_{\lambda}$ is globally Lipschitz continuous with constant $\rho = \sqrt{1 - 2 \alpha \lambda + \lambda^2 L}$,
     which is less than 1 if and only~\eqref{eq:condition_time_step} is satisfied.
-    The bound~\eqref{eq:exponential_convergence} then follows easily.
+    The bound~\eqref{eq:exponential_convergence} then follows by noting that
+    \[
+        \norm{\vect x_k - \vect x_*} = \norm{\vect F_{\lambda}(\vect x_{k-1}) - \vect F_{\lambda} (\vect x_*)}
+        \leq \rho \norm{\vect x_{k-1} - \vect x_*} \leq \dots \leq \rho^k \norm{\vect x_0 - \vect x_*},
+    \]
+    which concludes the proof.
+    (Note that~\eqref{eq:exponential_convergence} also follows from~\cref{theorem:exponential_convergence_fixed_point}.)
 \end{proof}
 
 \begin{remark}
@@ -308,45 +352,47 @@ We shall now prove the convergence of the steepest descent under appropriate ass
     The choice of~$\lambda$ minimizing the Lipschitz constant~$\rho$ is given by $\lambda_* = \frac{\alpha}{L^2}$,
     which corresponds to $\rho_* = 1 - \left(\frac{\alpha}{L}\right)^2$.
     Often, in practice, it holds that $\alpha \ll L$,
-    in which case the convergence is steepest descent method with fixed step is slow.
+    in which case the convergence of the steepest descent with fixed step is slow.
 \end{remark}
 
 \section{Constrained optimization}
 \label{sec:constrained_optimization}
 
 In this section,
-we assume that $V \subset \real^n$.
+we assume that $\mathcal K \subset \real^n$.
 We begin by establishing well-posedness of the optimization problem~\eqref{eq:optimization} in this setting.
 
 \begin{proposition}
     [Well posedness of~\eqref{eq:optimization} in the constrained setting]
     \label{proposition:well-posedness_constrained}
-    The two items below concern existence and uniqueness respectively.
+    The two items below concern existence and uniqueness, respectively.
     \begin{itemize}
         \item
-            Suppose that~$V \subset \real^n$ is \emph{closed} and that $J \colon V \to \real$ is continuous and coercive.
-            Then there exists a global minimizer of~$J$ in $V$.
+            Suppose that~$\mathcal K \subset \real^n$ is \emph{closed} and that $J \colon \mathcal K \to \real$ is continuous and coercive.
+            Then there exists a global minimizer of~$J$ in $\mathcal K$.
 
         \item
-            Suppose that $V \subset \real^n$ is \emph{convex} and that $J\colon V \to \real$ is strictly convex.
+            Suppose that $\mathcal K \subset \real^n$ is \emph{convex} and that $J\colon \mathcal K \to \real$ is strictly convex.
             Then there exists at most one global minimizer.
     \end{itemize}
 \end{proposition}
 \begin{proof}
     The proof is very similar to those of~\cref{proposition:existence_minimizer} and~\cref{proposition:uniqueness_minimizer},
     and so we leave it to the reader.
-    Note that the set~$V$ should be closed to ensure existence,
+    Note that the set~$\mathcal K$ must be closed to ensure existence,
     and convex to guarantee uniqueness.
-    These assumptions are clearly satisfied when $V = \real^n$,
+    These assumptions are clearly satisfied when $\mathcal K = \real^n$,
     so~\cref{proposition:well-posedness_constrained} generalizes \cref{proposition:existence_minimizer,proposition:uniqueness_minimizer}.
 \end{proof}
 
-The following theorem establishes a characterization of the minimizer when $J$ is differentiable.
+The following theorem,
+which generalizes~\eqref{theorem:euler},
+establishes a characterization of the minimizer when $J$ is differentiable.
 \begin{theorem}
     [Euler--Lagrange conditions]
     \label{theorem:euler_lagrange}
-    Suppose that $J\colon V \to \real^n$ is differentiable and
-    that $V \subset \real^n$ is closed and convex.
+    Suppose that $J\colon \mathcal K \to \real$ is differentiable and
+    that $\mathcal K \subset \real^n$ is closed and convex.
     Then the following statements hold.
     \begin{itemize}
         \item
@@ -354,8 +400,8 @@ The following theorem establishes a characterization of the minimizer when $J$ i
             then
             \begin{equation}
                 \label{eq:euler_lagrange}
-                \forall \vect y \in V,
-                \qquad \ip{\nabla J(\vect x_*), \vect y - \vect x_*} \geq 0.
+                \forall \vect x \in \mathcal K,
+                \qquad \ip{\nabla J(\vect x_*), \vect x - \vect x_*} \geq 0.
             \end{equation}
 
         \item
@@ -367,47 +413,48 @@ The following theorem establishes a characterization of the minimizer when $J$ i
     Suppose that $\vect x_*$ is a local minimizer of $J$.
     This means that there exists~$\delta > 0$ such that
     \[
-        \forall \vect y \in B_{\delta}(\vect x_*) \cap V, \qquad
-        J(\vect y) \leq J(\vect x_*).
+        \forall \vect x \in B_{\delta}(\vect x_*) \cap \mathcal K, \qquad
+        J(\vect x_*) \leq J(\vect x).
     \]
-    Therefore $J(\vect x_*) \leq J\bigl((1-t)\vect x_* + t \vect y\bigr)$ for all $t \in [0, 1]$ sufficiently small.
+    Therefore $J(\vect x_*) \leq J\bigl((1-t)\vect x_* + t \vect x\bigr)$ for all $t \in [0, 1]$ sufficiently small.
     But then
     \[
-        \ip{\nabla J(\vect x_*), \vect y - \vect x_*}
-        = \lim_{t \to 0} \frac{ J\bigl((1-t)\vect x_* + t \vect y\bigr)  - J(\vect x_*)}{t} \geq 0.
-        % 0 \leq \frac{\d}{\d t} \Bigl( J\bigl((1-t)\vect x_* + t \vect y\bigr) \Bigr) \Big\vert_{t=0} = \ip{\nabla J(\vect x_*), \vect y - \vect x_*}.
+        \ip{\nabla J(\vect x_*), \vect x - \vect x_*}
+        = \lim_{t \to 0} \frac{ J\bigl((1-t)\vect x_* + t \vect x\bigr)  - J(\vect x_*)}{t} \geq 0.
+        % 0 \leq \frac{\d}{\d t} \Bigl( J\bigl((1-t)\vect x_* + t \vect x\bigr) \Bigr) \Big\vert_{t=0} = \ip{\nabla J(\vect x_*), \vect y - \vect x_*}.
     \]
     Conversely, suppose that~\eqref{eq:euler_lagrange} is satisfied and that~$J$ is convex.
-    Then~\eqref{eq:strong_convex_eq1} holds with $\alpha = 0$,
-    and so we deduce that $\vect x_*$ is a global minimizer.
+    Since~$J$ is convex, equation~\eqref{eq:strong_convex_eq1} holds with $\alpha = 0$,
+    and applying this equation with~$\vect y = \vect x_*$,
+    we deduce that $\vect x_*$ is a global minimizer.
 \end{proof}
 
 The steepest descent~\cref{algo:steepest_descent_method_optimization} can be extended to a class of optimization problems with constraints by introducing an additional projection step.
 In order to precisely formulate the algorithm,
-we begin by introducing the projection operator.
+we begin by introducing the projection operator~$\Pi_{\mathcal K}$.
 
 \begin{proposition}
     [Projection on a closed convex set]
-    Suppose that $V$ is a closed convex subset of~$\real^n$.
-    Then for all $\vect x \in \real^n$ there a unique $\Pi_V \vect x \in V$,
-    called the orthogonal projection of~$\vect x$ onto~$V$,
+    Suppose that $\mathcal K$ is a closed convex subset of~$\real^n$.
+    Then for all $\vect x \in \real^n$ there a unique $\Pi_{\mathcal K} \vect x \in \mathcal K$,
+    called the orthogonal projection of~$\vect x$ onto~$\mathcal K$,
     such that
     \[
-        \norm{\Pi_V \vect x - \vect x} = \inf_{\vect y \in V} \norm{\vect y - \vect x}.
+        \norm{\Pi_{\mathcal K} \vect x - \vect x} = \inf_{\vect y \in \mathcal K} \norm{\vect y - \vect x}.
     \]
 \end{proposition}
 \begin{proof}
     The functional $J_{\vect x}(\vect y) = \norm{\vect y - \vect x}^2$ is strongly convex,
-    and so~\cref{proposition:well-posedness_constrained} immediately implies the existence and uniqueness of~$\Pi_V \vect  x$.
+    and so~\cref{proposition:well-posedness_constrained} immediately implies the existence and uniqueness of~$\Pi_{\mathcal K} \vect  x$.
 \end{proof}
 
 \begin{remark}
     In view of~\cref{theorem:euler_lagrange},
-    the projection~$\Pi_V \vect x$ is the unique element of~$V$ which satisfies
+    the projection~$\Pi_{\mathcal K} \vect x$ is the unique element of~$\mathcal K$ which satisfies
     \begin{equation}
         \label{eq:euler_lagrange_projection}
-        \forall \vect y \in V,
-        \qquad \ip{\Pi_V \vect x - \vect x, \vect y - \Pi_V\vect x} \geq 0.
+        \forall \vect y \in \mathcal K,
+        \qquad \ip{\Pi_{\mathcal K} \vect x - \vect x, \vect y - \Pi_{\mathcal K}\vect x} \geq 0.
     \end{equation}
 \end{remark}
 
@@ -415,17 +462,17 @@ We are now ready to present the steepest descent method with projection:
 see~\cref{algo:steepest_descent_method_optimization_projection}.
 Like~\cref{algo:steepest_descent_method_optimization},
 the steepest descent with projection may be viewed as a fixed point iteration,
-this time for the function:
+this time for the function
 \begin{equation}
     \label{eq:constrained_fixed_point}
-    \vect F_{\lambda}(\vect x) := \Pi_V\bigl(\vect x - \lambda \nabla J(\vect x)\bigr)
+    \vect F_{\lambda}(\vect x) := \Pi_{\mathcal K}\bigl(\vect x - \lambda \nabla J(\vect x)\bigr)
 \end{equation}
 Under the assumption that~$J$ is convex,
 a fixed point of this function is a solution of the constrained optimization problem~\eqref{eq:optimization}.
 Indeed if~$\vect F_{\lambda}(\vect x_*) = \vect x_*$,
-then $\vect x_* \in V$ by definition of~$\Pi_V$ and, by~\eqref{eq:euler_lagrange_projection},
+then $\vect x_* \in \mathcal K$ by definition of~$\Pi_{\mathcal K}$ and, by~\eqref{eq:euler_lagrange_projection},
 \[
-    \forall \vect y \in V,
+    \forall \vect y \in \mathcal K,
     \qquad \ip{\lambda \nabla J(\vect x_*), \vect y - \vect x_*} \geq 0.
 \]
 Therefore, using~\cref{theorem:euler_lagrange} and assuming that~$J$ is convex,
@@ -438,7 +485,7 @@ We now prove the convergence of the method.
     \State Pick $\lambda$, and initial $\vect x_0$.
     \For {$k \in \{0, 1, \dotsc\}$}
         \State $\vect d_k \gets \nabla J(\vect x_k)$
-        \State $\vect x_{k+1} \gets \Pi_V(\vect x_{k} - \lambda \vect d_k)$
+        \State $\vect x_{k+1} \gets \Pi_{\mathcal K}(\vect x_{k} - \lambda \vect d_k)$
     \EndFor
 \end{algorithmic}
 \end{algorithm}
@@ -448,7 +495,7 @@ We now prove the convergence of the method.
     \label{theorem:convergence_steepest_descent_optimization_constraint}
     Suppose that $J$ is differentiable, strongly convex with parameter~$\alpha$,
     and that its gradient $\nabla J \colon \real^n \to \real^n$ is Lipschitz continuous with parameter~$L$.
-    Assume also that $V \subset \real^n$ is closed and convex.
+    Assume also that $\mathcal K \subset \real^n$ is closed and convex.
     Then provided that
     \begin{equation}
         \label{eq:condition_time_step_constroined}
@@ -464,18 +511,18 @@ We now prove the convergence of the method.
 \begin{proof}
     We already showed in the proof of~\cref{theorem:convergence_steepest_descent_optimization} that the mapping $\vect x \mapsto \vect x - \lambda \nabla J(\vect x)$ is a contraction if and only if~$\lambda$ satisfies~\eqref{eq:condition_time_step_constroined}.
     In order to prove that~$\vect F_{\lambda}$ given in~\eqref{eq:constrained_fixed_point} is a contraction,
-    it is sufficient to prove that $\Pi_V \colon \real^n \to V$ satisfies the following equation:
+    it is sufficient to prove that $\Pi_{\mathcal K} \colon \real^n \to \mathcal K$ satisfies the following estimate:
     \[
         \forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
-        \norm{\Pi_V \vect x - \Pi_V \vect y} \leq \norm{\vect x - \vect y}.
+        \norm{\Pi_{\mathcal K} \vect x - \Pi_{\mathcal K} \vect y} \leq \norm{\vect x - \vect y}.
     \]
-    To this end, take $(\vect x, \vect y) \in \real^n \times \real^n$ and let $\vect \delta = \Pi_V \vect x - \Pi_V \vect y$.
+    To this end, take $(\vect x, \vect y) \in \real^n \times \real^n$ and let $\vect \delta = \Pi_{\mathcal K} \vect x - \Pi_{\mathcal K} \vect y$.
     By~\eqref{eq:euler_lagrange_projection},
     it holds that
     \begin{align*}
         \norm{\vect \delta}^2
-        &= \ip{\vect \delta, \Pi_V \vect x - \vect x} + \ip{\vect \delta, \vect x - \vect y} + \ip{\vect \delta, \vect y - \Pi_V \vect y} \\
-        &\leq \ip{\vect \delta, \vect x - \vect y} \leq \norm{\vect \delta} \norm{\vect x - \vect y},
+        &= \ip{\vect \delta, \Pi_{\mathcal K} \vect x - \vect x} + \ip{\vect \delta, \vect x - \vect y} + \ip{\vect \delta, \vect y - \Pi_{\mathcal K} \vect y} \\
+        &\leq 0 + \ip{\vect \delta, \vect x - \vect y} + 0 \leq \norm{\vect \delta} \norm{\vect x - \vect y},
     \end{align*}
     which enables to conclude.
 \end{proof}
