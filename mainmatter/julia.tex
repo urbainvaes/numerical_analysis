@@ -37,13 +37,13 @@ it is sometimes convenient to use the following shorthand notations instead of a
 \begin{minted}{julia}
 condition = true
 
-# Assign 0 to x if `condition' is true, else assign 2
+# Assign x = 0 if `condition` is true, else assign x = 2
 x = condition ? 0 : 2
 
-# Print "true" if `condition' is true
+# Print "true" if `condition` is true
 condition && println("true")
 
-# Print "false" if `condition' is false
+# Print "false" if `condition` is false
 condition || println("false")
 \end{minted}
 \end{remark}
@@ -447,7 +447,8 @@ because the instruction \julia{b = a} defines a new binding to the array~\julia{
     append!(b, 4)
     println(a)
 \end{minted}
-A similar behavior applies when passing an array as argument to a function.
+A similar behavior applies when passing an array as argument to a function,
+as we saw previously.
 The \julia{copy} function can be used to perform a copy.
 
 \begin{task}

@@ -201,7 +201,7 @@ The proof is provided for information purposes only.
 
 \section{Completeness}
 Assume that $\mathcal X$ is a vector space with a norm~$\norm{\placeholder}$.
-Together, $\mathcal X$ and $\norm{\placeholder}$ form a \emph{normed vector space}.
+Together, $(\mathcal X,\norm{\placeholder})$ form a \emph{normed vector space}.
 A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is convergent in this space
 if there exists $\vect x_* \in \mathcal X$ such that
 \[
@@ -214,7 +214,7 @@ we write $\lim_{n \to \infty} \vect x_n = \vect x_*$ or $\vect x_n \to \vect x_*
     \[
         \lim_{m, n \to +\infty} \norm{\vect x_n - \vect x_m} = 0.
     \]
-    The normed vector space $(\mathcal X, \norm{\placeholder})$ is called complete if every Cauchy sequence is convergent.
+    The normed vector space $(\mathcal X, \norm{\placeholder})$ is called \emph{complete} if every Cauchy sequence is convergent.
 \end{definition}
 Every convergent sequence is Cauchy,
 but the converse is not always true.
@@ -232,12 +232,12 @@ but the converse is not always true.
         f_n(x) = x^{\frac{1}{2n+1}}
     \end{equation}
     is Cauchy but not convergent.
-    Indeed, assume for contradiction that there exists~$f_* \in \mathcal X$ such that
+    Indeed, assume for contradiction that there existed~$f_* \in \mathcal X$ such~that
     \begin{equation}
         \label{eq:example_non_complete_convergence}
         \norm{f_n - f_*} \xrightarrow[n \to \infty]{} 0.
     \end{equation}
-    Then $f_*$ must necessarily coincide with sign function:
+    Then $f_*$ necessarily coincides with sign function:
     \[
         {\rm sgn}(x)
         :=\begin{cases}
@@ -253,7 +253,7 @@ In this course,
 all the vector spaces encountered are complete.
 For example,
 \begin{itemize}
-    \item $\real^n$ with any vector norm is complete.
+    \item $\real^n$ with any vector norm is complete;
     \item $\complex^{m\times n}$ with any matrix norm is complete.
 \end{itemize}
 In order to show that a sequence is convergent in a complete normed vector space,
@@ -303,11 +303,11 @@ The importance of contraction mappings in this course stems from the following t
     \begin{align*}
         \norm{x_{n} - x_{m}}
         &\leq \norm{x_{n} - x_{n-1}} + \dotsb + \norm{x_{m+1} - x_{m}} \\
-        &\leq (L^{n-1} + \dotsb + L^{m}) \norm{x_{1} - x_0}
-        \leq L^{m} (1 + L + \dotsb) \norm{x_{1} - x_0}
+        &\leq (L^{n-1} + \dotsb + L^{m}) \norm{x_{1} - x_0} \\
+        &\leq L^{m} (1 + L + L^2 + \dotsb) \norm{x_{1} - x_0}
         = \frac{L^{m}}{1-L} \norm{x_{1} - x_0}.
     \end{align*}
-    It follows that the sequence $(x_k)_{k\geq0}$ is Cauchy in $\mathcal X$,
+    It follows that the sequence $(x_k)_{k\in \nat}$ is Cauchy in $\mathcal X$,
     implying by completeness that $x_k \to x_*$ in the limit as $k \to \infty$,
     for some limit $x_* \in \mathcal X$.
     Being a contraction, the mapping $\phi$ is continuous,
@@ -322,7 +322,7 @@ The importance of contraction mappings in this course stems from the following t
 
     \vspace{.2cm}
     \noindent\textbf{Uniqueness.}
-    Assume that $y_* \in \mathcal X$ is another fixed point.
+    Assume that $y_* \in \mathcal X$ is a fixed point.
     Then,
     \begin{equation*}
         \norm[big]{y_* - x_{*}}
@@ -345,7 +345,7 @@ the most commonly used norms are particular cases of the $p$-norm, also called H
 \begin{definition}
     \label{definition:pnorm_vector}
     Given $p \in [1, \infty]$,
-    the $p$-norm of a vector $\vect x \in \complex^n$ is defined by
+    the $p$-norm of a vector $\vect x \in \complex^n$ is defined as follows:
     \[
         \norm{\vect x}_p :=
         \begin{cases}
@@ -392,7 +392,7 @@ for all $\vect x \in \complex^n$,
     \label{eq:submultiplicative_mat_vec}%
     \norm{\mat A \vect x}_{\alpha}
     = \norm{\mat A \widehat{\vect x}}_{\alpha} \norm{\vect x}_{\beta}
-    \leq \sup \bigl\{ \norm{\mat A \vect y}_{\alpha}: \norm{\vect y}_{\beta} \leq 1 \bigr\} \norm{\vect x}_{\beta}
+    \leq \sup \Bigl\{ \norm{\mat A \vect y}_{\alpha}: \norm{\vect y}_{\beta} \leq 1 \Bigr\} \norm{\vect x}_{\beta}
     = \norm{\mat A}_{\alpha,\beta} \norm{\vect x}_{\beta},
     \qquad \widehat {\vect x} = \frac{\vect x}{\norm{\vect x}_{\beta}}.
 \end{equation}
@@ -400,6 +400,8 @@ for all $\vect x \in \complex^n$,
 \begin{exercise}
     Show that equation~\eqref{eq:subordinate_norm} defines a norm on $\complex^{m \times n}$.
 \end{exercise}
+
+\iffalse
 \begin{solution}
     We need to verify that~\eqref{eq:subordinate_norm} satisfies the properties of positivity and homogeneity,
     together with the triangle inequality.
@@ -436,6 +438,7 @@ for all $\vect x \in \complex^n$,
     \end{itemize}
     Since the three properties are satisfied, $\norm{\placeholder}_{\alpha,\beta}$ is indeed a norm.
 \end{solution}
+\fi
 
 The matrix $p$-norm is defined as the operator norm~\eqref{eq:subordinate_norm} in the particular case
 where $\norm{\placeholder}_{\alpha}$ and $\norm{\placeholder}_{\beta}$ are both H\"older norms with the same value of $p$.
@@ -461,7 +464,7 @@ It is, however, induced by an inner product on~$\complex^{m \times n}$.
 \end{definition}
 
 A matrix norm $\norm{\placeholder}$ is said to be submultiplicative if,
-for any two matrices $\mat A \in \complex^{m \times n}$ and $\mat B \in \complex^{n \times \ell}$,
+for any two matrices $\mat A \in \complex^{m \times n}$ and~$\mat B \in \complex^{n \times \ell}$,
 it holds that
 \[
     \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}.
@@ -504,9 +507,10 @@ which is called the \emph{characteristic polynomial}.
 \subsection*{Symmetric matrices and spectral theorem}%
 The transpose of a matrix $\mat A \in \complex^{m \times n}$ is denoted by $\mat A^\t \in \complex^{n \times m}$
 and defined as the matrix with entries~$a^\t_{ij} = a_{ji}$.
-The conjugate transpose of $\mat A$ is the matrix obtained by taking the transpose and taking the complex conjugate of all the entries.
-A real matrix equal to its transpose is necessarily square and called \emph{symmetric},
-and a complex matrix equal to its conjugate transpose is called \emph{Hermitian}.
+The conjugate transpose of $\mat A$, denoted by $\mat A^*$,
+is the matrix obtained by taking the transpose and taking the complex conjugate of all the entries.
+A real matrix that is equal to its transpose is necessarily square and called \emph{symmetric},
+and a complex matrix that is equal to its conjugate transpose is called \emph{Hermitian}.
 Hermitian matrices, of which real symmetric matrices are a subset,
 enjoy many nice properties,
 the main one being that they are diagonalizable with a matrix $\mat Q$ that is unitary,
@@ -529,109 +533,103 @@ a pillar of linear algebra with important generalizations to infinite-dimensiona
     Reasoning by induction,
     we assume that the result is true for Hermitian matrices in $\complex^{n-1 \times n-1}$
     and prove that it then also holds for~$\mat A \in \complex^{n \times n}$.
-    % \begin{itemize}
-        % \item
 
-            \vspace{.3cm}
-            \textbf{Step 1. Existence of a real eigenvalue}.
-            By the fundamental theorem of algebra,
-            there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(\mat A - \lambda \mat I_n) = 0$,
-            to which there corresponds a solution $\vect q_1 \in \complex^n$ of norm 1 to the equation $(\mat A - \lambda_1 \mat I_n) \vect q_{1} = \vect 0$.
-            The eigenvalue $\lambda_1$ is necessarily real because
-            \[
-                \lambda_1 \ip{\vect e_1, \vect e_1}
-                = \ip{\lambda_1 \vect e_1, \vect e_1}
-                = \ip{\mat A \vect e_1, \vect e_1}
-                = \ip{\vect e_1, \mat A\vect e_1}
-                = \ip{\vect e_1, \lambda_1 \vect e_1}
-                = \ip{\vect e_1, \lambda_1 \vect e_1}
-                = \overline \lambda_1 \ip{\vect e_1, \vect e_1}.
-            \]
+        \vspace{.3cm}
+        \textbf{Step 1. Existence of a real eigenvalue}.
+        By the fundamental theorem of algebra,
+        there exists at least one solution $\lambda_1 \in \complex$ to the equation $\det(\mat A - \lambda \mat I_n) = 0$,
+        to which there corresponds at least one solution $\vect q_1 \in \complex^n$ of norm 1 to the equation $(\mat A - \lambda_1 \mat I_n) \vect q_{1} = \vect 0$.
+        The eigenvalue $\lambda_1$ is necessarily real because
+        \[
+            \lambda_1 \ip{\vect q_1, \vect q_1}
+            = \ip{\lambda_1 \vect q_1, \vect q_1}
+            = \ip{\mat A \vect q_1, \vect q_1}
+            = \ip{\vect q_1, \mat A\vect q_1}
+            = \ip{\vect q_1, \lambda_1 \vect q_1}
+            = \overline \lambda_1 \ip{\vect q_1, \vect q_1}.
+        \]
 
-        % \item
-            \vspace{.3cm}
-            \textbf{Step 2. Using the induction hypothesis}.
-            Next,
-            take an orthonormal basis $(\vect e_2, \dotsc, \vect e_n)$ of the orthogonal complement $\Span\{\vect q_1\}^\perp$
-            and construct the unitary matrix
-            \[
-                V = \begin{pmatrix} \vect q_1 & \vect e_2 & \dots & \vect e_n \end{pmatrix},
-            \]
-            i.e.\ the matrix with columns $\vect q_1$, $\vect e_2$, etc.
-            A calculation gives,
-            \[
-                \mat V^* \mat A \mat V =
-                \begin{pmatrix}
-                    \ip{\vect q_1, \mat A \vect q_1} & \ip{\vect q_1, \mat A \vect e_2} & \dots & \ip{\vect q_1, \mat A \vect e_n} \\
-                    \ip{\vect e_2, \mat A \vect q_1} & \ip{\vect e_2, \mat A \vect e_2} & \dots & \ip{\vect e_2, \mat A \vect e_n} \\
-                    \vdots & \vdots & \ddots & \vdots \\
-                    \ip{\vect e_n, \mat A \vect q_1} & \ip{\vect e_n, \mat A \vect e_2} & \dots & \ip{\vect e_n, \mat A \vect e_n}
-                \end{pmatrix}
-                =
-                \begin{pmatrix}
-                    \lambda_1 & 0 & \dots & 0 \\
-                    0 & \ip{\vect e_2, \mat A \vect e_2} & \dots & \ip{\vect e_2, \mat A \vect e_n} \\
-                    \vdots & \vdots & \ddots & \vdots \\
-                    0 & \ip{\vect e_n, \mat A \vect e_2} & \dots & \ip{\vect e_n, \mat A \vect e_n}
-                \end{pmatrix}.
-            \]
-            Let us denote the $n-1 \times n-1$ lower right block of this matrix by $\mat V_{n-1}$.
-            This is a Hermitian matrix of size $n-1$ so,
-            using the induction hypothesis,
-            we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^*$
-            for appropriate matrices $\mat Q_{n-1} \in \complex^{n-1 \times n-1}$ and $\mat D_{n-1} \in \real^{n-1 \times n-1}$
-            which are unitary and diagonal, respectively.
+        \vspace{.3cm}
+        \textbf{Step 2. Using the induction hypothesis}.
+        Next,
+        take an orthonormal basis $(\vect e_2, \dotsc, \vect e_n)$ of the orthogonal complement $\Span\{\vect q_1\}^\perp$
+        and construct the unitary matrix
+        \[
+            V = \begin{pmatrix} \vect q_1 & \vect e_2 & \dots & \vect e_n \end{pmatrix},
+        \]
+        i.e.\ the matrix with columns $\vect q_1$, $\vect e_2$, etc.
+        A calculation gives,
+        \[
+            \mat V^* \mat A \mat V =
+            \begin{pmatrix}
+                \ip{\vect q_1, \mat A \vect q_1} & \ip{\vect q_1, \mat A \vect e_2} & \dots & \ip{\vect q_1, \mat A \vect e_n} \\
+                \ip{\vect e_2, \mat A \vect q_1} & \ip{\vect e_2, \mat A \vect e_2} & \dots & \ip{\vect e_2, \mat A \vect e_n} \\
+                \vdots & \vdots & \ddots & \vdots \\
+                \ip{\vect e_n, \mat A \vect q_1} & \ip{\vect e_n, \mat A \vect e_2} & \dots & \ip{\vect e_n, \mat A \vect e_n}
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                \lambda_1 & 0 & \dots & 0 \\
+                0 & \ip{\vect e_2, \mat A \vect e_2} & \dots & \ip{\vect e_2, \mat A \vect e_n} \\
+                \vdots & \vdots & \ddots & \vdots \\
+                0 & \ip{\vect e_n, \mat A \vect e_2} & \dots & \ip{\vect e_n, \mat A \vect e_n}
+            \end{pmatrix}.
+        \]
+        Let us denote the $n-1 \times n-1$ lower right block of this matrix by $\mat V_{n-1}$.
+        This is a Hermitian matrix of size $n-1$ so,
+        using the induction hypothesis,
+        we deduce that $\mat V_{n-1} = \mat Q_{n-1} \mat D_{n-1} \mat Q_{n-1}^*$
+        for appropriate matrices $\mat Q_{n-1} \in \complex^{n-1 \times n-1}$ and $\mat D_{n-1} \in \real^{n-1 \times n-1}$
+        which are unitary and diagonal, respectively.
 
-        % \item
-            \vspace{.3cm}
-            \textbf{Step 3. Constructing $\mat Q$ and $\mat D$}.
-            Define now
-            \[
-                \mat Q =
-                \mat V
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}
-                \end{pmatrix}.
-            \]
-            It is not difficult to verify that $\mat Q$ is a unitary matrix,
-            and we have
-            \[
-                \mat Q^* \mat A \mat Q =
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}^*
-                \end{pmatrix}
-                \mat V^* \mat A \mat V
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}
-                \end{pmatrix}
-                =
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}^*
-                \end{pmatrix}
-                \begin{pmatrix}
-                    \lambda_1 & \vect 0^\t \\
-                    \vect 0 & \mat V_{n-1}
-                \end{pmatrix}
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat Q_{n-1}
-                \end{pmatrix}.
-            \]
-            Developing the last expression, we obtain
-            \[
-                \mat Q^* \mat A \mat Q
-                =
-                \begin{pmatrix}
-                    1 & \vect 0^\t \\
-                    \vect 0 & \mat D_{n-1}
-                \end{pmatrix},
-            \]
-            which concludes the proof.
-    % \end{itemize}
+        \vspace{.3cm}
+        \textbf{Step 3. Constructing $\mat Q$ and $\mat D$}.
+        Define now
+        \[
+            \mat Q =
+            \mat V
+            \begin{pmatrix}
+                1 & \vect 0^\t \\
+                \vect 0 & \mat Q_{n-1}
+            \end{pmatrix}.
+        \]
+        It is not difficult to verify that $\mat Q$ is a unitary matrix,
+        and we have
+        \[
+            \mat Q^* \mat A \mat Q =
+            \begin{pmatrix}
+                1 & \vect 0^\t \\
+                \vect 0 & \mat Q_{n-1}^*
+            \end{pmatrix}
+            \mat V^* \mat A \mat V
+            \begin{pmatrix}
+                1 & \vect 0^\t \\
+                \vect 0 & \mat Q_{n-1}
+            \end{pmatrix}
+            =
+            \begin{pmatrix}
+                1 & \vect 0^\t \\
+                \vect 0 & \mat Q_{n-1}^*
+            \end{pmatrix}
+            \begin{pmatrix}
+                \lambda_1 & \vect 0^\t \\
+                \vect 0 & \mat V_{n-1}
+            \end{pmatrix}
+            \begin{pmatrix}
+                1 & \vect 0^\t \\
+                \vect 0 & \mat Q_{n-1}
+            \end{pmatrix}.
+        \]
+        Developing the last expression, we obtain
+        \[
+            \mat Q^* \mat A \mat Q
+            =
+            \begin{pmatrix}
+                \lambda_1 & \vect 0^\t \\
+                \vect 0 & \mat D_{n-1}
+            \end{pmatrix},
+        \]
+        which concludes the proof.
 \end{proof}
 
 We deduce, as a corollary of the spectral theorem,
@@ -640,7 +638,7 @@ then they are necessarily orthogonal for the Euclidean inner product.
 Indeed, since $\mat A = \mat A^*$ and the eigenvalues are real, it holds that
 \begin{align*}
     (\lambda_1 - \lambda_2) \ip{\vect e_1, \vect e_2}
-    &= \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \lambda_2 \vect e_2} \\
+    &= \ip{\lambda_1 \vect e_1, \vect e_2} - \ip{\vect e_1, \overline \lambda_2 \vect e_2} \\
     &= \ip{\mat A \vect e_1, \vect e_2} - \ip{\vect e_1, \mat A \vect e_2}
     = \ip{\mat A \vect e_1, \vect e_2} - \ip{\mat A^* \vect e_1, \vect e_2} = 0.
 \end{align*}
@@ -680,9 +678,10 @@ we recall and prove the Courant--Fisher theorem.
     [Courant--Fisher Min-Max theorem]
     \label{theorem:courant-fisher}
     The eigenvalues $\lambda_1 \geq \lambda_2 \geq \dotsb \geq \lambda_n$ of a Hermitian matrix are characterized by the relation
-    \[
+    \begin{equation}
+        \label{eq:courant_fischer}
         \lambda_k = \max_{\mathcal S, {\rm dim}(\mathcal S) = k} \left( \min_{\vect x \in \mathcal S \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x} \right).
-    \]
+    \end{equation}
 \end{theorem}
 \begin{proof}
     Let $\vect v_1, \dotsc, \vect v_n$ be normalized and pairwise orthogonal eigenvectors associated with the eigenvalues $\lambda_1, \dotsc, \lambda_n$,
@@ -700,7 +699,7 @@ we recall and prove the Courant--Fisher theorem.
     \[
          \min_{\vect x \in \mathcal S_k \backslash\{0\}} \frac{\vect x^* \mat A \vect x}{\vect x^* \vect x}  \geq \lambda_k,
     \]
-    which proves the $\geq$ direction.
+    which proves the $\geq$ direction of~\eqref{eq:courant_fischer}.
     For the $\leq$ direction,
     let $\mathcal U_k = \Span \{ \vect v_{k}, \dots \vect v_n \}$.
     Using a well-known result from linear algebra,
@@ -740,7 +739,7 @@ In this section, we work with matrices in $\complex^{n \times n}$.
 A \emph{similarity transformation} is a mapping of the type~$\complex^{n \times n} \ni \mat A \mapsto \mat P^{-1} \mat A \mat P \in \complex^{n \times n}$,
 where $\mat P \in \complex^{n \times n}$ is a nonsingular matrix.
 If two matrices are related by a similarity transformation,
-they are called \emph{similar},
+then they are called \emph{similar},
 because they may be viewed as two representations of the same linear mapping in different bases.
 
 \begin{definition}
