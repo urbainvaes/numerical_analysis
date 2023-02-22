@@ -10,19 +10,19 @@ The Chebyshev polynomials $(T_n)_{n \in \nat}$ are given on $[-1, 1]$ by the for
 Although this formula makes sense only if $x \in [-1, 1]$,
 the polynomials are defined for all $x \in \real$.
 Equivalently,
-the Chebyshev polynomials can be defined from
+the Chebyshev polynomials can be defined from the equation
 \begin{equation}
     \label{eq:chebyshev_cosh}
     \forall x \in [1, \infty), \qquad
-    T_n(x) = \cosh \bigl(n \arccosh(x)\bigr).
+    T_n(x) = \cosh \bigl(n \arccosh(x)\bigr),
 \end{equation}
 where $\cosh(\theta) = \frac{1}{2} \left( \e^\theta + \e^{-\theta} \right)$
 and $\arccosh\colon [1, \infty) \to [0, \infty)$ is the inverse function of $\cosh$.
 The first few Chebyshev polynomials are illustrated in~\cref{fig:chebyshev}.
-It is immediate to show from~\eqref{eq:chebyshev} that
+It is immediate to show the following properties from~\eqref{eq:chebyshev}:
 \begin{itemize}
     \item
-        the roots of $T_n$ are given by
+        The roots of $T_n$ are given by
         \[
             z_k = \cos \left( \frac{\pi}{2n} + \frac{k\pi}{n} \right), \qquad k = 0, \dotsc, n-1.
         \]
@@ -67,7 +67,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
         \cos (n \theta) = \frac{1}{2}\left( \e^{\i n \theta} + \e^{-\i n \theta} \right)
             = \frac{1}{2}\Bigl( \bigl(\cos(\theta) + \i \sin (\theta)\bigr)^n + \bigl(\cos(\theta) - \i \sin (\theta)\bigr)^n \Bigr).
     \]
-    By expanding the power on the right-hand side,
+    By expanding the powers on the right-hand side,
     we obtain
     \begin{align*}
         \bigl( \cos (\theta) + \i \sin (\theta) \bigr)^n
@@ -75,7 +75,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
         \bigl( \cos (\theta) - \i \sin (\theta) \bigr)^n
         &= \sum_{j=0}^{n} \binom{n}{j} \cos(\theta)^{n-j}  \, (-\i)^{j} \, \sin(\theta)^{j}.
     \end{align*}
-    The terms corresponding to odd values of~$j$ cancels out in the expression of $\cos(n \theta)$,
+    The terms corresponding to odd values of~$j$ cancel out in the expression of $\cos(n \theta)$,
     and so we obtain the following expression for $\cos(n \theta)$ in terms of $\cos(\theta)$ and $\sin(\theta)$:
     \begin{align*}
         \cos (n \theta)
@@ -86,7 +86,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
     we conclude that
     \begin{equation}
         \label{eq:expression_chebyshev}
-        T_n(x) = \sum_{j=0}^{\lfloor n/2 \rfloor} \binom{n}{2j} x^{n-2j}   \bigl(x - 1\bigr)^j.
+        T_n(x) = \sum_{j=0}^{\lfloor n/2 \rfloor} \binom{n}{2j} x^{n-2j}   \bigl(x^2 - 1\bigr)^j.
     \end{equation}
 \end{solution}
 
@@ -204,8 +204,8 @@ It is immediate to show from~\eqref{eq:chebyshev} that
     we assume that there exists $p \in \poly(n)$ that satisfies
     \[
         \sup_{x \in (-1, 1)} \lvert p(x) \rvert \leq 1
+        \qquad \text{ and } \qquad \lvert p(\xi) \rvert > \lvert T_n(\xi) \rvert.
     \]
-    and $\lvert p(\xi) \rvert > \lvert T_n(\xi) \rvert$.
     Let $q(x) = p(x) T_n(\xi) / p(\xi)$.
     Then by construction $q(\xi) = T_n(\xi)$
     and
@@ -218,12 +218,12 @@ It is immediate to show from~\eqref{eq:chebyshev} that
         \forall k \in \{0, \dotsc, n\}, \qquad
         (-1)^k (T_n - q)(x_k) > 0.
     \]
-    In other words, the polynomial $T_n - q$ takes positive values at $\{x_0, x_2, x_4, \dotsc\}$ and negative values at $\{x_1, x_3, x_5, \dotsc\}$.
+    In other words, the polynomial $T_n - q$ takes positive values at $\{x_0, x_2, x_4, \dotsc\}$ and negative values at~$\{x_1, x_3, x_5, \dotsc\}$.
     Consequently, by the intermediate value theorem,
     $T_n - q$ possesses~$n$ distinct roots in the open interval $(-1, 1)$.
     Since, in addition, $(T_n - q)(\xi) = 0$,
     we deduce that~$T_n - q$ has $n+1$ distinct roots,
-    which is a contradiction given that $T_n - q$ is a nonzero polynomial of degree at most $n$.
+    which is a contradiction given that $T_n - q$ is a nonzero polynomial of degree at most~$n$.
 \end{solution}
 
 \begin{figure}
@@ -253,7 +253,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
 
 \begin{exercise}
     \label{exercise:conjugate_gradient_chebyshev}
-    Assume that $0 < x_1 < x_2$.
+    Assume that $0 < \lambda_1 < \lambda_2$.
     Prove that for any polynomial $p \in \poly(n)$ that satisfies $p(0) = 1$,
     it holds that
     \[
@@ -261,9 +261,10 @@ It is immediate to show from~\eqref{eq:chebyshev} that
         \qquad \xi := \frac{\lambda_2 + \lambda_1}{\lambda_2-  \lambda_1},
     \]
     with equality for
-    \[
+    \begin{equation}
+        \label{eq:optimal_polynomial}
         p_*(\lambda) = \frac{T_n \left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1} \right)}{T_n \left(\frac{\lambda_1 + \lambda_2}{\lambda_2 - \lambda_1} \right)}.
-    \]
+    \end{equation}
 \end{exercise}
 \begin{solution}
     Assume that $p \in \poly(n)$ is such that $p(0) = 1$,
@@ -273,7 +274,7 @@ It is immediate to show from~\eqref{eq:chebyshev} that
         \qquad \Leftrightarrow \qquad
         p(\lambda) = q\left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1}\right).
     \]
-    Since $\xi > 1$,
+    Since $\xi > 1$, it holds from~\eqref{eq:chebyshev_polynomials} that $T_n(\xi) > 0$ and
     it follows from~\cref{exercise:auxiliary_chebyshev} that
     \[
         p(0) = q(\xi)
@@ -282,17 +283,13 @@ It is immediate to show from~\eqref{eq:chebyshev} that
     \]
     with equality when $q \propto T_n$,
     i.e.\ when
-    % Rewriting this equation in terms of~$p$, we obtain
-    % \[
-    %     p(0) \leq T_n(\xi) \sup_{\mu \in (\lambda_1, \lambda_2)} \lvert p(\mu) \rvert,
-    % \]
-    % with equality when
     \[
         p(\lambda) \propto T_n \left(\frac{\lambda_1 + \lambda_2 - 2\lambda}{\lambda_2 - \lambda_1} \right).
     \]
-    The statement then follows from the fact that $p(0) = 1$.
+    The expression~\eqref{eq:optimal_polynomial} then follows from the fact that $p_*(0) = 1$.
 \end{solution}
 
+\iffalse
 \begin{solution}
     \Cref{exercise:conjugate_gradient_chebyshev} may alternatively be solved without a change of variable,
     by using a more direct approach similar to that in~\cref{exercise:auxiliary_chebyshev}.
@@ -330,3 +327,4 @@ It is immediate to show from~\eqref{eq:chebyshev} that
     so $n+1$ roots in total,
     but this is impossible for a nonzero polynomial of degree $n$.
 \end{solution}
+\fi
