@@ -210,11 +210,9 @@ if there exists $\vect x_* \in \mathcal X$ such that
 In this case,
 we write $\lim_{n \to \infty} \vect x_n = \vect x_*$ or $\vect x_n \to \vect x_*$.
 \begin{definition}[Cauchy sequence]
-    A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is said to be Cauchy if for every $\varepsilon > 0$,
-    there exists $N \in \nat$ such that
+    A sequence $(\vect x_n)_{n \geq 0}$ in~$\mathcal X$ is said to be Cauchy if
     \[
-        \forall m,n \geq N, \qquad
-        \norm{\vect x_n - \vect x_m} \leq \varepsilon.
+        \lim_{m, n \to +\infty} \norm{\vect x_n - \vect x_m} = 0.
     \]
     The normed vector space $(\mathcal X, \norm{\placeholder})$ is called \emph{complete} if every Cauchy sequence is convergent.
 \end{definition}
