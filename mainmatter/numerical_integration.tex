@@ -234,11 +234,11 @@ but it turns out that the dependence on~$h$ of this bound is optimal).
         \frac h 2 \left(x_0^2 + 2 x_1^2 + \dotsc + 2 x_{n - 1}^2 + x_n^2\right),
     \]
     which we shall denote $\widehat I_h$ hereafter.
-    Using $x_i = ih$, and $x_n = 1$, we get
+    Using $x_i = ih$, and $x_n = 1$, we obtain
     \begin{align*}
-        \widehat I_h = \frac h 2\left( 2 h^2 \sum_{i = 0}^{n - 1} i^2 + 1\right)
+        \widehat I_h = \frac h 2\left( 2 h^2 \sum_{i = 1}^{n - 1} i^2 + 1\right)
         = \frac h 2 \left( \frac {h^2} 3 (n - 1) n (2n - 1) + 1\right)
-        = \frac h 2 \left( \frac {h^2} 3 (2 n^3 - 3 n^2 + n) + 1 \right)
+        = \frac h 2 \left( \frac {h^2} 3 (2 n^3 - 3 n^2 + n) + 1 \right).
     \end{align*}
     Now, observing that $n = 1 / h$ yields
     \begin{align*}
@@ -265,7 +265,7 @@ in terms of the dependence on~$h$,
 for this integration formula is slightly more involved.
 
 \begin{theorem}
-    [Integration for the composite Simpson rule]
+    [Integration error for the composite Simpson rule]
     \label{theorem:integration_error_simpson}
     Let $\widehat I_h$ denote the approximate integral calculated using~\eqref{eq:composite_simpson}.
     Then
