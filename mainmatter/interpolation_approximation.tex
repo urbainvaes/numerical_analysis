@@ -350,14 +350,14 @@ with the coefficients in~\eqref{eq:gregory_newton}.
 \end{lemma}
 \begin{proof}
     The result is clearly true for $k = 0$,
-    and we shall assume by induction that it holds for $k - 1$.
+    and we shall assume by induction that it holds for~$k - 1$.
     Using our induction hypothesis, we get
     \begin{align*}
         \frac 1 {k!} \Delta^k u(i)
-        &= \frac 1 k \left(\frac 1 {(k - 1)!} \Delta^{k - 1} u(i + 1) - \frac 1 {(k - 1)!} \Delta^{k - 1} u(i)\right)\\
-        &= \frac 1 k \left([u_{i + 1}, \dotsc, u_{i + k}] - [u_i, \dotsc, u_{i + k - 1}]\right).
+        &= \frac 1 k \left(\frac{\Delta^{k - 1} u(i + 1)}{(k - 1)!} - \frac{\Delta^{k - 1} u(i)} {(k - 1)!} \right)\\
+        &= \frac 1 k \Bigl( [u_{i + 1}, \dotsc, u_{i + k}] - [u_i, \dotsc, u_{i + k - 1}] \Bigr).
     \end{align*}
-    By our definition of divided differences in~\eqref{eq:definition_divided_difference},
+    By the definition of divided differences in~\eqref{eq:definition_divided_difference},
     it follows that we have
     \begin{align*}
         \frac 1 {k!} \Delta^k u(i)
