@@ -76,56 +76,45 @@ $$
 
 ## The closed Newton-Cotes method: Examples {.smaller}
 
+$$~$$
 
-## Getting up
+| $n$  | $d$    | Method      | Integration formula                                                                                                                                                        |
+| ---- | ------ | ---------   | --------------------------------                                                                                                                                           |
+| 1    | 1      | Trapezoidal | $\widehat I = f(-1) + f(1)$                                                                                                                                                |
+| 2    | 3      | Simpson     | $\widehat I = \frac{1}{3} f(-1) + \frac{4}{3} f(0) + \frac{1}{3} f(1)$                                                                                                     |
+| 4    | 5      | Boole       | $\widehat I = \frac{7}{45} f(-1) + \frac{32}{45} f\left(-\frac{1}{2}\right) + \frac{12}{45} f\left(0\right) + \frac{32}{45} f\left(\frac{1}{2}\right) + \frac{7}{45} f(1)$ |
 
-- Turn off alarm test?
-- Get out of bed
-- Wow, this is fast
+$$~$$
 
+:::incremental
+- Here $n =$ number of **integration nodes**
 
+- Here $d =$ **degree of precision** $=$ the polynomial degree up to which the formula is exact
+
+- In principle, integration rules of arbitrarily high degrees can be constructed by adding integration nodes.
+:::
+
+## The Newton-Cotes can fails with many nodes {.smaller}
+
+... because polynomial interpolation does not always converge.
 ```{julia}
 #| echo: true
+#| code-fold: true
 #| eval: true
-
-s1 = sum(1/n for n in 1:10000)
-s2 = sum(1/n for n in 10000:-1:1)
-println(s1, " ", s2)
+import Polynomials
+import Plots
+Plots.default(linewidth=2)
+x = -1:0.005:1
+n = 12
+f(x) = 1 / (1 + 25 * x^2)
+X = LinRange(-1, 1, n)
+p = Polynomials.fit(X, f.(X))
+Plots.plot(x, f.(x), label="Runge function")
+Plots.plot!(legend=:topright, size=(900,500))
+label = "Newton-cotes with " * string(n) * " nodes"
+Plots.plot!(x, p.(x), fillrange = 0 .* x, fillalpha = 0.35, label=label)
+Plots.scatter!(X, f.(X), label="Interpolation nodes")
 ```
-
-```{julia}
-#| echo: true
-#| eval: false
-
-julia> sum(1/n for n in 1:10000)
-9.787606036044348
-
-julia> sum(1/n for n in 10000:-1:1)
-9.787606036044386
-```
-
-## Test plotly
-
-```{julia}
-#| echo: true
-println("Hello, world")
-# import plotly.express as px
-# df = px.data.iris()
-# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-# fig.show()
-```
-
-## Going to sleep {.smaller}
-
-- Get in bed
-- Count sheep
-
-For another demonstration, hello @fig-polar.
-
-```{julia}
-#| label: fig-polar
-#| fig-cap: "Test"
-
-using Plots
-Plots.plot(x -> cos(x) * cos(2x) + exp(x), background_color=:transparent, foreground_color=:black, linewidth=3, label=nothing)
-```
+::: footer
+Source: B. K. Nguyen's course in numerical analysis, see [here](https://nguyen.me.uk)
+:::

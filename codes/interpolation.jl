@@ -58,7 +58,7 @@ p = Polynomials.fit(x, y)
 
 # Grid for the plots
 x_plot = LinRange(-1, 1, 500)
-Plots.plot(x_plot, f.(x_plot), xlims=(-1, 1), size=size=(900,450))
+Plots.plot(x_plot, f.(x_plot), xlims=(-1, 1), size=(900,450))
 Plots.plot!(x_plot, p.(x_plot))
 Plots.scatter!(x, f.(x), legend=:bottomright)
 # Plots.plot!(title="Interpolation of the Runge function with $n nodes")
