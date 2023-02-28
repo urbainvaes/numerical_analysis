@@ -1,0 +1,131 @@
+---
+title: "Numerical integration"
+author: "Urbain Vaes"
+institution: "Inria"
+format:
+    revealjs:
+        theme: default
+        width: 1400
+        height: 800
+        chalkboard: true
+        transition: convex
+        callout-appearance: minimal
+        navigation-mode: vertical
+jupyter: julia-1.8
+---
+
+## The problem
+
+::: {.hidden}
+$$
+ \def\d{{\mathrm d}}
+ \def\real{{\mathbf R}}
+$$
+:::
+
+:::{.callout-tip}
+## Objective: numerically calculate
+$$
+    I := \int_{\Omega} f(\mathbf x) \, \d \mathbf x
+$$
+where $\Omega \subset \mathbf R^d$ and $f\colon \Omega \to \real$.
+:::
+
+:::incremental
+- For simplicity, we focus on the **one-dimensional** setting:  $\Omega = [-1, 1] \subset \real$.
+
+- **Question:** can we approximate $I$ by a sum of the form
+
+  $$
+      \widehat I = \sum_{i=0}^n w_i \, f(x_i) \quad ?
+  $$
+:::
+
+## The closed Newton-Cotes method {.smaller}
+
+:::{.callout-tip}
+## Main idea
+- Calculate the polynomial interpolation $\widehat f$ of $f$ at equidistant nodes $-1 = x_0 < x_1 < \dots < x_{n-1} < x_n = 1$.
+
+- Use the approximation
+
+  $$
+      \widehat I \approx \int_{-1}^{1} \widehat f(x) \, \d x
+  $$
+:::
+
+:::incremental
+
+- Explicit expression of the interpolating polynomial:
+$$
+\widehat f(x) = \sum_{i=0}^{n} f(x_i) \varphi_i(x),
+\qquad \text{where} \qquad
+\varphi_{i}(x) = \prod_{\substack{j = 0\\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
+$$
+
+- We deduce that
+$$
+\widehat I
+= \int_{-1}^{1} \widehat f(x) \, \d x
+= \sum_{i=1}^n w_i f(x_i),
+\qquad \text{with} \qquad
+w_i := \int_{-1}^{1} \varphi_i(x) \, \d x.
+$$
+:::
+
+
+## The closed Newton-Cotes method: Examples {.smaller}
+
+
+## Getting up
+
+- Turn off alarm test?
+- Get out of bed
+- Wow, this is fast
+
+
+```{julia}
+#| echo: true
+#| eval: true
+
+s1 = sum(1/n for n in 1:10000)
+s2 = sum(1/n for n in 10000:-1:1)
+println(s1, " ", s2)
+```
+
+```{julia}
+#| echo: true
+#| eval: false
+
+julia> sum(1/n for n in 1:10000)
+9.787606036044348
+
+julia> sum(1/n for n in 10000:-1:1)
+9.787606036044386
+```
+
+## Test plotly
+
+```{julia}
+#| echo: true
+println("Hello, world")
+# import plotly.express as px
+# df = px.data.iris()
+# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
+# fig.show()
+```
+
+## Going to sleep {.smaller}
+
+- Get in bed
+- Count sheep
+
+For another demonstration, hello @fig-polar.
+
+```{julia}
+#| label: fig-polar
+#| fig-cap: "Test"
+
+using Plots
+Plots.plot(x -> cos(x) * cos(2x) + exp(x), background_color=:transparent, foreground_color=:black, linewidth=3, label=nothing)
+```

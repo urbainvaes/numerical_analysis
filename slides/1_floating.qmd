@@ -1,21 +1,35 @@
 ---
 title: "Floating point arithmetic"
-author: ""
-institution: ""
+author: "Urbain Vaes"
+institution: "Inria Paris"
 format:
     revealjs:
-        theme: [serif, custom.scss]
+        # theme: [solarized, custom.scss]
+        eval: true
+        theme: default
+        width: 1600
+        height: 800
+        min-scale: .5
+        max-scale: 2
         chalkboard: true
-        transition: convex
+        transition: none
         navigation-mode: vertical
         callout-appearance: default
+        margin: .2
+        progress: true
+        center: false
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"
+        highlight-style: pygments
+        freeze: true
+jupyter: julia-1.8
 ---
 
 # Problèmes
 
-- Indentation des environnement imbriqués
+- Nested indentation not supported
 
-- Définition de nouveaux environnements
+- Difficult to define new environments
 
 - .smaller ne fonctionne pas avec les icônes des call-out
 
@@ -23,23 +37,26 @@ format:
 
 - Slide sans titre = pas possible?
 
+- On ne sait pas mettre des commentaires
+
+- Blurry in Firefox
+
 # Motivations: can you explain this?
 
 :::: {.columns}
 ::: {.column width="50%"}
-:::{.callout-note icon=false}
-## Theorem (Cauchy--Lipschitz)
-There exits
-$$
-\int_0^1 = 2
-$$
-:::
+Approximation of the derivative
+```{julia}
+#| echo: false
+#| eval: false
+ε = 1e-16
+(exp(ε) - 1) / ε
+```
 :::
 
 ::: {.column width="50%"}
-::: {.theorem}
-Does this work?
-:::
+This is the second column
+
 :::
 ::::
 
@@ -157,15 +174,21 @@ println("Hello, world")
 # fig.show()
 ```
 
-## Going to sleep {.smaller}
+## Creating plots {.smaller}
 
+- Use `Plots.plot` the first time,
 
-For another demonstration, hello @fig-polar.
+- Test two
+
+- and then `Plots.plot!` to add to an existing plot
 
 ```{julia}
 #| label: fig-polar
 #| fig-cap: "Test"
 
 using Plots
-Plots.plot(x -> cos(x) * cos(2x), background_color=:transparent, foreground_color=:black, linewidth=3, label=nothing)
+Plots.plot(x -> cos(x),
+           background_color=:transparent,
+           foreground_color=:black,
+           linewidth=3, label=nothing)
 ```
