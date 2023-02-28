@@ -131,7 +131,7 @@ which are given by
     \varphi_{i}(x)
     = \frac{(x - x_0) (x - x_1) \dotsc (x - x_{i-1}) (x - x_{i+1}) \dotsc (x - x_n)}
     {(x_i - x_0) (x_i - x_1) \dotsc (x_i - x_{i-1}) (x_i - x_{i+1}) \dotsc (x_i - x_n)}
-    = \prod_{\substack{j = 1\\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
+    = \prod_{\substack{j = 0\\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
 \]
 It is simple to check that
 \[
@@ -721,7 +721,7 @@ we deduce the following corollary.
         \sup_{y \in [-1, 1]} \abs{p(y)} = \frac{2^{n+1}}{(b-a)^{n+1}} \sup_{x \in [a, b]} \abs{(x-x_0) \dotsc (x - x_n)}.
     \end{equation}
     By~\cref{theorem:minimum_infty_norm},
-    the left-hand side is minimized when $p$ is equal to $2^{-n} T_{n+1}(y)$,
+    the left-hand side is minimized when $p$ is equal to $2^{-n} T_{n+1}$,
     i.e.\ when the roots of $p$ coincide with the roots of $T_{n+1}$.
     This occurs when
     \[
