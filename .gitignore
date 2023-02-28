@@ -1,4 +1,6 @@
 /homeworks
 /build
 *converted-to.pdf
+*ipynb_checkpoints
+*jupyter_cache
 solutions/*.html
