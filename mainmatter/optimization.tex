@@ -22,7 +22,7 @@ We came across several examples of such problems earlier in these notes:
 
     \item
         In \cref{cha:solution_of_linear_systems},
-        we observed,
+        we observed that,
         if $\mat A$ is a symmetric and positive definite matrix,
         then solving the linear system~$\mat A \vect x = \vect b$
         amounts to finding the minimizer of the functional
@@ -37,11 +37,11 @@ equation~\eqref{eq:optimization} is a \emph{constrained} optimization problem.
 In practice,
 the set~$\mathcal K$ is often an intersection of sets of the form
 \[
-    \bigl\{ \vect x \in \real^n : \phi(x) \leq 0 \bigr\},
+    \bigl\{ \vect x \in \real^n : \phi(\vect x) \leq 0 \bigr\},
     \qquad
     \text{ or }
     \qquad
-    \bigl\{ \vect x \in \real^n : \phi(x) = 0 \bigr\},
+    \bigl\{ \vect x \in \real^n : \phi(\vect x) = 0 \bigr\},
 \]
 for appropriate $\phi\colon \real^n \to \real^m$.
 Constraints of the former form are called \emph{inequality constraints},
@@ -81,7 +81,7 @@ The rest of this chapter is organized as follows:
     Assume that $J\colon \mathcal K \to \real$.
     \begin{itemize}
         \item
-            The function~$J$ is said to be convex if
+            The function~$J$ is said to be \emph{convex} if
             \begin{equation}
                 \label{eq:convexity}
                 \forall (\vect x, \vect y) \in \mathcal K \times \mathcal K,
