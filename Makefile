@@ -2,7 +2,7 @@
 
 TEX_FILES = main.tex $(wildcard frontmatter/*enpc.tex) $(wildcard mainmatter/*.tex)
 PDF_OUTPUTS := $(addprefix build/, $(notdir $(TEX_FILES:.tex=.pdf)))
-COMMON_DEPS := main.tex preamble.tex macros.tex
+COMMON_DEPS := main.tex preamble.tex macros.tex $(wildcard mainmatter/**/*.tex)
 
 all : $(PDF_OUTPUTS)
 
