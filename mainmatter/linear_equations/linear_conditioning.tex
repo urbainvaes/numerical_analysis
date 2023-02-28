@@ -1,7 +1,69 @@
 \section{Conditioning}%
 \label{sec:conditioning}
+Before studying the properties of numerical methods for solving linear system,
+it is crucial to understand the impact of \emph{round-off errors} on the solution,
+which impose a bound on the accuracy we can hope to achieve.
+We begin with a motivating example.
+\begin{example}
+Suppose that we wish to solve the following equation
+\[
+    \mat A \vect x :=
+    \begin{pmatrix}
+        1 & 1 \\
+        1 & 1 - 10^{-12}
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_1 \\
+        x_2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        0 \\
+        10^{-12}
+    \end{pmatrix} =: \vect b.
+\]
+The exact solution is given by $\begin{psmallmatrix} 1 & -1 \end{psmallmatrix}^\t$.
+In Julia, this equation can be solved as follows:
+\begin{minted}{julia}
+A = [1 1; 1 (1-1e-12)]
+b = [0; 1e-12]
+x = A\b
+\end{minted}
+The solution returned by the program is the following:
+\begin{minted}{julia}
+  1.0000221222095027
+ -1.0000221222095027
+\end{minted}
+The relative error on the solution is of the order of $10^{-5}$,
+which is about 12 orders of magnitude larger than the machine epsilon for the \julia{Float64} type.
+In order to understand this,
+note that the final error on~\julia{x} arises from three sources:
+\begin{itemize}
+    \item
+        First, the machine representation \julia{b} of the right-hand side is only \emph{an approximation} of the true right-hand side~$\vect b$.
 
-The condition number for a given problem measures the sensitivity of the solution to the input data.
+    \item
+        Similarly, the machine representation \julia{A} of the matrix is only \emph{an approximation} of the true matrix~$\mat A$.
+
+    \item
+        Finally, the operation \julia{A\b} itself leads to additional round-off errors,
+        as the computer implementation of the backslash operator is based on elementary arithmetic operations.
+        Understanding the magnitude of the error introduced at this step is delicate,
+        and we shall not address this question.
+\end{itemize}
+It follows from the first two items that, when writing \julia{A\b},
+we are in fact asking the computer for a solution~$\vect x + \Delta \vect x$ to a perturbed equation
+\[
+    (\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b + \Delta \vect b,
+\]
+where $\Delta \mat A$ and~$\Delta \vect b$ represent the rounding errors on the matrix and right-hand side, respectively.
+Understanding the impact of the perturbations~$\Delta \vect b$ and $\Delta \mat A$ is the goal of this section.
+We shall prove, 
+in particular,
+that the magnitude of the error~$\Delta \vect x$ is related to the perturbations~$\Delta \vect b$ and~$\Delta \mat A$ through a quantity known as the \emph{condition number} of the matrix~$\mat A$.
+\end{example}
+
+In general, the condition number for a given problem measures the sensitivity of the solution to the input data.
 In order to define this concept precisely,
 we consider a general problem of the form~$F(x, d) = 0$,
 with unknown $x$ and data $d$.
@@ -165,9 +227,10 @@ because the term between brackets on the right-hand side of~\eqref{eq:linear_per
 
 
 \Cref{proposition:linear_perturbation_rhs,proposition:linear_perturbation_matrix} show that
-the condition number, with respect to perturbations of either~$\vect b$ or~$\mat A$,
+the condition number of the linear system~\eqref{eq:linear_system},
+with respect to perturbations of either~$\vect b$ or~$\mat A$,
 depends only on $\mat A$.
-This motivates the following definition.
+This motivates the following definition of the condition number~\emph{of a matrix}.
 \begin{definition}
     [Condition number of a matrix]
     The condition number of a matrix $\mat A$ associated with a vector norm $\norm{\placeholder}$ is defined as
@@ -181,7 +244,7 @@ This motivates the following definition.
 Note that the condition number $\kappa(\mat A)$ associated with an induced norm,
 i.e.\ a matrix norm induced by a vector norm,
 is at least one.
-Indeed, since the identity matrix has induced norm 1,
+Indeed, since the identity matrix has induced norm~1,
 it holds that
 \[
     1 = \norm{\mat I} = \norm{\mat A \mat A^{-1}}\leq \norm{\mat A} \norm{\mat A^{-1}}.
