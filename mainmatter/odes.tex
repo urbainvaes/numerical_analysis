@@ -1215,7 +1215,7 @@ the numerical solution of the rescaled equation, when the time step is rescaled 
 coincides with the discrete function obtained by linear rescaling of the numerical solution to the original equation.
 This motivates the definition of \emph{absolute stability region} as
 \[
-    \mathcal A := \{ z \in \complex : \text{\eqref{eq:convergence_absolute_stability}  holds if $\Delta \lambda = z$} \} \subset \complex.
+    \mathcal A := \{ z \in \complex : \text{\eqref{eq:convergence_absolute_stability}  holds when $\Delta \lambda = z$} \} \subset \complex.
 \]
 The exact solution to the model equation~\eqref{eq:model_equation} diverges to $\infty$ as $t \to \infty$ if $\Re(\lambda) > 0$,
 and it converges to $0$ if~$\Re(\lambda) < 0$.
@@ -1318,12 +1318,11 @@ We provide a couple of motivations:
         \end{equation}
         which looks similar to~\eqref{eq:model_equation} with $\partial_x f\bigl(t,x(t)\bigr)$ in place of $\lambda$.
         At a given time~$t$,
-        the solutions tend to converge 
-        % -- i.e. get closer to each other -- 
+        the solutions tend to converge to each other as time increases
         if~$\partial_x f\bigl(t, x(t)\bigr) < 0$,
-        and diverge if $\partial_x f\bigl(t, x(t)\bigr) > 0$.
+        and diverge from each other if $\partial_x f\bigl(t, x(t)\bigr) > 0$.
         Testing absolute stability with $\lambda = \partial_x f\bigl(t, x(t)\bigr)$ enables to determine whether this property holds true also at the discrete level.
-        Although this statement is difficult to state precisely and prove generally,
+        Although the latter statement is difficult to state precisely and prove generally,
         we illustrate its validity for the forward Euler method in~\cref{example:perturbed_forward_euler}.
 \end{itemize}
 
@@ -1339,7 +1338,7 @@ We provide a couple of motivations:
         &\approx x_{n}^{\varepsilon} - x_{n} + \Delta \partial_x f(t_n, x_n) (x_{n}^{\varepsilon} - x_{n})
         = \bigl(1 + \Delta \partial_x f(t_n, x_n) \bigr) (x_{n}^{\varepsilon} - x_{n}).
     \end{align*}
-    Therefore, the numerical solutions $(x^{\varepsilon}_n)$ and $(x_n)$ tend to become closer if
+    Therefore, the numerical solutions $(x^{\varepsilon}_n)$ and $(x_n)$ tend to become closer as~$n$ increases if
     \begin{equation}
         \label{eq:stability_nonlinear}
         \Delta \partial_x f(t_n, x_n) \in \mathcal A.
@@ -1387,7 +1386,9 @@ for which exact solutions to the model equation are divergent.
 \end{figure}
 
 \subsection*{Stiff differential equations}
-A differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix~$\mat J_f\bigl(t, \vect x(t)\bigr)$ has at least one eigenvalue with a large negative real part in some part of the domain~$[0, T]$.
+A differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix~$\mat J_f\bigl(t, \vect x(t)\bigr)$,
+with respect to the variable~$\vect x$,
+has at least one eigenvalue with a large negative real part in some part of the domain~$[0, T]$.
 In the one-dimensional setting,
 the solutions to stiff differential equations which are close at the initial time tend to converge quickly to each other,
 in view of~\eqref{eq:ode_error_equation}.
