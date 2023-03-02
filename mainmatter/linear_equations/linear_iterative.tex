@@ -164,8 +164,8 @@ In other words,
 by~\cref{proposition:linear_convergence},
 there is for any choice of~$\omega \in \real$ some $\vect x^{(0)}$ such that Richardson's method is non-convergent.
 Therefore, in order for convergence to hold for all~$\vect x^{(0)}$,
-it is necessary that the eigenvalues of $\mat A$ either all have a positive real part,
-or all have a negative real part.
+it is necessary that the eigenvalues of $\mat A$ either all have a negative real part,
+or all have a positive real part.
 We focus in the next paragraph on the latter case and we also assume,
 for simplicity, that $\mat A$ is symmetric.
 
@@ -179,13 +179,14 @@ the spectral radius of $\mat M^{-1} \mat N$ should be as small as possible,
 in view of~\cref{proposition:linear_convergence}.
 Denoting by $\lambda_{\min}$ and $\lambda_{\max}$ the minimum and maximum eigenvalues of $\mat A$,
 it is not difficult to show that
-\[
+\begin{equation}
+    \label{eq:spectral_richardson}
     \rho(\mat M^{-1} \mat N)
     = \max_{1 \leq i \leq L} \abs{1  - \omega \lambda_i}
     = \max \bigl\{ \abs{1 - \omega \lambda_{\min}}, \abs{1 - \omega \lambda_{\max}}\bigr\}.
-\]
-The maximum is minimized when its two arguments are equal,
-i.e.\ when $1 - \omega \lambda_{\min} = \omega \lambda_{\max} -1$.
+\end{equation}
+The right-hand side is minimized $1 - \omega \lambda_{\min} = \omega \lambda_{\max} -1$,
+in which case the two arguments of the maximum in~\eqref{eq:spectral_richardson} are equal.
 From this we deduce the optimal value of $\omega$ and the associated spectral radius:
 \[
     \omega_{\rm opt} = \frac{2}{\lambda_{\max} + \lambda_{\min}},
@@ -202,7 +203,8 @@ the better the asymptotic rate of convergence.
     [Link to optimization]
     \label{remark:linear_link_optimization}
     In the case where $\mat A$ is symmetric and positive definite,
-    the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm
+    the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm,
+    which we study carefully in~\cref{cha:Optimization},
     for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
     \begin{equation}
         \label{eq:linear_richardson_gradient}
