@@ -17,7 +17,7 @@ We came across several examples of such problems earlier in these notes:
         in the context of least-squares approximation,
         we considered the problem of minimizing
         \[
-            J(\vect \alpha) = \frac{1}{2} \norm{ \mat A \vect x - \vect b }^2.
+            J(\vect \alpha) = \frac{1}{2} \norm{ \mat A \vect \alpha - \vect b }^2.
         \]
 
     \item
@@ -43,7 +43,7 @@ the set~$\mathcal K$ is often an intersection of sets of the form
     \qquad
     \bigl\{ \vect x \in \real^n : \phi(\vect x) = 0 \bigr\},
 \]
-for appropriate $\phi\colon \real^n \to \real^m$.
+for appropriate $\phi\colon \real^n \to \real$.
 Constraints of the former form are called \emph{inequality constraints},
 while constraints of the latter form are called \emph{equality constraints}.
 Our aim in this chapter is to give a brief introduction to numerical optimization.
