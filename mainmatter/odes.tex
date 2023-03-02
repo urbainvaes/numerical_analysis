@@ -1386,9 +1386,12 @@ for which exact solutions to the model equation are divergent.
 \end{figure}
 
 \subsection*{Stiff differential equations}
-A differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix~$\mat J_f\bigl(t, \vect x(t)\bigr)$,
+In the context of ordinary differential equations, 
+stiffness is not a precisely defined concept,
+but rather rather a generic term employed to describe equations with widely separated time scales.
+Roughly speaking, a differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix of~$f$,
 with respect to the variable~$\vect x$,
-has at least one eigenvalue with a large negative real part in some part of the domain~$[0, T]$.
+has at least one eigenvalue with a large negative real part.
 In the one-dimensional setting,
 the solutions to stiff differential equations which are close at the initial time tend to converge quickly to each other,
 in view of~\eqref{eq:ode_error_equation}.
@@ -1434,19 +1437,20 @@ i.e.\ if
     \Delta < \Delta_* ~= \frac{2}{\alpha}.
 \]
 It turns out that this prediction is precise,
-as is depicted in~\cref{fig:forward_euler_stiff}.
-Note that the if the equation is very stiff,
+as depicted in~\cref{fig:forward_euler_stiff}.
+Note that if the equation is very stiff,
 that is to say if $\alpha \gg 1$,
 then a very small time step is required to ensure stability.
 
-In contrast to the backward Euler scheme,
-the forward Euler scheme is stable regardless of the time step.
+In contrast with the forward Euler scheme,
+the backward Euler scheme is stable regardless of the time step.
 Since the right-hand side of~\eqref{eq:stiff_ode} is linear in~$x$,
-the value of the iterate~$x_{n+1}$ can be calculated explicitly from~$x_n$:
+the value of the iterate~$x_{n+1}$ can be calculated explicitly from~$x_n$ for the backward scheme:
 \[
     x_{n+1} = \frac{x_n + \Delta \alpha \sin(t_{n+1}) + \Delta \cos(t_{n+1})}{1 + \Delta \alpha}.
 \]
 Numerical approximations obtained using this scheme are illustrated in~\cref{fig:backward_euler_stiff}.
+We observe that the method is stable even for the large time step $\Delta = 2 \Delta_*$.
 
 \begin{figure}[ht]
     \centering
