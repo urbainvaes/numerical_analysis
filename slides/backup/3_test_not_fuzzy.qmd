@@ -1,0 +1,96 @@
+---
+title: "Test presentation"
+author: "John Doe"
+institution: "MIT"
+format:
+    revealjs:
+        # theme: [solarized, custom.scss]
+        eval: false
+        theme: default
+        width: 1200
+        height: 600
+        min-scale: 1
+        max-scale: 1
+        chalkboard: true
+        center: false
+        transition: convex
+        navigation-mode: vertical
+        callout-appearance: default
+jupyter: julia-1.8
+---
+
+# Problèmes
+
+- Nested indentation not supported
+
+- Difficult to define new environments
+
+- .smaller ne fonctionne pas avec les icônes des call-out
+
+- Relance le kernel à chaque fois
+
+- Slide sans titre = pas possible?
+
+- On ne sait pas mettre des commentaires
+
+- Blurry in Firefox
+
+# Motivations: can you explain this?
+
+:::: {.columns}
+::: {.column width="50%"}
+Approximation of the derivative
+```julia
+ε = 1e-16
+(exp(ε) - 1) / ε
+```
+:::
+
+::: {.column width="50%"}
+This is the second column
+
+:::
+::::
+
+$$
+\begin{align}
+     a &= b \\
+     c &= d
+\end{align}
+$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+:::{.callout-tip}
+## Hello
+Can you explain this?
+:::
+:::
+
+::: {.column width="50%"}
+:::{.callout-caution collapse="true"}
+## Click to expand
+hello
+:::
+:::
+
+::::
+
+:::{.callout-tip collapse="true"}
+## Additional Resources
+
+-   Resource 1
+
+-   Resource 2
+:::
+
+## Can you explain this
+
+Hello
+
+
+## And this
+
+
+Test

@@ -91,4 +91,5 @@ end
 println(niter)
 
 # Plot the solution
-plot_solution(x)
+p = plot_solution(x)
+PlotlyJS.savefig(p, "solution.html")

@@ -1,0 +1,28 @@
+---
+title: "Numerical integration"
+author: "Urbain VAES"
+institution: ""
+format:
+    revealjs:
+        theme: [serif, custom.scss]
+        chalkboard: true
+        transition: convex
+        navigation-mode: vertical
+        callout-appearance: default
+---
+
+# Problèmes
+
+- Indentation des environnements imbriqués
+
+- Définition de nouveaux environnements
+
+- .smaller ne fonctionne pas avec les icônes des call-out
+
+- Relance le kernel à chaque fois
+
+- Slide sans titre = pas possible?
+
+- On ne sait pas mettre des commentaires
+
+- Ne fonctionne pas offline
