@@ -619,7 +619,7 @@ We assume in this section that~$(x_k)_{k\geq 0}$ is generated from the Newton--R
     \begin{equation}
         \label{eq:convergence_newton_raphson_dim1}
         \forall k \in \nat, \qquad
-        \abs{x_{k+1} - x_*} \leq \frac{M}{m} \abs{x_{k} - x_*}^2.
+        \abs{x_{k+1} - x_*} \leq \frac{M}{2m} \abs{x_{k} - x_*}^2.
     \end{equation}
 \end{theorem}
 \begin{proof}
@@ -651,6 +651,14 @@ We assume in this section that~$(x_k)_{k\geq 0}$ is generated from the Newton--R
     \]
     which concludes the proof.
 \end{proof}
+
+\begin{remark}
+    As a corollary of~\cref{theorem:newton_raphson_1d},
+    we obtain that the Newton--Raphson method is convergent if
+    \[
+        \abs{x_k - x_*} \leq \frac{2m}{M}.
+    \]
+\end{remark}
 
 \subsection*{Convergence in the multi-dimensional setting~\moreinfo}
 As a first step towards a proof of quadratic convergence for the Newton--Raphson method in the multi-dimensional setting,
