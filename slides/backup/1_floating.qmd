@@ -1,0 +1,194 @@
+---
+title: "Floating point arithmetic"
+author: "Urbain Vaes"
+institution: "Inria Paris"
+format:
+    revealjs:
+        # theme: [solarized, custom.scss]
+        eval: true
+        theme: default
+        width: 1600
+        height: 800
+        min-scale: .5
+        max-scale: 2
+        chalkboard: true
+        transition: none
+        navigation-mode: vertical
+        callout-appearance: default
+        margin: .2
+        progress: true
+        center: false
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"
+        highlight-style: pygments
+        freeze: true
+jupyter: julia-1.8
+---
+
+# Problèmes
+
+- Nested indentation not supported
+
+- Difficult to define new environments
+
+- .smaller ne fonctionne pas avec les icônes des call-out
+
+- Relance le kernel à chaque fois
+
+- Slide sans titre = pas possible?
+
+- On ne sait pas mettre des commentaires
+
+- Blurry in Firefox
+
+# Motivations: can you explain this?
+
+:::: {.columns}
+::: {.column width="50%"}
+Approximation of the derivative
+```{julia}
+#| echo: false
+#| eval: false
+ε = 1e-16
+(exp(ε) - 1) / ε
+```
+:::
+
+::: {.column width="50%"}
+This is the second column
+
+:::
+::::
+
+$$
+\begin{align}
+     a &= b \\
+     c &= d
+\end{align}
+$$
+
+:::: {.columns}
+
+::: {.column width="50%"}
+:::{.callout-tip}
+## Hello
+Can you explain this?
+:::
+:::
+
+::: {.column width="50%"}
+:::{.callout-caution collapse="true"}
+## Click to expand
+hello
+:::
+:::
+
+::::
+
+:::{.callout-tip collapse="true"}
+## Additional Resources
+
+-   Resource 1
+
+-   Resource 2
+:::
+
+
+## Can you explain this
+
+::: {.callout-caution collapse="true"}
+## Expand To Learn About Collapse
+
+This is an example of a 'folded' caution callout that can be expanded by the user. You can use `collapse="true"` to collapse it by default or `collapse="false"` to make a collapsible callout that is expanded by default.
+:::
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+First col
+
+::: {.fragment .highlight-red}
+Why is this slow
+:::
+
+:::
+
+::: {.column width="50%"}
+
+- Second col
+
+- Another thing
+:::
+
+::::
+
+
+## Getting up
+
+::: {.hidden}
+$$
+ \def\d{{\mathrm d}}
+$$
+:::
+
+$$
+    \int_0^1 f(x) \, \d x
+$$
+
+## Getting up
+
+- Turn off alarm test?
+- Get out of bed
+- Wow, this is fast
+
+```{julia}
+#| echo: true
+#| eval: false
+
+s1 = sum(1/n for n in 1:10000)
+s2 = sum(1/n for n in 10000:-1:1)
+println(s1, " ", s2)
+```
+
+```{julia}
+#| echo: true
+#| eval: false
+
+julia> sum(1/n for n in 1:10000)
+9.787606036044348
+
+julia> sum(1/n for n in 10000:-1:1)
+9.787606036044386
+```
+
+## Test plotly
+
+```{julia}
+#| echo: true
+#| eval: false
+println("Hello, world")
+# import plotly.express as px
+# df = px.data.iris()
+# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
+# fig.show()
+```
+
+## Creating plots {.smaller}
+
+- Use `Plots.plot` the first time,
+
+- Test two
+
+- and then `Plots.plot!` to add to an existing plot
+
+```{julia}
+#| label: fig-polar
+#| fig-cap: "Test"
+
+using Plots
+Plots.plot(x -> cos(x),
+           background_color=:transparent,
+           foreground_color=:black,
+           linewidth=3, label=nothing)
+```
