@@ -146,7 +146,7 @@ It may seem at first glance that uniqueness of the solution to~\eqref{eq:ode_int
 However, this theorem implies uniqueness \emph{only in the set~$\mathcal X$},
 a property known as~\emph{conditional uniqueness}.
 In order to prove that the solution is unique over the full space $C([t_0-T, t_0+T], \real^n)$,
-additional arguments are required.
+additional assumptions and arguments are required.
 A simple approach is to rely on Gr\"onwall's lemma.
 \begin{lemma}
     [Gr\"onwall's lemma, simplified integral form]
@@ -269,10 +269,10 @@ We are now ready to prove uniqueness under an appropriate condition.
     where $0 \leq T_- <  t_0 < T_+ \leq \infty$.
     In view of~\cref{theorem:uniqueness},
     all the local solutions coincide where they are defined,
-    and so they can be patched together in order to obtain a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
+    and so they can be patched together in order to construct a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
     It remains to prove the third item.
     To this end, suppose for contradiction that $T_+$ was finite and that
-    there was $(t_n)_{n \in \nat}$ such that $t_n \to T_+$ and~
+    there was $(t_n)_{n \in \nat}$ such that $t_n \to T_+$ in the limit~$n \to \infty$ and~
     \[
         K := \sup_{n \in \nat} \vecnorm{\vect x_*(t_n)} < \infty.
     \]
@@ -460,7 +460,7 @@ The convergence of this method can be proved under a global Lipschitz assumption
     \end{align*}
     for some $\tau_n \in (t_{n-1}, t_n)$.
     Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\tau_n)$.
-    The first term is the error at iteration~$n$,
+    The first term is the error at iteration~$n-1$,
     and the second may be bounded from~\eqref{eq:global_lipschitz},
     which gives
     \begin{align*}
@@ -529,7 +529,7 @@ then the fixed point can be approximated by using the iteration
 \end{equation}
 and there is exponential convergence~$\vect y_k \to \vect x_{n+1}$ in the limit as $k \to \infty$.
 A natural starting point for~\eqref{eq:fixed_point_ode} is~$\vect y_0 = \vect x_n$.
-An alternative approach to~\eqref{eq:fixed_point_ode} is to use Newton--Raphson's method directly for~\eqref{eq:backward_euler},
+An alternative approach to the fixed point iteration~\eqref{eq:fixed_point_ode} is to use the Newton--Raphson method for~\eqref{eq:backward_euler},
 which is faster in principle but must be initialized sufficiently close to the fixed point.
 
 Using a reasoning similar to that employed for proving~\cref{theorem:forward_euler},
@@ -573,7 +573,7 @@ given that both methods have same order of convergence but iterations of the for
 The reason is that the backward Euler method,
 like many implicit methods,
 is more \emph{stable} than its forward counterpart.
-Implicit methods are especially attractive in the context of~\emph{stiff} equations.
+Implicit methods are especially attractive in the context of~\emph{stiff} differential equations.
 We shall elaborate on this subject in~\cref{sec:absolute_stability}.
 
 \subsection{Analysis of general one-step methods}
@@ -1386,7 +1386,7 @@ for which exact solutions to the model equation are divergent.
 \end{figure}
 
 \subsection*{Stiff differential equations}
-In the context of ordinary differential equations, 
+In the context of ordinary differential equations,
 stiffness is not a precisely defined concept,
 but rather rather a generic term employed to describe equations with widely separated time scales.
 Roughly speaking, a differential equation of the form~\eqref{eq:ode} is called stiff if the Jacobian matrix of~$f$,
