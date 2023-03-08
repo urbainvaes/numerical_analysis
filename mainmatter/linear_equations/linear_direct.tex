@@ -2,7 +2,7 @@
 \label{sec:direct_solution_method}
 In this section,
 we present the \emph{direct method} for solving linear systems of the form~\eqref{eq:linear_system}
-with a general invertible matrix~$\mat A \in \real^{n \times n}$.
+with a general invertible matrix~$\mat A \in \complex^{n \times n}$.
 The direct method can be decomposed into three steps:
 \begin{itemize}
     \item
@@ -43,12 +43,12 @@ based on \emph{Gaussian elimination}.
 
 \subsubsection*{Existence and uniqueness of the decomposition}%
 We present a necessary and sufficient condition for the existence of a unique $\mat L \mat U$ decomposition of a matrix.
-To this end, we define the principal submatrix of order $i$ of a matrix $\mat A \in \real^{n \times n}$
+To this end, we define the principal submatrix of order $i$ of a matrix $\mat A \in \complex^{n \times n}$
 as the matrix $\mat A_i = \mat A[1:i, 1:i]$, in Julia notation.
 
 \begin{proposition}
     \label{proposition:linear_existence_lu}
-    The $\mat L \mat U$ factorization of a matrix $\mat A \in \real^{n \times n}$,
+    The $\mat L \mat U$ factorization of a matrix $\mat A \in \complex^{n \times n}$,
     with $\mat L$ unit lower triangular and $\mat U$ upper triangular,
     exists and is unique if and only if
     the principal submatrices of $\mat A$ of all orders are nonsingular.
@@ -130,9 +130,9 @@ We begin by introducing the concept of \emph{Gaussian transformation}.
     \]
 \end{definition}
 
-The action of a Gaussian transformation $\mat M_k$ left-multiplying a matrix $\mat A \in \real^{n \times n}$ is
+The action of a Gaussian transformation $\mat M_k$ left-multiplying a matrix $\mat A \in \complex^{n \times n}$ is
 to replace the rows from index $k + 1$ to index $n$ by a linear combination involving themselves and the $k$-th row.
-To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the rows of a matrix $\mat T \in \real^{n \times n}$.
+To see this, let us denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the rows of a matrix $\mat T \in \complex^{n \times n}$.
 Then, we have
 \[
     \mat M_k \mat T
@@ -245,8 +245,8 @@ then the Gaussian transformation matrices exist and are uniquely defined.
     Assume that $\mat A^{(k)}$ is upper triangular up to column $k$ included,
     with $k \leq n-2$.
     If~$a^{(k)}_{k+1,k+1} > 0$,
-    then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that $\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
-    This transformation matrix is given by $\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$, where
+    then there is a unique Gaussian transformation matrix $\mat M_{k+1}$ such that~$\mat M_{k+1} \mat A^{(k)}$ is upper triangular up to column $k + 1$.
+    This transformation matrix is given by~$\mat I - \vect c^{(k+1)} \vect e_{k+1}^\t$, where
     \[
         \vect c^{(k+1)} =
         \begin{pmatrix}
@@ -256,7 +256,7 @@ then the Gaussian transformation matrices exist and are uniquely defined.
 \end{lemma}
 \begin{proof}
     We perform the multiplication explicitly.
-    Denoting denote by $(\vect r^{(i)}){1 \leq i \leq n}$ the rows of $\mat A^{(k)}$,
+    Denoting denote by $(\vect r^{(i)})_{1 \leq i \leq n}$ the rows of $\mat A^{(k)}$,
     we have
     \[
         \mat M_{k + 1} \mat A^{(k)}
@@ -454,7 +454,7 @@ It is useful at this point to introduce the concept of a row permutation matrix.
         \end{cases}
     \]
 \end{definition}
-When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \real^{n \times n}$,
+When a row permutation $\mat P$ left-multiplies a matrix $\mat B \in \complex^{n \times n}$,
 row~$i$ of matrix $\mat B$ is moved to row index $\sigma(i)$ in the resulting matrix,
 for all $i \in \{1, \dots, n\}$.
 A permutation matrix has a single entry equal to~1 per row and per column,
@@ -632,19 +632,19 @@ A Julia implementation of this algorithm is presented in~\cref{julia:lu_factoriz
     the best pivot is already on the diagonal.
 \end{remark}
 
-\subsection{Direct method for symmetric positive definite matrices}%
+\subsection{Direct method for Hermitian positive definite matrices}%
 \label{sub:direct_method_for_symmetric_positive_definite_matrices}
-The $\mat L \mat U$ factorization with partial pivoting applies to any matrix $\mat A \in \real^{n \times n}$ that is invertible.
-If~$\mat A$ is symmetric positive definite,
+The $\mat L \mat U$ factorization with partial pivoting applies to any matrix $\mat A \in \complex^{n \times n}$ that is invertible.
+If~$\mat A$ is Hermitian positive definite,
 however, it is possible to compute a factorization into lower and upper triangular matrices at half the computational cost,
 using the so-called \emph{Cholesky decomposition}.
 \begin{lemma}
     [Cholesky decomposition]
-    If~$\mat A$ is symmetric positive definite,
-    then there exists a lower-triangular matrix $\mat C \in \real^{n \times n}$ such that
+    If~$\mat A$ is Hermitian positive definite,
+    then there exists a lower-triangular matrix $\mat C \in \complex^{n \times n}$ such that
     \begin{equation}
         \label{eq:linear_cholesky_decomposition}
-        \mat A = \mat C \mat C^\t.
+        \mat A = \mat C \mat C^*.
     \end{equation}
     Equation~\eqref{eq:linear_cholesky_decomposition} is called the Cholesky factorization of $\mat A$.
     The matrix $\mat C$ is unique if we require that all its diagonal entries are positive.
@@ -658,20 +658,20 @@ using the so-called \emph{Cholesky decomposition}.
         \mat A = \mat L \mat D \mat (\mat D^{-1} \mat U).
     \]
     Note that the matrix $\mat D^{-1} \mat U$ is unit upper triangular.
-    Since $\mat A$ is symmetric,
+    Since $\mat A$ is Hermitian,
     we have
     \[
-        \mat A = \mat A^\t = (\mat D^{-1} \mat U)^\t (\mat L \mat D)^\t.
+        \mat A = \mat A^* = (\mat D^{-1} \mat U)^* (\mat L \mat D)^*.
     \]
     The first and second factors on the right-hand side are respectively unit lower triangular and upper triangular,
     and so we deduce, by uniqueness of the $\mat L \mat U$ decomposition,
-    that $\mat L = (\mat D^{-1} \mat U)^\t$ and $\mat U = (\mat L \mat D)^\t$.
+    that $\mat L = (\mat D^{-1} \mat U)^*$ and $\mat U = (\mat L \mat D)^*$.
     But then
     \[
-        \mat A = \mat L \mat U = \mat L \mat D \mat L^\t = (\mat L \sqrt{\mat D}) (\sqrt{\mat D} \mat L)^\t.
+        \mat A = \mat L \mat U = \mat L \mat D \mat L^* = (\mat L \sqrt{\mat D}) (\sqrt{\mat D} \mat L)^*.
     \]
     Here $\sqrt{\mat D}$ denotes the diagonal matrix whose diagonal entries are obtained by taking the square root of those of $\mat D$,
-    which are necessarily positive because $\mat A$ is positive definite.
+    which are necessarily real and positive because $\mat A$ is positive definite.
     This implies the existence of a Cholesky factorization with $\mat C = \mat L \sqrt{\mat D}$.
 \end{proof}
 
@@ -685,9 +685,9 @@ Implementing the Cholesky factorization is the goal of \cref{exercise:linear_cho
 \subsection{Direct methods for banded matrices}%
 
 In applications related to partial differential equations,
-the matrix $\mat A \in \real^{n \times n}$ very often has a bandwidth which is small in comparison with $n$.
+the matrix $\mat A \in \complex^{n \times n}$ very often has a bandwidth which is small in comparison with $n$.
 \begin{definition}
-    The bandwidth of a matrix $\mat A \in \real^{n \times n}$ is the smallest number $k \in \nat$ such that
+    The bandwidth of a matrix $\mat A \in \complex^{n \times n}$ is the smallest number $k \in \nat$ such that
     $a_{ij} = 0$ for all $(i, j) \in \{1, \dotsc, n\}^2$ with $\abs{i - j} > k$.
 \end{definition}
 It is not difficult to show that,
@@ -721,9 +721,9 @@ and then letting $\vect x = \mat P^\t \vect y$.
 
 The Cuthill--McKee algorithm is a heuristic method for finding a good,
 but sometimes not optimal,
-permutation matrix~$\mat P$ in the particular case where $\mat A$ is a \emph{symmetric} matrix.
+permutation matrix~$\mat P$ in the particular case where $\mat A$ is a \emph{Hermitian} matrix.
 It is based on the fact that,
-to a symmetric matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$,
+to a Hermitian matrix~$\mat A$, we can associate a unique undirected graph whose adjacency matrix~$\mat A_*$ has the same sparsity structure as that of $\mat A$,
 i.e.\ zeros in the same places.
 For any row permutation matrix $\mat P_{\sigma}$ with corresponding permutation~$\sigma\colon \{1, \dotsc, n\} \rightarrow \{1, \dotsc, n\}$ (see \cref{definition:row_permutation_matrix}),
 the matrices~$\mat P_{\sigma} \mat A \mat P_{\sigma}^\t$ and~$\mat P_{\sigma} \mat A_* \mat P_{\sigma}^\t$ also have the same sparsity structure.

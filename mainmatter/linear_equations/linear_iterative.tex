@@ -12,7 +12,7 @@ and the so-called Krylov subspace methods.
 \label{sub:basic_iterative_methods}
 The basic iterative methods are particular cases of a general \emph{splitting method}.
 Given a splitting of the matrix of the linear system as $\mat A = \mat M - \mat N$,
-for a nonsingular matrix $\mat M \in \real^{n \times n}$ and a matrix $\mat N \in  \real^{n \times n}$,
+for a nonsingular matrix $\mat M \in \complex^{n \times n}$ and a matrix $\mat N \in  \complex^{n \times n}$,
 together with an initial guess $\vect x^{(0)}$ of the solution,
 one step of this general method reads
 \begin{equation}
@@ -120,7 +120,7 @@ In the next sections,
 we present four instances of splitting methods.
 For each of them,
 we obtain a sufficient condition for convergence.
-We are particularly interested in the case where the matrix~$\mat A$ is symmetric (or Hermitian) and positive definite,
+We are particularly interested in the case where the matrix~$\mat A$ is Hermitian and positive definite,
 which often arises in applications,
 and in the case where $\mat A$ is strictly row or column diagonally dominant.
 We recall that a matrix $\mat A$ is said to be row or column diagonally dominant
@@ -167,11 +167,11 @@ Therefore, in order for convergence to hold for all~$\vect x^{(0)}$,
 it is necessary that the eigenvalues of $\mat A$ either all have a negative real part,
 or all have a positive real part.
 We focus in the next paragraph on the latter case and we also assume,
-for simplicity, that $\mat A$ is symmetric.
+for simplicity, that $\mat A$ is Hermitian.
 
 \paragraph{Case of symmetric positive definite $\mat A$.}%
 \label{par:case_of_symmetric_positive_definite_mat_a_}
-If the matrix $\mat A$ is symmetric and positive definite,
+If the matrix $\mat A$ is Hermitian and positive definite,
 the eigenvalues of $\mat A$ are all real and positive,
 and it is possible to explicitly calculate the optimal value of $\omega$ for convergence.
 In order for convergence to be as fast as possible,
@@ -202,7 +202,7 @@ the better the asymptotic rate of convergence.
 \begin{remark}
     [Link to optimization]
     \label{remark:linear_link_optimization}
-    In the case where $\mat A$ is symmetric and positive definite,
+    In the case where $\mat A \in \real^{n\times n}$ is symmetric and positive definite,
     the Richardson update~\eqref{eq:linear_richardson} may be viewed as a step of the steepest descent algorithm,
     which we study carefully in~\cref{cha:Optimization},
     for the function $f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x$:
@@ -377,7 +377,7 @@ which concerns a general splitting $\mat A = \mat M - \mat N$.
         \norm{\mat M^{-1} \mat N}_{\mat A}
         = \sup \bigl\{ \norm{\vect x - \mat M^{-1} \mat A \vect x}_{\mat A}: \norm{\vect x}_{\mat A} \leq 1 \bigr\}.
     \]
-    Take $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} \leq 1$
+    Take $\vect x \in \complex^n$ with $\norm{\vect x}_{\mat A} \leq 1$
     and let $\vect y = \mat M^{-1} \mat A \vect x$.
     We calculate
     \begin{align*}
@@ -389,7 +389,7 @@ which concerns a general splitting $\mat A = \mat M - \mat N$.
         % &= \vect x^\t \mat A \vect x - 2 \vect y^\t \mat M \vect \vect y + \vect y^\t \mat A \vect y \\
     \end{align*}
     where we used in the last inequality the assumption that $\mat M^* + \mat N$ is positive definite.
-    This inequality holds true for all $\vect x \in \real^n$ with $\norm{\vect x}_{\mat A} = 1$,
+    This inequality holds true for all $\vect x \in \complex^n$ with $\norm{\vect x}_{\mat A} = 1$,
     and so we conclude that \( \norm{\mat M^{-1} \mat N}_{\mat  A} < 1\),
     which implies that $\rho(\mat M^{-1} \mat N) < 1$.
 \end{proof}
@@ -640,7 +640,7 @@ the following alternatives are available:
 \label{sub:the_conjugate_gradient_method}
 
 As already mentioned in~\cref{remark:linear_link_optimization},
-when the matrix $\mat A \in \real^{n \times n}$ in the linear system $\mat A \vect x = \vect b$ is symmetric and positive definite,
+when the matrix $\mat A \in \complex^{n \times n}$ in the linear system $\mat A \vect x = \vect b$ is symmetric and positive definite,
 the system can be interpreted as a minimization problem for the function
 \begin{equation}
     \label{eq:function_optimization}
