@@ -2,10 +2,10 @@
 This chapter is devoted to the numerical solution of linear problems of the following form:
 \begin{equation}
     \label{eq:linear_system}
-    \text{Find $\vect x \in \real^n$ such that} \qquad
+    \text{Find $\vect x \in \complex^n$ such that} \qquad
     \mat A \vect x = \vect b,
-    \qquad \mat A \in \real^{n \times n},
-    \qquad \vect b \in \real^n.
+    \qquad \mat A \in \complex^{n \times n},
+    \qquad \vect b \in \complex^n.
 \end{equation}
 Systems of this type appear in a variety of applications.
 They naturally arise in the context of linear partial differential equations,
@@ -15,7 +15,7 @@ to mention just a few.
 Linear systems in this context often have a particular structure:
 the matrix $\mat A$ is generally very sparse,
 which means that most of the entries are equal to 0,
-and it is often symmetric and positive definite,
+and it is often Hermitian and positive definite,
 provided that these properties are satisfied by the underlying operator.
 
 There are two main approaches for solving linear systems:

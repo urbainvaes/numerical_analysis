@@ -87,7 +87,7 @@ The absolute and relative condition numbers are defined as follows.
 In the rest of this section,
 we obtain an upper bound on the relative condition number for the linear system~\eqref{eq:linear_system} with respect to perturbations first of $\vect b$,
 and then of $\mat A$.
-We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\real^n$ and the induced operator norm on matrices.
+We use the notation~$\norm{\placeholder}$ to denote both a vector norm on $\complex^n$ and the induced operator norm on matrices.
 
 \begin{proposition}
     [Perturbation of the right-hand side]
@@ -127,17 +127,17 @@ Before stating and proving the main result,
 we show an ancillary lemma.
 \begin{lemma}
     \label{lemma:linear_inverse_neumann}
-    Let $\mat B \in \real^{n \times n}$ be such that $\norm{\mat B} < 1$ in some submultiplicative matrix norm~$\norm{\placeholder}$.
+    Let $\mat B \in \complex^{n \times n}$ be such that $\norm{\mat B} < 1$ in some submultiplicative matrix norm~$\norm{\placeholder}$.
     Then $\mat I - \mat B$ is invertible and
     \begin{equation}
         \label{eq:linear_bound_inverse_perturbation_identity}
         \norm{(\mat I - \mat B)^{-1}}
         \leq \frac{1}{1 - \norm{\mat B}},
     \end{equation}
-    where $\mat I \in \real^{n \times n}$ is the identity matrix.
+    where $\mat I \in \complex^{n \times n}$ is the identity matrix.
 \end{lemma}
 \begin{proof}
-    It holds for any matrix $\mat B \in \real^{n \times n}$ that
+    It holds for any matrix $\mat B \in \complex^{n \times n}$ that
     \begin{equation}
         \label{eq:first_equation_neumann}
         \mat I - \mat B^{n+1} = (\mat I - \mat B)(\mat I + \mat B + \dotsb + \mat B^n).
@@ -250,7 +250,7 @@ it holds that
     1 = \norm{\mat I} = \norm{\mat A \mat A^{-1}}\leq \norm{\mat A} \norm{\mat A^{-1}}.
 \]
 
-Since the 2-norm of an invertible matrix $\mat A \in \real^{n \times n}$ coincides with the spectral radius $\rho(\mat A^\t \mat A)$,
+Since the 2-norm of an invertible matrix $\mat A \in \complex^{n \times n}$ coincides with the spectral radius $\rho(\mat A^\t \mat A)$,
 the condition number $\kappa_2$ corresponding to the $2$-norm is equal to
 \[
     \kappa_2(\mat A) = \sqrt{\frac{\lambda_{\max}(\mat A^\t \mat A)}{\lambda_{\min}(\mat A^\t \mat A)}},
