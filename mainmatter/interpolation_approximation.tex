@@ -376,7 +376,7 @@ are given by the divided differences.
     Assume that $(x_0, u_0), \dotsc, (x_n, u_n)$ are $n+1$ points in the plane with distinct abcissae.
     Then the interpolating polynomial of degree $n$ may be expressed as
     \[
-        p(x) = \sum_{i=0}^{n} [u_0, \dotsc, u_n] \varphi_i(x),
+        p(x) = \sum_{i=0}^{n} [u_0, \dotsc, u_i] \varphi_i(x),
     \]
     where $\varphi_i(x)$, for $i = 0, \dotsc, n$, are the basis functions defined in~\eqref{eq:basis_newton}.
 \end{proposition}
@@ -403,7 +403,7 @@ are given by the divided differences.
     \begin{align*}
         p(x) =
         &u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, \dotsc, u_{n-2}] \prod_{i=0}^{n-2} (x - x_i)  \\
-        & + \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} \prod_{i=0}^{n-1} (x - x_i).
+        & + \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n-1}]}{x_n - x_{n-1}} \prod_{i=0}^{n-1} (x - x_i).
     \end{align*}
     In \cref{exercise:divided_differences},
     we show that divided differences are invariant under permutations of the data points,
