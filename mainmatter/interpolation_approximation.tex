@@ -376,7 +376,7 @@ are given by the divided differences.
     Assume that $(x_0, u_0), \dotsc, (x_n, u_n)$ are $n+1$ points in the plane with distinct abcissae.
     Then the interpolating polynomial of degree $n$ may be expressed as
     \[
-        p(x) = \sum_{i=0}^{n} [u_0, \dotsc, u_n] \varphi_i(x),
+        p(x) = \sum_{i=0}^{n} [u_0, \dotsc, u_i] \varphi_i(x),
     \]
     where $\varphi_i(x)$, for $i = 0, \dotsc, n$, are the basis functions defined in~\eqref{eq:basis_newton}.
 \end{proposition}
@@ -403,13 +403,13 @@ are given by the divided differences.
     \begin{align*}
         p(x) =
         &u_0 + [u_0, u_1] (x - x_0) + \dotsc + [u_0, \dotsc, u_{n-2}] \prod_{i=0}^{n-2} (x - x_i)  \\
-        & + \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} \prod_{i=0}^{n-1} (x - x_i).
+        & + \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n-1}]}{x_n - x_{n-1}} \prod_{i=0}^{n-1} (x - x_i).
     \end{align*}
     In \cref{exercise:divided_differences},
     we show that divided differences are invariant under permutations of the data points,
     and so we have that
     \[
-        \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n-1}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n}]}{x_n - x_{n-1}} = [u_0, \dotsc, u_n],
+        \frac{[u_0, u_1, \dotsc, u_{n-2}, u_{n}] - [u_0, u_1, \dotsc, u_{n-2}, u_{n-1}]}{x_n - x_{n-1}} = [u_0, \dotsc, u_n],
     \]
     which enables to conclude.
 \end{proof}
@@ -582,8 +582,8 @@ and then a continuous solution is constructed using polynomial or Fourier interp
 When the interpolation nodes are not given a priori as data,
 it is natural to wonder whether these can be picked in such a manner that the interpolation error,
 measured in a function norm, is minimized.
-For example, given a continuous function~$u(x)$ and a number of nodes~$n$,
-is it possible to chose nodes $x_0, \dotsc, x_n$ such that
+For example, given a continuous function~$u(x)$ and a number of nodes~$n+1$,
+is it possible to choose nodes $x_0, \dotsc, x_n$ such that
 \[
     E := \sup_{x \in [a, b]} \bigl\lvert u(x) - \widehat u(x) \bigr\rvert
 \]
@@ -592,7 +592,7 @@ Here $\widehat u$ is the polynomial interpolating~$u$ at the nodes.
 Achieving this goal in general is a difficult task,
 because $\xi = \xi(x)$ is unknown in the expression of the interpolation error from~\cref{theorem:interpolation_error}:
 \[
-    e_n(x) = \frac{u^{(n+1)}(\xi)}{n+1!} (x-x_0) \dotsc (x - x_n).
+    e_n(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n).
 \]
 In view of this difficulty,
 we will focus on the simpler problem of finding interpolation nodes
@@ -673,7 +673,7 @@ which we will deduce from the following theorem.
     In order to solve~\eqref{eq:differential_equation_chebyshev},
     we rearrange the equation and take the square root:
     \[
-        \frac{\frac{p_*'(x)}{E}}{\sqrt{1 - \frac{p_*(x)^2}{E^2}}} = \pm \frac{n}{1 - x^2}
+        \frac{\frac{p_*'(x)}{E}}{\sqrt{1 - \frac{p_*(x)^2}{E^2}}} = \pm \frac{n}{\sqrt{1 - x^2}}
         \qquad \Leftrightarrow \qquad
         \frac{\d}{\d x} \left( \arccos\left(\frac{p_*(x)}{E}\right) \right) = \pm n \frac{\d}{\d x} \arccos(x).
     \]
@@ -712,7 +712,7 @@ we deduce the following corollary.
     \end{align*}
     The function
     \begin{align*}
-        p(y) &:= \frac{2^n}{(b-a)^n} \omega\bigl(\zeta(y)\bigr) = \frac{2^{n+1}}{(b-a)^{n+1}} \bigl(\zeta(y)-x_0\bigr) \dotsb \bigl(\zeta(y)-x_n\bigr) \\
+        p(y) &:= \frac{2^{n+1}}{(b-a)^{n+1}} \omega\bigl(\zeta(y)\bigr) = \frac{2^{n+1}}{(b-a)^{n+1}} \bigl(\zeta(y)-x_0\bigr) \dotsb \bigl(\zeta(y)-x_n\bigr) \\
              &= \bigl(y-y_0\bigr) \dotsb \bigl(y-y_n\bigr), \qquad y_i = \zeta^{-1}(x_i),
     \end{align*}
     is a monic polynomial of degree~$n+1$ such that
