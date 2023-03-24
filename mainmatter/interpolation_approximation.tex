@@ -734,7 +734,7 @@ we deduce the following corollary.
 \Cref{corollary:chebyshev_nodes} is useful for interpolation.
 The nodes
 \begin{equation}
-    x_i = a + (b-a) \frac{1 + \cos \left( (2i + 1) \frac{\pi}{2 n} \right)}{2}, \qquad i = 0, \dotsc, n,
+    x_i = a + (b-a) \frac{1 + \cos \left( \frac{(2i + 1)\pi}{2 (n+1)} \right)}{2}, \qquad i = 0, \dotsc, n,
 \end{equation}
 are known as Chebyshev nodes and,
 more often than not, employing these nodes for interpolation produces much better results than using equidistant rodes,
@@ -871,7 +871,7 @@ and so we deduce
     \sup_{x \in [a, b]} \abs{u(x) - \widehat u(x)} \leq C h^{m+1},
 \end{equation*}
 for an appropriate constant~$C$ independent of $h$.
-This equation shows that the error is guaranteed to decrease to~0 in the limit as $h \to \infty$.
+This equation shows that the error is guaranteed to decrease to~0 in the limit as $h \to 0$.
 In practice, the number $m$ of interpolation nodes within each interval can be small.
 % Several integration methods presented~\cref{cha:quadrature} are related to piecewise interpolation.
 
