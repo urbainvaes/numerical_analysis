@@ -333,7 +333,7 @@ The right-hand side of this equation is an example of a \emph{divided difference
 In general, divided differences are defined recursively as follows:
 \begin{equation}
     \label{eq:definition_divided_difference}
-    [u_{0}, u_{2}, \dotsc, u_{d}] := \frac{[u_{1}, \dotsc, u_{d}] - [u_{0}, \dotsc, u_{d-1}]}{x_{d}-x_{0}}, \qquad [u_i] = u_i.
+    [u_{0}, u_{1}, \dotsc, u_{d}] := \frac{[u_{1}, \dotsc, u_{d}] - [u_{0}, \dotsc, u_{d-1}]}{x_{d}-x_{0}}, \qquad [u_i] = u_i.
 \end{equation}
 
 Let us start by observing that our divided differences coincide
@@ -659,7 +659,7 @@ which we will deduce from the following theorem.
     are sufficient to derive an explicit expression for the polynomial~$p_*$,
     as we formally demonstrate hereafter.
 
-    The points $x_2, \dotsc, x_{n-1}$
+    The points $x_1, \dotsc, x_{n-1}$
     are local extrema of~$p_*$,
     and so~$p_*'(x) = 0$ at these nodes.
     We therefore deduce that $p_*$ satisfies the differential equation
@@ -668,7 +668,7 @@ which we will deduce from the following theorem.
         n^2\left(E^2 - p_*(x)^2\right) = p_*'(x)^2 (1 - x^2).
     \end{equation}
     Indeed, both sides are polynomials of degree $2n$ with single roots at -1 and 1,
-    with double roots at $x_2, \dotsc, x_{n+1}$,
+    with double roots at $x_1, \dotsc, x_{n-1}$,
     and with the same coefficient of the leading power.
     In order to solve~\eqref{eq:differential_equation_chebyshev},
     we rearrange the equation and take the square root:

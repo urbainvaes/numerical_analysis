@@ -100,7 +100,7 @@ for example the following:
         With this notation, we have $(FF)_{16} = (255)_{10}$, for example.
 
         The hexadecimal notation is often used in programming languages for describing colors specified by a triplet $(r,g,b)$ of values between 0 and 255,
-        corresponding to the primary colors \emph{red}, \emph{blue} and \emph{green}.
+        corresponding to the primary colors \emph{red}, \emph{green} and \emph{blue}.
         The number of possible values for each component is~$256 = 16^2$,
         and so only 2 digits are required to represent these in the hexadecimal notation.
         Hexadecimal numbers are also employed in IPv6 addresses,
@@ -234,7 +234,7 @@ Note that $\floating_{16} \subset \floating_{32} \subset \floating_{64}$.
         Floating point formats.
         The first column corresponds to the \emph{half-precision} format.
         This format,
-        which is available through the \texttt{Float16} type in Julia,
+        which is available through the \julia{Float16} type in Julia,
         is more recent than the single and double precision formats.
         It was introduced in the 2008 revision to the IEEE 754 standard of 1985,
         a revision known as IEEE 754-2008.
@@ -396,7 +396,7 @@ it rarely needs worrying about.
 
 \begin{example}
     In Julia,
-    the machine epsilon can be obtained using the \texttt{eps} function.
+    the machine epsilon can be obtained using the \julia{eps} function.
     For example, the instruction \julia{eps(Float16)} returns $\varepsilon_M$ for the half-precision format.
 \end{example}
 
@@ -461,7 +461,7 @@ where ${\rm fl}_{64}$ is the rounding operator to the double-precision format.
 
 \begin{example}
     Using the \julia{typeof} function,
-    we check that the floating point literal \texttt{1.0} is indeed interpreted as a double-precision number:
+    we check that the floating point literal \julia{1.0} is indeed interpreted as a double-precision number:
     % julia-repl does not work on old versions of LaTeX
 % \begin{minted}{julia-repl}
 \begin{minted}{julia}
@@ -753,7 +753,7 @@ integer formats do not provide special values like \julia{Inf} and \julia{NaN}.
 The number delivered by the machine when a calculation exceeds the maximum representable value in the format,
 called the \emph{overflow behavior}, generally depends on the programming language.
 
-Since the overflow behavior of integer format is not universal across programming languages,
+Since the overflow behavior of integer formats is not universal across programming languages,
 a detailed discussion is of little interest.
 We only mention that Julia uses a \emph{wraparound} behavior,
 where $N_{\max} + 1$ silently returns $N_{\min}$ and,
@@ -771,7 +771,7 @@ such as \julia{2^64} evaluating to 0.
 \end{exercise}
 
 \begin{exercise}
-    How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary format?
+    How many digits does it take to represent all the integers from 0 to $10^{10} - 1$ in decimal and binary formats?
     What about the hexadecimal format?
 \end{exercise}
 
@@ -788,7 +788,7 @@ such as \julia{2^64} evaluating to 0.
     Implement~\cref{algo:conversion_to_binary} on a computer and verify that it works.
     Your function should take two arguments: an array of integers \verb?[a_1, ..., a_n]? containing the digits after the decimal point
     and the~$m$ number of bits to return.
-    The bits should be \emph{returned} as an array~\verb?[b_1, ..., b_m]?
+    The bits should be \emph{returned} as an array~\verb?[b_1, ..., b_m]?.
 \end{compexercise}
 
 \begin{compexercise}
@@ -812,8 +812,8 @@ such as \julia{2^64} evaluating to 0.
 \end{compexercise}
 
 \begin{exercise}
-    Show that the successor of $1$ in $\floating_{64}$ is $1 + \varepsilon_M$,
-    where $\varepsilon_M$ is the machine epsilon for the double-precision format.
+    Show that the successor of $1$ in $\floating_{64}$ is $1 + \varepsilon_{64}$,
+    where $\varepsilon_{64}$ is the machine epsilon for the double-precision format.
 \end{exercise}
 
 \begin{exercise}
@@ -825,7 +825,7 @@ such as \julia{2^64} evaluating to 0.
     [Relative error and machine epsilon]
     \label{exercise:machine_epsilon}
     Prove that the inequality~\eqref{eq:bound_epsilon_machine} is sharp.
-    To this end, find $x \in \real$ such that the inequality is an equality.
+    That is to say, find $x \in \real$ such that the inequality is an equality.
 \end{exercise}
 
 \begin{exercise}
@@ -858,7 +858,7 @@ such as \julia{2^64} evaluating to 0.
 \begin{compexercise}
     [Numerical differentiation]
     Let $f(x) = \exp(x)$.
-    By definition, the derivative of~$f$ at~$0$ is
+    By definition, the derivative of~$f$ at~$0$ is given by
     \[
         f'(0) = \lim_{\delta \to 0} \left( \frac{f(\delta) - f(0)}{\delta} \right).
     \]
@@ -905,7 +905,7 @@ such as \julia{2^64} evaluating to 0.
         N, L = 10^6, 10^9
         x = L .+ rand(N)
     \end{minted}
-    It is well know that the variance of $x_n \in \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
+    It is well know that the variance of $x_n \sim \mathcal U(L, L+1)$ is given by~$\sigma^2 = \frac{1}{12}$.
     Numerically, the variance can be estimated from the \emph{sample variance}:
     % \begin{equation}
     %     \label{eq:sample_variance_1}
@@ -982,14 +982,14 @@ such as \julia{2^64} evaluating to 0.
     The first task is to determine the member of $\floating_{32}$ that is nearest $x$.
     We have
     \begin{align*}
-        x^- = \max \bigl\{y: y \in \floating_{32} \text{ and } y \leq x\bigr\} &= 2^{-4} \times (1.10011001100110011001100)_2 \\
-        x^+ = \min \bigl\{y: y \in \floating_{32} \text{ and } y \geq x\bigr\} &= 2^{-4} \times (1.10011001100110011001101)_2.
+        x^- := \max \bigl\{y: y \in \floating_{32} \text{ and } y \leq x\bigr\} &= 2^{-4} \times (1.10011001100110011001100)_2 \\
+        x^+ := \min \bigl\{y: y \in \floating_{32} \text{ and } y \geq x\bigr\} &= 2^{-4} \times (1.10011001100110011001101)_2.
     \end{align*}
     Since the number $(0.\overline{1100})_2$ is closer to 1 than to 0,
     the number $x$ is closer to $x^+$ than to $x^-$.
     Therefore, the number obtained when writing \julia{Float32(0.1)} is $x^+$.
     To conclude the exercise,
-    we need to calculate ${\rm fl}\bigl(10 \times x^+\bigr)$,
+    we need to calculate~${\rm fl}\bigl(10 \times x^+\bigr)$,
     and to this end we first write the exact binary representation of the real number $10 \times x^+ = (1010)_2 \times x^+$.
     We have
     \begin{align*}
@@ -1001,7 +1001,8 @@ such as \julia{2^64} evaluating to 0.
     \end{align*}
     This can be checked in Julia by writing \julia{bitstring(Float32(0.1) * Float64(10.0))}.
     Clearly, when rounding to the nearest $\floating_{32}$ number,
-    the number $2^{-4} (10000)_2 = 1$ is obtained.
+    the number $2^{-4} (10000)_2 = 1$ is obtained;
+    the boolean expression in the question is thus \julia{true}.
 \end{solution}
 
 \begin{remark}
@@ -1020,7 +1021,8 @@ such as \julia{2^64} evaluating to 0.
     Explain why \julia{Float32(sqrt(2))^2 - 2} is not zero in Julia.
 \end{exercise}
 \begin{solution}
-    The exact binary representation of $x := \sqrt{2}$ is
+    The exact binary representation of $x := \sqrt{2}$, found using the \julia{bitstring} in the \julia{Float64} format,
+    is given by
     \begin{align*}
         x
         &= (\underbrace{1.01101010000010011110011}_{\text{24 bits}}001100\dots)_2.
@@ -1028,8 +1030,8 @@ such as \julia{2^64} evaluating to 0.
     The first task is to determine the member of $\floating_{32}$ that is nearest $x$.
     We have
     \begin{align*}
-        x^- &= \max \bigl\{x: x \in \floating_{32} \text{ and } x \leq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110011}_{\text{24 bits}})_2 \\
-        x^+ &= \min \bigl\{x: x \in \floating_{32} \text{ and } x \geq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110100}_{\text{24 bits}})_2,
+        x^- &:= \max \bigl\{x: x \in \floating_{32} \text{ and } x \leq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110011}_{\text{24 bits}})_2 \\
+        x^+ &:= \min \bigl\{x: x \in \floating_{32} \text{ and } x \geq \sqrt{2}\bigr\} = (\underbrace{1.01101010000010011110100}_{\text{24 bits}})_2,
     \end{align*}
     and we calculate
     \begin{align*}
@@ -1229,10 +1231,10 @@ such as \julia{2^64} evaluating to 0.
         julia> bitstring(log(7))[13:end]
         "1111001000100111001010101110001100100101101001010111"
     \end{minted}
-    Therefore,
+    Therefore, since \julia{exponent(log(7))} returns 0, we have
     \begin{equation}
         \label{eq:log7_in_binary}
-        \log(7) = (\underbrace{1.1111001000}_{\text{11 bits}}100111001010101110001100100101101001010111...)_2
+        \log(7) = (\underbrace{1.1111001000}_{\text{11 bits}}10011100101010111000110010010110100101011...)_2
     \end{equation}
     The number returned by the command \julia{log(Float16(7))}
     is given by ${\rm fl}_{16}\bigl(\log(7)\bigr)$,
@@ -1260,7 +1262,7 @@ such as \julia{2^64} evaluating to 0.
     Therefore,
     \[
         \exp(1.9462890625)
-        = 2^2 (\underbrace{1.1100000000}_{\text{11 bits}}101011011101110000111000100001100010001110...)_2,
+        = 2^2 (\underbrace{1.1100000000}_{\text{11 bits}}1010110111011100001110001000011000100011...)_2,
     \]
     and, rounding to 11 bits,
     we finally obtain

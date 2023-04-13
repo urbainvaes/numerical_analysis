@@ -529,30 +529,30 @@ notice that for any $\mu \neq 0$ it holds that
     there exists a nontrivial solution $\vect v$ to the last equation if and only if
     \[
         p_{\mathcal G}(\lambda) := \det (\mat N_{\mathcal G} - \lambda \mat M_{\mathcal G})
-        = - \det (\lambda \mat L + \lambda \mat D + \mat U) = 0.
+        = \det (-\lambda \mat L - \lambda \mat D - \mat U) = 0.
     \]
     Likewise, $\lambda$ is an eigenvalue of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ if and only if
     \[
         p_{\mathcal J}(\lambda) := \det (\mat N_{\mathcal J} - \lambda \mat M_{\mathcal J})
-        = - \det (\mat L + \lambda \mat D + \mat U) = 0.
+        = \det (-\mat L - \lambda \mat D - \mat U) = 0.
     \]
-    Now notice that
+    Now notice that, for $\lambda \neq 0$,
     \[
         p_{\mathcal G}(\lambda^2)
-        = - \det \bigl(\lambda^2 \mat L + \lambda^2 \mat D + \mat U\bigr)
-        = - \lambda^n \det \bigl(\lambda \mat L + (\lambda \mat D) + \lambda^{-1} \mat U\bigr).
+        = \det \bigl(-\lambda^2 \mat L - \lambda^2 \mat D - \mat U\bigr)
+        = \lambda^n \det \bigl(-\lambda \mat L - \lambda \mat D - \lambda^{-1} \mat U\bigr).
     \]
     Applying~\eqref{eq:preliminary_equation} with $\mu = \lambda \neq 0$,
     we deduce
     \[
         p_{\mathcal G}(\lambda^2)
-        = - \lambda^n \det \bigl(\mat L + \lambda \mat D + \mat U\bigr)
+        =  \lambda^n \det \bigl(-\mat L - \lambda \mat D - \mat U\bigr)
         = \lambda^n p_{\mathcal J}(\lambda)
     \]
     It is clear that this relation is true also if $\lambda = 0$.
     Consequently, it holds that if $\lambda$ is an eigenvalue of the matrix $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$ then
     $\lambda^2$ is an eigenvalue of $\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$.
-    Conversely, if $\lambda$ is an eigenvalue of~$\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$,
+    Conversely, if $\lambda$ is a nonzero eigenvalue of~$\mat M_{\mathcal G}^{-1} \mat N_{\mathcal G}$,
     then the two square roots of $\lambda$ are eigenvalues of $\mat M_{\mathcal J}^{-1} \mat N_{\mathcal J}$.
 \end{proof}
 
@@ -887,16 +887,16 @@ Letting $\vect x^{(k)} = \mat T \vect y^{(k)}$,
 this equation can be rewritten as the following iteration:
 \[
     \vect x^{(k+1)} = \vect x^{(k)} - \widetilde \omega_k \vect d_k,
-    \qquad \widetilde \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}, \qquad \vect d_k = \mat T^{\t} \mat T (\mat A \vect x^{(k)} - \vect b).
+    \qquad \widetilde \omega_k = \frac{\vect d_k^\t \vect r^{(k)}}{\vect d_k^\t \mat A \vect d_k}, \qquad \vect d_k = \mat T \mat T^{\t} (\mat A \vect x^{(k)} - \vect b).
 \]
 A comparison with~\eqref{eq:linear_optimal_step_size_steepest_descent} shows that the step size $\widetilde \omega_k$ is such that $f(\vect x^{(k+1)})$ is minimized.
-This reasoning shows that the preconditioned conjugate gradient method amounts to choosing the direction~$\vect d^{(k)} = \mat T \mat T^{\t} \vect r^{(k)}$ at each iteration,
+This reasoning shows that the preconditioned conjugate gradient method amounts to choosing the direction~$\vect d_k = \mat T \mat T^{\t} \vect r^{(k)}$ at each iteration,
 instead of just $\vect r^{(k)}$,
 as is apparent in \cref{algo:preconditioned_steepest_descent_method}.
-It is simple to check that $- \vect d^{(k)}$ is a descent direction for $f$:
+It is simple to check that $- \vect d_k$ is a descent direction for $f$:
 \[
-    -\nabla f(\vect x)^\t \bigl(\mat T^\t \mat T (\mat A \vect x - \vect b)\bigr) =
-    -\bigl(\mat T (\mat A \vect x - \vect b)\bigr)^\t \bigl(\mat T (\mat A \vect x - \vect b)\bigr) \leq 0.
+    -\nabla f(\vect x)^\t \bigl(\mat T \mat T^\t (\mat A \vect x - \vect b)\bigr) =
+    -\bigl(\mat T^\t (\mat A \vect x - \vect b)\bigr)^\t \bigl(\mat T^\t (\mat A \vect x - \vect b)\bigr) \leq 0.
 \]
 \begin{algorithm}[ht]
 \caption{Preconditioned steepest descent method}%
@@ -1096,7 +1096,7 @@ Indeed, it holds that
     \label{eq:orthogonality_residual}
     \forall j \in \{0, \dotsc, k-1\}, \qquad
     \vect d_j^\t \vect r^{(k)} = \vect d_j \mat A (\vect x^{(k)} - \vect x_*)
-    = \sum_{i=k}^{n-1} \alpha_i \vect d_j^\t \vect d_i = 0.
+    = \sum_{i=k}^{n-1} \alpha_i \vect d_j^\t \mat A \vect d_i = 0.
 \end{equation}
 
 \subsubsection{The conjugate gradient method}%
