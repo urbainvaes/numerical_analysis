@@ -825,6 +825,21 @@ We are now able to prove the convergence of the steepest descent method.
 \end{algorithmic}
 \end{algorithm}
 
+\begin{remark}
+    The attentive reader will have noticed that the rate of convergence rate of the steepest descent method is not apparently better than that of Richardson's method with optimal~$\omega$;
+    in both cases, some upper bound on the norm of the error is multiplied by
+    \[
+        \frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}
+    \]
+    at each iteration.
+    For the steepest descent method, this rate of convergence is always guaranteed,
+    but for Richardson's method, this rate of convergence holds only for the optimal value of $\omega$,
+    which itself depends on the conditioning of~$\kappa_2(\mat A)$ and is computationally expensive to approximate.
+    Indeed, as we shall see in~\cref{cha:numerical_computation_of_eigenvalues},
+    the simplest method for calculating the smallest eigenvalue of a matrix, 
+    which is necessary for estimating the condition number, requires to solve linear systems with matrix~$\mat A$.
+\end{remark}
+
 \subsubsection{Preconditioned steepest descent}%
 \label{ssub:preconditioned_steepest_descent}
 We observe from \cref{theorem:linear_convergenec_steepest_descent} that the convergence of the steepest descent method is faster when
