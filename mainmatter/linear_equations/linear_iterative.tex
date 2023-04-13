@@ -905,7 +905,7 @@ It is simple to check that $- \vect d_k$ is a descent direction for $f$:
 \State Pick $\varepsilon$, invertible $\mat T$ and initial $\vect x$%
 \State $\vect r \gets \mat A \vect x - \vect b$%
 \While{$\norm{\vect r} \geq \varepsilon \norm{\vect b}$}
-    \State $\vect d \gets \mat T^\t \mat T \vect r$
+    \State $\vect d \gets \mat T \mat T^\t \vect r$
     \State $\omega \gets \vect d^\t \vect r/\vect d^\t \mat A \vect d$
     \State $\vect x \gets \vect x - \omega \vect d$
     \State $\vect r \gets \mat A \vect x - \vect b$
