@@ -836,7 +836,7 @@ We are now able to prove the convergence of the steepest descent method.
     but for Richardson's method, this rate of convergence holds only for the optimal value of $\omega$,
     which itself depends on the conditioning of~$\kappa_2(\mat A)$ and is computationally expensive to approximate.
     Indeed, as we shall see in~\cref{cha:numerical_computation_of_eigenvalues},
-    the simplest method for calculating the smallest eigenvalue of a matrix, 
+    the simplest method for calculating the smallest eigenvalue of a matrix,
     which is necessary for estimating the condition number, requires to solve linear systems with matrix~$\mat A$.
 \end{remark}
 
@@ -1083,8 +1083,8 @@ the conjugate directions method also satisfies the following stronger property.
     \cref{proposition:optimality_conjugate_directions} shows that $\vect x^{(k)}$ minimizes the norm~$\norm{\vect x^{(k)} - \vect x_*}_{\mat A}$
     over $\vect x^{(0)} + \mathcal  B_k$.
     This is not surprising since,
-    by construction, the vector $\vect x^{(k)} - \vect x_*$ is the orthogonal projection
-    of $\vect x^{(0)} - \vect x_*$ onto $\mathcal B_k^\perp$,
+    by construction, the vector $\vect x^{(k)} - \vect x^{(0)}$ is the orthogonal projection
+    of~$\vect x_* - \vect x^{(0)}$ onto $\mathcal B_k$,
     for the inner product $\ip{\placeholder,\placeholder}_{\mat A}$.
     % Equation~\eqref{eq:series_expansion_of_y} shows that $\vect x^{(k)} - \vect x^{(0)}$ is the orthogonal projection,
     % with respect to the inner product $(\vect x, \vect y) \mapsto \vect x^\t \mat A \vect y$,
