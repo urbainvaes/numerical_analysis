@@ -442,22 +442,21 @@ it follows that~$\mat X_k$ can be obtained by~$\mat Q \mat R$ factorization of $
 In order to show the convergence of the simultaneous iteration,
 we begin by proving the following preparatory lemma.
 \begin{lemma}
-    [Continuity of the QR decomposition]
+    [Continuity of the reduced QR decomposition]
     \label{lemma:continuity_qr}
     If $\mat Q_k \mat R_k \to \mat Q \mat R$,
-    where $\mat Q$ is orthogonal and~$\mat R$ is upper triangular with positive real entries on the diagonal,
+    where $\mat Q \in \complex^{n\times p}$ has orthonormal columns and~$\mat R \in \complex^{p\times p}$ is upper triangular with positive real entries on the diagonal,
     then $\mat Q_k \to \mat Q$.
 \end{lemma}
 \begin{proof}
     We reason by contradiction and assume
     there is $\varepsilon > 0$ and a subsequence $(\mat Q_{k_n})_{n\geq 0}$ such that $\norm{\mat Q_{k_n} - \mat Q} \geq \varepsilon$ for all~$n$.
-    Since the set of unitary matrices is a compact subset of $\mat C^{n \times n}$,
+    Since the set of matrices with normalized columns is a compact subset of $\mat C^{n \times p}$,
     there exists a further subsequence $(\mat Q_{k_{n_m}})_{m\geq 0}$ that converges to a limit $\mat Q_{\infty}$
-    which is also a unitary matrix and at least $\varepsilon$ away in norm from $\mat Q$.
+    which also has orthonormal columns and is at least $\varepsilon$ away in norm from $\mat Q$.
     But then
     \[
         \mat R_{k_{n_m}}
-        = \mat Q_{k_{n_m}}^{-1} (\mat Q_{k_{n_m}} \mat R_{k_{n_m}})
         = \mat Q_{k_{n_m}}^* ( \mat Q_{k_{n_m}} \mat R_{k_{n_m}})
         \xrightarrow[m \to \infty]{} \mat Q_{\infty}^* (\mat Q \mat R) =: \mat R_{\infty}.
     \]
@@ -493,7 +492,7 @@ see~\cite{MR3396212} for more information.
     If it holds that
     \begin{equation}
         \label{eq:order_eigenvalues}
-        \lambda_1 > \lambda_2 > \dotsb > \lambda_p > \lambda_{p+1} \geq \lambda_{p+2} \geq \dotsc \geq \lambda_n,
+        \lvert \lambda_1 \rvert > \lvert \lambda_2 \rvert > \dotsb > \lvert \lambda_p \rvert > \lvert \lambda_{p+1} \rvert \geq \lvert \lambda_{p+2} \rvert \geq \dotsc \geq \lvert \lambda_n \rvert,
     \end{equation}
     then $\mat X_k$ converges \emph{essentially} to $\mat V_1 := \begin{pmatrix} \vect v_1 & \hdots & \vect v_p \end{pmatrix}$.
 \end{theorem}
@@ -556,7 +555,6 @@ see~\cite{MR3396212} for more information.
     The second term in the bracket on the right-hand side converges to zero in the limit as $k \to \infty$ by~\eqref{eq:order_eigenvalues}.
     Let $\widetilde{\mat Q_k} \widetilde {\mat R_k}$~denote the reduced $\mat Q \mat R$ decomposition of the bracketed term.
     By~\cref{lemma:continuity_qr},
-    which we proved for the standard $\mat Q \mat R$ decomposition but also holds for the reduced one,
     we deduce from $\widetilde{\mat Q_k} \widetilde{\mat R_k} \to \mat V_1$ that $\widetilde{\mat Q_k} \to \mat V_1$.
     Rearranging~\eqref{eq:factorization},
     we have
@@ -568,13 +566,13 @@ see~\cite{MR3396212} for more information.
     Denoting by $\mat Q_k \mat R_k$ the $\mat Q \mat R$ decomposition of~$\mat A_k \mat X_0$,
     we therefore have~$\col(\mat Q_k) = \col(\widetilde {\mat Q_k})$,
     and so the projectors on these subspaces are equal.
-    We recall that, for a set of orthonormal vectors $\vect r_1, \dotsc, \vect r_p$
-    gathered in a matrix $\mat R = \begin{pmatrix} \vect r_1 & \hdots & \vect r_p \end{pmatrix}$,
-    the projector on $\col(\mat R) = \Span \{\vect r_1, \dotsc, \vect r_p \} \subset \complex^n$
+    We recall that, for a set of orthonormal vectors $\vect y_1, \dotsc, \vect y_p$
+    gathered in a matrix $\mat Y = \begin{pmatrix} \vect y_1 & \hdots & \vect y_p \end{pmatrix}$,
+    the projector on $\col(\mat Y) = \Span \{\vect y_1, \dotsc, \vect y_p \} \subset \complex^n$
     is the square $n \times n$ matrix
     \[
-        \mat R \mat R^*
-        = \vect r_1 \vect r_1^* + \dotsb + \vect r_p \vect r_p^*.
+        \mat Y \mat Y^*
+        = \vect y_1 \vect y_1^* + \dotsb + \vect y_p \vect y_p^*.
     \]
     Consequently,
     the equality of the projectors implies
@@ -585,13 +583,13 @@ see~\cite{MR3396212} for more information.
     To this end, we reason by induction,
     relying on the fact that the first $k$ columns of $\mat X_0$ undergo a simultaneous iteration independent of the other columns.
     For example, the first column simply undergoes a power iteration, and so it converges essentially to~$\vect v_1$.
-    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge essentially to $\vect v_1, \dotsc, \vect v_{p-1}$.
+    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge essentially to~$\vect v_1, \dotsc, \vect v_{p-1}$.
     Then the $p$-th column of $\mat Q_k$ at iteration $k$,
     which we denote by~$\vect q_p^{(k)}$,
     satisfies
     \begin{align*}
         \vect q_p^{(k)} {\vect q_p^{(k)}}^* &= \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^*
-        = \widetilde{\mat Q}_k \widetilde{\mat Q}_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^* \\
+        = \widetilde{\mat Q_k} \widetilde{\mat Q_k}^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^* \\
         &\xrightarrow[k \to \infty]{} \mat V_1 \mat V_1^* - \vect v_1 \vect v_1^* - \dotsb - \vect v_{p-1} \vect v_{p-1}^* = \vect v_p \vect v_p^{*}.
     \end{align*}
     Therefore, noting that $\abs{a} = \sqrt{a \overline a}$ for every $a \in \complex$,
