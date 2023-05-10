@@ -216,10 +216,10 @@ in the limit as $k \to \infty$.
 \paragraph{Essential convergence.}
 It is useful at this point to introduce the concept of \emph{essential convergence}.
 A sequence~$(\vect x_k)$ in $\complex^n$ is said to \emph{converge essentially} to a vector~$\vect x_{\infty}$ if
-there exists a sequence of complex numbers~$\left(\e^{\i \phi_k}\right)$ such that
+there exists a sequence of complex numbers~$\left(\e^{\i \phi_k}\right)$ of modulus 1 such that
 the sequence $\left( \e^{\i \phi_k} \vect x_k \right)$ converges to $\vect x_{\infty}$.
-Equivalently, the sequence~$(\vect x_k)$ converges essentially to $\vect x_{\infty}$ if
-$\angle(\vect x_k, \vect x_{\infty})$ converges to 0.
+For a sequence $(\vect x_k)$ of normalized vectors,
+the essential convergence of $(\vect x_k)$ to $\vect x_{\infty}$ is equivalent to the convergence of $\angle(\vect x_k, \vect x_{\infty})$ to 0.
 Proving this equivalence is the goal of~\cref{exercise:essential_convergence}.
 Reformulated in this new terminology,
 \cref{proposition:convergence_of_the_power_iteration} states that the sequence~$(\vect x_k)$ obtained from the power iteration converges essentially to $\vect v_1$.
