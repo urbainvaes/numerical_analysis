@@ -577,33 +577,43 @@ see~\cite{MR3396212} for more information.
     Consequently,
     the equality of the projectors implies
     \(
-        \mat Q_k \mat Q_k^* = \widetilde{\mat Q_k} \widetilde {\mat Q_k}^*.
+        \mat Q_k \mat Q_k^* = \widetilde{\mat Q_k} \widetilde {\mat Q_k}^*,
     \)
-    Now, we want to establish the essential convergence of $\mat Q_k$ to $\mat V_1$.
-    To this end, we reason by induction,
-    relying on the fact that the first $k$ columns of $\mat X_0$ undergo a simultaneous iteration independent of the other columns.
-    For example, the first column simply undergoes a power iteration, and so it converges essentially to~$\vect v_1$.
-    Assume now that the columns 1 to $p-1$ of $\mat Q_k$ converge essentially to~$\vect v_1, \dotsc, \vect v_{p-1}$.
-    Then the $p$-th column of $\mat Q_k$ at iteration $k$,
-    which we denote by~$\vect q_p^{(k)}$,
-    satisfies
+    and so $\mat Q_k \mat Q_k^* \to \mat V_1 \mat V_1^*$.
+    Similarly, noting that $\mat Q_k\texttt{[:,1:i]} \mat R\texttt{[1:i,1:i]}$ is the $\mat Q \mat R$ decompostion of the matrix $\mat A^k \mat X_0\texttt{[:,1:i]}$ for all~$i \in \{1, \dotsc, p\}$,
+    we obtain the convergence
+    \begin{equation}
+        \label{eq:convergence_projectors}
+        \forall i \in \{1, \dotsc, p\}, \qquad
+        \mat Q_k\texttt{[:,1:i]} \mat Q_k\texttt{[:,1:i]}^* \xrightarrow[k\to \infty]{} \vect v_1 \vect v_1^* + \dotsb + \vect v_{i} \vect v_{i}^*.
+    \end{equation}
+    This is not surprising given that the first $k$ columns of $\mat X_0$ undergo a simultaneous iteration independent of the other columns.
+
+    Next, we establish the essential convergence of $\mat Q_k$ to $\mat V_1$.
+    To this end, we denote the columns of $\mat Q_k$ by $\vect q_1^{(k)}, \dotsc, \vect q_p^{(k)}$ and first show by induction that
+    $\vect q_i^{(k)} {\vect q_i^{(k)}}^* \to \vect v_i \vect v_i^*$ in the limit~$k \to \infty$.
+    For~$i = 1$ this follows from~\eqref{eq:convergence_projectors}.
+    Assume now that $\vect q_{\placeholder}^{(k)} {\vect q_{\placeholder}^{(k)}}^* \to \vect v_{\placeholder} \vect v_{\placeholder}^*$ for $\placeholder$ up to~$i-1$.
+    Then
     \begin{align*}
-        \vect q_p^{(k)} {\vect q_p^{(k)}}^* &= \mat Q_k \mat Q_k^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^*
-        = \widetilde{\mat Q_k} \widetilde{\mat Q_k}^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{p-1}^{(k)} {\vect q_{p-1}^{(k)}}^* \\
-        &\xrightarrow[k \to \infty]{} \mat V_1 \mat V_1^* - \vect v_1 \vect v_1^* - \dotsb - \vect v_{p-1} \vect v_{p-1}^* = \vect v_p \vect v_p^{*}.
+        \vect q_{i}^{(k)} {\vect q_{i}^{(k)}}^*
+        &= \mat Q_k \texttt{[:,1:i]} \mat Q_k \texttt{[:,1:i]}^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{i-1}^{(k)} {\vect q_{i-1}^{(k)}}^* \\
+        &\xrightarrow[k \to \infty]{} \mat V_1\texttt{[:,1:i]} \mat V_1\texttt{[:,1:i]}^* - \vect v_1 \vect v_1^* - \dotsb - \vect v_{i-1} \vect v_{i-1}^* = \vect v_{i} \vect v_{i}^{*}.
     \end{align*}
-    Therefore, noting that $\abs{a} = \sqrt{a \overline a}$ for every $a \in \complex$,
-    we deduce
+    It remains to show that $\vect q_i^{(k)} {\vect q_i^{(k)}}^* \to \vect v_i \vect v_i^*$ implies the desired essential convergence.
+    Noting that~$\abs{a} = \sqrt{a \overline a}$ for every $a \in \complex$,
+    we have
     \[
-        \abs{\vect v_p^* \vect q_p^{(k)}} = \sqrt{\vect v_p^* \vect q_p^{(k)} {\vect q_p^{(k)}}^* \vect v_p} \xrightarrow[k \to \infty]{} \sqrt{\vect v_p^* \vect v_p \vect v_p^* \vect v_p} = 1,
+        \abs{\vect v_i^* \vect q_i^{(k)}} = \sqrt{\vect v_i^* \vect q_i^{(k)} {\vect q_i^{(k)}}^* \vect v_i}
+        \xrightarrow[k \to \infty]{} \sqrt{\vect v_i^* \vect v_i \vect v_i^* \vect v_i} = 1,
     \]
-    which shows that $\angle(\vect q_p^{(k)}, \vect v_p)$ converges to 0.
     Finally, observing that
     \[
-        \norm*{\e^{- i \theta_k}\vect q_p^{(k)} - \vect v_p}^2 = 2 - 2 \abs{\vect v_p^* \vect q_p^{(k)}} \xrightarrow[k \to \infty]{} 0, \qquad
-        \theta_k = \frac{\vect v_p^* \vect q_p^{(k)}}{\abs{\vect v_p^* \vect q_p^{(k)}}},
+        \norm*{\e^{-\i \theta_k}\vect q_i^{(k)} - \vect v_i}^2
+        = 2 - 2 \abs{\vect v_i^* \vect q_i^{(k)}} \xrightarrow[k \to \infty]{} 0, \qquad
+        \e^{\i\theta_k} = \frac{\vect v_i^* \vect q_i^{(k)}}{\abs{\vect v_i^* \vect q_i^{(k)}}},
     \]
-    we conclude that $\vect q_p^{(k)}$ converges essentially to $\vect v_p$.
+    we conclude that $\vect q_i^{(k)}$ converges essentially to $\vect v_i$.
 \end{proof}
 
 In addition to this convergence result,
@@ -832,7 +842,7 @@ we deduce that
     &= \max_{\mathcal R \subset \mathcal U, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right)
     \leq \max_{\mathcal R \subset \complex^n, {\rm dim}(\mathcal R) = i} \left( \min_{\vect y \in \mathcal R \backslash\{0\}} \frac{\vect y^* \mat A \vect y}{\vect y^* \vect y} \right) = \lambda_i,
 \end{align*}
-where we used the Courant--Fisher for the matrix~$\mat A$ in the last equality.
+where we used the Courant--Fisher theorem for the matrix~$\mat A$ in the last equality.
 \end{proof}
 
 This projection approach is sometimes combined with a simultaneous subspace iteration:
