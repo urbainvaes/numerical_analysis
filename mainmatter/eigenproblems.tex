@@ -600,7 +600,7 @@ see~\cite{MR3396212} for more information.
         &= \mat Q_k \texttt{[:,1:i]} \mat Q_k \texttt{[:,1:i]}^* - \vect q_1^{(k)} {\vect q_1^{(k)}}^* - \dotsb - \vect q_{i-1}^{(k)} {\vect q_{i-1}^{(k)}}^* \\
         &\xrightarrow[k \to \infty]{} \mat V_1\texttt{[:,1:i]} \mat V_1\texttt{[:,1:i]}^* - \vect v_1 \vect v_1^* - \dotsb - \vect v_{i-1} \vect v_{i-1}^* = \vect v_{i} \vect v_{i}^{*}.
     \end{align*}
-    It remains to show that $\vect q_i^{(k)} {\vect q_i^{(k)}}^* \to \vect v_i \vect v_i^*$ implies the desired essential convergence.
+    It remains to show that the convergence $\vect q_i^{(k)} {\vect q_i^{(k)}}^* \to \vect v_i \vect v_i^*$ implies the desired essential convergence.
     Noting that~$\abs{a} = \sqrt{a \overline a}$ for every $a \in \complex$,
     we have
     \[
@@ -800,6 +800,12 @@ we can show the following more general statement.
     But then $(\mat Q \vect x, \widehat \lambda) = (\mat U \vect y, \widehat \lambda)$ is an eigenpair of~$\mat A$,
     which proves the statement.
 \end{proof}
+\begin{remark}
+    \Cref{proposition:invariant_subpsace_ritz} can be proved more directly from~\eqref{eq:equivalent_rayleigh_ritz} by noting that,
+    if~$\mathcal U$ is an invariant subspace of~$\mat A$,
+    then this equation implies that $\mat A \vect v - \lambda \vect v$ belongs to both $\mathcal U$ and its orthogonal complement $\mathcal U^\perp$,
+    and so this vector is $\vect 0$.
+\end{remark}
 
 If $\mathcal U$ is close to being an invariant subspace of~$\mat A$,
 then it is expected that the Ritz vectors and Ritz values of~$\mat A$ relative to~$\mathcal U$ will provide good approximations of some of the eigenpairs of~$\mat A$.
