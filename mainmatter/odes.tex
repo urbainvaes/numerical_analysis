@@ -133,9 +133,9 @@ and begin by establishing existence of a local solution.
     it holds that
     \[
         \forall (\vect x, \vect y) \in \mathcal X \times \mathcal X, \qquad
-        \norm{\Phi(\vect x) - \Phi(\vect y)} \leq 2 L T.
+        \norm{\Phi(\vect x) - \Phi(\vect y)} \leq L T \norm{\Phi(\vect x) - \Phi(\vect y)}.
     \]
-    Therefore, it suffices to take $T \leq \min \left\{ \mathcal T, \frac{\mathcal R}{M}, \frac{2}{L} \right\}$ to ensure that the above conditions are satisfied.
+    Therefore, it suffices to take $T < \min \left\{ \mathcal T, \frac{\mathcal R}{M}, \frac{1}{L} \right\}$ to ensure that the above conditions are satisfied.
     For a value of~$T$ in this range,
     the Banach fixed point theorem, \cref{theorem:banach_fixed_point},
     gives the existence of a unique fixed point~$\vect x_* \in \mathcal X$ of~$\Phi$.
