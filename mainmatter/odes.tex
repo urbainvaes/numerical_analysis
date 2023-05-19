@@ -244,7 +244,7 @@ We are now ready to prove uniqueness under an appropriate condition.
     [Maximal solutions]
     \label{corollary:maximal_solutions}
     Assume that $\vect f$ is continuous in~$t$ and satisfies the local Lipschitz condition~\eqref{eq:local_lipschitz_uniqueness}.
-    Then there exists $0 \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
+    Then there exists $- \infty \leq T_- < T_+ \leq \infty$ such that $t_0 \in (T_-, T_+)$ and
     the following properties are satisfied.
     \begin{itemize}
         \item
@@ -266,7 +266,7 @@ We are now ready to prove uniqueness under an appropriate condition.
     The open set $\mathcal I$ is connected and, by~\cref{theorem:existence},
     it contains a neighborhood of~$t_0$.
     Therefore $\mathcal I$ is of the form $(T_-, T_+)$,
-    where $0 \leq T_- <  t_0 < T_+ \leq \infty$.
+    where $-\infty \leq T_- <  t_0 < T_+ \leq \infty$.
     In view of~\cref{theorem:uniqueness},
     all the local solutions coincide where they are defined,
     and so they can be patched together in order to construct a solution~$\vect x_*\colon (T_-, T_+) \to \real$.
@@ -312,7 +312,7 @@ We are now ready to prove uniqueness under an appropriate condition.
     \]
     The maximal solution is $x_* \colon (-\infty, 1) \to \real$ given by
     \[
-        \vect x_*(t) = \sqrt{\frac{1}{1-t}}.
+        \vect x_*(t) = \frac{1}{1-t}.
     \]
 \end{example}
 
