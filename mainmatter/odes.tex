@@ -451,15 +451,22 @@ The convergence of this method can be proved under a global Lipschitz assumption
     \end{equation}
 \end{theorem}
 \begin{proof}
-    Notice that
+    By Taylor's theorem,
+    it holds that
+    \[
+        \vect x(t_{n}) = \vect x(t_{n-1}) + \Delta \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect \alpha_n,
+        \qquad
+        \vect \alpha_n := 2 \int_{0}^{1} (1 - s) \vect x''(t_n + \Delta s) \, \d s.
+    \]
+    Notice that that $\norm {\vect \alpha_n} \leq M.$
+    Therefore, it holds that
     \begin{align*}
         \vect x(t_{n}) - \vect x_{n}
-        &= \left( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n) \right)
+        &= \left( \vect x(t_{n-1}) + \Delta \, \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) + \frac{\Delta^2}{2} \vect \alpha_n \right)
         - \Bigl( \vect x_{n-1} + \Delta \, \vect f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) \\
-        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - \vect f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect x''(\tau_n),
+        &= \bigl(\vect x(t_{n-1}) - \vect x_{n-1}\bigr) + \Delta \Bigl( \vect f\bigl(t_{n-1}, \vect x(t_{n-1})\bigr) - \vect f\bigl(t_{n-1}, \vect x_{n-1}\bigr) \Bigr) + \frac{\Delta^2}{2} \vect \alpha_n,
     \end{align*}
-    for some $\tau_n \in (t_{n-1}, t_n)$.
-    Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect x''(\tau_n)$.
+    Let $\vect e_n = \vect x(t_n) - \vect x_n$ and $\vect \varepsilon_n = \frac{\Delta^2}{2} \vect \alpha_n$.
     The first term is the error at iteration~$n-1$,
     and the second may be bounded from~\eqref{eq:global_lipschitz},
     which gives
@@ -499,8 +506,7 @@ instead of forward around~$t$,
 then we obtain
 \[
     \label{eq:taylor_backward}
-    \vect x(t) = \vect x(t + \Delta) - \Delta \vect f(t + \Delta, \vect x) + \frac{\Delta^2}{2} \vect x''(\tau),
-    \qquad \tau \in (t, t+\Delta).
+    \vect x(t) = \vect x(t + \Delta) - \Delta \vect f(t + \Delta, \vect x) + \mathcal O(\Delta^2).
 \]
 This motivates the so-called \emph{backward} or \emph{implicit} Euler method:
 \begin{equation}
@@ -750,8 +756,7 @@ a Taylor expansion of higher order than~\eqref{eq:taylor_forward} can be employe
     + \Delta \vect x'(t)
     + \dotsb
     + \frac{\Delta^p}{p!} \vect x^{(p)}(t)
-    + \frac{\Delta^{p+1}}{(p+1)!} \vect x^{(p+1)}(\tau),
-    \qquad \tau \in (t, t + \Delta).
+    + \mathcal O(\Delta^{p+1}).
 \end{equation}
 Since $\vect x\colon [0, T] \to \real$ is a smooth solution to~\eqref{eq:ode} by assumption,
 the time derivatives of~$\vect x$ can be obtained by differentiation of~\eqref{eq:ode}:
@@ -937,10 +942,10 @@ over all the discretization points, in norm, scales as~$\bigo(\Delta^p)$.
 The following result is useful for estimating the order of consistency of a linear multistep method.
 \begin{proposition}
     The linear multistep method~\eqref{eq:linear_mulitstep} is consistent with order~$p$ for any smooth $\vect x\colon [0, T] \to \real^n$ if and only if
-    the local truncation error~\eqref{eq:truncation_multistep} is everywhere zero when~$\vect x(t)$ is of the form
+    the local truncation error~\eqref{eq:truncation_multistep} is everywhere zero when~$\vect x(t)$ is of the scalar form
     \begin{equation}
         \label{eq:polynomial_form}
-        \vect x(t) = \vect e t^{q}, \qquad q \in \{0, \dotsc, p\},  \qquad \vect e \in \real^n.
+        x(t) = t^{q}, \qquad q \in \{0, \dotsc, p\}.
     \end{equation}
 \end{proposition}
 % Before presenting the proof,
@@ -1063,7 +1068,7 @@ The value of these coefficients for the first few Adams--Bashforth methods are c
          \\ \hline \phantom{$\Big($}
              $k=0$ & $1$ & & &
          \\ \hline \phantom{$\Big($}
-             $k=1$ & $\frac{3}{4}$ & $-\frac{1}{4}$ & &
+             $k=1$ & $\frac{3}{2}$ & $-\frac{1}{2}$ & &
          \\ \hline \phantom{$\Big($}
              $k=2$ & $\frac{23}{12}$ & $-\frac{16}{12}$ & $\frac{5}{12}$ &
          \\ \hline \phantom{$\Big($}
