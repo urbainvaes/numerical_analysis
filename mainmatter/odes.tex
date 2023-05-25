@@ -953,19 +953,18 @@ The following result is useful for estimating the order of consistency of a line
 % Therefore, if the local truncation error is zero for any monomial~$\vect x(t)$,
 % then it is also zero for any polynomial
 \begin{proof}
-    Assume that the method is consistent with order~$p$, fix $q \in \{1, \dotsc, p\}$ and $\vect e \in \real^n$,
-    and let $\vect x(t) = \vect e t^{q}$.
-    Fix also $t \in [0, T]$ and consider the function $\vect \xi\colon \{\Delta : t/\Delta \in \nat_{> 0}\} \to \real^n$ given by
+    Assume that the method is consistent with order~$p$, fix $q \in \{1, \dotsc, p\}$,
+    and let $x(t) = t^{q}$.
+    Fix also $t \in [0, T]$ and consider the function $\xi\colon \{\Delta : t/\Delta \in \nat_{> 0}\} \to \real$ given by
     \begin{align*}
         \nonumber
-        \Delta \vect \xi(\Delta) = \Delta \vect \eta_{(t/\Delta) +1}
-            &= \vect x(t + \Delta) - a_1 \vect x(t) - a_2 \vect x(t - \Delta) - \dotsb - a_k \vect x\bigl(t - (k-1) \Delta\bigr) \\
-            & \qquad- \Delta \Bigl( b_0 \vect x'(t + \Delta) + b_1 \vect x'(t) + \dotsb + b_k \vect x'\bigl(t - (k-1) \Delta\bigr) \Bigr).
+        \Delta \xi(\Delta) = \Delta \eta_{(t/\Delta) +1}
+            &= x(t + \Delta) - a_1 x(t) - a_2 x(t - \Delta) - \dotsb - a_k x\bigl(t - (k-1) \Delta\bigr) \\
+            & \qquad- \Delta \Bigl( b_0 x'(t + \Delta) + b_1 x'(t) + \dotsb + b_k x'\bigl(t - (k-1) \Delta\bigr) \Bigr).
     \end{align*}
-    The quantity $\vect \xi(\Delta)$ should be understood as the local truncation error at~$t$ for time step $\Delta$.
-    Each entry of $\vect \xi$, viewed as a function of~$\Delta$,
-    is a polynomial of degree at most~$p$ scaling as~$\bigo(\Delta^{p+1})$.
-    Therefore, it holds necessarily that~$\vect \xi(\Delta) = 0$.
+    The quantity $\xi(\Delta)$ should be understood as the local truncation error at~$t$ for time step $\Delta$.
+    It is a polynomial in $\Delta$ of degree at most~$p$ and scaling as~$\bigo(\Delta^{p+1})$.
+    Therefore, it holds necessarily that~$\xi(\Delta) = 0$.
 
     Conversely, assume that the right-hand side of~\eqref{eq:truncation_multistep} is equal to zero for any function of the form~\eqref{eq:polynomial_form}.
     If~$\vect x(t)$ denotes a smooth solution of~\eqref{eq:ode},
