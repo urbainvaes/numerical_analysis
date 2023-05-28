@@ -79,7 +79,7 @@ and begin by establishing existence of a local solution.
     \[
         \bigl\{(t, \vect x) \in \real \times \real^n: \abs{t-t_0} \leq \mathcal T \text{ and } \vecnorm{\vect x - \vect x_0} \leq \mathcal R \bigr\},
     \]
-    Assume that the following conditions are satisfied:
+    Assume that the following conditions are satisfied for some $\mathcal T > 0$ and $\mathcal R > 0$:
     \begin{itemize}
         \item
             The function $\vect f$ is uniformly bounded on~$\Omega_{\mathcal T, \mathcal R}$:
@@ -834,11 +834,11 @@ Heun's method is a particular instance of a Runge--Kuta method.
 In general, an explicit Runge--Kutta method with~$s$ stages is of the form
 \begin{align*}
     \vect x_{n+1} &= \vect x_n + \Delta \sum_{i=1}^s b_i \vect k_i \\
-    \vect k_1 &= f(t_n, \vect x_n),  \\
-    \vect k_2 &= f\bigl(t_n + c_2 \Delta, \vect x_n+\Delta(a_{21} \vect k_1)\bigr), \\
-    \vect k_3 &= f\bigl(t_n + c_3 \Delta, \vect x_n+\Delta(a_{31} \vect k_1 + a_{32} \vect k_2)\bigr), \\
+    \vect k_1 &= \vect f(t_n, \vect x_n),  \\
+    \vect k_2 &= \vect f\bigl(t_n + c_2 \Delta, \vect x_n+\Delta(a_{21} \vect k_1)\bigr), \\
+    \vect k_3 &= \vect f\bigl(t_n + c_3 \Delta, \vect x_n+\Delta(a_{31} \vect k_1 + a_{32} \vect k_2)\bigr), \\
               &\;\;\vdots \\
-    \vect k_i &= f\left(t_n + c_i \Delta, \vect x_n + \Delta \sum_{j = 1}^{i-1} a_{ij} k_j\right),
+    \vect k_s &= \vect f\left(t_n + c_s \Delta, \vect x_n + \Delta \sum_{j = 1}^{s-1} a_{sj} \vect k_j\right),
 \end{align*}
 with appropriate coefficients $c_i$ and $a_{ij}$.
 Heun's iteration can be recast in this form as follows:
