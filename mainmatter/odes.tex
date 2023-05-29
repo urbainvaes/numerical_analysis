@@ -616,7 +616,7 @@ while for the backward Euler method, the function $\vect \Phi_{\Delta}$ is defin
 \subsubsection*{Local truncation error and consistency}%
 The local truncation error is the residual error obtained when substituting the exact solution of the differential equation in~\eqref{eq:general_one_step}:
 \[
-    \vect \eta_{n+1} := \frac{\vect x(t_{n+1}) - \vect x(t_n)}{\Delta} + \vect \Phi_{\Delta}\bigl(t_n, \vect x(t_n)\bigr).
+    \vect \eta_{n+1} := \frac{\vect x(t_{n+1}) - \vect x(t_n)}{\Delta} - \vect \Phi_{\Delta}\bigl(t_n, \vect x(t_n)\bigr).
 \]
 Since there is a division by~$\Delta$, the local truncation error has the same physical dimension as that of $\vect x'$,
 and so it should be viewed as an error \emph{per time unit}.
@@ -1298,7 +1298,7 @@ We provide a couple of motivations:
             \label{eq:multiscale_autonomous}
             \left\{
             \begin{aligned}
-                x'(t) &= f\bigl(x(t)\bigr), \\
+                x'(t) &= f\bigl(t, x(t)\bigr), \\
                 x(0) &= x_0 + \varepsilon,
             \end{aligned}
             \right.
@@ -1307,7 +1307,7 @@ We provide a couple of motivations:
             \qquad
             \left\{
             \begin{aligned}
-                x_{\varepsilon}'(t) &= f\bigl(x_{\varepsilon}(t)\bigr), \\
+                x_{\varepsilon}'(t) &= f\bigl(t, x_{\varepsilon}(t)\bigr), \\
                 x_{\varepsilon}(0) &= x_0 + \varepsilon,
             \end{aligned}
             \right.
@@ -1316,7 +1316,7 @@ We provide a couple of motivations:
         \begin{equation}
             \label{eq:ode_error_equation}
             \begin{aligned}
-                e'(t) &= f\bigl(x_{\varepsilon}(t)\bigr) - f\bigl(x(t)\bigr) \approx \partial_x f\bigl(t,x(t)\bigr) e(t), \\
+                e'(t) &= f\bigl(t, x_{\varepsilon}(t)\bigr) - f\bigl(t, x(t)\bigr) \approx \partial_x f\bigl(t,x(t)\bigr) e(t), \\
                 e(0) &= \varepsilon,
             \end{aligned}
         \end{equation}
