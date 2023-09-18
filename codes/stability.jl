@@ -62,6 +62,7 @@ Plots.contour!(x, y, fun_plot, color=:green, levels=[1])
 Plots.vline!([0], color=:gray) 
 Plots.hline!([0], color=:gray) 
 Plots.plot!(xlims=xlims, ylims=ylims)
+
 Plots.savefig("stability_$name.pdf")
 
 for key in keys(fun)
