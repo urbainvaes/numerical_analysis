@@ -2,9 +2,11 @@ import Plots
 using LaTeXStrings
 Plots.resetfontsizes()
 Plots.scalefontsizes(1.5)
-Plots.default(titlefont = ("computer modern"),
-              legendfont = ("computer modern"),
-              linewidth = 2)
+Plots.default(titlefont = "computer modern",
+              legendfont = "computer modern",
+              linewidth = 2,
+              top_margin=20Plots.mm, 
+              bottom_margin=20Plots.mm)
 
 eps_64 = eps(Float64)
 exp_min, exp_max = -4, 4
@@ -19,7 +21,7 @@ successors_32 = nextfloat.(x_32)
 distance_32 = successors_32 - x_32
 
 Plots.plot(x_64, distance_64, label=L"\Delta(x)~\mathrm{(Float64)}")
-Plots.plot!(xaxis=:log, yaxis=:log, top_margin=2Plots.mm, bottom_margin=2Plots.mm, size=(900,450))
+Plots.plot!(xaxis=:log, yaxis=:log, size=(900,450))
 Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i in exp_min:exp_max])
 Plots.title!("Absolute spacing between Float64 numbers")
 Plots.xlabel!(L"x")
