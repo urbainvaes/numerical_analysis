@@ -1,12 +1,13 @@
 import BandedMatrices
 import LinearAlgebra
+using BenchmarkTools
 
 function cholesky1(A)
     _, n = size(A)
     C = copy(LinearAlgebra.LowerTriangular(A))
     b = A.u
     for i ∈ 1:n, j ∈ max(1, i-b):i
-        C[i, j] -= C[i, max(1, i-b):j-1]'C[j, max(1, i-b):j-1]
+        C[i, j] -= @view C[i, max(1, i-b):j-1]'C[j, max(1, i-b):j-1]
         C[i, j] = (j < i) ? C[i, j] / C[j, j] : sqrt(C[i, j])
     end
     return C
@@ -33,11 +34,11 @@ function cholesky2(A)
     return C
 end
 
-n, l, u = 20000, 2, 2;
+n, l, u = 2000, 2, 2;
 A = BandedMatrices.brand(n, l, u);
 A = A'*A;
 
-C = @time cholesky1(A);
+@belapsed cholesky1(A)
 C = @time cholesky2(A);
 
 
