@@ -747,6 +747,12 @@ Specifically, we prove that the integration nodes are given by the roots of a Le
 
 Since the integration weights are all positive,
 the Gauss--Legendre quadrature rules are less susceptible to roundoff errors than the Newton--Cotes methods.
+In addition, we have the following result.
+
+\begin{theorem}
+    If $u \in C([-1, 1])$,
+    then
+\end{theorem}
 
 \paragraph{Computation of the integration nodes.}
 We proved that the integration nodes are given by the roots of the Legendre polynomials.
@@ -1165,6 +1171,42 @@ is a $(1 - \alpha)$ confidence interval for $I$.
     \caption{Example solution for~\cref{exercise:hyperballs}.}%
     \label{fig:hyperballs}
 \end{figure}
+
+\begin{compexercise}
+    Complete the following tasks:
+    \begin{itemize}
+        \item
+            Write a function \julia{legendre(n)} which returns the Legendre polynomial of degree~$n$.
+            To this end, you may use the \julia{Polynomials} library and Rodrigues' formula:
+            \[
+                L_n(x) = \frac{1}{2^n n!} \frac{\d^n}{\d x^n} \left(x^2 - 1\right)^n.
+            \]
+
+        \item
+            Write a function \julia{get_nodes_and_weights(n)} which returns the nodes and weights of the Gauss--Legendre quadrature with~$n$ nodes.
+            In order to construct Lagrange polynomials,
+            you may find it useful to use the \julia{fromroots} functions.
+
+        \item
+            Write a function \julia{composite_gauss_legendre(u, a, b, n, N)},
+            which returns an approximation of the integral
+            \[
+                \int_{a}^{b} u(x) \, \d x
+            \]
+            obtained by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying the Gauss--Legendre quadrature within each cell.
+
+        \item
+            Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
+            Illustrate on the same plot the error for the values~$n \in \{1, 2, 3\}$ and $N$ varying from 1 to 40.
+            For each value of~$n$, estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha(n)$ such that
+            \[
+                \lvert \widehat I_{n, N} - I \rvert \propto C N^{-\alpha},
+            \]
+            where $I$ denotes the exact value of the Integral
+            and $\widehat I_{n, N}$ denotes its approximation.
+    \end{itemize}
+\end{compexercise}
 
 \section{Discussion and bibliography}
 The presentation of part of the material follows that in~\cite{Legat},
