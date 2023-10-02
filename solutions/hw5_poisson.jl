@@ -1,7 +1,6 @@
 using LinearAlgebra
+using Plots
 import SparseArrays
-import Plots
-import PlotlyJS
 
 # Domain size
 Lx, Ly = 2, 1
@@ -24,15 +23,15 @@ end
 
 function plot_solution(f)
     f = reshape(f, ny-2, nx-2)
-
-    # Boundary condition
-    z = [zeros(nx)'; zeros(ny-2) f zeros(ny-2); zeros(nx)']
+    z = [zeros(nx)'; zeros(ny-2) f zeros(ny-2); zeros(nx)']  # Add boundary
     xgrid = Lx/(nx-1) * (0:nx-1)
     ygrid = Ly/(ny-1) * (0:ny-1)
-
-    # Plots.contourf(xgrid, ygrid, z, c=:viridis, levels=50)
-    PlotlyJS.plot(PlotlyJS.contour(x=xgrid, y=ygrid, z=z))
+    contourf(xgrid, ygrid, z, c=:viridis, levels=50)
 end
+
+A, b = discretize(nx, ny)
+f = A\b
+plot_solution(f)
 
 function conjugate_gradient(A, b) # A is matrix, b is vector
 
