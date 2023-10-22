@@ -209,6 +209,7 @@
 \newpage
 
 \begin{compexercise}
+    [Floating point arithmetic, 5 marks]
     Read the documentation of the \julia{nextfloat} function.
     Using this function,
     plot on the same graph the spacing between successive \julia{Float16}, \julia{Float32} and \julia{Float64} numbers in the range $[1, 10^6]$.
@@ -218,7 +219,7 @@
 \end{compexercise}
 
 \begin{compexercise}
-    [Interpolation]
+    [Interpolation, 5 marks]
     Consider the data
     \[
         x =
@@ -247,37 +248,116 @@
     Plot on the same graph the functions $u$ and $\widehat u$.
 \end{compexercise}
 
+\newpage
 \begin{compexercise}
-    [Approximation]
-    Write from scratch a function to obtain, 
+    [Approximation, 10 marks]
+    Write without using the \julia{Polynomials} library a Julia function \julia{approx(x, y, d, X)} to obtain,
     given data points
     \[
-        (x_0, u_0), \dotsc, (x_N, u_N)
+        (x_0, y_0), \dotsc, (x_N, y_N)
     \]
-    and $d \leq N$,
+    and an positive integer $d \leq N$,
     the polynomial $p \in \poly(d)$ minimizing the distance
     \[
         \sum_{n=1}^{N} \bigl\lvert p(x_i) - u_i \bigr\rvert^2.
     \]
     Your function should return the values taken by~$p$
     when evaluated at the points $X_1, \dotsc, X_m$.
-    You may use the following code to test your function
+    Within the function, proceed in 3 steps
+    \begin{itemize}
+        \item
+            First create the following matrix and vector:
+            \[
+                \mat A
+                \begin{pmatrix}
+                    1 & x_0 & \hdots & x_0^d \\
+                    \vdots & \vdots & & \vdots \\
+                    1 & x_{N} & \hdots & x_N^d
+                \end{pmatrix},
+                \qquad
+                \vect b :=
+                \begin{pmatrix}
+                    u_0 \\
+                    \vdots \\
+                    u_d
+                \end{pmatrix}.
+            \]
+            \item
+                Then solve the normal equations using the backslash operator:
+                \begin{equation}
+                    \label{eq:normal_equations}
+                    \mat A^\t \mat A \vect \alpha = \mat A^\t \vect b.
+                \end{equation}
+
+            \item
+                Finally, evaluate the polynomial
+                \[
+                    p(x) = \alpha_0 + \alpha_1 x + \dotsc + \alpha_d x^d.
+                \]
+                at all the points in \julia{X} and return the result.
+    \end{itemize}
+    Use the following data,
+    of the altitude of a marble as a function of time,
+    to test your code.
+    The experiment was performed on a different planet.
+    Can you find which one?
+
     \begin{minted}{julia}
-    import Plots
-    function approx(X, x, u, d)
-        # Your code comes here
-    end
-    n, m = 10, 100
-    f(t) = cos(2π * t)
-    x = LinRange(0, 1, n)
-    X = LinRange(0, 1, m)
-    u = f.(x)
-    U = interp(X, x, u)
-    Plots.plot(X, f.(X), label="Original function")
-    Plots.plot!(X, U, label="Interpolation")
-    Plots.scatter!(x, u, label="Data")
+        import Plots
+        function approx(x, y, d, X)
+            # Your code comes here
+        end
+        # Time since dropping pen
+        x = [0., 1., 2., 3., 4., 5.]
+        # Altitude of pen
+        y = [100., 98., 92., 83., 71., 55.]
+        X = LinRange(0, 1, 200)
+        Y = approx(x, y, 2, X)
+        Plots.plot!(X, Y, label="Approximation")
+        Plots.scatter!(x, y, label="Data")
     \end{minted}
 \end{compexercise}
 
+\newpage
+\begin{compexercise}
+    [Numerical integration]
+    Milne's integration rule reads
+    \[
+        \int_{-1}^{1} u(x) \, \d x
+        % \approx \frac{2}{3} \left( 2 f\left(-\frac{1}{2}\right) - f(0) + 2 f\left(\frac{1}{2}\right) \right)
+        \approx w_1 f\left(-\frac{1}{2}\right) - w_2 f(0) + w_3 f\left(\frac{1}{2}\right).
+    \]
+    \begin{itemize}
+        \item
+            Write a function \julia{get_milne_weights} which calculates and returns a vector containing the weights~$w_1, w_2, w_3$.
+
+        \item
+            Write a function \julia{composite_milne(u, a, b, N)},
+            which returns an approximation of the integral
+            \[
+                \int_{a}^{b} u(x) \, \d x
+            \]
+            obtained by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying Milne's rule quadrature within each cell.
+
+        \item
+            Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
+            Illustrate the evolution of the error for $N$ varying from 1 to 1000.
+
+        \item
+            Estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha(n)$ such that
+            \[
+                \lvert \widehat I_{N} - I \rvert \propto C N^{-\alpha},
+            \]
+            where $I$ denotes the exact value of the Integral
+            and $\widehat I_{N}$ denotes its approximation.
+            In order to find~$\alpha$,
+            use the function \julia{fit} from the \julia{Polynomials} package to find a linear approximation
+            of the form
+            \[
+                \log \lvert \widehat I_{N} - I \rvert \approx C - \alpha \log(N).
+            \]
+    \end{itemize}
+\end{compexercise}
 
 \end{document}
