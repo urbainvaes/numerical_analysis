@@ -1,0 +1,712 @@
+\documentclass[11pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[outputdir=build,newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{mdframed}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\theoremstyle{definition}
+\newtheorem{question}{Question}
+\theoremstyle{remark}
+\newtheorem*{protosolution}{Solution}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\setlist[enumerate]{font=\bfseries}
+\input{../macros.tex}
+
+\definecolor{lightgreen}{HTML}{f1faf8}
+\newenvironment{solutionframe}
+{%
+    \begin{mdframed}[
+        leftmargin=1cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightgreen,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
+\newenvironment{solution}
+{\pushQED{\qed}\renewcommand{\qedsymbol}{$\triangle$}
+\begin{solutionframe}\small \begin{protosolution}}
+{\popQED\end{protosolution}\end{solutionframe}}
+
+\begin{document}
+
+\title{Numerical Analysis: Midterm \\
+\small{(\textbf{30 marks}, only the 3 best questions count)}}
+\author{Urbain Vaes}
+\maketitle
+
+\begin{question}
+    [Floating point arithmetic, 10 marks]
+    True or false? (+1/0/-1)
+    \begin{enumerate}
+        \item
+            Let $(\placeholder)_2$ denote binary representation.
+            It holds that
+            \(
+                (0.1011)_2 + (0.0101)_2 = 1.
+            \)
+
+        \item
+            Let $(\placeholder)_3$ denote base 3 representation.
+            It holds that
+            \(
+                (1000)_3 \times (0.002)_3 = 2.
+            \)
+
+        \item
+            A natural number with binary representation $(b_4 b_3 b_2 b_1 b_0)_2$ is even if and only if $b_0 = 0$.
+
+        \item
+            In Julia, \julia{Float64(.4) == Float32(.4)} evaluates to \julia{true}.
+
+        \item
+            Machine addition~$\madd$ is a commutative operation.
+            More precisely, given any two double-precision floating point numbers $x \in \floating_{64}$ and $y \in \floating_{64}$,
+            it holds that
+            \(
+                x \madd y = y \madd x.
+            \)
+
+        \item
+            Let $\floating_{32}$ and $\floating_{64}$ denote respectively the sets of single and double precision floating point numbers.
+            It holds that $\floating_{32} \subset \floating_{64}$.
+
+        \item
+            The machine epsilon of a floating point format is the smallest strictly positive number that can be represented exactly in the format.
+
+        \item
+            Let $\floating_{64}$ denote the set of double precision floating point numbers.
+            For any $x \in \real$ such that~$x \in \floating_{64}$,
+            it holds that $x + 1 \in \floating_{64}$.
+
+        \item
+            Let $a_i \in \{0, 1\}$ for $i \in \{1, 2, 3\}$.
+            If $(a_1 a_2 a_3)_2$ is a multiple of 3,
+            then $(a_1 a_2 a_3)_4$ is a multiple of 6.
+            Here $(\placeholder)_4$ denotes base 4 representation.
+
+        \item
+            Let $f\colon \real \to \real$ denote the function that maps $x \in \real$
+            to the number of double precision floating point numbers contained in the interval $[x-1, x+1]$.
+            Then $f$ is a decreasing function of $x$.
+
+        \item
+            Let $n \in \nat$.
+            The number of bits in the binary representation of $n$ is less than or equal to 4 times the number of digits in the decimal representation of~$n$.
+
+        \item
+            It holds that $(0.\overline{2200})_3 = (0.9)_{10}$.
+
+        \item
+            Let $p \in \nat$.
+            The set
+            \(
+                \bigl\{ (b_0. b_1 b_2 \dots b_{p-1})_2 \colon b_i \in \{0, 1\} \bigr\}
+            \)
+            contains $2^{p}$ distinct real numbers.
+    \end{enumerate}
+    % A correct (resp.~incorrect) answer leads to +1 mark (resp. -1 mark).
+\end{question}
+
+\newpage
+\begin{solution}
+    The correct answers are the following:
+    \begin{enumerate}
+        \item True
+        \item True
+        \item True
+        \item False, because the binary representation of $0.4$ is infinite.
+        \item
+            True, because
+            \[
+                x \madd y = {\rm fl} (x + y) = {\rm fl} (y + x) = y \madd x,
+            \]
+            where ${\rm fl}$ is the rounding operator.
+        \item True
+        \item
+            False.
+            The smallest number that can be represented in a format is $2^{E_{\min}-(p-1)}$,
+            and the machine epsilon is $2^{-(p-1)}$.
+        \item
+            False, otherwise there would be infinitely many numbers in the set $\floating_{64}$.
+
+        \item
+            False. For example, $(110)_2 = 6$ and $(110)_4 = 20$.
+
+        \item
+            False since $\lim_{x \to -\infty} f(x) = 0$ and $f(0) > 0$.
+
+        \item
+            True. Indeed, let $d$ denote the number of digits in the decimal representation of~$n$.
+            Then $n \leq 10^d - 1$.
+            With $4d$ bits, all the numbers up to $2^{4d}- 1$ can be represented,
+            and since $2^{4d} - 1 = 16^d - 1 \geq 10^d - 1$,
+            the statement is true.
+
+        \item
+            True because
+            \[
+                (0.\overline{2200})_3 = (0.2200)_3 \Bigl(1 + 3^{-4} + (3^{-4})^2 + (3^{-4})^3 + \dotsb\Bigr)
+                = \left(\frac{2}{3} + \frac{2}{9}\right)  \frac{1}{1 - 3^{-4}} = \frac{8}{9} \frac{81}{80} = \frac{9}{10}.
+            \]
+
+        \item
+            True because there are $2^p$ choices for the bits,
+            and distinct sets of bits correspond to distinct real numbers.
+    \end{enumerate}
+\end{solution}
+
+\newpage
+\begin{question}
+    [Interpolation and approximation, 10 marks]
+    Throughout this exercise, we assume
+    that $x_0 < \dotsc < x_n$ are distinct values and
+    that $u \colon \real \to \real$ is a smooth function.
+    The notation $\poly(n)$ denotes the set of polynomials of degree less than or equal to $n$.
+
+    \begin{enumerate}
+        \item
+            \mymarks{4}
+            Are the following statements true or false? (+1/0/-1)
+            \begin{itemize}
+                \item
+                    There exists a unique polynomial~$p \in \poly(n)$ such that
+                    \begin{equation}
+                        \label{eq:interpolation}
+                        \forall i \in \{0, \dotsc, n\}, \qquad
+                        p(x_i) = u (x_i).
+                    \end{equation}
+
+                \item
+                    Assume that $p \in \poly(n)$ is such that~\eqref{eq:interpolation} is satisfied.
+                    Then there is a constant~$K \in \real$ independent of~$x$ such that
+                    \[
+                        \forall x \in \real,
+                        \qquad u(x) - p(x) = K (x - x_0) \dotsc (x - x_n).
+                    \]
+
+                \item
+                    Assume that $p \in \poly(n)$ is such that~\eqref{eq:interpolation} is satisfied.
+                    Then $p$ is of degree exactly~$n$.
+
+                \item
+                    If $x_0, \dotsc, x_n$ are the roots of the Chebyshev polynomial of degree~$n$,
+                    then
+                    \[
+                        \sup_{x \in \real} \Bigl\lvert (x - x_0) \dotsc (x - x_n) \Bigr\rvert \leq \frac{\pi}{2^n}.
+                    \]
+
+                \item
+                    The function $S\colon \nat \to \real$ given by
+                    \[
+                        S(n) = \sum_{i=1}^{n} \left(i + i^2 + i^3 + i^4\right)
+                    \]
+                    is a polynomial of degree 5.
+                    (More precisely, there exists a polynomial of degree~5,
+                    say~$q$, such that $S(n) = q(n)$ for all $n \in \nat$.)
+
+                % \item
+                %     Assume that $p \in \poly(n)$ is such that~\eqref{eq:interpolation} is satisfied.
+                %     It holds that
+                %     \[
+                %         \sup_{x \in \real} \bigl\lvert u(x) - p(x) \bigr\rvert \leq \pi^2 /n.
+                %     \]
+            \end{itemize}
+            \begin{solution}
+                The correct answers are the following:
+                \begin{itemize}
+                    \item
+                        True. Indeed assume that $p$ and $q$ both satisfy~\eqref{eq:interpolation}.
+                        Then $p - q \in \poly(n)$ and
+                        \[
+                            \forall i \in \{0, \dotsc, n\}, \qquad
+                            (p - q) (x_i) = 0.
+                        \]
+                        Therefore $p - q$ has at least $n+1$ roots which,
+                        given that $p - q$ if of degree at most~$n$,
+                        is possible only if $p - q = 0$.
+
+                    \item
+                        False, because if it were true,
+                        then it would hold that
+                        \[
+                            u(x) = p(x) + K (x - x_0) \dotsc (x - x_n),
+                        \]
+                        implying that $u$ is a polynomial of degree~$n+1$.
+                        Therefore, the equation cannot be true for a general smooth function~$u$.
+
+                    \item
+                        False.
+                        The statement is not true in general since,
+                        if~(for example) $u$ is  the function everywhere equal to zero,
+                        then the only~$p \in \poly(n)$ that satisfies~\eqref{eq:interpolation} is $p = 0$,
+                        which is not a polynomial of degree exactly~$n$.
+
+                    \item
+                        False, because the supremum on the left-hand side is equal to~$\infty$
+                        as
+                        \[
+                            \lim_{x \to \infty} \Bigl\lvert (x - x_0) \dotsc (x - x_n) \Bigr\rvert = \infty.
+                        \]
+
+                    \item
+                        True.
+                \end{itemize}
+            \end{solution}
+    \item
+        For $i \in \{0, \dotsc, n\}$,
+        let $u_i = u(x_i)$,
+        and let $m \leq n$ be a given natural number.
+        We wish to fit the data $(x_0, u_0), \dotsc, (x_n, u_n)$ with a function $\widehat u\colon \real \to \real$ of the form
+        \[
+            \widehat u(x) = \alpha_0 + \alpha_1 x + \dotsc + \alpha_m x^m.
+        \]
+        Specifically, we wish to find coefficients $\vect \alpha = (\alpha_0, \dotsc, \alpha_m)^\t$
+        such that the error
+        \[
+            J(\vect \alpha) := \frac{1}{2}\sum_{i=0}^{n} \abs[big]{u_i - \widehat u(x_i)}^2
+        \]
+        is minimized.
+        Throughout this exercise,
+        we use the notations
+        \[
+            \mat A
+            \begin{pmatrix}
+                1 & x_0 & \hdots & x_0^m \\
+                \vdots & \vdots & & \vdots \\
+                1 & x_{n} & \hdots & x_n^m
+            \end{pmatrix},
+            \qquad
+            \vect b :=
+            \begin{pmatrix}
+                u_0 \\
+                \vdots \\
+                u_n
+            \end{pmatrix}
+        \]
+        \begin{itemize}
+            \item
+            \mymarks{3}
+                Show that $J(\vect \alpha)$ may be rewritten as
+                \[
+                    J(\vect \alpha) = \frac{1}{2} (\mat A \vect \alpha  - \vect b)^\t (\mat A \vect \alpha  - \vect b).
+                \]
+
+            \item
+            \mymarks{2}
+                Prove that if $\vect \alpha_* \in \real^{m+1}$ is a minimizer of $J$,
+                then
+                \begin{equation}
+                    \label{eq:normal_equations}
+                    \mat A^\t \mat A \vect \alpha_* = \mat A^\t \vect b.
+                \end{equation}
+
+            % \item
+            %     \mymark
+            %     Show that the matrix $\mat A^\t \mat A$ is positive definite.
+            %     You can take for granted that the columns of~$\mat A$ are linearly independent.
+
+            \item
+                \mymark
+                Find a solution to~\eqref{eq:normal_equations} in terms of $u_0, \dotsc, u_n$ and $n$ when $m = 0$.
+                Explain.
+        \end{itemize}
+        \begin{solution}
+            $~$
+            \begin{itemize}
+                \item Notice that
+                    \[
+                        \mat A \vect \alpha =
+                        \begin{pmatrix}
+                            \alpha_0 + \alpha_1 x_0 + \dotsb + \alpha_m x_0^m \\
+                            \vdots \\
+                            \alpha_0 + \alpha_1 x_n + \dotsb + \alpha_m x_n^m
+                        \end{pmatrix}
+                        =
+                        \begin{pmatrix}
+                            \widehat u(x_0) \\
+                            \vdots \\
+                            \widehat u(x_n)
+                        \end{pmatrix}.
+                    \]
+                    Therefore
+                    \[
+                        \frac{1}{2} \sum_{i=1}^{n} \bigl\lvert \widehat u(x_i)  - u_i \bigr\rvert^2
+                        = \frac{1}{2} \sum_{i=1}^{n} \bigl\lvert (\mat A \vect \alpha  - \vect b)_i \bigr\rvert^2
+                        = \frac{1}{2} (\mat A \vect \alpha  - \vect b)^\t (\mat A \vect \alpha  - \vect b)
+                    \]
+
+                \item
+                A necessary condition is that $\nabla J(\vect \alpha_*) = 0$.
+                We calculate that
+                \[
+                    \frac{\partial}{\partial_{x_i}} \left(\vect b^\t \vect x\right)
+                    = \frac{\partial}{\partial_{x_i}} \left(\sum_{j=1}^{n} b_j x_j\right) = \sum_{j=1}^{n} b_j \delta_{ij} = b_i.
+                \]
+                Similarly, for any matrix $\mat M \in \real^{n \times n}$,
+                it holds that
+                \[
+                    \frac{\partial}{\partial_{x_i}} \left(\vect x^\t \mat M \vect x \right)
+                    = \frac{\partial}{\partial_{x_i}} \left(\sum_{j=1}^{n}\sum_{k=1}^{n} m_{jk} x_j x_k\right)
+                    =  \sum_{j=1}^{n}\sum_{k=1}^{n} m_{jk} \frac{\partial}{\partial_{x_i}} (x_j x_k).
+                \]
+                Applying the formula for the derivative of a product,
+                we obtain
+                \begin{align*}
+                    \frac{\partial}{\partial_{x_i}} \left(\vect x^\t \mat M \vect x \right)
+                    &= \sum_{j=1}^{n}\sum_{k=1}^{n} m_{jk} \delta_{ij} x_k + m_{jk} x_j \delta_{ik} \\
+                    &= \sum_{k=1}^{n} m_{ik} x_k + \sum_{j=1}^{n} m_{ji} x_j
+                    = (\mat M \vect x + \mat M^\t \vect x)_i.
+                \end{align*}
+                Employing these formulae,
+                we calculate that (representing the gradient with a column vector)
+                \[
+                    \nabla_{\vect \alpha} \left(\vect b^\t \vect \alpha\right)
+                    = \vect b, \qquad \nabla_{\vect \alpha} \left(\vect \alpha^\t \mat A^\t \mat A \vect \alpha\right)
+                    = 2 \mat A^\t \mat A \vect \alpha.
+                \]
+                It is then simple to conclude.
+
+                \item
+                    In this case $\mat A^\t \mat A = n+1$ and $\alpha_*$ is a scalar.
+                    The solution is given by
+                    \[
+                        \alpha_* = \frac{u_0 + \dotsb + u_n}{n+1},
+                    \]
+                    which is the average of the values $u_0, \dotsc, u_{n+1}$.
+            \end{itemize}
+        \end{solution}
+\end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Numerical integration, 10 marks]
+    The Gauss--Legendre quadrature formula with $n$ nodes is an approximate integration formula of the form
+    \begin{equation}
+        \label{gauss_legendre}
+        I(u) := \int_{-1}^{1} u(x) \, \d x \approx \sum_{i=1}^{n} w_i \, u(x_i) =: \widehat I_n(u),
+    \end{equation}
+    which is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+    (Note that the nodes are here numbered starting from 1.)
+
+    \begin{enumerate}
+        \item
+            \mymarks{5}
+            Find the nodes and weights of the Gauss--Legendre rule with $n=3$ nodes.
+
+            \begin{solution}
+                A necessary and sufficient condition in order for~\eqref{gauss_legendre} to be satisfied for any polynomial~$p \in \poly(5)$ is that
+                \[
+                    \int_{-1}^{1} x^d \, \d x= \sum_{i=1}^{n} w_i x_i^d,
+                    \qquad \text{ for all $d \in \{0, 1, 2, 3, 4, 5\}$}.
+                \]
+                This leads to the following system of equations
+                \begin{equation*}
+                    \left\{
+                        \begin{aligned}
+                            2 &= w_1 + w_2 + w_3, \\
+                            0 &= w_1 x_1 + w_2 x_2 +  w_3 x_3, \\
+                            \frac{2}{3} &= w_1 x_1^2 + w_2 x_2^2 +  w_3 x_3^2, \\
+                            0 &= w_1 x_1^3 + w_2 x_2^3 +  w_3 x_3^3, \\
+                            \frac{2}{5} &= w_1 x_1^4 + w_2 x_2^4 +  w_3 x_3^4, \\
+                            0 &= w_1 x_1^5 + w_2 x_2^5 +  w_3 x_3^5.
+                        \end{aligned}
+                        \right.
+                \end{equation*}
+                Given the symmetry of the problem,
+                it is reasonable to look for a solution of the form
+                \[
+                    (x_1, x_2, x_3, w_1, w_2, w_3)
+                    = (-x, 0, x, w_1, w_2, w_1),
+                \]
+                where only 3 unknown parameters remain.
+                For such a set of parameters,
+                the second, fourth and sixth equations are satisfied,
+                and the other three equations give
+                \begin{equation*}
+                    \left\{
+                        \begin{aligned}
+                            2 &= 2w_1 + w_2, \\
+                            \frac{2}{3} &= 2 w_1 x^2, \\
+                            \frac{2}{5} &= 2 w_1 x^4.
+                        \end{aligned}
+                        \right.
+                \end{equation*}
+                Dividing the third equation by the second,
+                we obtain $x^2 = 3/5$ and so $x = \pm \sqrt{\frac{3}{5}}$ (both values lead to the same integration rule in the end).
+                It is then simple to deduce that~$w_1 = \frac{5}{9}$ and $w_2 = \frac{8}{9}$.
+                We have thus derived the formula
+                \[
+                    \int_{-1}^{1} u(x) \approx
+                    \frac{5}{9} u \left( - \sqrt{\frac{3}{5}} \right)
+                    + \frac{8}{9} u \left(0\right)
+                    + \frac{5}{9} u \left( \sqrt{\frac{3}{5}} \right).
+                \]
+            \end{solution}
+
+        \item
+            \mymarks{2}
+            Let $\{L_0, L_1, \dotsc\}$ denote orthogonal polynomials for the inner product
+            \[
+                \ip{f, g} := \int_{-1}^{1} f(x) g(x) \, \d x
+            \]
+            which, in addition, satisfy the following two conditions:
+            \begin{itemize}
+                \item
+                    For all $i \in \nat$,
+                    the polynomial $L_i$ is of degree $i$.
+
+                \item
+                    The leading coefficient of $L_i$,
+                    which multiplies $x^i$,
+                    is equal to 1.
+            \end{itemize}
+            Calculate $L_0$, $L_1$, $L_2$ and $L_3$.
+            What is the connection between $L_3$ and the rule found in the first item?
+
+            \begin{solution}
+                Clearly $L_0 = 1$.
+                Then $L_1 = x + a_1$ and the requirement that $\ip{L_1, L_0} = 0$ implies that $a_1 = 0$.
+                We then use the ansatz $L_2 = x^2 + b_2 x + a_2$ for $L_2$.
+                The requirement that $\ip{L_2, L_1}$ leads to $b_2 = 0$, and then
+                \[
+                    \ip{L_2, L_0} = \frac{2}{3} + 2 a_2,
+                \]
+                and so $L_2(x) = x^2 - \frac{1}{3}$.
+                Finally, for $L_3$, we use the ansatz $L_3 = x^3 + c_3 x^2 + b_3 x + a_3$.
+                We calculate
+                \begin{align*}
+                    \ip{L_3, 1} &= \frac{2}{3} c_3 + 2 a_3, \\
+                    \ip{L_3, x} &= \frac{2}{5} + \frac{2}{3} b_3, \\
+                    \ip{L_3, x^2} &= \frac{2}{5} c_3 + \frac{2}{3} a_3.
+                \end{align*}
+                The second equation gives $b_3 = - \frac{3}{5}$,
+                and the other two equations lead to $c_3 = a_3 = 0$.
+                We conclude that $L_3(x) = x^3 - \frac{3}{5}  x$.
+                The roots of $L_3$ are given by $\left\{- \sqrt{\frac{3}{5}}, 0, \sqrt{\frac{3}{5}} \right\}$,
+                and they coincide with the nodes of the Gauss--Legendre quadrature with 3 nodes.
+            \end{solution}
+
+        \item
+            Assume that $x_1, \dotsc, x_n$ and $w_1, \dotsc, w_n$ are such that~\eqref{gauss_legendre} is satisfied for all $u \in \poly(2n-1)$.
+            % denote the nodes and weights of the Gauss--Legendre quadrature with~$n$ nodes.
+            \begin{itemize}
+
+                \item
+                   \mymarks{2}
+                    Show that the weights are given by
+                    \[
+                        \forall i \in \{1, \dotsc, n\}, \qquad
+                        w_i = \int_{-1}^{1} \ell_i(x) \, \d x,
+                    \]
+                    where $\ell_i$ is the Lagrange polynomial
+                    \[
+                        \ell_i(x) = \prod_{j \neq i} \frac{x - x_j}{x_i - x_j}.
+                    \]
+
+                \item
+                   \mymarks{1}
+                    Show that the weights are all positive: $w_i > 0$ for all $i$.
+            \end{itemize}
+            \begin{solution}
+                Since~\eqref{gauss_legendre} holds true for all $u \in \poly(2n-1)$,
+                it holds true in particular for the function~$u = \ell_i \in \poly(2n-1)$,
+                which implies that
+                \[
+                    \int_{-1}^{1} \ell_i(x) \, \d x = \sum_{i=1}^{n} w_j \ell_i(x_j) = w_i.
+                \]
+                Similarly, since~\eqref{gauss_legendre} holds true also for $u \in \ell_i^2 \in \poly(2n-1)$,
+                we deduce that
+                \[
+                    \int_{-1}^{1} \bigl(\ell_i(x)\bigr)^2 \, \d x
+                    = \sum_{i=1}^{n} w_j \bigl(\ell_i(x_j)\bigr)^2 = w_i.
+                \]
+                Since the left-hand side is positive,
+                we deduce that $w_i > 0$.
+            \end{solution}
+
+                \item
+                    \mybonus{2} Prove the following error estimate:
+                    if $u$ is a smooth function,
+                    then
+                    \[
+                         \bigl\lvert I(u) - \widehat I_n(u) \bigr\rvert
+                         \leq \frac{C_{2n}}{(2n)!}\int_{-1}^1 \bigl(L_n(x)\bigr)^2 \, \d x,
+                         \qquad C_{2n} := \sup_{\xi \in [-1, 1]} \left\lvert u^{(2n)}(\xi) \right\rvert.
+                    \]
+                    \textbf{Hint}: You may find it useful to proceed as follows:
+                    \begin{itemize}
+                        \item
+                            First show that
+                            \begin{equation}
+                                \label{eq:hermite_interpolation}
+                                 I(u) - \widehat I_n(u)
+                                = \int_{-1}^{1} u(x) - p(x) \, \d x,
+                            \end{equation}
+                            for \emph{any} polynomial $p \in \poly(2n-1)$ such that
+                            \begin{equation}
+                                \label{eq:polynomial_interp}
+                                \forall i \in \{1, \dotsc, n\}, \qquad
+                                p(x_i) = u(x_i).
+                            \end{equation}
+
+                        \item
+                            Notice that equation~\eqref{eq:hermite_interpolation} is true in particular when $p$ is the Hermite interpolation of~$u$ at the nodes~$x_1, \dotsc, x_n$.
+                            Finally, conclude by using the formula for the interpolation error proved in class:
+                            if $p$ is the Hermite interpolant of $u$ at the nodes $x_1, \dotsc, x_n$,
+                        then
+                        \[
+                            \forall x \in \real, \qquad
+                            u(x) - p(x) = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} (x-x_1)^2 \dotsc (x - x_n)^2.
+                        \]
+                    \end{itemize}
+                    \begin{solution}
+                        Assume that $p \in \poly(2n-1)$ is such that~\eqref{eq:polynomial_interp} is satisfied.
+                        Then by~\eqref{gauss_legendre} we deduce that
+                        \[
+                            \int_{-1}^{1} p(x) \, \d x = \sum_{i=1}^{n} w_i p(x_i) = \sum_{i=1}^{n} w_i u(x_i) = \widehat I_n(u).
+                        \]
+                        Consequently,
+                        we obtain that
+                        \[
+                            I(u) - \widehat I_n(u) = \int_{-1}^1 u(x)  \, \d x - \int_{-1}^1 p(x) \, \d x = \int_{-1}^1 u(x) - p(x) \, \d x.
+                        \]
+                        This equation holds true in particular with $p$ being the Hermite interpolation of~$u$ at the nodes $x_1, \dotsc, x_n$.
+                        Then, using the formula for the interpolation error,
+                        we obtain
+                        \[
+                            u(x) - u(x) = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} (x-x_1)^2 \dotsc (x - x_n)^2
+                            = \frac{u^{(2n)}\bigl(\xi(x)\bigr)}{(2n)!} \bigl(L_n(x)\bigr)^2.
+                        \]
+                        Indeed, as shown in class, $L_n$ is a polynomial of degree $n$ with single roots at $x_1, \dotsc, x_n$.
+                        Now we conclude by noting that
+                        \[
+                            \bigl\lvert I(u) - \widehat I_n(u) \bigr\rvert
+                            = \left\lvert \int_{-1}^{1} u(x) - p(x) \, \d x \right\rvert
+                            \leq \int_{-1}^{1} \left\lvert u(x) - p(x) \right\rvert \, \d x
+                            \leq \int_{-1}^{1} \frac{C_{2n}}{(2n)!} \bigl(L_n(x)\bigr)^2 \, \d x,
+                        \]
+                        which concludes the exercise.
+                    \end{solution}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Vector and matrix norms, 10 marks]
+    The 1-norm and the $\infty$-norm of a vector~$\vect x \in \real^n$ are defined as follows:
+    \[
+        \norm{\vect x}_1 = \lvert x_1 \rvert + \dotsb + \lvert x_n \rvert
+        \qquad \text{ and } \qquad
+        \norm{\vect x}_{\infty} = \max \Bigl\{ \lvert x_1 \rvert, \dotsc, \lvert x_n \rvert \Bigr\}.
+    \]
+    These norms both induce a matrix norm through the formula
+    \[
+        \norm{\mat A}_p
+        := \sup \Bigl\{ \norm{\mat A \vect x}_p : \norm{\vect x}_p = 1 \Bigr\}.
+    \]
+    Prove, for $\mat A \in \real^{n \times n}$, that
+    \begin{enumerate}
+        \item
+            \mymarks{10}
+            $\norm{\mat A}_1$ is given by the maximum absolute column sum:
+            \begin{equation}
+                \label{eq:matrix_1_norm}
+               \norm{\mat A}_1 = \max_{1 \leq j \leq n}  \sum_{i=1}^{n} \abs{a_{ij}}.
+            \end{equation}
+
+        \item
+            \mybonus{2}
+            $\norm{\mat A}_{\infty}$ is given by the maximum absolute row sum:
+            \[
+                \norm{\mat A}_{\infty} = \max_{1 \leq i \leq n}  \sum_{j=1}^{n} \abs{a_{ij}}.
+            \]
+    \end{enumerate}
+
+    \textbf{Hint:} In order to prove~\eqref{eq:matrix_1_norm},
+    you may find it useful to proceed as follows:
+    \begin{itemize}
+        \item
+            Introduce $j_*$ as the index of the column with maximum absolute sum:
+            \[
+                j_* = \argmax_{1 \leq j \leq n}  \sum_{i=1}^{n} \abs{a_{ij}}.
+            \]
+        \item
+            Prove the direction $\geq$ in~\eqref{eq:matrix_1_norm} by finding a vector $\vect x$ with $\norm{\vect x}_1 = 1$ such that
+            \[
+                \norm{\mat A \vect x}_1 =  \sum_{i=1}^{n} \abs{a_{ij_*}}.
+            \]
+
+        \item
+            Prove the direction $\leq$ in~\eqref{eq:matrix_1_norm} by showing that,
+            for any $\vect x \in \real^n$ with $\norm{\vect x}_1 = 1$,
+            \[
+               \norm{\mat A \vect x}_1 \leq  \sum_{i=1}^{n} \abs{a_{ij_*}}.
+           \]
+    \end{itemize}
+\end{question}
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item
+            Let $\vect e_j$ denote the column vector with a 1 at entry~$j$ and zero everywhere else.
+            Notice that~$\lVert \vect e_j \rVert_1 = 1$ and
+            \[
+                \norm{\mat A \vect e_{j_*}}_1 = \sum_{i=1}^{n} \lvert a_{ij_*} \rvert,
+            \]
+            and so $\norm{\mat A}_1 \geq \sum_{i=1}^{n} \lvert a_{ij_*} \rvert$.
+            It remains to prove that $\norm{\mat A}_1 \leq \sum_{i=1}^{n} \lvert a_{ij_*} \rvert$.
+            To this end,
+            it is sufficient to show that $\norm{\mat A \vect x}_1 \leq \sum_{i=1}^{n} a_{ij_*}$ for all $\vect x \in \real^n$ with $\norm{\vect x}_1 = 1$.
+            Take~$\vect x \in \real^n$ with $\norm{\vect x}_1 = 1$.
+            We calculate that
+            \begin{align*}
+                \norm{\mat A \vect x}_1
+                &= \sum_{i=1}^{n} \left\lvert \sum_{j=1}^{n} a_{ij} x_j \right\rvert
+                \leq \sum_{i=1}^{n} \sum_{j=1}^{n} \lvert a_{ij} \rvert \lvert x_j \rvert  \\
+                &=  \sum_{j=1}^{n} \left(\sum_{i=1}^{n} \lvert a_{ij} \rvert\right) \lvert x_j \rvert
+                \leq \sum_{j=1}^{n} \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \lvert x_j \rvert  \\
+                &= \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \sum_{j=1}^{n} \lvert x_j \rvert
+                = \left(\sum_{i=1}^{n} \lvert a_{ij_*} \rvert\right) \norm{\vect x}_1 = \sum_{i=1}^{n}\lvert a_{ij_*} \rvert,
+            \end{align*}
+            implying that $\norm{\mat A}_1 \leq \sum_{i=1}^{n}\lvert a_{ij_*} \rvert$.
+
+        \item
+            Let~$i_*$ denote the index of a row (not necessarily unique) with maximum absolute sum,
+            and let $\vect y$ be a column vector with entry~$j$ equal to $\sign(a_{i_* j})$.
+            Then $\norm{\vect y}_{\infty} = 1$ and
+            \[
+                \norm{\mat A \vect y}_{\infty} = \sum_{j=1}^{n} \abs{a_{i_* j}},
+            \]
+            which implies that $\norm{\mat A}_{\infty} \geq \sum_{j=1}^{n} \abs{a_{i_* j}}$.
+            It remains to prove that $\norm{\mat A}_{\infty} \leq \sum_{j=1}^{n} \abs{a_{i_* j}}$.
+            To this end, take $\vect x \in \real^n$ with $\norm{\vect x}_{\infty} = 1$.
+            Then for all $i \in \{1, \dotsc, n\}$,
+            \begin{align*}
+                \bigl\lvert (\mat A \vect x)_i \bigr\rvert
+                &= \left\lvert \sum_{j=1}^{n} a_{ij} x_j \right\rvert
+                \leq \sum_{j=1}^{n} \lvert a_{ij} \rvert \lvert x_j \rvert
+                \leq \left( \sum_{j=1}^{n} \lvert a_{ij} \rvert \right) \max_{1\leq j \leq n} \abs{x_j} \\
+                &= \left( \sum_{j=1}^{n} \lvert a_{ij} \rvert \right) \norm{\vect x}_{\infty}
+                = \sum_{j=1}^{n} \lvert a_{i j} \rvert
+                \leq \sum_{j=1}^{n} \lvert a_{i_* j} \rvert,
+            \end{align*}
+            which implies that $\norm{\mat A}_{\infty} \leq \sum_{j=1}^{n} \lvert a_{i_* j} \rvert$.
+    \end{enumerate}
+\end{solution}
+\end{document}
