@@ -40,7 +40,7 @@
             In base 16, all the natural numbers from 1 to 300 can be represented using 2 digits.
 
         \item
-            If $x$ is finite \julia{Float64} number, 
+            If $x$ is finite \julia{Float64} number,
             then $x$ is a rational number.
 
         \item
@@ -162,7 +162,7 @@
         \item
             There exists a quadrature rule with a degree of precision equal to $2N + 1$ of the form
             \[
-                \int_{-1}^{1} u(x) \, \d x \approx 
+                \int_{-1}^{1} u(x) \, \d x \approx
                 \sum_{n=0}^{N} w_n u(x_n).
             \]
 
@@ -173,7 +173,7 @@
             \]
 
         \item
-            Fix $u(x) = \cos(x)$ and let 
+            Fix $u(x) = \cos(x)$ and let
             \begin{equation}
                 \label{eq:mc}
                 I^{MC}_N = \frac{1}{N} \sum_{n=1}^{N} u(X_n), \qquad X_n \stackrel{\rm i.i.d.}{\sim} \mathcal U([0, 1]).
@@ -183,13 +183,13 @@
         \item
             The variance of $I^{MC}_N$ in~\eqref{eq:mc} tends to 0 in the limit $N \to \infty$.
 
-        \item 
+        \item
             Let $x^N_i = i/N$ and consider the following approximation of $\int_{0}^{1} u(x) \, \d x$:
             \begin{equation}
                 \label{eq:trapezium}
                 I^T_N = \frac{1}{2N} \Bigl( u\left(x^N_0\right) + 2 u\left(x^N_1\right) + 2 u\left(x^N_2\right) + \dotsc + u\left(x^N_{N-2}\right) + 2 u\left(x^N_{N-1}\right) + u\left(x^N_N\right) \Bigr)
             \end{equation}
-            Fix $u(x) = (1 + 25 x^2)^{-1}$. 
+            Fix $u(x) = (1 + 25 x^2)^{-1}$.
             Then $I^T_N$ diverges in the limit $N \to \infty$.
 
         \item
@@ -209,17 +209,26 @@
 \newpage
 
 \begin{compexercise}
+    Read the documentation of the \julia{nextfloat} function.
+    Using this function,
+    plot on the same graph the spacing between successive \julia{Float16}, \julia{Float32} and \julia{Float64} numbers in the range $[1, 10^6]$.
+    Use a logarithmic scale for the $x$ axis.
+    You may find it useful to use \julia{LinRange{Type}(a, b, n)}
+    to create an array of $n$ equidistant numbers of type \julia{Type} between $a$ and $b$.
+\end{compexercise}
+
+\begin{compexercise}
     [Interpolation]
     Consider the data
     \[
-        x = 
+        x =
         \begin{pmatrix}
             1 \\
             2 \\
             3 \\
-        \end{pmatrix}, 
+        \end{pmatrix},
         \qquad
-        y = 
+        y =
         \begin{pmatrix}
             1 \\
             5 \\
@@ -237,5 +246,38 @@
     \]
     Plot on the same graph the functions $u$ and $\widehat u$.
 \end{compexercise}
+
+\begin{compexercise}
+    [Approximation]
+    Write from scratch a function to obtain, 
+    given data points
+    \[
+        (x_0, u_0), \dotsc, (x_N, u_N)
+    \]
+    and $d \leq N$,
+    the polynomial $p \in \poly(d)$ minimizing the distance
+    \[
+        \sum_{n=1}^{N} \bigl\lvert p(x_i) - u_i \bigr\rvert^2.
+    \]
+    Your function should return the values taken by~$p$
+    when evaluated at the points $X_1, \dotsc, X_m$.
+    You may use the following code to test your function
+    \begin{minted}{julia}
+    import Plots
+    function approx(X, x, u, d)
+        # Your code comes here
+    end
+    n, m = 10, 100
+    f(t) = cos(2π * t)
+    x = LinRange(0, 1, n)
+    X = LinRange(0, 1, m)
+    u = f.(x)
+    U = interp(X, x, u)
+    Plots.plot(X, f.(X), label="Original function")
+    Plots.plot!(X, U, label="Interpolation")
+    Plots.scatter!(x, u, label="Data")
+    \end{minted}
+\end{compexercise}
+
 
 \end{document}
