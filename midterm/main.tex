@@ -8,18 +8,20 @@
 \usepackage[margin=1.2in]{geometry}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{mathtools}
+\usepackage[colorlinks=true]{hyperref}
 \theoremstyle{definition}
 \newtheorem{question}{{\normalfont \faGears}~Question}
-\newtheorem{compexercise}{{\normalfont \faLaptop}~Question}
+\newtheorem{compexercise}{{\normalfont \faLaptop}~Computer exercise}
 \input{../macros.tex}
+\renewcommand{\mymarks}[1]{\textbf{#1 marks}}
 \begin{document}
 
-\title{Numerical Analysis: Practice Midterm (30 marks)}
+\title{Numerical Analysis: Midterm {\small (\mymarks{60})}}
 \author{Urbain Vaes}
 \maketitle
 
 \begin{question}
-    [Floating point arithmetic, 10 marks]
+    [Floating point arithmetic, \mymarks{12}]
     True or false? (+1/0/-1)
     \begin{enumerate}
         \item Let $(\placeholder)_2$ denote binary representation.
@@ -72,10 +74,10 @@
 
 \newpage
 \begin{question}
-    [Interpolation and approximation, 5 marks]
+    [Interpolation and approximation, \mymarks{10}]
     Throughout this exercise, we use the notation
-    $x^n_i = i/n$ and assume that $u \colon \real \to \real$ is a smooth function.
-    The notation $\poly(n)$ denotes the set of polynomials of degree less than or equal to $n$.
+    $x^n_i = i/n$ and assume that $u \colon \real \to \real$ is a continuous function.
+    The notation~$\poly(n)$ denotes the set of polynomials of degree less than or equal to $n$.
     We proved in class that,
     for all $n \geq 0$,
     there exists a unique polynomial~$p_n \in \poly(n)$ such that
@@ -90,7 +92,7 @@
 
         \item
             Suppose that $u \in \poly(m)$.
-            Then~$u = p_n$ if~$n \geq m$.
+            Then~$p_n = u$ if~$n \geq m$.
 
         \item
             Fix $u(x) = \sin(3\pi x)$. Then $p_3(x) = 0$.
@@ -100,7 +102,7 @@
             Then $p_2(x) = (2x - 1)^2$.
 
         \item
-            Suppose $u$ is smooth.
+            Suppose that $u$ is smooth.
             Then it necessarily holds that
             \[
                 \max_{x \in [0, 1]} \bigl\lvert u(x) - p_n(x) \bigr\rvert \xrightarrow[n \to \infty]{} 0.
@@ -144,7 +146,7 @@
 
 \newpage
 \begin{question}
-    [Numerical integration, 5 marks]
+    [Numerical integration, \mymarks{9}]
     True or false? (+1/0/-1)
     \begin{enumerate}
         \item
@@ -187,7 +189,7 @@
             Let $x^N_i = i/N$ and consider the following approximation of $\int_{0}^{1} u(x) \, \d x$:
             \begin{equation}
                 \label{eq:trapezium}
-                I^T_N = \frac{1}{2N} \Bigl( u\left(x^N_0\right) + 2 u\left(x^N_1\right) + 2 u\left(x^N_2\right) + \dotsc + u\left(x^N_{N-2}\right) + 2 u\left(x^N_{N-1}\right) + u\left(x^N_N\right) \Bigr)
+                I^T_N = \frac{1}{2N} \Bigl( u\left(x^N_0\right) + 2 u\left(x^N_1\right) + 2 u\left(x^N_2\right) + \dotsc + u\left(x^N_{N-2}\right) + 2 u\left(x^N_{N-1}\right) + u\left(x^N_N\right) \Bigr).
             \end{equation}
             Fix $u(x) = (1 + 25 x^2)^{-1}$.
             Then $I^T_N$ diverges in the limit $N \to \infty$.
@@ -196,30 +198,30 @@
             Fix $u(x) = \cos(x)$ and let $I^T_N$ be as in~\eqref{eq:trapezium}.
             Then there exists $C \in (0, \infty)$ such that
             \[
-                \forall N > 5, \qquad
+                \forall N \geq 2, \qquad
                 \left\lvert I^T_N - \int_{0}^1 u(x) \, \d x \right\rvert \leq \frac{C}{N^4}.
             \]
 
         \item
             Fix $u(x) = 2x - 1$ and let $I^T_N$ be as in~\eqref{eq:trapezium}.
-            Then $I^T_N = 0$ for $N \geq 5$.
+            Then $I^T_N = 0$ for $N \geq 2$.
     \end{enumerate}
 \end{question}
 
 \newpage
 
 \begin{compexercise}
-    [Floating point arithmetic, 5 marks]
+    [Floating point arithmetic, \mymarks{10}]
     Read the documentation of the \julia{nextfloat} function.
     Using this function,
-    plot on the same graph the spacing between successive \julia{Float16}, \julia{Float32} and \julia{Float64} numbers in the range $[1, 10^6]$.
-    Use a logarithmic scale for the $x$ axis.
+    plot on the same graph the spacing between successive \julia{Float16}, \julia{Float32} and \julia{Float64} numbers in the range $[1, 10^4]$.
+    Use a logarithmic scale for the $x$ and $y$ axes.
     You may find it useful to use \julia{LinRange{Type}(a, b, n)}
     to create an array of $n$ equidistant numbers of type \julia{Type} between $a$ and $b$.
 \end{compexercise}
 
 \begin{compexercise}
-    [Interpolation, 5 marks]
+    [Interpolation, \mymarks{10}]
     Consider the data
     \[
         x =
@@ -227,43 +229,44 @@
             1 \\
             2 \\
             3 \\
+            4 \\
         \end{pmatrix},
         \qquad
         y =
         \begin{pmatrix}
-            1 \\
-            5 \\
+            12 \\
             7 \\
-        \end{pmatrix}
+            2 \\
+            4 \\
+        \end{pmatrix}.
     \]
-    Find $\alpha_1, \alpha_2, \alpha_3$ such that
+    Find $\alpha_1, \alpha_2, \alpha_3, \alpha_4$ such that
     \[
-        \widehat u(x) := \alpha_1 \, \cos(\pi x) + \alpha_2 \, \sin(\pi x) + \alpha_3 \, 2^x
+        \widehat u(x) := \alpha_1 \, \cos(\pi x) + \frac{\alpha_2}{x} + \alpha_3 \, 2^x + \alpha_4 \, x^2.
     \]
     satisfies
     \[
-        \forall i \in \{1, 2, 3\}, \qquad
+        \forall i \in \{1, 2, 3, 4\}, \qquad
         \widehat u(x_i) = y_i.
     \]
-    Plot on the same graph the functions $u$ and $\widehat u$.
+    Plot on the same graph the function $\widehat u$ and the data points.
 \end{compexercise}
 
 \newpage
 \begin{compexercise}
-    [Approximation, 10 marks]
+    [Approximation, \mymarks{10}]
     Write without using the \julia{Polynomials} library a Julia function \julia{approx(x, y, d, X)} to obtain,
     given data points
     \[
         (x_0, y_0), \dotsc, (x_N, y_N)
     \]
     and an positive integer $d \leq N$,
-    the polynomial $p \in \poly(d)$ minimizing the distance
+    the polynomial $p \in \poly(d)$ minimizing the total error
     \[
-        \sum_{n=1}^{N} \bigl\lvert p(x_i) - u_i \bigr\rvert^2.
+        E := \frac{1}{2} \sum_{n=1}^{N} \bigl\lvert p(x_i) - u_i \bigr\rvert^2.
     \]
-    Your function should return the values taken by~$p$
-    when evaluated at the points $X_1, \dotsc, X_m$.
-    Within the function, proceed in 3 steps
+    Your function should a vector containing the values $p(X_1), \dotsc, p(X_m)$.
+    Within the function, proceed in 3 steps:
     \begin{itemize}
         \item
             First create the following matrix and vector:
@@ -277,17 +280,16 @@
                 \qquad
                 \vect b :=
                 \begin{pmatrix}
-                    u_0 \\
+                    y_0 \\
                     \vdots \\
-                    u_d
+                    y_N
                 \end{pmatrix}.
             \]
             \item
                 Then solve the normal equations using the backslash operator:
-                \begin{equation}
-                    \label{eq:normal_equations}
+                \[
                     \mat A^\t \mat A \vect \alpha = \mat A^\t \vect b.
-                \end{equation}
+                \]
 
             \item
                 Finally, evaluate the polynomial
@@ -296,40 +298,25 @@
                 \]
                 at all the points in \julia{X} and return the result.
     \end{itemize}
-    Use the following data,
-    of the altitude of a marble as a function of time,
+    Use the data given in the notebook,
+    of the altitude of a marble in free fall as a function of time,
     to test your code.
     The experiment was performed on a different planet.
     Can you find which one?
-
-    \begin{minted}{julia}
-        import Plots
-        function approx(x, y, d, X)
-            # Your code comes here
-        end
-        # Time since dropping pen
-        x = [0., 1., 2., 3., 4., 5.]
-        # Altitude of pen
-        y = [100., 98., 92., 83., 71., 55.]
-        X = LinRange(0, 1, 200)
-        Y = approx(x, y, 2, X)
-        Plots.plot!(X, Y, label="Approximation")
-        Plots.scatter!(x, y, label="Data")
-    \end{minted}
+    See \url{https://en.wikipedia.org/wiki/Gravitational_acceleration}.
 \end{compexercise}
 
 \newpage
 \begin{compexercise}
-    [Numerical integration]
+    [Numerical integration, \mymarks{10}]
     Milne's integration rule reads
     \[
         \int_{-1}^{1} u(x) \, \d x
-        % \approx \frac{2}{3} \left( 2 f\left(-\frac{1}{2}\right) - f(0) + 2 f\left(\frac{1}{2}\right) \right)
-        \approx w_1 f\left(-\frac{1}{2}\right) - w_2 f(0) + w_3 f\left(\frac{1}{2}\right).
+        \approx \frac{2}{3} \left( 2 f\left(-\frac{1}{2}\right) - f(0) + 2 f\left(\frac{1}{2}\right) \right)
     \]
     \begin{itemize}
-        \item
-            Write a function \julia{get_milne_weights} which calculates and returns a vector containing the weights~$w_1, w_2, w_3$.
+        % \item
+        %     Write a function \julia{get_milne_weights} which calculates and returns a vector containing the weights~$w_1, w_2, w_3$.
 
         \item
             Write a function \julia{composite_milne(u, a, b, N)},
@@ -338,11 +325,11 @@
                 \int_{a}^{b} u(x) \, \d x
             \]
             obtained by partitioning the integration interval $[a, b]$ into $N$ cells,
-            and applying Milne's rule quadrature within each cell.
+            and applying Milne's rule within each cell.
 
         \item
             Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
-            Illustrate the evolution of the error for $N$ varying from 1 to 1000.
+            Plot the evolution of the error for $N$ varying from 1 to 1000.
 
         \item
             Estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha(n)$ such that
@@ -355,7 +342,7 @@
             use the function \julia{fit} from the \julia{Polynomials} package to find a linear approximation
             of the form
             \[
-                \log \lvert \widehat I_{N} - I \rvert \approx C - \alpha \log(N).
+                \log \lvert \widehat I_{N} - I \rvert \approx \log (C) - \alpha \log(N).
             \]
     \end{itemize}
 \end{compexercise}
