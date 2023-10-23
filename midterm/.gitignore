@@ -1,3 +1,4 @@
 build/*
 !build/main.pdf
+!build/output.pdf
 _minted-main
