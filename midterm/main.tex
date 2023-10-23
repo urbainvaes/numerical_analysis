@@ -102,8 +102,8 @@
             Then $p_2(x) = (2x - 1)^2$.
 
         \item
-            Suppose that $u$ is smooth.
-            Then it necessarily holds that
+            For all $u$ that is smooth,
+            it holds that
             \[
                 \max_{x \in [0, 1]} \bigl\lvert u(x) - p_n(x) \bigr\rvert \xrightarrow[n \to \infty]{} 0.
             \]
@@ -162,7 +162,8 @@
             \]
 
         \item
-            There exists a quadrature rule with a degree of precision equal to $2N + 1$ of the form
+            For any natural number $N > 0$,
+            there exists a quadrature rule with a degree of precision equal to $2N + 1$ of the form
             \[
                 \int_{-1}^{1} u(x) \, \d x \approx
                 \sum_{n=0}^{N} w_n u(x_n).
@@ -199,7 +200,7 @@
             Then there exists $C \in (0, \infty)$ such that
             \[
                 \forall N \geq 2, \qquad
-                \left\lvert I^T_N - \int_{0}^1 u(x) \, \d x \right\rvert \leq \frac{C}{N^4}.
+                \left\lvert I^T_N - \int_{0}^1 u(x) \, \d x \right\rvert \leq \frac{C}{N}.
             \]
 
         \item
@@ -255,17 +256,19 @@
 \newpage
 \begin{compexercise}
     [Approximation, \mymarks{10}]
-    Write without using the \julia{Polynomials} library a Julia function \julia{approx(x, y, d, X)} to obtain,
+    Write, without using the \julia{Polynomials} library,
+    a function \julia{approx(x, y, d, X)} to obtain,
     given data points
     \[
         (x_0, y_0), \dotsc, (x_N, y_N)
     \]
-    and an positive integer $d \leq N$,
+    and a nonnegative integer $0 \leq d \leq N$,
     the polynomial $p \in \poly(d)$ minimizing the total error
     \[
-        E := \frac{1}{2} \sum_{n=1}^{N} \bigl\lvert p(x_i) - u_i \bigr\rvert^2.
+        E := \frac{1}{2} \sum_{n=0}^{N} \bigl\lvert p(x_n) - y_n \bigr\rvert^2.
     \]
-    Your function should a vector containing the values $p(X_1), \dotsc, p(X_m)$.
+    Your function should a vector containing the values $p(X_0), \dotsc, p(X_M)$,
+    where $X_0, \dotsc, X_M$ are the elements of the vector \julia{X}.
     Within the function, proceed in 3 steps:
     \begin{itemize}
         \item
@@ -296,7 +299,7 @@
                 \[
                     p(x) = \alpha_0 + \alpha_1 x + \dotsc + \alpha_d x^d.
                 \]
-                at all the points in \julia{X} and return the result.
+                at all the points in \julia{X} and return the result in a vector.
     \end{itemize}
     Use the data given in the notebook,
     of the altitude of a marble in free fall as a function of time,
@@ -332,11 +335,11 @@
             Plot the evolution of the error for $N$ varying from 1 to 1000.
 
         \item
-            Estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha(n)$ such that
+            Estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha$ such that
             \[
                 \lvert \widehat I_{N} - I \rvert \propto C N^{-\alpha},
             \]
-            where $I$ denotes the exact value of the Integral
+            where $I$ denotes the exact value of the integral
             and $\widehat I_{N}$ denotes its approximation.
             In order to find~$\alpha$,
             use the function \julia{fit} from the \julia{Polynomials} package to find a linear approximation
