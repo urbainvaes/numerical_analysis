@@ -750,9 +750,37 @@ the Gauss--Legendre quadrature rules are less susceptible to roundoff errors tha
 In addition, we have the following result.
 
 \begin{theorem}
-    If $u \in C([-1, 1])$,
-    then
+    Assume that $u \in C([-1, 1])$,
+    and let $\widehat I_n(u)$ denote the approximation of~$I(u)$ using the Gauss--Legendre quadrature.
+    Then $\widehat I_n(u) \rightarrow I(u)$ in the limit as $n \to \infty$.
 \end{theorem}
+\begin{proof}
+    The positivity of the weights is crucial for the proof.
+    By the Weierstrass approximation theorem,
+    for all $\varepsilon > 0$ there exists polynomial $p$ such that
+    \[
+        E := \max_{x \in [-1, 1]} \Bigl\lvert p(x) - u(x) \Bigr\rvert \leq \varepsilon.
+    \]
+    Since the degree of precision of the Gauss--Legendre quadrature with $n+1$ integration nodes is $2n+1$,
+    there exists $N$ sufficiently large such that $\widehat I_n(p) = I(p)$ for all $n \geq N$.
+    Thus
+    \begin{align*}
+        \forall n \geq N,
+        \qquad
+        \Bigl\lvert \widehat I_n(u) - I(u) \Bigr\rvert
+        &\leq
+        \Bigl\lvert \widehat I_n(u) - \widehat I_n(p) \Bigr\rvert
+        + \Bigl\lvert \widehat I_n(p) - I(p) \Bigr\rvert
+        + \Bigl\lvert I(p) - I(u) \Bigr\rvert \\
+        &=
+        \Bigl\lvert \widehat I_n(u) - \widehat I_n(u) \Bigr\rvert
+        + \Bigl\lvert \widehat I(p) - I(u) \Bigr\rvert \\
+        &\leq \sum_{i=0}^{n} w_i E + \int_{-1}^{1} E \, \d x
+        = 2 \varepsilon + 2 \varepsilon = 4 \varepsilon.
+    \end{align*}
+    Since $\varepsilon > 0$ was arbitrary,
+    this concludes the proof.
+\end{proof}
 
 \paragraph{Computation of the integration nodes.}
 We proved that the integration nodes are given by the roots of the Legendre polynomials.
