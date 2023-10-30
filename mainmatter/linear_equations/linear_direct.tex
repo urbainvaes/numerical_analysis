@@ -393,7 +393,7 @@ All the other operations amount to a computational cost scaling as $\bigo(n^2)$,
 which is negligible compared to the cost of the $\mat L \mat U$ factorization when $n$ is large.
 This factorization requires
 \[
-    \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\julia{for i in 1:n-1}} \overbrace{(n - i)}^{\julia{for r in i+1:n}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
+    \overbrace{2\times}^{\text{\julia{-} and \julia{*}}} \underbrace{\sum_{i=1}^{n-1}}_{\text{\julia{for i in 1:n-1}}} \overbrace{(n - i)}^{\text{\julia{for r in i+1:n}}} \underbrace{(n - i + 1)}_{\text{indices \julia{[i:end]}}} \quad \mathrm{flops}
     = \frac{2}{3} n^3 + \bigo(n^2) \quad \mathrm{flops}.
 \]
 
