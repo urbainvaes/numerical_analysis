@@ -761,7 +761,7 @@ In addition, we have the following result.
     \[
         E := \max_{x \in [-1, 1]} \Bigl\lvert p(x) - u(x) \Bigr\rvert \leq \varepsilon.
     \]
-    Since the degree of precision of the Gauss--Legendre quadrature with $n+1$ integration nodes is $2n+1$,
+    Since the degree of precision of the Gauss--Legendre quadrature with $n+1$ integration nodes is~$2n+1$,
     there exists $N$ sufficiently large such that $\widehat I_n(p) = I(p)$ for all $n \geq N$.
     Thus
     \begin{align*}
@@ -775,9 +775,12 @@ In addition, we have the following result.
         &=
         \Bigl\lvert \widehat I_n(u) - \widehat I_n(u) \Bigr\rvert
         + \Bigl\lvert \widehat I(p) - I(u) \Bigr\rvert \\
-        &\leq \sum_{i=0}^{n} w_i E + \int_{-1}^{1} E \, \d x
+        &\leq \sum_{i=0}^{n} \lvert w_i \rvert E + \int_{-1}^{1} E \, \d x
         = 2 \varepsilon + 2 \varepsilon = 4 \varepsilon.
     \end{align*}
+    Indeed, all the weights are positive
+    and the Gauss--Legendre quadrature rule is exact for the constant function~$u(x) = 1$,
+    which implies that the weights add up to 2.
     Since $\varepsilon > 0$ was arbitrary,
     this concludes the proof.
 \end{proof}
@@ -1177,8 +1180,8 @@ is a $(1 - \alpha)$ confidence interval for $I$.
         return vol, σ
     end
     \end{minted}
-            that calculates the volume of the unit ball $B_{d}$ with $d = \julia{dim}$
-            using a Monte Carlo approach with~$\julia{n}$ samples drawn from an appropriate distribution.
+            that calculates the volume of the unit ball $B_{d}$ with $d = \text{\julia{dim}}$
+            using a Monte Carlo approach with~\julia{n} samples drawn from an appropriate distribution.
             Your function should return an estimation of the volume
             together with the standard deviation of the estimator
             (which you should estimate from the samples).
