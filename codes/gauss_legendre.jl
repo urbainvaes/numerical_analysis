@@ -1,10 +1,10 @@
 using Polynomials
+using LaTeXStrings
 using Plots
 
 function legendre(n)
     p = Polynomial([-1, 0, 1])
-    factor = 1 // (2^n * factorial(n))
-    return factor * derivative(p^n, n)
+    return 1 / (2^n * factorial(n)) * derivative(p^n, n)
 end
 
 function get_nodes_and_weights(n)
@@ -19,13 +19,13 @@ function get_nodes_and_weights(n)
 end
 
 function composite_gauss_legendre(u, a, b, n, N)
-    h = 2/N
-    result = 0.
+    h = (b-a)/N
     X = LinRange(a, b, N + 1)
-    x, w = get_nodes_and_weights(n)
-    x, w = (x .+ 1)/2, w/2
+    z, w = get_nodes_and_weights(n)
+    result = 0.
     for i in 1:N
-        result += h * w'u.(X[i] .+ h*x)
+        nodes = X[i] + h/2 .+ z*h/2
+        result += h/2 * w'u.(nodes)
     end
     return result
 end
@@ -36,13 +36,22 @@ u(x) = cos(x)
 # Integration interval
 a, b = -1, 1
 
-# Number of nodes
-n = 3
-
 # Exact value of the integral
 I = 2sin(1)
 
+# Number of nodes
+ns = [1, 2, 3]
+
+# Number of cells
 N = 1:40
-errors = composite_gauss_legendre.(u, a, b, 2, N) .- I
-scatter(N, abs.(errors), scale=:log10)
-fit(log.(N), log.(abs.(errors)), 1)
+
+p = plot(title="Convergence of Gauss Legendre quadrature")
+for n in ns
+    errors = composite_gauss_legendre.(u, a, b, n, N) .- I
+    polyfit = fit(log.(N), log.(abs.(errors)), 1)
+    α = round(- polyfit[1], digits=2)
+    scatter!(N, abs.(errors), scale=:log10, label="n=$n, α=$α")
+    xlabel!(L"N")
+    ylabel!(L"|I - \widehat I|")
+end
+display(p)
