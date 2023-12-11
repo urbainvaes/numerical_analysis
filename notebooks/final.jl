@@ -9,6 +9,8 @@
 #       jupytext_version: 1.14.5
 # ---
 
+# # NYU Paris - Numerical Analysis
+
 # ## Final Exam
 #
 # - Submit this notebook on Brightspace before 6:00 PM
@@ -17,10 +19,10 @@
 #   cells may depend on the previous cells.
 #
 # - To facilitate correction of your code,
-#   do not change the signatures of the functions to be implemented.
+#   do not change the signatures of the functions to implement.
 #
 # - Run the cell below to import necessary packages and
-#   load a macro used unit for tests thoughout the notebook.
+#   load a macro used for unit tests thoughout the notebook.
 
 # +
 using ForwardDiff
@@ -40,7 +42,7 @@ end
 #
 # Throughout this exercise,
 # $(\bullet)_\beta$ denotes base $\beta$ representation.
-# True or false? (+1/0-1)
+# True or false? (+1/0/-1)
 # 1. It holds that
 #    $
 #      (1.0111)_2 + (0.1001)_2 = (10)_2.
@@ -56,12 +58,19 @@ end
 # 1. In base 16, all the natural numbers from 1 to 1000 can be represented using 3 digits.
 #
 # 1. Machine multiplication according to the IEEE754 standard is a commutative operation.
+#
 # 1. Machine addition according to the IEEE754 standard is an associative operation.
+#
 # 1. Only finitely many real numbers can be represented exactly in the `Float64` format.
-# 1. The spacing (in absolute value) between successive `Float64` is strictly increasing.
+#
+# 1. The spacing (in absolute value) between successive `Float64` numbers is strictly increasing.
+#
 # 1. In Julia, `eps(Float32)` is the smallest positive number representable in the `Float32` format.
-# 1. In Julia, `nextfloat(1f0) - 1` equals the machine epsilon for the `Float32` format.
+#
+# 1. In Julia, `nextfloat(1f0) - 1f0` equals the machine epsilon for the `Float32` format.
+#
 # 1. Assume that $x \in \real$ belongs to $\mathbf F_{64}$. Then $2x \in \mathbf F_{64}$.
+#
 # 1. The real number $\sqrt{2}$ can be represented exactly in the single-precision format.
 
 # +
@@ -80,7 +89,6 @@ answers_q1[9] = 0
 answers_q1[10] = 0
 answers_q1[11] = 0
 answers_q1[12] = 0
-
 # -
 
 
@@ -91,14 +99,17 @@ answers_q1[12] = 0
 
 # +
 # Calculate a, b and c here
-
+# sol >
 A = [x^i for x in [0, 1, 2], i in [0, 1, 2]]
 rhs = [1, 3, 7]
 a, b, c = A\rhs
+# sol <
 
 @mark begin p(x) = a*x^2 + b*x + c; p(0) == 1 end
 @mark begin p(x) = a*x^2 + b*x + c; p(1) == 3 end
 @mark begin p(x) = a*x^2 + b*x + c; p(2) == 7 end
+
+# Create the plot here
 # -
 
 # 2. Find the function $f$ of the form $f(x) = a \sin(x) + b \cos(x) + c \sin(2x)$ that goes through the points $(x_1, y_1)$, $(x_2, y_2)$ and $(x_3, y_3)$,
@@ -110,13 +121,16 @@ x = [1, 2, 3]
 y = [2.8313730233698577, -0.6797987415765313, -2.11828048333995]
 
 # Calculate a, b and c here
-
+# sol >
 A = [g(xi) for xi in x, g in (sin, cos, x -> sin(2*x))]
 a, b, c = A\y
+# sol <
 
 @mark begin f(z) = a*sin(z) + b*cos(z) + c*sin(2z); f(x[1]) == y[1] end
 @mark begin f(z) = a*sin(z) + b*cos(z) + c*sin(2z); f(x[2]) == y[2] end
 @mark begin f(z) = a*sin(z) + b*cos(z) + c*sin(2z); f(x[3]) == y[3] end
+
+# Create the plot here
 # -
 
 # 3. Find the function $g$ of the form $g(x) = a \sin(x) + b \cos(x)$
@@ -134,13 +148,14 @@ y = [0.46618950237090034, 0.9365762460801551, 0.5907432672662498,
      0.1784931250350807, 1.024036713535387, 0.7837248688922458,
      -0.1544083454499539]
 
-# Calculate a and b here
-
+# Calculate a and b and create the plot here
+# sol >
 A = [g(xi) for xi in x, g in (sin, cos)]
 a, b = A\y
 
 plot(x -> a*sin(x) + b*cos(x), xlims = (0, 11))
 scatter!(x, y)
+# sol <
 # -
 
 # ### 3. Exercise on numerical integration
@@ -162,10 +177,13 @@ scatter!(x, y)
 
 # +
 function hermite(n)
+    # Write your code here
+# sol >
     n == 0 && return Polynomial([1])
     x = Polynomial([0, 1])
     h = hermite(n-1)
     return 2x * h - derivative(h)
+# sol <
 end
 
 @mark hermite(2) == Polynomial([-2, 0, 4])
@@ -184,8 +202,12 @@ end
 
 # +
 function integrate_monomial(n)
+    # Write your code here
+# sol >
      1/2 * ((-1)^n + 1) * gamma((n + 1)/2)
+# sol <
 end
+
 @mark integrate_monomial(0) ≈ √π
 @mark integrate_monomial(2) ≈ √π/2
 @mark integrate_monomial(3) ≈ 0
@@ -201,6 +223,8 @@ end
 
 # +
 function get_nodes_and_weights(n)
+    # Write your code here
+# sol >
     nodes = roots(hermite(n))
     weights = zero(nodes)
     for i in 1:n
@@ -208,6 +232,7 @@ function get_nodes_and_weights(n)
         ℓ /= ℓ(nodes[i])
         weights[i] = integrate_monomial.(0:n-1)'ℓ.coeffs
     end
+# sol <
     return nodes, weights
 end
 
@@ -220,15 +245,26 @@ end
 
 # +
 function integrate_hermite(f, n)
+    # Write your code here
+# sol >
     nodes, weights = get_nodes_and_weights(n)
     return f.(nodes)'weights
+# sol <
 end
+
+@mark integrate_hermite(x -> 1, 10) ≈ integrate_monomial(0)
+@mark abs(integrate_hermite(x -> x, 10)) <= 1e-10
+@mark integrate_hermite(x -> x^2, 10) ≈ integrate_monomial(2)
+@mark integrate_hermite(x -> x^4, 10) ≈ integrate_monomial(4)
+@mark integrate_hermite(x -> x^6, 10) ≈ integrate_monomial(6)
+@mark abs(integrate_hermite(sin, 10)) <= 1e-10
 # -
 
 # 5. Set $n = 4$, and calculate numerically the degree of precision of the corresponding quadrature rule.
 
 # +
-n = 4
+# Write your code here
+# sol >
 for i in 0:15
     my_approx = integrate_hermite(x -> x^i, n)
     exact = integrate_monomial(i)
@@ -239,6 +275,7 @@ for i in 0:15
         break
     end
 end
+# sol <
 # -
 
 # 6. Set $f(x) = \sin(x)$, and plot the integration error as a function of $n$.
@@ -248,26 +285,28 @@ end
 #    $$
 
 # +
+# Write your code here
+# sol >
 ns = 1:10
 f(x) = cos(x)
 In = √π/ℯ^(.25)
 Ih = integrate_hermite.(f, ns)
 plot(ns, abs.(Ih .- In), yscale=:log10, xlabel=L"n", ylabel="Error")
 scatter!(ns, abs.(Ih .- In))
+# sol <
 # -
 
 # ### 4. Exercise on linear systems
 #
 # This exercise focuses on solving the Euler-Bernoulli beam equation in one dimension,
-# with homogeneous Dirichlet conditions:
+# with homogeneous Dirichlet boundary conditions:
 # $$
-# u''''(x) = -1, \qquad u(0) = u'(0) = u'(1) = u(1) = 0.
+# u''''(x) = 1, \qquad u(0) = u'(0) = u'(1) = u(1) = 0.
 # $$
 # This equation models the deflection of a beam clamped at both ends,
 # under a uniform load.
 # A discretization of this equation on a uniform grid using the finite difference method leads to the following linear system:
 # $$
-# \frac{1}{h^4}
 # \begin{pmatrix}
 #     6  & -4 & 1 \\
 #     -4 & 6  & -4 & 1 \\
@@ -289,6 +328,7 @@ scatter!(ns, abs.(Ih .- In))
 #     u_{n-2}
 # \end{pmatrix}
 # =
+# h^4
 # \begin{pmatrix}
 #     1 \\
 #     1 \\
@@ -306,58 +346,53 @@ scatter!(ns, abs.(Ih .- In))
 # where $h$ is the spacing between the discretization points, and $(u_2, u_3, \cdots, u_{n-3}, u_{n-2})$ are the values of the unknown function $u$ at the points $(x_2, x_3, \cdots, x_{n-3}, x_{n-2})$.
 #
 # 1. Write a function `build_matrix(n)`, which returns the matrix of the linear system.
+#
+#    **Hint:** the function `diagm` is useful here.
 
 # +
 function build_matrix(n)
+    # Write your code here
+# sol >
     m = n - 3
-    A = zeros(m, m)
-    for i in 1:m
-        if i-2 >= 1
-            A[i, i-2] = 1
-        end
-        if i-1 >= 1
-            A[i, i-1] = -4
-        end
-        A[i, i  ] = 6
-        if i+1 <= m
-            A[i, i+1] = -4
-        end
-        if i+2 <= m
-            A[i, i+2] = 1
-        end
-    end
-    return n^4 * A
+    A = diagm(-2 => fill(1, m-2), -1 => fill(-4, m-1), 0 => fill(3, m))
+    return A + A'
+# sol <
 end
 
 @mark size(build_matrix(20)) == (17, 17)
-@mark build_matrix(20)[5, 3] / 20^4 ≈ 1
-@mark build_matrix(20)[5, 4] / 20^4 ≈ -4
-@mark build_matrix(20)[5, 5] / 20^4 ≈ 6
-@mark build_matrix(20)[5, 6] / 20^4 ≈ -4
-@mark build_matrix(20)[5, 7] / 20^4 ≈ 1
-@mark build_matrix(20)[5, 8] / 20^4 ≈ 0
+@mark build_matrix(20)[5, 3] ≈ 1
+@mark build_matrix(20)[5, 4] ≈ -4
+@mark build_matrix(20)[5, 5] ≈ 6
+@mark build_matrix(20)[5, 6] ≈ -4
+@mark build_matrix(20)[5, 7] ≈ 1
+@mark build_matrix(20)[5, 8] ≈ 0
 # -
 
 # 2. Write a function `build_rhs(n)`, which returns the right-hand side of the linear system.
 
 # +
 function build_rhs(n)
+    # Write your code here
+# sol >
     m = n - 3
-    return ones(m)
+    return fill(1/n^4, m)
+# sol <
 end
 
 @mark length(build_rhs(20)) == 17
-@mark build_rhs(20)[end] == 1
-@mark build_rhs(20)[1] == 1
+@mark build_rhs(20)[end] == 1 / 20^4
+@mark build_rhs(20)[1] == 1 / 20^4
 # -
 
-# 3. Write a function `forward_substitution(L, y)`,
-#    which solves the linear system $Lx = y$,
+# 3. Write a function `forward_substitution(L, y)`
+#    that solves the linear system $\mathsf L \mathbf x = \mathbf y$,
 #    in the case where `L` is a lower-triangular matrix,
 #    by using forward substitution.
 
 # +
 function forward_substitution(L, y)
+    # Write your code here
+# sol >
     z = copy(y)
     n = length(y)
     for i in 1:n
@@ -367,33 +402,38 @@ function forward_substitution(L, y)
         z[i] /= L[i, i]
     end
     return z
+# sol <
 end
 
 @mark begin n = 10; L = [1 0; 2 1]; forward_substitution(L, [1; 0]) ≈ [1; -2] end
 @mark begin n = 10; L = LowerTriangular(ones(n, n)); y = fill(2, n); forward_substitution(L, L*y) ≈ y end
+@mark begin n = 10; L = LowerTriangular(randn(n, n)); y = randn(n); forward_substitution(L, L*y) ≈ y end
 @mark begin n = 20; L = LowerTriangular(2ones(n, n)); y = rand(n); forward_substitution(L, L*y) ≈ y end
 # -
 
 # 4. The successive over-relaxation method is a splitting method for solving linear systems of the form $\mathsf A \mathbf x = \mathbf b$.
 #    It is based on the iteration
 #    $$
-#    \mathsf M \mathbf x_{k+1} = \mathsf N \mathbf x_{k} + \mathbf{b}, \qquad \mathsf M = \frac{\mathsf D}{\omega} + \mathsf L, \qquad \mathsf N = \mathsf M - \mathsf A,
+#    \mathsf M \mathbf x_{k+1} = \mathsf N \mathbf x_{k} + \mathbf{b}, \qquad \text{where} \quad \mathsf M = \frac{\mathsf D}{\omega} + \mathsf L \quad \text{and} \quad \mathsf N = \mathsf M - \mathsf A.
 #    \tag{SOR}
 #    $$
 #    <a id="SOR"></a>
-#    where $\omega \in (0, 2)$ is a parameter,
+#    Here $\omega \in (0, 2)$ is a parameter,
 #    $\mathsf D$ is diagonal matrix containing the diagonal of $\mathsf A$,
 #    and $\mathsf L$ is a strictly lower triangular matrix containing the strict lower triangular part of $\mathsf A$,
 #    not including the diagonal.
 #    Write a function `sor(A, b, ω)` that
-#    implements this method, without using Julia's `\` and `inv` functions.
+#    implements this iteration, without using Julia's `\` and `inv` functions.
 #    Initialize the iteration with $\mathbf x_0 = \mathbf 0$,
-#    and use as stopping criterion
+#    and use as stopping criterion that
 #    $$
 #    \lVert \mathsf A \mathbf x - \mathbf b \rVert
 #    \leq \varepsilon \lVert \mathbf b \rVert,
 #    \qquad \varepsilon := 10^{-10}.
 #    $$
+#    If after `maxiter` iterations,
+#    a solution that satisfies this stopping criterion has not been found,
+#    return `nothing`.
 #
 #    **Hints**:
 #    - The functions `Diagonal` and `LowerTriangular` are useful to construct the matrices $\mathsf D$ and $\mathsf L$.
@@ -402,6 +442,8 @@ end
 
 # +
 function sor(A, b; ω = 1, ε = 1e-10, maxiter = 10^5)
+    # Write your code here
+# sol >
     n = length(b)
     x = zeros(n)
     D = Diagonal(A)
@@ -413,32 +455,40 @@ function sor(A, b; ω = 1, ε = 1e-10, maxiter = 10^5)
         end
         x = forward_substitution(M, (M-A)*x + b)
     end
-    return x
+    return nothing
+# sol <
 end
 
 # Test code
-n, ε = 20, 1e-10
-A = build_matrix(n)
-b = build_rhs(n)
-sol = sor(A, b; ω = 1.5, ε = ε)
-@mark norm(A*sol - b) ≤ ε*norm(b)
+n = 20
+X = qr(randn(n, n)).Q
+A = X*Diagonal(rand(n) .+ 5)*X'
+b = randn(n)
+@mark begin ε = 1e-10; sol = sor(A, b; ω = 1.5, ε = ε); norm(A*sol - b) ≤ ε*norm(b) end
+@mark begin ε = 1e-10; sol = sor(A, b; ω = 1.5, ε = ε); norm(A*sol - b) ≥ 1e-15*norm(b) end
+@mark begin ε = 1e-12; sol = sor(A, b; ω = 1.5, ε = ε); norm(A*sol - b) ≤ ε*norm(b) end
+@mark begin ε = 1e-12; sor(A, b; ω = 2, ε = ε) == nothing end
+@mark begin ε = 1e-12; sor(A, b; ω = 1, ε = ε) ≈ A\b end
 # -
 
 # 5. Use the relaxation method implemented in the previous item
-#    with $\omega = 1.5$ to solve the linear system of this exercise with $n = 40$.
+#    with parameters $\omega = 1.5$ and $\varepsilon = 10^{-8}$ to solve the linear system of this exercise with $n = 40$.
 #    Compare on a graph the solution you obatined with the exact solution,
 #    which is given by
 #    $$ u(x) = \frac{1}{24} x^2(x - 1)^2. $$
 
 # +
 u(x) = 1/24 * x^2 * (x - 1)^2
-n = 50
+# Write your code here
+# sol >
+n, ε = 40, 1e-8
 A = build_matrix(n)
 b = build_rhs(n)
 sol = sor(A, b; ω = 1.5, ε = ε)
 x = LinRange(0, 1, n + 1)
 plot(u, xlims = (0, 1), label="Exact solution")
-plot!(x[3:end-2], sol, xlims = (0, 1), label="Approximate solution")
+plot!(x[3:end-2], A\b, xlims = (0, 1), label="Approximate solution")
+# sol <
 # -
 
 
@@ -447,6 +497,7 @@ plot!(x[3:end-2], sol, xlims = (0, 1), label="Approximate solution")
 # We wish to find all the solutions to the following transcendental equation for $x \in [-5, -5]$.
 # $$
 # x = 5 \sin(\pi x)
+# \tag{1}
 # $$
 #
 # 1. Plot the functions $x \mapsto x$ and $x \mapsto 5 \sin(\pi x)$ on the same graph,
@@ -454,25 +505,34 @@ plot!(x[3:end-2], sol, xlims = (0, 1), label="Approximate solution")
 #    and count the number of solutions
 
 # +
+# Write your code here
+# sol >
 plot(x -> x, xlims = (-5, 5), ylims=(-7, 7))
 plot!(x -> 5sinpi(x))
+# sol <
 # -
 
 # 2. Using the bisection method, calculate precisely the only solution in the interval $[\frac{1}{2}, 1]$.
 
 # +
 function bisection(f, a, b, ε = 1e-10)
+    # Write your code here
+# sol >
     @assert f(a) * f(b) ≤ 0
     while abs(b - a) ≥ ε
         x = (a + b) / 2
         a, b = f(a) * f(x) ≤ 0 ? [a, x] : [x, b]
     end
     return (a + b) / 2
+# sol <
 end
 
+# Calculate solution here
+# sol >
 f(x) = x - 5sinpi(x)
 a, b = 1/2, 1
 bisection(f, a, b)
+# sol <
 # -
 
 # 3. Write a function `newton_raphson(f, x₀; maxiter = 100, ε = 1e-12)` that returns the result of the Newton-Raphson iteration applied to the equation $f(x) = 0$ and initialized at `x₀`,
@@ -480,17 +540,20 @@ bisection(f, a, b)
 #    Use the `ForwardDiff` library to compute derivatives,
 #    and use the following stopping criterion
 #    $$
-#    |f(z_k)| ≤ \varepsilon.
+#    |f(x_k)| ≤ \varepsilon.
 #    $$
 
 # +
 function newton_raphson(f, x₀; maxiter = 100, ε = 1e-12)
+    # Write your code here
+# sol >
     df(x) = ForwardDiff.derivative(f, x)
     for i in 1:maxiter
         x₀ -= f(x₀) / df(x₀)
         (abs∘f)(x₀) ≤ ε && return x₀
     end
     return nothing
+# sol <
 end
 
 @mark newton_raphson(x -> x^2 - 2, 1) ≈ √2
@@ -501,14 +564,15 @@ end
 # -
 
 # 4. Using the Newton-Raphson method you implemented,
-#    calculate all the solutions to the transcendental equation.
+#    calculate all the solutions to the transcendental equation <a href="#NR">(1)</a>.
 
 # +
 # Write your code here.
-
+# sol >
 for x in LinRange(-5.5, 5.5, 17)
     println(newton_raphson(f, x))
 end
+# sol <
 # -
 
 # 5. We now consider another approach,
@@ -518,12 +582,14 @@ end
 #    x_{k+2} = \frac{x_{k} f(x_{k+1}) - x_{k+1}f(x_k)}{f(x_{k+1}) - f(x_{k})}.
 #    $$
 #    Write a function `secant(f, x₀, x₁; maxiter = 100, ε = 1e-12)`
-#    that returns the result of the secant iteration applied to the equatio $f(x) = 0$, and initialized with `x₀` and `x₁`,
+#    that returns the result of the secant iteration applied to the equation $f(x) = 0$, and initialized with `x₀` and `x₁`,
 #    or `nothing` if a solution is not found after `maxiter` iterations.
 #    Use the same stopping criterion as above.
 
 # +
 function secant(f, x₀, x₁; maxiter = 100, ε = 1e-12)
+    # Write your code here
+# sol >
     x₁, x₂ = x₀, x₁
     for i in 1:maxiter
         x₀, x₁ = x₁, x₂
@@ -531,6 +597,7 @@ function secant(f, x₀, x₁; maxiter = 100, ε = 1e-12)
         (abs∘f)(x₂) ≤ ε && return x₂
     end
     return nothing
+# sol <
 end
 
 @mark secant(x -> x^2 - 2, 1., 2.) ≈ √2
@@ -543,7 +610,9 @@ end
 
 # +
 # Write your code here.
+# sol >
 secant(x -> x - exp(-x), 0., 1.)
+# sol <
 # -
 
 # ### 6. Exercise on eigenvalue problems
@@ -575,6 +644,8 @@ function myQR(B)
 end
 
 function myEigen(B, p, niter)
+    # Write your code here
+# sol >
     n = size(B, 1)
     X = randn(n, p)
     for i in 1:niter
@@ -582,6 +653,7 @@ function myEigen(B, p, niter)
     end
     λs = diag(X'*B*X)
     return λs, X
+# sol <
 end
 
 @mark begin n = 2; A = randn(n, n); myEigen(A'A, n, 100)[1] ≈ reverse(eigen(A'A).values) end
@@ -590,8 +662,8 @@ end
 # -
 
 # 2. Write a function `mySVD(B, p, niter)`
-#    whith returns the `p` dominant singular values of square matrix `B` as a vector,
-#    together with the associated left and right singular vectors.
+#    that returns the `p` dominant singular values of square matrix `B` (in a vector `σs`),
+#    together with the associated left and right singular vectors (in matrices `Up` and `Vp`).
 #    To this end,
 #    notice that
 #    $$
@@ -612,20 +684,23 @@ end
 #
 #    - Once you have calculated the left and right singular vectors
 #      associated with the `p` dominant singular values,
-#      the singular values themselves can be obtained from
+#      the singular values themselves can be obtained by extracting the diagonal from the matrix
 #      $$
-#      \Sigma = \mathsf U_p^\top \mathsf B \mathsf V_p.
+#      \Sigma_p = \mathsf U_p^\top \mathsf B \mathsf V_p.
 #      $$
 #      Here $\mathsf U_p$ and $\mathsf V_p$ are the matrices containing as columns the left and right singular vectors associated with the `p` dominant singular values,
 #      respectively.
 
 # +
 function mySVD(B, p, niter)
+    # Write your code here
+# sol >
     n = size(B, 1)
     λ₁, U = myEigen(B*B', p, niter)
     λ₂, V = myEigen(B'B, p, niter)
     σs = U'B*V
     return σs, U, V
+# sol <
 end
 # -
 
@@ -638,18 +713,19 @@ end
 
 # +
 # Write you code here
-
+# sol >
 n = 10
 B = randn(n, n)
 σs, U, V = mySVD(B, n, 1000)
 @mark norm(U'U - I(n)) < 1e-10
 @mark norm(V'V - I(n)) < 1e-10
 @mark norm(U*Diagonal(σs)*V' - B) < 1e-10
+# sol <
 # -
 
 # 4. The singular value decomposition is very useful for compressing matrices.
 #    The idea of compression methods based on SVD is the following:
-#    given $p \leq n$, a matrix $B \in \mathbf R^{n\times n}$
+#    given $p \leqslant n$, a matrix $B \in \mathbf R^{n\times n}$
 #    can be approximated by
 #    $$
 #    \widetilde {\mathsf B} := \mathsf U_p \mathsf \Sigma_p \mathsf V_p^\top,
@@ -665,21 +741,23 @@ B = randn(n, n)
 #    and plot the compressed image for $p \in \{5, 10, 20, 30\}$.
 
 #    **Remark**:
-#    - (For information) In practice, instead of storing the full matrix $\widetilde {\mathsf B}$, which contains $n^2$ entries,
-#      we can store only $\mathsf U_p$, $\mathsf \Sigma_p$ and $\mathsf V_p$,
-#      which together contain only $np + p^2$ entries.
-#      If $p \ll n$, the memory required to store these matrices is much smaller than the memory required to store $\mathsf B$.
+#    - (For information only) In practice, instead of storing the full matrix $\widetilde {\mathsf B}$, which contains $n^2$ entries,
+#      we can store only the matrices $\mathsf U_p$, $\mathsf \Sigma_p$ and $\mathsf V_p$,
+#      which together contain only $2np + p^2$ entries.
+#      If $p \ll n$,
+#      then the memory required to store these matrices is much smaller than the memory required to store the initial matrix $\mathsf B$.
 #
 #    - A function for drawing images based on the matrix of pixel intensity values is provided below.
 
 # +
+# Do not change the code in this cell
 A = testimage("fabio_gray_256")
 
-# Convert to matrix of Float64
+# Convert image to matrix of Float64
 M = Float64.(A)
 
-# Function to plot black and white image from a
-# matrix containing the grayscale value of each pixel
+# Function to plot a grayscale image from the matrix
+# containing the intensity values of all the pixels
 function plot_matrix(B)
     plot(Gray.(B), ticks=false, showaxis=false)
 end
@@ -688,25 +766,41 @@ plot_matrix(M)
 # -
 
 # +
-p, niter = 5, 100
+p = 5
+# Write you code here
+# sol >
+niter = 100
 σs, U, V = mySVD(M, p, niter)
 plot_matrix(U*Diagonal(σs)*V')
+# sol <
 # -
 
 # +
-p, niter = 10, 100
+p = 10
+# Write you code here
+# sol >
+niter = 100
 σs, U, V = mySVD(M, p, niter)
 plot_matrix(U*Diagonal(σs)*V')
+# sol <
 # -
 
 # +
-p, niter = 20, 100
+p = 20
+# Write you code here
+# sol >
+niter = 100
 σs, U, V = mySVD(M, p, niter)
 plot_matrix(U*Diagonal(σs)*V')
+# sol <
 # -
 
 # +
-p, niter = 30, 100
+p = 30
+# Write you code here
+# sol >
+niter = 100
 σs, U, V = mySVD(M, p, niter)
 plot_matrix(U*Diagonal(σs)*V')
+# sol <
 # -
