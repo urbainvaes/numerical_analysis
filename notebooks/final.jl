@@ -265,6 +265,7 @@ end
 # +
 # Write your code here
 # sol >
+n = 4
 for i in 0:15
     my_approx = integrate_hermite(x -> x^i, n)
     exact = integrate_monomial(i)
@@ -278,10 +279,10 @@ end
 # sol <
 # -
 
-# 6. Set $f(x) = \sin(x)$, and plot the integration error as a function of $n$.
+# 6. Set $f(x) = \cos(x)$, and plot the integration error as a function of $n$.
 #    You may use that
 #    $$
-#    \int_{-\infty}^{\infty} \sin(x) \, e^{-x^2} \, d x = \frac{\sqrt{\pi}}{\sqrt[4]{e}}
+#    \int_{-\infty}^{\infty} \cos(x) \, e^{-x^2} \, d x = \frac{\sqrt{\pi}}{\sqrt[4]{e}}
 #    $$
 
 # +
@@ -330,6 +331,7 @@ scatter!(ns, abs.(Ih .- In))
 # =
 # h^4
 # \begin{pmatrix}
+#     1 \\
 #     1 \\
 #     1 \\
 #     1 \\
@@ -724,7 +726,7 @@ B = randn(n, n)
 # -
 
 # 4. The singular value decomposition is very useful for compressing matrices.
-#    The idea of compression methods based on SVD is the following:
+#    The idea of matrix compression based on SVD is the following:
 #    given $p \leqslant n$, a matrix $B \in \mathbf R^{n\times n}$
 #    can be approximated by
 #    $$
@@ -736,11 +738,11 @@ B = randn(n, n)
 #
 #    Since a grayscale image can be represented by a matrix containing the intensity values of all the pixels,
 #    this approach for compressing matrices can be used for compressing grayscale images.
-#    Use this method, i.e. calculate $\widetilde {\mathsf B}$,
+#    Use this method, i.e. calculate $\widetilde {\mathsf B}$, for $p \in \{5, 10, 20, 30\}$,
 #    in order to compress the image `fabio_gray_256` given below,
-#    and plot the compressed image for $p \in \{5, 10, 20, 30\}$.
+#    and plot the compressed image for these values of `p`.
 
-#    **Remark**:
+#    **Remarks**:
 #    - (For information only) In practice, instead of storing the full matrix $\widetilde {\mathsf B}$, which contains $n^2$ entries,
 #      we can store only the matrices $\mathsf U_p$, $\mathsf \Sigma_p$ and $\mathsf V_p$,
 #      which together contain only $2np + p^2$ entries.
