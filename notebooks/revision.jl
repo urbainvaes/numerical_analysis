@@ -46,7 +46,7 @@
 #
 #     where `x` are the interpolation nodes, and `y` are the values of the function to interpolate.
 #
-# - To calculate the analytical solution with a polynomial right-hand side, notice that all solutions are polynomials, and without boundary conditions, the solution is unique modulo $\mathbf{P}_3$.
+# - To calculate the analytical solution with a polynomial right-hand side, notice that all solutions are polynomials, and without boundary conditions, the solution is unique modulo a polynomial of degree at most 3.
 #
 # - You can use the `integrate` function from the `Polynomials.jl` library, which calculates an antiderivative of a polynomial:
 #
@@ -125,8 +125,8 @@ plot!(yaxis=:log, lw=2)
 #    $$
 #    write a function `laguerre(n)` which returns the Laguerre polynomial of degree $n$.
 #
-# 1. Write a function `get_nodes_and_weights(n)` which returns the nodes and weights of the Gauss-Laguerre quadrature    with $n$ nodes. In order to construct Lagrange polynomials, you may find it useful to use the `fromroots` function.
-# You will need to use that
+# 1. Write a function `get_nodes_and_weights(n)` which returns the nodes and weights of the Gauss-Laguerre quadrature with $n$ nodes. In order to construct Lagrange polynomials, you may find it useful to use the `fromroots` function from `Polynomials.jl`.
+#    You will need to use that
 #    $$
 #    \int_0^{\infty} x^n e^{-x} \, dx = n!
 #    $$
