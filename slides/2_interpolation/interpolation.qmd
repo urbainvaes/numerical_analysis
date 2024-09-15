@@ -1,0 +1,178 @@
+---
+title: "Interpolation"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 1400
+        height: 900
+        chalkboard: false
+        transition: convex
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        slide-number: h.v
+        eval: false
+        echo: true
+        preview-links: auto
+        toc: false
+        embed-resources: true
+
+revealjs-plugins:
+  - verticator
+  - pointer
+
+bibliography: ../biblio/scientific_computing.bib
+link-citations: true
+csl: ../biblio/elsevier-harvard.csl
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.10
+execute:
+  freeze: auto
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+## Existence and uniqueness {.smaller}
+
+::: {.callout-note icon=false}
+## Theorem (Existence and uniqueness)
+Given data $x_0 < x_1< \dotsc < x_n$ and $y_0, \dotsc, y_n$,
+there **exists** a **unique** $p \in \mathcal P_n$ such that
+$$
+\forall i \in \{0, \dotsc, n\}, \qquad p(x_i) = y_i.
+$$
+:::
+
+. . .
+
+**Proof of existence**: Define [Lagrange]{.emph} polynomials
+$$
+\forall i \in \{0, \dotsc, n\}, \qquad
+L_i(x) = \prod_{\substack{j = 0 \\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}
+$$
+Then set $p(x) = \sum_{i=0}^{n} y_i L_i(x)$ and verify that $p$ is an interpolating polynomial,
+which proves existence.
+
+. . .
+
+**Proof of uniqueness**: 
+assume $q \in \mathcal P_n$ is another interpolating polynomial.
+Then $p - q \in \mathcal P_n$ and
+$$
+    \forall i \in \{0, \dotsc, n\}, \qquad
+    p(x) - q(x) = 0.
+$$
+Thus $p - q$ is a polynomial of degree at most $n$ with $n + 1$ roots, so $p - q = 0$.
+
+## Illustration: Lagrange polynomials {.smaller}
+
+Key property of Lagrange polynomials:
+$$
+L_i(x_j) = 
+\begin{cases} 
+1 & \text{if $i = j$} \\
+0 & \text{if $i \neq j$}
+\end{cases}
+$$
+
+:::: {.columns}
+
+::: {.column width="45%"}
+```{julia}
+#| echo: true
+#| eval: false
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+# Interpolation nodes
+x = [1, 2, 3]
+
+function L(i, z)
+    result = 1.0
+    for j in 1:length(x)
+        if i != j
+            result *= (z - x[j]) / (x[i] - x[j])
+        end
+    end
+    return result
+end
+
+scatter(x, ones(3), title="Lagrange polynomials")
+plot!(z -> L(1, z))
+plot!(z -> L(2, z))
+plot!(z -> L(3, z))
+```
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="45%"}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+# Interpolation nodes
+x = [1, 2, 3]
+
+function L(i, z)
+    result = 1.0
+    for j in 1:length(x)
+        if i != j
+            result *= (z - x[j]) / (x[i] - x[j])
+        end
+    end
+    return result
+end
+
+scatter(x, ones(3), label="nodes", title="Lagrange polynomials")
+plot!(z -> L(1, z), label=L"L_1")
+plot!(z -> L(2, z), label=L"L_2")
+plot!(z -> L(3, z), label=L"L_3")
+```
+:::
+::::
+
+## Interpolation error
+
+::: {.column width="80%"}
+::: {.callout-note icon=false}
+## Theorem
+**Assumptions**
+
+- $u\colon [a, b] \to \mathbf R$ is a $C^{n+1}([a, b])$ function
+
+- $a=x_0< x_1< \dotsc < x_n=b$ are $n+1$ distinct interpolation nodes
+
+- $\widehat u$ interpolates $u$ at $x_0, x_1, \dotsc, x_n$, i.e. $\widehat u(x_i) = u(x_i)$ for all $i ∈ \{0,\dotsc,n\}$
+
+Then, it hold that $\quad ∀\, x ∈ [a,b],\quad ∃\, ξ=ξ(x) ∈ [a,b]$
+$$
+    e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n)
+$$
+:::
+:::
+
+## Corollary 
+
+
