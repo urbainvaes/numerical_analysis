@@ -7,7 +7,7 @@ institute: "NYU Paris"
 format:
     revealjs:
         theme: [default, ../config/custom.scss]
-        width: 1400
+        width: 1600
         height: 900
         chalkboard: false
         transition: convex
@@ -46,6 +46,39 @@ execute:
 
 ---
 
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings
+# Plots.pgfplotsx()
+
+Plots.default(fontfamily="Computer Modern",
+              titlefont = "Computer Modern",
+              legendfont = "Computer Modern",
+              titlefontsize=20,
+              xlabelfontsize=20,
+              ylabelfontsize=20,
+              legendfontsize=16,
+              xtickfontsize=16,
+              ytickfontsize=16,
+              linewidth=4,
+              markersize=7,
+              framestyle=:box,
+              grid=true,
+              background_color=:transparent,
+              foreground_color=:black,
+              top_margin=5Plots.mm,
+              bottom_margin=12Plots.mm,
+              left_margin=12Plots.mm,
+              right_margin=5Plots.mm,
+)
+;
+```
+
 ## Existence and uniqueness {.smaller}
 
 ::: {.callout-note icon=false}
@@ -62,14 +95,14 @@ $$
 **Proof of existence**: Define [Lagrange]{.emph} polynomials
 $$
 \forall i \in \{0, \dotsc, n\}, \qquad
-L_i(x) = \prod_{\substack{j = 0 \\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}
+L_i(x) := \prod_{\substack{j = 0 \\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
 $$
 Then set $p(x) = \sum_{i=0}^{n} y_i L_i(x)$ and verify that $p$ is an interpolating polynomial,
 which proves existence.
 
 . . .
 
-**Proof of uniqueness**: 
+**Proof of uniqueness**:
 assume $q \in \mathcal P_n$ is another interpolating polynomial.
 Then $p - q \in \mathcal P_n$ and
 $$
@@ -82,8 +115,8 @@ Thus $p - q$ is a polynomial of degree at most $n$ with $n + 1$ roots, so $p - q
 
 Key property of Lagrange polynomials:
 $$
-L_i(x_j) = 
-\begin{cases} 
+L_i(x_j) =
+\begin{cases}
 1 & \text{if $i = j$} \\
 0 & \text{if $i \neq j$}
 \end{cases}
@@ -114,9 +147,10 @@ function L(i, z)
 end
 
 scatter(x, ones(3), title="Lagrange polynomials")
-plot!(z -> L(1, z))
-plot!(z -> L(2, z))
-plot!(z -> L(3, z))
+plot!(legend=:outertopright, size=(900, 900))
+plot!(z -> L(1, z), label=L"L_1")
+plot!(z -> L(2, z), label=L"L_2")
+plot!(z -> L(3, z), label=L"L_3")
 ```
 :::
 
@@ -149,11 +183,12 @@ scatter(x, ones(3), label="nodes", title="Lagrange polynomials")
 plot!(z -> L(1, z), label=L"L_1")
 plot!(z -> L(2, z), label=L"L_2")
 plot!(z -> L(3, z), label=L"L_3")
+plot!(legend=:outertopright)
 ```
 :::
 ::::
 
-## Interpolation error
+## Interpolation error {.smaller}
 
 ::: {.column width="80%"}
 ::: {.callout-note icon=false}
@@ -166,13 +201,316 @@ plot!(z -> L(3, z), label=L"L_3")
 
 - $\widehat u$ interpolates $u$ at $x_0, x_1, \dotsc, x_n$, i.e. $\widehat u(x_i) = u(x_i)$ for all $i ∈ \{0,\dotsc,n\}$
 
-Then, it hold that $\quad ∀\, x ∈ [a,b],\quad ∃\, ξ=ξ(x) ∈ [a,b]$
+Then, it holds that $\quad ∀\, x ∈ [a,b],\quad ∃\, ξ=ξ(x) ∈ [a,b]$
 $$
     e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n)
 $$
 :::
 :::
 
-## Corollary 
+## Corollary {.smaller}
+
+::: {.column width="80%"}
+::: {.callout-note icon=false}
+## Theorem
+**Assumptions**
+
+- $u\colon [a, b] \to \mathbf R$ is a smooth function
+
+- $a=x_0< x_1< \dotsc < x_n=b$ are $n+1$ distinct interpolation nodes
+
+- $\widehat u$ interpolates $u$ at $x_0, x_1, \dotsc, x_n$.
+
+Then it holds that
+$$
+    E_n := \sup_{x \in [a, b]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{n+1}}{4(n+1)} h^{n+1},
+    \qquad
+    C_{n+1} :=
+    \sup_{x \in [a, b]} \left\lvert u^{(n+1)}(x) \right\rvert.
+$$
+where $h$ is the maximum spacing between two successive interpolation nodes.
+:::
+:::
+\begin{corollary}
+    [Upper bound on the interpolation error]
+    \label{corollary:interpolation_error}
+\end{corollary}
+
+## Chebyshev roots {.smaller}
+
+**Question**? What nodes $(x_0, \dotsc x_n)$ to pick  to minimize $(x-x_0) \dotsc (x - x_n)$? Recall
+$$
+    u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n)
+$$
+
+::: {.column width="80%"}
+::: {.callout-note icon=false}
+## Theorem
+Assume that $p$ is a [monic]{.emph} polynomial of degree $n \geq 1$:
+$$
+    p(x) = \alpha_0 + \alpha_1 x + \dotsb + \alpha_{n-1} x^{n-1} +  x^n.
+$$
+Then it holds that
+$$
+    \label{eq:chebychev_lower_bound}
+    \sup_{x \in [-1, 1]} \bigl\lvert p(x) \bigr\rvert \geq \frac{1}{2^{n-1}} =: E.
+$$
+In addition, the lower bound is achieved for $p_*(x) = 2^{-(n-1)} T_n(x)$,
+where $T_n$ is the Chebyshev polynomial of degree $n$:
+$$
+    \label{eq:chebyshev_polynomial}
+    T_n(x) = \cos(n\arccos x) \qquad (-1 \leq x \leq 1).
+$$
+:::
+:::
+
+. . .
+
+$\leadsto$ **Idea**: use roots of $T_n$ as interpolation nodes
+
+## Sine function with equidistant nodes {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+
+using Polynomials
+
+function plotsin(n)
+    lims = (0, 2π)
+    X = LinRange(0, 2π, n)
+    f(x) = sin(x)
+    Y = f.(X)
+    P = Polynomials.fit(X, Y)
+    x_plot = LinRange(lims[1], lims[2], 600)
+    Plots.plot(xlims=lims, size=(600,400))
+    Plots.plot!(x_plot, f.(x_plot), label="")
+    Plots.plot!(x_plot, P.(x_plot), label="")
+    Plots.scatter!(X, f.(X), label = "$n nodes", legend=:topright)
+    Plots.plot!(xlim = lims, ylim = (-1.2, 1.2))
+    Plots.xticks!(range(0,2π,step=π/4), [L"0",L"\frac{π}{4}",L"\frac{π}{2}",L"\frac{3π}{4}",L"π",L"\frac{5π}{4}",L"\frac{3π}{2}",L"\frac{7π}{4}",L"2π"])
+end
+;
+```
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="30%"}
+$$
+u(x)=\sin{x}
+$$
+$$
+x_k=a + (b-a) \frac{k}{n} \quad (0 ≤ k ≤ n)
+$$
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotsin(3)
+```
+:::
+:::
+
+::: {.column width="10%"}
+:::
+
+::::
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotsin(4)
+```
+:::
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotsin(8)
+```
+:::
+:::
+
+::: {.column width="10%"}
+:::
+
+::::
+
+## Runge function with equidistant nodes {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+
+function plotRunge(n)
+    lims = (-1, 1)
+    X = LinRange(-1, 1, n)
+    f(x) = 1 / (1 + 25x^2)
+    Y = f.(X)
+    P = Polynomials.fit(X, Y)
+    x_plot = LinRange(lims[1], lims[2], 600)
+    Plots.plot(xlims=lims, size=(600,400))
+    Plots.plot!(x_plot, f.(x_plot), label="")
+    Plots.plot!(x_plot, P.(x_plot), label="")
+    Plots.scatter!(X, f.(X), label = "$n nodes", legend=:topright)
+    Plots.plot!(xlim = lims)
+end
+;
+```
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="30%"}
+$$
+u(x)=\frac{1}{1+25x^2}
+$$
+$$
+x_k=a + (b-a) \frac{k}{n} \quad (0 ≤ k ≤ n)
+$$
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotRunge(6)
+```
+:::
+:::
+
+::: {.column width="10%"}
+:::
+
+::::
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotRunge(10)
+```
+:::
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotRunge(20)
+```
+:::
+:::
+
+::: {.column width="10%"}
+:::
+
+::::
+
+## Optimization of the nodes: Chebyshev nodes {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+
+function plotRungeCheb(n)
+    lims = (-1, 1)
+    k = 0:(n-1)
+    X = @. -cos(π*(k+1/2)/n)
+    f(x) = 1 / (1 + 25x^2)
+    Y = f.(X)
+    P = Polynomials.fit(X, Y)
+    x_plot = LinRange(lims[1], lims[2], 600)
+    Plots.plot(xlims=lims, size=(600,400))
+    Plots.plot!(f, x_plot, label="")
+    Plots.plot!(f, x_plot, label="")
+    Plots.scatter!(X, f.(X), label = "$n nodes", legend=:topright)
+    Plots.plot!(xlim = lims)
+end
+;
+```
+
+**Idea:** Take $x_0 < x_1 < \dotsc < x_n$ to be the roots of $T_n$:
+
+$$
+x_k=-\cos \Bigl(\pi \frac{k + \frac{1}{2}}{n} \Bigl),
+\qquad (0 ≤ k < n)
+$$
+
+:::: {.columns}
 
 
+::: {.column width="49%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotRungeCheb(15)
+```
+:::
+:::
+
+::: {.column width="49%"}
+::: {.fragment .fade-up}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plotRungeCheb(30)
+```
+:::
+:::
+::::
