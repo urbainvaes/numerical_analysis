@@ -68,7 +68,7 @@ Plots.default(fontfamily="Computer Modern",
               linewidth=4,
               markersize=7,
               framestyle=:box,
-              grid=true,
+              grid=false,
               background_color=:transparent,
               foreground_color=:black,
               top_margin=5Plots.mm,
@@ -79,7 +79,11 @@ Plots.default(fontfamily="Computer Modern",
 ;
 ```
 
+
 ## Existence and uniqueness {.smaller}
+
+{{< include ../config/_macros_revealjs.tex >}}
+{{< include ../config/_macros_colors.tex >}}
 
 ::: {.callout-note icon=false}
 ## Theorem (Existence and uniqueness)
@@ -514,3 +518,248 @@ plotRungeCheb(30)
 :::
 :::
 ::::
+
+## Piecewise interpolation {.smaller}
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="80%"}
+::: {.callout-note icon="false"}
+## Piecewise continuous interpolation
+Let $e_n$ denote the interpolation error and recall that
+\begin{align}
+    &\max_{x ∈ [a, b]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{n+1}}{4(n+1)} h^{n+1},
+    \qquad
+    C_{n+1} = \max_{x ∈ [a, b]} \left\lvert u^{(n+1)}(x) \right\rvert
+\end{align}
+with $h = \max_{i ∈ \{0, \dotsc, n-1\}} \lvert x_{i+1} - x_i\rvert$
+
+
+Idea to control the error :
+
+  - Divide interval $[a,b]$ into $n$ subinteravl of size $h=\frac{b-a}{n}$
+
+  - Interpolate with a polynomial of degree $m$ over $[x_{i},x_{i+1}]$
+
+    ```{julia}
+    #| echo: false
+    #| eval: true
+    #| code-fold: false
+    #| code-line-numbers: false
+
+    δ = 0.2
+    pl = Plots.plot(size = (700,100), ylim =(-δ,δ))
+    xs = LinRange(-1, 1, 37)
+    Plots.plot!(xs, zero(xs),)
+    Plots.scatter!(xs, zero(xs), markersize=6, markershape=:diamond,)
+    xs = LinRange(-1, 1, 13)
+    Plots.scatter!(xs, zero(xs), markersize=8,)
+    Plots.plot!(axis = false, grid = false, legend = false, ticks = false)
+    ```
+    $$
+    \max_{x ∈ [x_{i},x_{i+1}]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{m+1}}{4(m+1)} \left(\frac{h}{m}\right)^{m+1}
+    \quad \Rightarrow \quad
+    \max_{x ∈ [a, b]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{m+1}}{4(m+1)} \left(\frac{h}{m}\right)^{m+1}
+    $$
+
+  - $m$ is fixed and small but $h$ can vary.
+    The error scales as $C h^{m+1}$.
+
+:::
+:::
+::::
+
+## Example (1/3)
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using Polynomials
+f(x) = 1 / (1 + 10*(x+.5cos(4x))^2)
+
+function plot_n_m(n, m)
+    X = -1:2/n:1
+    x = -1:2/(n*m):1
+    xplot = LinRange(-1, 1, 200)
+    pl = plot(title="n = $n, m = $m", size=(1200, 700))
+    plot!(f, xplot, linewidth=2, label="f(x)")
+    scatter!(f, x, markersize=4, label=nothing)
+    scatter!(f, X, markersize=8, label=nothing)
+    vline!(X, color="gray", xlims=(-1, 1), label=nothing)
+    for i in 1:n
+        a, b = -1 + 2(i-1)/n, -1 + 2i/n
+        x_interp = LinRange(a, b, m + 1)
+        x_fine = LinRange(a, b, 50)
+        p = fit(x_interp, f.(x_interp))
+        plot!(x_fine, p.(x_fine), label=nothing)
+    end
+    return pl
+end
+
+plot_n_m(3, 2)
+```
+
+## Example (2/3)
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plot_n_m(4, 3)
+```
+
+
+## Example (3/3)
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+plot_n_m(8, 3)
+```
+
+## Least squares approximation {.smaller}
+
+:::: {.columns}
+
+::: {.column width="80%"}
+::: {.callout-note icon="false"}
+## Problem statement
+- $n+1$ distinct nodes $a=x_0< x_1< \dotsc < x_n=b$
+
+- $n+1$ values $u_0, u_1, \dotsc, u_n$
+
+- a vector space ${\rm Span}(φ_0,φ_1,\dotsc,φ_m)$ of continuous functions on $[a,b]$ 
+  with $\color{red}{m<n}$
+
+We wish to find 
+$\widehat u(x) = α_0 φ_0(x) + \dotsb + α_m φ_m(x)$
+such that
+$$
+\forall i \in \{0, \dotsc, n\}, \qquad
+    \widehat u(x_i) \, {\color{red}{\approx}} \, u_i
+$$
+Matrix form of these equations:
+$$
+\mat A \vect \alpha :=
+\begin{pmatrix}
+    \varphi_0(x_0) & \varphi_1(x_0) & \dots & \varphi_m(x_0) \\
+    \varphi_0(x_1) & \varphi_1(x_1) & \dots & \varphi_m(x_1) \\
+    \varphi_0(x_2) & \varphi_1(x_2) & \dots & \varphi_m(x_2) \\
+    \vdots & \vdots & & \vdots \\
+    \varphi_0(x_{n-2}) & \varphi_1(x_{n-2}) & \dots & \varphi_m(x_{n-2}) \\
+    \varphi_0(x_{n-1}) & \varphi_1(x_{n-1}) & \dots & \varphi_m(x_{n-1}) \\
+    \varphi_0(x_n) & \varphi_1(x_n) & \dots & \varphi_m(x_n)
+\end{pmatrix}
+\begin{pmatrix}
+    \alpha_0 \\
+    \alpha_1 \\
+    \vdots \\
+    \alpha_m
+\end{pmatrix}
+{\color{red}{\approx}}
+\begin{pmatrix}
+    u_0 \\
+    u_1 \\
+    u_2 \\
+    \vdots \\
+    u_{n-2} \\
+    u_{n-1} \\
+    u_n
+\end{pmatrix} =: \vect b
+$$
+:::
+:::
+::::
+
+## Solution via minimization problem
+
+:::: {.columns}
+
+::: {.column width="65%"}
+::: {.callout-note appearance="minimal"}
+**Key idea**: Minimize
+$$
+J(\vect \alpha)=
+\frac{1}{2}\,\sum_{i=0}^{n} \abs{\widehat u(x_i) - u_i}^2
+= \frac{1}{2}\,\sum_{i=0}^{n} \left( \sum_{j=0}^{m} \alpha_j \varphi_j(x_i) - u_i\right)^2
+=\frac{1}{2}\,\norm{\mat A \vect \alpha-\vect b}^2
+$$
+
+To this end, we seek $\alpha$ such that
+$$
+\nabla J(\vect \alpha)=\frac{1}{2}\,\nabla \Bigl( (\mat A \vect \alpha - \vect b)^\t (\mat A \vect \alpha - \vect b) \Bigr)=\vect 0,
+$$
+which leads to the equation
+$$
+\nabla J(\vect \alpha)=\mat A^\t (\mat A \vect \alpha - \vect b)
+=\vect 0
+$$
+Rearranging, we obtain the following [linear system]{.emph}
+$$
+\mat A^\t \mat A \vect \alpha = \mat A^\t \vect b.
+$$
+:::
+:::
+
+::: {.column width="30%"}
+::: {.fragment .fade-up}
+::: {.callout-tip icon="false"}
+## Remark
+In `Julia`, the result of the caluclation $\alpha=(\mat A^\t \mat A)^{-1} \mat A^\t \vect b$ can be obtained via
+```{julia}
+#| echo: true
+#| eval: false
+#| code-fold: false
+#| code-line-numbers: false
+α = A\b
+```
+:::
+:::
+:::
+
+::::
+
+## [`Polynomials.jl`](https://github.com/JuliaMath/Polynomials.jl) library {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Github repository <https://github.com/JuliaMath/Polynomials.jl>
+
+- Documentation <https://juliamath.github.io/Polynomials.jl/stable/>
+
+<iframe src="https://juliamath.github.io/Polynomials.jl/stable/" width="100%" height="600" data-external="1">
+</iframe>
+:::
+
+::: {.column width="50%"}
+Example use of [`fit`](https://juliamath.github.io/Polynomials.jl/stable/#Fitting-arbitrary-data)
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+
+using Plots, Polynomials
+xs = range(0, 10, length=10)
+ys = @. exp(-xs)
+f1 = fit(xs, ys) # degree = length(xs) - 1
+f2 = fit(xs, ys, 2) # degree = 2
+
+scatter(xs, ys, label="Data")
+plot!(f1, extrema(xs)..., label="Fit")
+plot!(f2, extrema(xs)..., label="Quadratic Fit")
+width, height = 750, 500 ; plot!(size = (width, height), legend = :topright)
+```
+:::
+::::
+
