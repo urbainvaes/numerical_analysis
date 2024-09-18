@@ -22,7 +22,7 @@ but there are a number of other standard interpolation methods.
 Our first goal in this chapter is to present an overview of these methods and the associated error estimates.
 
 In the second part of this chapter,
-we focus of \emph{function approximation},
+we focus on \emph{function approximation},
 which is closely related to the subject of mathematical interpolation.
 Indeed, a simple manner for approximating a general function by another one in a finite-dimensional space is to select a set of real numbers on the $x$ axis,
 called \emph{nodes}, and find the associated interpolant.
@@ -131,7 +131,7 @@ which are given by
     \varphi_{i}(x)
     = \frac{(x - x_0) (x - x_1) \dotsc (x - x_{i-1}) (x - x_{i+1}) \dotsc (x - x_n)}
     {(x_i - x_0) (x_i - x_1) \dotsc (x_i - x_{i-1}) (x_i - x_{i+1}) \dotsc (x_i - x_n)}
-    = \prod_{\substack{j = 0\\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
+    = \prod_{\substack{j = 0 \\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
 \]
 It is simple to check that
 \[
@@ -737,7 +737,7 @@ The nodes
     x_i = a + (b-a) \frac{1 + \cos \left( \frac{(2i + 1)\pi}{2 (n+1)} \right)}{2}, \qquad i = 0, \dotsc, n,
 \end{equation}
 are known as Chebyshev nodes and,
-more often than not, employing these nodes for interpolation produces much better results than using equidistant rodes,
+more often than not, employing these nodes for interpolation produces much better results than using equidistant nodes,
 both in the case where~$u$ is a polynomial of degree $n+1$,
 as we just proved,
 but also for general~$u$.
