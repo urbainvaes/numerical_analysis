@@ -347,12 +347,12 @@ admits a composite version for an arbitrary integration interval $[a, b]$ obtain
 \begin{equation}
     \label{eq:composite_rule}
     \int_{a}^{b} u(x) \, \d x
-    \approx \frac{h}{2} \sum_{i=0}^{M - 1} \sum_{j=0}^{N} w_j u \left( a + ih + \frac{h}{2} + \frac{x_j h}{2} \right), 
+    \approx \frac{h}{2} \sum_{i=0}^{M - 1} \sum_{j=0}^{N} w_j u \left( a + ih + \frac{h}{2} + \frac{x_j h}{2} \right),
     \qquad h := \frac{b - a}{M}.
 \end{equation}
 Clearly, the single-interval rule~\eqref{eq:one-interval_rule} and the composite rule~\eqref{eq:composite_rule} have the same degree of precision.
 To conclude this section,
-we prove a relation between this degree of precision of a rule and 
+we prove a relation between this degree of precision of a rule and
 the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composite_rule}.
 
 \begin{theorem}
@@ -362,7 +362,7 @@ the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composi
     there is $c > 0$ such that
     \begin{equation}
         \label{eq:theorem_order_from_precision}
-        \forall M \geq 1, \qquad 
+        \forall M \geq 1, \qquad
         \Bigl\lvert I[u] - \widehat I_h[u] \Bigr\rvert
         \leq c  h^{d+1},
         \qquad c:= \frac{C_{d+1} (b-a)}{(d+1)!}   \left(1 + \frac{1}{2} \sum_{i=0}^{J} \lvert w_j \rvert \right).
@@ -377,16 +377,16 @@ the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composi
         \label{eq:taylor_for_integration}
         p_i(x) = u(z_i) + u'(z_i) (x - z_i) + \dotsc + \frac{u^{(d)}(z_i)}{d!} (x - z_i)^{d}.
     \end{equation}
-    By the mean-value form of the remainder, 
+    By the mean-value form of the remainder,
     it is simple to prove that
     \begin{equation}
         \label{eq:local_error}
-        \forall x \in [z_i, z_{i+1}], \qquad 
+        \forall x \in [z_i, z_{i+1}], \qquad
         \bigl\lvert u(x) - p_i(x) \bigr\rvert = \frac{C_{d+1}}{(d+1)!} h^{d+1}, \qquad C_{d+1} = \sup_{x \in [a, b]} \Bigl\lvert u^{(d+1)}(x) \Bigr\rvert.
     \end{equation}
     Let us define the local contributions to the total integral as follows:
     \[
-        I^{(i)}[u] := \int_{z_i}^{z_{i+1}} u(x) \, \d x, 
+        I^{(i)}[u] := \int_{z_i}^{z_{i+1}} u(x) \, \d x,
         \qquad
         \widehat I_h^{(i)}[u] = \frac{h}{2} \sum_{i=0}^{N} w_i u \left( z_i + \frac{h}{2} + \frac{x_i h}{2} \right),
     \]
@@ -396,10 +396,10 @@ the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composi
     \begin{align*}
         \left\lvert I^{(i)}[u] - \widehat I^{(i)}_h[u] \right\rvert
         &= \Bigl\lvert I^{(i)}[u] - I^{(i)}[p] + \widehat I_h^{(i)}[p] - \widehat I_h^{(i)}[u] \Bigr\rvert \\
-        &\leq 
+        &\leq
         \Bigl\lvert I^{(i)}[u] - I^{(i)}[p] \Bigl\lvert
         + \Bigl\lvert \widehat I_h^{(i)}[u] - \widehat I_h^{(i)}[p] \Bigl\lvert
-        = 
+        =
         \Bigl\lvert I^{(i)}[u - p] \Bigl\lvert
         + \Bigl\lvert \widehat I_h^{(i)}[u - p] \Bigl\lvert,
     \end{align*}
@@ -423,7 +423,7 @@ the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composi
 \begin{remark}
     A few comments are in order.
     \begin{itemize}
-        \item 
+        \item
             The constant $c$ in~\eqref{eq:theorem_order_from_precision} is not sharp in general,
             but the power of~$h$ is optimal.
 
@@ -431,11 +431,11 @@ the convergence rate with respect to~$h$ of the composite rule~\eqref{eq:composi
             This result may be viewed as a generalization of~\cref{theorem:integration_error_trapeze,theorem:integration_error_simpson},
             albeit with a worse constant prefactor.
 
-        \item 
+        \item
             Instead of the polynomial~$p_i$ in~\eqref{eq:taylor_for_integration},
             we could have used any polynomial approximation of~$u$ such that~\eqref{eq:local_error} is satisfied,
             with possibly a different prefactor but the same power of~$h$ on the right-hand side.
-            A natural choice, for example, 
+            A natural choice, for example,
             would have been to define~$p_i$ by interpolation through (possibly a subset or superset of) the local integration points.
 
         \item
@@ -683,12 +683,54 @@ Romberg's integration method consists of applying Richardson's extrapolation to 
 \]
 where $a = x_0 < x_1 < \dotsb < x_n = b$ are equidistant nodes.
 The right-hand side of this equation is simply the composite trapezoidal rule with step size~$h$.
-It is possible to show, see for example~\cite[Property 9.3]{MR2265914},
-that~$J(h)$ may be expanded as follows:
-\[
+It is possible to show that~$J(h)$ may be expanded as follows:
+\begin{equation}
+    \label{eq:expansion_error_composite_trapezium}
     \forall k \in \nat, \qquad
     J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \cdots + \alpha_k h^{2k} + \bigo(h^{2k+2}).
-\]
+\end{equation}
+This is the content of the following result.
+\begin{lemma}
+    Let $J(h)$ denote the approximation of the integral $I[u]$ by the composite trapezium rule,
+    and assume that $u \in C^{\infty}[a, b]$.
+    Then $J(h)$ may be expanded as in \eqref{eq:expansion_error_composite_trapezium}.
+\end{lemma}
+\begin{proof}
+    Using the same notation as in~\cref{theorem:relation_precision_order},
+    we introduce
+    \[
+        I^{(i)}[u] = \int_{x_i}^{x_{i+1}} u(x) \, \d x,
+        \qquad
+        \widehat I_h^{(i)}[u] = \frac{h}{2} \Bigl( u(x_i) + u(x_{i+1}) \Bigr),
+        \qquad i = 0, \dotsc, n-1. 
+    \]
+    Fix $i \in \{0, \dotsc, n-1\}$ and let $p_i$ denote the Taylor expansion of~$u$ around $x_{i + \frac{1}{2}} := x_i + \frac{h}{2}$,
+    of degree $2k + 1$:
+    \[
+        p_i(x) = u\bigl(x_{i + \frac{1}{2}}\bigr) + u'\bigl(x_{i + \frac{1}{2}}\bigr) \Bigl(x - x_{i + \frac{1}{2}}\Bigr) + \dotsb + \frac{u^{(2k+1)}\bigl(x_{i + \frac{1}{2}}\bigr)}{(2k+1)!} \Bigl(x - x_{i + \frac{1}{2}}\Bigr)^{2k+1}.
+    \]
+    From the mean-value form of the remainder, 
+    it is clear that
+    \[
+        I^{(i)}[u] = I^{(i)}[p_i] + \mathcal O(h^{2k+3}), 
+        \qquad
+        \widehat I_h^{(i)}[u] = \widehat I_h^{(i)}[p_i] + \mathcal O(h^{2k+3}).
+    \]
+    Substituting~$p_i$ leads to
+    \begin{align*}
+        I^{(i)}[p_i] &= u\bigl(x_{i + \frac{1}{2}}\bigr) h + \omega_2 h^3 + \omega_4 h^5 + \dotsb + \omega_{2k} h^{2k+1}, \\
+        \widehat I_h^{(i)}[p_i] &= u\bigl(x_{i + \frac{1}{2}}\bigr) h + \eta_2 h^3 + \eta_4 h^5 + \dotsb + \eta_{2k} h^{2k+1},
+    \end{align*}
+    for appropriate coefficients. 
+    Thus we obtain that
+    \begin{align*}
+        I[u] - \widehat I_h[u] 
+        &= \sum_{i=0}^{n} I^{(i)}[p_i] - I_h^{(i)}[p_i] \\
+        &= (\omega_2 - \eta_2) h^2 + (\omega_2 - \eta_2) h^4 + \dotsc + (\omega_{2k} - \eta_{2k}) h^{2k} + \mathcal O(h^{2k+2}),
+    \end{align*}
+    which concludes the proof.
+\end{proof}
+
 Richardson's extrapolation~\eqref{eq:generalized_richardson} can therefore be employed in order to compute approximations of the integral with increasing accuracy.
 The convergence of Romberg's method for calculating the integral~\eqref{eq:integral_example} is illustrated in~\cref{fig:romberg}.
 \begin{figure}[ht]
