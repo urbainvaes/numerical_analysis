@@ -702,17 +702,17 @@ This is the content of the following result.
         I^{(i)}[u] = \int_{x_i}^{x_{i+1}} u(x) \, \d x,
         \qquad
         \widehat I_h^{(i)}[u] = \frac{h}{2} \Bigl( u(x_i) + u(x_{i+1}) \Bigr),
-        \qquad i = 0, \dotsc, n-1. 
+        \qquad i = 0, \dotsc, n-1.
     \]
     Fix $i \in \{0, \dotsc, n-1\}$ and let $p_i$ denote the Taylor expansion of~$u$ around $x_{i + \frac{1}{2}} := x_i + \frac{h}{2}$,
     of degree $2k + 1$:
     \[
         p_i(x) = u\bigl(x_{i + \frac{1}{2}}\bigr) + u'\bigl(x_{i + \frac{1}{2}}\bigr) \Bigl(x - x_{i + \frac{1}{2}}\Bigr) + \dotsb + \frac{u^{(2k+1)}\bigl(x_{i + \frac{1}{2}}\bigr)}{(2k+1)!} \Bigl(x - x_{i + \frac{1}{2}}\Bigr)^{2k+1}.
     \]
-    From the mean-value form of the remainder, 
+    From the mean-value form of the remainder,
     it is clear that
     \[
-        I^{(i)}[u] = I^{(i)}[p_i] + \mathcal O(h^{2k+3}), 
+        I^{(i)}[u] = I^{(i)}[p_i] + \mathcal O(h^{2k+3}),
         \qquad
         \widehat I_h^{(i)}[u] = \widehat I_h^{(i)}[p_i] + \mathcal O(h^{2k+3}).
     \]
@@ -722,10 +722,10 @@ This is the content of the following result.
         I^{(i)}[p_i] &= u\bigl(x_{i + \frac{1}{2}}\bigr) h + \omega_2 h^3 + \omega_4 h^5 + \dotsb + \omega_{2k} h^{2k+1}, \\
         \widehat I_h^{(i)}[p_i] &= u\bigl(x_{i + \frac{1}{2}}\bigr) h + \eta_2 h^3 + \eta_4 h^5 + \dotsb + \eta_{2k} h^{2k+1},
     \end{align*}
-    for appropriate coefficients. 
+    for appropriate coefficients.
     Thus we obtain that
     \begin{align*}
-        I[u] - \widehat I_h[u] 
+        I[u] - \widehat I_h[u]
         &= \sum_{i=0}^{n} I^{(i)}[p_i] - I_h^{(i)}[p_i] \\
         &= (\omega_2 - \eta_2) h^2 + (\omega_2 - \eta_2) h^4 + \dotsc + (\omega_{2k} - \eta_{2k}) h^{2k} + \mathcal O(h^{2k+2}),
     \end{align*}
