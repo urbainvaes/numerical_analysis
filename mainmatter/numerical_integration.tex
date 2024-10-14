@@ -14,6 +14,7 @@ we are concerned with the problem of calculating numerically integrals of the fo
 Perhaps somewhat surprisingly,
 the numerical calculation of such integrals when $n \gg 1$ is still a very active area of research today.
 In this chapter,
+however,
 we will focus for simplicity on the one-dimensional setting where $\Omega = [a, b] \subset \real$.
 We assume throughout this chapter that the function~$u$ is Riemann-integrable.
 Then, by definition,
@@ -29,15 +30,15 @@ All the numerical integration formulas that we present in this chapter are based
     \label{eq:deterministic_integration}
     \widehat I = \sum_{i=0}^{n} w_i u(x_i),
 \end{equation}
-where~$x_0 < \dotsc < x_n$ are the \emph{integration nodes} and $w_0, \dotsc, w_n$ are the \emph{integration weights}.
-In many cases, integration formulas contain a small parameter that can be changed to improve the accuracy of the approximation.
+where~$x_0 < \dotsc < x_n$ are the \emph{integration points} and $w_0, \dotsc, w_n$ are the \emph{integration weights}.
+In many cases, integration formulas contain a small parameter that can be refined to improve the accuracy of the approximation.
 In methods based on equidistant interpolation nodes,
-for example, this parameter encodes the distance between nodes and is typically denoted by~$h$,
-and we often use the notation~$\widehat I_h$ to emphasize the dependence of the approximation on~$h$.
+for example, this parameter encodes the distance between nodes and is typically denoted by~$h$.
+We shall often use the notation~$\widehat I_h$ to emphasize the dependence of the approximation on~$h$.
 The difference~$E_h = I - \widehat I_h$ is called the \emph{integration error} or \emph{discretization error}.
 The \emph{degree of precision},
 defined hereafter,
-is an important measure of the quality of an integration rule.
+is an important measure of the quality of quadrature rule.
 \begin{definition}
         The \emph{degree of precision} of an integration method is the smallest integer number~$d$ such that
         the integration error is zero for all $u \in \poly(d)$,
@@ -46,7 +47,7 @@ is an important measure of the quality of an integration rule.
 
 We observe that,
 without loss of generality,
-we can consider that the integration interval is equal to~$[-1, 1]$.
+we can assume that the integration interval is equal to~$[-1, 1]$.
 Indeed, using the change of variable
 \begin{align}
     \notag
@@ -63,7 +64,7 @@ we have
 \end{equation}
 and the right-hand side is the integral of $u \circ \zeta$ over the interval~$[-1, 1]$.
 
-\section{The Newton--Cotes method}
+\section{The closed Newton--Cotes method}
 \label{sec:newton_cotes}
 
 Given a set of equidistant points $-1 = x_0 < \dotsb < x_n = 1$,
@@ -145,7 +146,7 @@ A natural alternative to the approach presented in~\cref{sec:newton_cotes}
 is to construct an integration rule using piecewise polynomial interpolation,
 which we studied in~\cref{sub:piecewise_interpolation}.
 After partitioning the integration interval in a number of subintervals,
-the integral can be approximated by using one of the rules presented in~\eqref{sec:newton_cotes} within each subinterval.
+the integral can be approximated by using one of the rules presented in~\cref{sec:newton_cotes} within each subinterval.
 
 \paragraph{Composite trapezoidal rule.}
 Let us illustrate the composite approach with an example.
@@ -332,6 +333,19 @@ and so
 \]
 where we used the short-hand notation $\widehat u_3(x) = \widehat u_3(x; \alpha)$.
 \end{remark}
+
+\paragraph{General composite quadrature rules.}%
+\label{par:General_composite_quadrature_rules}
+Any quadrature rule of the form
+\[
+    \int_{-1}^{1} u(x) \, \d x
+    \approx \sum_{i=0}^{N_q} w_i u(x_i)
+\]
+admits a composite version:
+\[
+    \int_{-1}^{1} u(x) \, \d x
+    \approx \sum_{i=0}^{N_q} w_i u(x_i)
+\]
 
 \paragraph{Estimating the error a posteriori.}
 In practice,
