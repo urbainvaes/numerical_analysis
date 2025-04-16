@@ -7,12 +7,12 @@
 \dominitoc
 
 \newif\iftitleincluded\titleincludedfalse
-\newif\ifenpc\enpcfalse
+\newif\ifenpc\enpctrue
 \ifenpc
 \include{frontmatter/title_enpc}
 \frontmatter
 \include{frontmatter/license}
-\include{frontmatter/syllabus_enpc}
+% \include{frontmatter/syllabus_enpc}
 \include{frontmatter/acknowledgements}
 \include{frontmatter/notations_enpc}
 \else
@@ -37,7 +37,7 @@
 \include{mainmatter/nonlinear_equations}
 \include{mainmatter/eigenproblems}
 \include{mainmatter/odes}
-\include{mainmatter/optimization}
+% \include{mainmatter/optimization}
 
 \appendix
 \include{mainmatter/matrices}
