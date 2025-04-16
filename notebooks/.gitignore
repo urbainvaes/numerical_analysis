@@ -1,3 +1,3 @@
-*
-!*.jl
-!*.py
+/release/*
+*.csv
+*.tar
