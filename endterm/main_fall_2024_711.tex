@@ -86,11 +86,13 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
             Then \julia{f(a)} returns~\julia{0.0} for all finite number \julia{a} representable in the \julia{Float64} format.
 
         \item
+            \mymark
              In Julia \julia{exp(eps()) == 1 + eps()} evaluates to \julia{true}.
              Explain briefly why.
              \vspace{1.7cm}
 
         \item
+            \mymark
              In Julia \julia{sqrt(1 + eps()) == 1 + eps()} evaluates to \julia{false}.
              Explain briefly why.
              \vspace{1.7cm}
@@ -310,7 +312,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
         \item
             \mymarks{2}
             Suppose that~$\mat A$ is lower triangular.
-            Implement the forward substitution algorithm for solving~\eqref{eq:linear_system} is this case.
+            Implement the forward substitution algorithm for solving~\eqref{eq:linear_system} in this case.
             \begin{minted}{julia}
     A = [1.0 0.0 0.0; 1.0 2.0 0.0; 1.0 2.0 3.0]
     b = [1.0; 3.0; 6.0]
@@ -337,7 +339,7 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
             \mymarks{4}
             Write down a Julia program based on the iteration~\eqref{eq:iteration} for calculating~$\sqrt[3]{2}$.
             Use an appropriate stopping criterion that does not require to know the value of~$\sqrt[3]{2}$.
-            \vspace{4cm}
+            \vspace{5cm}
 
 
         \item
@@ -352,12 +354,12 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
             \textbf{(T/F)}
             The following iteration converges to $\sqrt[3]{2}$ for all initialization $x_0$:
             \[
-                x_{k+1} = x_k - \frac{x_k^3 - 2}{10}
+                x_{k+1} = x_k - \frac{x_k^3 - 2}{10}.
             \]
 
         \item
             \mymark{}
-            Illustrate a few iterations of the Newton--Raphson iteration on the following figure,
+            Illustrate a few iterations of the Newton--Raphson iteration for finding~$\sqrt[3]{2}$ on the following figure (see next page),
             where the function $f(x) = x^3 - 2$ is plotted.
     \end{enumerate}
 \end{question}
