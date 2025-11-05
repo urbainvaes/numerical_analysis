@@ -701,8 +701,6 @@ B[subi,subj]*u[subj]
 # + nbgrader={"grade": false, "grade_id": "comatrix", "locked": false, "schema_version": 3, "solution": true, "task": false}
 using LinearAlgebra
 function comatrix(A)
-    C = zero(A)
-    ### BEGIN SOLUTION
     for ij ∈ CartesianIndices(A)
         i, j = Tuple(ij)
         C[ij] = (-1)^(i+j)*det(A[1:end .!= i, 1:end .!= j])
