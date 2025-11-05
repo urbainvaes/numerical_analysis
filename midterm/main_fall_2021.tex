@@ -1,0 +1,385 @@
+\documentclass[10pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{fontawesome}
+\usepackage{svg}
+\usepackage[newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage[colorlinks=true]{hyperref}
+\theoremstyle{definition}
+\newtheorem{question}{{\normalfont \faGears}~Question}
+\newtheorem{compexercise}{{\normalfont \faLaptop}~Implementation exercise}
+\input{../macros.tex}
+\renewcommand{\mymarks}[1]{\textbf{#1 marks}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Midterm exam}
+\rhead{Page \thepage}
+
+\begin{document}
+
+\title{Numerical Analysis: Midterm {\small (\mymarks{50})}}
+\author{Urbain Vaes}
+\date{Fall 11111100101}
+\maketitle
+
+\noindent \emph{You are not required to complete every question.Although the total marks on the exam sum to 55, your midterm grade will be calculated out of 50.}
+\vspace{.5cm}
+
+\begin{question}
+    [Floating point arithmetic, \mymarks{10}]
+    True or false?
+    \begin{enumerate}
+        \item Let $(\placeholder)_2$ denote binary representation.
+            Then
+            \(
+                (0.1101)_2 + (0.0011)_2 = (1.0)_2.
+            \)
+
+        \item
+            Let $\varepsilon_{64}$ denote the machine epsilon for the \julia{Float64} format,
+            i.e.\ \julia{eps(Float64)}.
+            Then the number~2 is representable exactly in this format,
+            and the next representable number is $2 + \varepsilon_{64}$.
+
+        \item It holds that
+            \(
+                (10000)_2 \times (0.1010)_2 = (1010)_2.
+            \)
+        \item 
+            In Julia, \julia{Float64(.6) == Float32(.6)} evaluates to \julia{true}.
+
+        \item 
+            The spacing (in absolute value) between successive single-precision (\julia{Float32}) floating point numbers is constant.
+
+        \item
+            Infinitely many distinct real numbers can be represented exactly in the~\julia{Float64} format,
+            but only finitely many can be represented exactly in the~\julia{Float32} format.
+
+        \item 
+            It holds that $(0.\overline{101})_2 = \frac{5}{7}$.
+
+        \item 
+            Machine addition~$\madd$ is an operation that is \emph{associative} but not \emph{commutative}.
+
+        \item
+            The machine epsilon is the smallest number of the form~$2^{-n}$ with $n \in \nat$ that can be represented exactly in a floating point format.
+
+        \item
+            In Julia, the expression \julia{1 + eps()/3 == 1 + eps()} evaluates to \julia{true}.
+
+        \item
+            \textbf{Bonus.}
+            In Julia, the expression \julia{exp(eps()/2) == 1 + eps()} evaluates to \julia{true}.
+
+            \textit{Explain briefly:}
+            \vspace{1cm}
+
+        \item
+            \textbf{Bonus.}
+            In Julia, the expression \julia{cos(eps()) == 1} evaluates to \julia{true}.
+
+            \textit{Explain briefly:}
+            \vspace{1cm}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation and approximation, \mymarks{10}]
+    Are the following statements true or false? Prove or disprove.
+    Recall that~$\mathcal P_d$ denotes the set of polynomials of degree at most~$d$.
+
+    \begin{enumerate}
+        \item
+            Assume that $x_0 < x_1 < x_2 < x_3$ and $y_0, y_1, y_2, y_3$ are given real numbers. 
+            Then there exists a polynomial~$p \in \mathcal P_3$ such that
+            \(
+                p(x_i) = y_i 
+            \)
+            for all $i \in \{0, 1, 2, 3\}$.
+
+            \textit{Justification:}
+            \vspace{3cm}
+
+        \item
+            Assume that $x_0 < x_1 < x_2$ and $y_0, y_1, y_2$ are given real numbers. 
+            Then, there can exist \emph{at most one} polynomial~$p \in \mathcal P_2$ such that
+            \(
+                p(x_i) = y_i 
+            \)
+            for all $i \in \{0, 1, 2\}$.
+
+            \textit{Justification:}
+            \vspace{3cm}
+
+        \item
+            Let $p \in \mathcal P_d$ be a polynomial of degree $d > 0$,
+            and let $q\colon \real \to \real$ be given by $q(x) = p(x+1) - p(x)$.
+            Then it holds that~$q \in \mathcal P_{d-1}$.
+
+            \textit{Justification:}
+            \vspace{3cm}
+
+        \item
+            For $n \in \nat$, let $x^n_i = i/n$ for $i = 0, 1, \dotsc, n$.
+            Assume that $u \colon \real \to \real$ is the smooth function given by~$u(x) = \sin(3x) + x^3$,
+            and let $p_n \in \mathcal P_n$ denote the polynomial interpolation of~$u$ at the points $x^n_0, x^n_1, \dotsc, x^n_n$.
+            Then it holds that
+            \[
+                \lim_{n \to \infty} \left( \max_{x \in [0, 1]} \bigl\lvert u(x) - p_n(x) \bigr\rvert \right) = 0 \, .
+            \]
+
+            \textit{Justification:}
+            \vspace{3cm}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation, open-ended question, \mymarks{5}]
+    In polynomial interpolation, the error depends both on the function being interpolated and the choice of interpolation nodes. Consider two families of nodes on the interval $[-1,1]$:
+    \begin{itemize}
+        \item Equally spaced nodes,
+        \item Chebyshev nodes.
+    \end{itemize}
+    Discuss qualitatively (and illustrate with examples or plots if you wish) how the interpolation error behaves as the degree 
+    $n$ increases in each case. 
+    Why does one choice of nodes perform better for large~$n$,
+    and what is the mathematical motivation for using Chebyshev nodes?
+    \emph{You may refer to Runge’s phenomenon, but go beyond merely stating it.}
+\end{question}
+
+\newpage
+\begin{compexercise}
+    [Interpolation, \mymarks{5}]
+    Write Julia code that computes and plots the interpolating polynomial~$p \in \mathcal P_3$ through the following points:
+    $(0, 0)$, $(1, 4)$, $(2, 15)$, $(3, 40)$.
+    The plot should display both the interpolation points and the graph of the interpolating polynomial over an appropriate range.
+    Do not use any other library than the ones already imported.
+
+        \begin{minted}{julia}
+    using LinearAlgebra
+    using Plots
+    # Write your code here
+        \end{minted}
+
+    \vspace{9cm}
+\end{compexercise}
+
+
+\newpage
+\begin{question}
+    [Numerical integration, \mymarks{5}]
+    Are the following statements true or false?
+    Justify briefly.
+    \begin{enumerate}
+        \item
+            The degree of precision of the following quadrature rule is 2:
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx 2u(0) \, .
+            \]
+            \textit{Justification:}
+            \vspace{.7cm}
+
+        \item
+            The degree of precision of the following rule is equal to 3:
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx u \left(-\frac{1}{3}\right) + u \left(\frac{1}{3}\right).
+            \]
+            \textit{Justification:}
+            \vspace{.7cm}
+
+        \item
+            For any natural number $N > 0$,
+            there exists a quadrature rule with a degree of precision equal to $2N - 1$ of the form
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx
+                \sum_{n=1}^{N} w_n u(x_n).
+            \]
+            \textit{Justification:}
+            \vspace{.7cm}
+
+        \item
+            Let $x^N_i = i/N$ and consider the following approximation of $\int_{0}^{1} u(x) \, \d x$:
+            \begin{equation}
+                \label{eq:trapezium}
+                \widehat I_N = \frac{1}{2N} \Bigl( u\left(x^N_0\right) + 2 u\left(x^N_1\right) + 2 u\left(x^N_2\right) + \dotsc + 2 u\left(x^N_{N-2}\right) + 2 u\left(x^N_{N-1}\right) + u\left(x^N_N\right) \Bigr).
+            \end{equation}
+            Suppose first that $u$ is the Runge function, given by $u(x) = (1 + 25 x^2)^{-1}$.
+            Then $\widehat I_N$ diverges in the limit $N \to \infty$.
+
+            \textit{Justification:}
+            \vspace{.7cm}
+
+        \item
+            Let $u(x) = \cos(3x)$ and let $\widehat I_N$ be as in~\eqref{eq:trapezium}.
+            Then it holds that
+            \[
+                \lim_{N \to +\infty}
+                \left( \left\lvert \widehat I_N - \int_{0}^1 u(x) \, \d x \right\rvert \right) = 0.
+            \]
+            \textit{Justification:}
+            \vspace{.7cm}
+
+        \item
+            (\textbf{Bonus.})
+            Fix $u(x) = 2x - 1$ and let $\widehat I_N$ be as in~\eqref{eq:trapezium}.
+            Then $\widehat I_N = 0$ for all $N \geq 2$.
+
+            \textit{Justification:}
+            \vspace{.7cm}
+    \end{enumerate}
+\end{question}
+
+
+
+\newpage
+\begin{question}
+    [Gaussian--Hermite numerical integration, \mymarks{10}]
+
+The Gauss--Hermite quadrature formula with \(n\) nodes is an approximation of the form
+\[
+I(u) \coloneq \int_{-\infty}^{\infty} u(x)\, \e^{-x^{2}} \, \d x \approx \sum_{i=1}^n w_i\,u(x_i)=:\widehat I_n(u),
+\]
+which is exact when \(u\) is a polynomial of degree \(\le 2n-1\).
+Note that the nodes are numbered \(1,\dots,n\).
+For this question, we take for granted that, for integers \(i\ge 0\),
+it holds that
+\[
+    \int_{-\infty}^{\infty} x^{i} \e^{-x^{2}}\, \d x =
+    \begin{cases}
+        \displaystyle
+        0, & \text{if $i$ is odd},\\[2mm]
+        \displaystyle
+        (i-1)!! \, \sqrt{\frac{\pi}{2^i}}, & \text{if $i$ is even},
+    \end{cases}
+\]
+where 
+\(
+    (i-1)!! \coloneq 1 \times 3 \times 5 \times \cdots \times (i-1) \, .
+\)
+In particular, with all the integrals being over $(-\infty, \infty)$,
+the following special cases may be useful in your computations:
+\[
+    \int \e^{-x^{2}}\, \d x = \sqrt{\pi}, \quad
+    \int x^2 \, \e^{-x^{2}}\, \d x = \frac{\sqrt{\pi}}{2}, \quad
+    \int x^4 \, \e^{-x^{2}}\, \d x = \frac{3}{4} \sqrt{\pi}, \quad
+    \int x^6 \, \e^{-x^{2}}\, \d x = \frac{15}{8} \sqrt{\pi}\, .
+\]
+
+
+
+\begin{enumerate}
+\item (\mymarks{5})
+Find the nodes and weights of the Gauss--Hermite rule with \(n=3\) nodes.
+By symmetry,
+we expect nodes of the form $(-z,0,z)$ and weights $(w_1,w_2,w_1)$,
+which reduces the number of unknowns to three.
+
+\textit{Your answer:}
+\vspace{7cm}
+
+\newpage
+\item (\mymarks{5})  
+    Let $\{H_0, H_1, \dotsc\}$ denote orthogonal polynomials for the inner product 
+    \[ 
+        \ip{f, g} := \int_{-\infty}^{\infty} f(x) g(x) \, \e^{-x^2} \, \d x 
+    \] 
+    which, in addition,
+    satisfy the following two conditions: 
+    \begin{itemize} 
+        \item 
+            For all $i \in \nat$, the polynomial $H_i$ is of degree $i$. 
+        \item 
+            The leading coefficient of $H_i$, which multiplies $x^i$, is equal to 1. 
+    \end{itemize} 
+    Calculate $H_0$, $H_1$, $H_2$ and $H_3$.
+    What is the relationship between \(H_3\) and the quadrature rule found in the first item?
+
+    \textit{Your answer:}
+
+\newpage
+\vspace{10cm}
+\item (Bonus, \mymarks{2})  
+    Calculate $H_4$ and, using this result,
+    deduce the nodes and weights of the Gauss--Hermite quadrature with~$4$ points.
+
+    \textit{Your answer:}
+\end{enumerate}
+\end{question}
+\newpage
+
+\newpage
+\begin{compexercise}
+    [Numerical integration, \mymarks{10}]
+    The midpoint quadrature rule reads
+    \[
+        \int_{-1}^{1} u(x) \, \d x
+        \approx 2 u(0) \, .
+    \]
+    \begin{itemize}
+        \item
+            (\mymarks{3})
+            Write a function \julia{midpoint(u, a, b)} that returns, using this quadrature rule,
+            an approximation of the integral 
+            \begin{align}
+                \label{eq:integral_midpoint}
+                \int_{a}^{b} u(x) \, \d x \, .
+            \end{align}
+
+            \begin{minted}{julia}
+    function midpoint(u, a, b)
+        # Write your code here
+
+
+
+
+    end
+            \end{minted}
+
+        \item
+            (\mymarks{4})
+            Write a function \julia{composite_midpoint(u, a, b, N)}
+            that returns an approximation of the integral~\eqref{eq:integral_midpoint},
+            this time using a composite version of the midpoint rule.
+            More precisely, the approximation should be obtained
+            by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying the midpoint rule within each cell.
+
+            \begin{minted}{julia}
+    function composite_midpoint(u, a, b)
+        # Write your code here
+
+
+
+
+
+
+
+
+
+
+
+    end
+            \end{minted}
+
+        \item
+            (\mymarks{3})
+            Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
+            In this setting, plot the evolution of the error for $N$ varying from 1 to 1000.
+
+            \begin{minted}{julia}
+    using Plots
+    # Write your code here
+            \end{minted}
+    \end{itemize}
+\end{compexercise}
+
+\end{document}
