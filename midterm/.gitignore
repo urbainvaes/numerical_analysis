@@ -1,4 +1,5 @@
 build/*
 !build/main.pdf
+!build/main_fall_2021.pdf.pdf
 !build/output.pdf
 _minted-main
