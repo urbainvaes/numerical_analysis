@@ -6,7 +6,7 @@
 #       extension: .jl
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.16.1
+#       jupytext_version: 1.16.7
 #   kernelspec:
 #     display_name: Julia 1.10.5
 #     language: julia
@@ -84,65 +84,6 @@ end
 @mark composite_simpson(x -> x^2, 0, 1, 3) ≈ 1/3
 @mark composite_simpson(x -> x^3, 0, 1, 3) ≈ 1/4
 # -
-
-# 3. Write a function `calculate_sum(N)` that computes the sum
-#    $$
-#    S(n) := \sum_{n = 1}^{N} n^{-n}.
-#    $$
-#    Display the value of $S(N)$ for `n` equal to 5, 10, 15, and 20.
-
-# + nbgrader={"grade": false, "grade_id": "cell-a857d33e08817d31", "locked": false, "schema_version": 3, "solution": true, "task": false}
-function calculate_sum(N)
-    sum(n^(-n) for n in N:-1.:1)
-end
-
-# + nbgrader={"grade": true, "grade_id": "cell-b9e231e268dec320", "locked": true, "points": 0, "schema_version": 3, "solution": false, "task": false}
-println(calculate_sum(5))
-println(calculate_sum(10))
-println(calculate_sum(15))
-println(calculate_sum(20))
-
-@mark abs(calculate_sum(20) - 1.2912859970626636) < 1e-6
-@mark abs(calculate_sum(20) - 1.2912859970626636) < 1e-9
-@mark abs(calculate_sum(20) - 1.2912859970626636) < 1e-12
-# -
-
-# 4. It can be shown that
-#    $$
-#    \int_0^1 x^{-x} \, \mathrm d x = \sum_{n=1}^{\infty} n^{-n}.
-#    $$
-#    Illustrate the error of the composite methods defined above as a function of `n`,
-#    on the same graph.
-#    Use $S(20)$ as the reference value for the integral,
-#    and use a logarithmic scale for both axes of the graph.
-#
-#    > **Note**: The function to be integrated in this exercise is continuous,
-#    > but its derivative diverges at $x = 0$.
-#    > So do not worry if the observed convergence rate does not match the theoretical rate.
-
-# + nbgrader={"grade": true, "grade_id": "cell-0bbb90eb9b0b52af", "locked": false, "points": 0, "schema_version": 3, "solution": true, "task": false}
-### BEGIN SOLUTION
-ns = 3:2:400
-u = x -> x^-x
-I_exact = calculate_sum(20)
-I_trap = composite_trapezoidal.(u, 0, 1, ns)
-I_simp = composite_simpson.(u, 0, 1, ns)
-plot(ns, abs.(I_trap .- I_exact), label="Trapezoidal")
-plot!(ns, abs.(I_simp .- I_exact), label="Simpson")
-plot!(xaxis=:log, yaxis=:log, lw=2)
-### END SOLUTION
-# -
-
-# 5. (**Bonus**). Estimate, by approximating the logarithm of the error with a linear function of the logarithm of the integration step using the `fit` function, the order of convergence of the composite Simpson's method for the integral in the previous question.
-
-# + nbgrader={"grade": true, "grade_id": "cell-a76957fd17db30e1", "locked": false, "points": 0, "schema_version": 3, "solution": true, "task": false}
-### BEGIN SOLUTION
-I_simp = composite_simpson.(u, 0, 1, ns)
-ns = 3:2:400
-log_Δ = @. log(1/ns)
-log_e = @. log(abs(I_simp - I_exact))
-fit(log_Δ, log_e, 1).coeffs[2]
-### END SOLUTION
 
 # + [markdown] nbgrader={"grade": false, "grade_id": "cell-2c415728e0c980d5", "locked": true, "schema_version": 3, "solution": false, "task": false}
 # ### <font color='orange'>[Exercise 2]</font> Implementing a composite integrator
