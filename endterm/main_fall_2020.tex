@@ -151,7 +151,11 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
 
 
             \item
-                The Runge phenomenon can be mitigated by using Chebyshev nodes instead of equally spaced nodes.
+                Consider the function $\vect F \colon \real^{n+1} \to \real$ defined by
+                \[
+                    F(\vect x) \max_{x \in [-1, 1]} \Bigl\lvert (x - x_0)(x - x_1) \dotsb (x - x_n) \Bigr\rvert \, .
+                \]
+                Then $\vect F$ is minimized when the points $x_0, x_1, \dotsc, x_n$ are chosen as the roots of the Chebychev polynomial of degree $n + 1$.
 
             \item
                 In the following code,
@@ -159,7 +163,6 @@ and that all work will be my own. (Tick $\checkmark$ or copy the sentence on you
                 Here, for an array \julia{y} of size $n$, the command \julia{diff(y)} returns the array of size $n-1$
                 whose $i$-th entry is equal to \julia{y[i+1] - y[i]}.
         \begin{minted}{julia}
-using Plots
 x = [0, 1, 2, 3]
 y = [1, 2, 1, 2]
 
@@ -169,15 +172,14 @@ function p(x)
             + 1/2 * diff(diff(y))[1] * x^2
             + 1/6 * diff(diff(diff(y)))[1] * x^3
 end
-
-plot(p, xlims=(0, 5))
-scatter!(x, y)
         \end{minted}
             \item {(\textbf{Bonus, 1 mark})}
                 Let $f(n) = 2^n$. Then for all $n \in \nat$, it holds that
                 \[
-                    f(n) = \sum_{i=0}^{+\infty} \frac{\Delta^i f(0)}{i!} n^{\underline{i}} \, .
+                    f(n) = \sum_{i=0}^{+\infty} \frac{\Delta^i f(0)}{i!} n^{\underline{i}} \, ,
                 \]
+                where $\Delta$ denotes the forward difference operator,
+                meaning that $\Delta f(n) = f(n+1) - f(n)$,
                 Justify your answer.
         \end{itemize}
 \end{enumerate}
@@ -426,27 +428,36 @@ scatter!(x, y)
     \begin{itemize}
         \item (\mymarks{2})
             Assume that a numerical scheme of the form
-            \[
+            \begin{equation}
+                \label{eq:iterative_nonlinear}
                 x_{k+1} = F(x_k)
-            \]
+            \end{equation}
             is employed to find a root of $f$,
             where $F \colon \real \to \real$ is a given function.
             Assume additionally that~$F$ is globally Lipschitz continuous with Lipschitz constant~$L < 1$,
             and that there exists a fixed point~$x_*$ of~$F$.
             First, prove that the fixed point~$x_*$ is unique.
-            \vspace{3cm}
+            \vspace{6cm}
 
         \item
             (\mymarks{3})
             Under the same assumptions as in the previous item,
             prove that the sequence of iterates $(x_k)_{k \in \nat}$ converges to~$x_*$ for any initial guess~$x_0$.
-            \vspace{5cm}
+            \vspace{6cm}
 
+        \newpage
         \item
             (\mymarks{3})
             We wish to calculate~$x_* = \sqrt[4]{2}$.
-            Propose an iterative scheme~$x_{k+1} = F(x_k)$ that converges to this value.
+            Propose an iterative scheme of the form~\eqref{eq:iterative_nonlinear} that converges to this value.
+            Write down the expression of the function~$F$ you propose.
             Is the convergence of your scheme superlinear? Justify your answer by examining the value of $F'(x_*)$.
+            \vspace{6cm}
+
+        \item
+            (\textbf{Bonus, 2 marks})
+            Illustrate graphically the convergence of your scheme from the previous item,
+            in the specific case where the initial guess is $x_0 = 0$.
     \end{itemize}
 \end{question}
 
