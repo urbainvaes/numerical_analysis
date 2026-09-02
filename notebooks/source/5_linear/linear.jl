@@ -6,11 +6,11 @@
 #       extension: .jl
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.16.1
+#       jupytext_version: 1.16.7
 #   kernelspec:
-#     display_name: Julia 1.10.2
+#     display_name: Julia 1.11.1
 #     language: julia
-#     name: julia-1.10
+#     name: julia-1.11
 # ---
 
 # + [markdown] nbgrader={"grade": false, "grade_id": "cell-9546f1bdb893cdcd", "locked": true, "schema_version": 3, "solution": false, "task": false}
@@ -21,204 +21,9 @@ using LaTeXStrings
 using LinearAlgebra
 using Plots
 using Polynomials
-
-# + [markdown] jp-MarkdownHeadingCollapsed=true nbgrader={"grade": false, "grade_id": "duplicate_id", "locked": true, "schema_version": 3, "solution": false, "task": false}
-# ### <font color='green'>Conditioning</font>
-
-# + [markdown] nbgrader={"grade": false, "grade_id": "cell-f74928936311caa6", "locked": true, "schema_version": 3, "solution": false, "task": false}
-# ### <font color='orange'>[Exercise 1]</font> Link between conditioning and relative error
-#
-# Consider the linear system
-# $$
-#     \mathsf A(α) \mathbf x :=
-#     \begin{pmatrix}
-#         1 & 1 \\
-#         1 & 1 - α
-#     \end{pmatrix}
-#     \begin{pmatrix}
-#         x_1 \\
-#         x_2
-#     \end{pmatrix} =
-#     \begin{pmatrix}
-#         π \\
-#         π - πα
-#     \end{pmatrix} =: \mathbf b(α).
-# $$
-# For $α$ in the range $[10^{-15}, 10^{-2}]$,
-# plot on the same graph, using logarithmic scales for both axes,
-#
-# - The function which to $α$ associate $\kappa_2\bigl(\mathsf A(α)\bigr) \times ε$,
-#   where $\kappa_2\bigl(\mathsf A(α)\bigr)$ is the condition number of the matrix $A(α)$ for the Euclidean norm,
-#   and $ε$ is the machine epsilon for the `Float64` format.
-#
-# - The relative error, in Euclidean norm, obtained when solving the linear system with the backslash `\` operator,
-#   in the case where both $A(α)$ and $b(α)$ are stored in the `Float64` format.
-
-# + nbgrader={"grade": true, "grade_id": "conditining_plot", "locked": false, "points": 2, "schema_version": 3, "solution": true, "task": false}
-Af(α) = [1. 1.; 1. (1-α)]
-bf(α) = [π; π - π*α]
-
-# Exact solution
-x_exact = [0.; π]
-
-# Range of α
-αs = 10. .^ (-15:.1:-2)
-
-### BEGIN SOLUTION
-rel_err(α) = norm(Af(α)\bf(α) - x_exact)/norm(x_exact)
-plot(αs, rel_err.(αs), label=L"$ℓ^2$ error")
-# rel_err_A(α) = norm(Af(α)\bf(BigFloat(α)) - x_exact)/norm(x_exact)
-# rel_err_b(α) = norm(Af(BigFloat(α))\bf(α) - x_exact)/norm(x_exact)
-# plot!(αs, rel_err_A.(αs), label=L"$ℓ^2$ error from A")
-# plot!(αs, rel_err_b.(αs), label=L"$ℓ^2$ error from b")
-plot!(αs, cond.(Af.(αs)) * eps(), label=L"κ_2(A) \times ε")
-plot!(xscale=:log10, yscale=:log10, xlabel=L"α")
-### END SOLUTION
-
-# + [markdown] jp-MarkdownHeadingCollapsed=true nbgrader={"grade": false, "grade_id": "cell-readon", "locked": true, "schema_version": 3, "solution": false, "task": false}
-# ### <font color='green'>Direct methods</font>
 # -
 
-# ### <font color='orange'>[Exercise 2]</font> LU decomposition without Gaussian elimination
-#
-# The objective of this exercise is to propose an algorithm to perform the LU decomposition of a real matrix $\mathsf{A}\in\mathbb{R}^{n×n}$,
-# **not by Gaussian elimination** but by identifying the entries of $\mathsf A$ with those of $\mathsf L \mathsf U$.
-# The aim is to find a unit lower triangular matrix $\mathsf L$
-# and an upper triangular matrix $\mathsf U$ such that:
-# <a id="LU"></a>
-# $$
-# \tag{LU}
-# \mathsf{A}=\mathsf{L}\mathsf{U}
-# $$
-#
-# 1. Write a function `my_lu(A)` that takes a matrix `A` as an argument and returns the matrices `L` and `U`.
-#    To compute these matrices, rely on the successive identification of the elements on both sides of <a href="#LU">(LU)</a>,
-#    row by row from top to bottom, and from left to right within each row.
-#
-#    <details>
-#        <summary>
-#            <em><font color='gray'>Hint (click to display)</font></em>
-#        </summary>
-#
-#    When following the suggested order,
-#    comparing the element $(i, j)$ provides an equation for $\ell_{ij}$ if $j < i$,
-#    and an equation for $u_{ij}$ if $j \geq i$.
-#    Note that it is possible to traverse the elements in other orders.
-#    </details>
-
-# + nbgrader={"grade": false, "grade_id": "my_lu", "locked": false, "schema_version": 3, "solution": true, "task": false}
-function my_lu(A)
-    ### BEGIN SOLUTION
-    n = size(A, 1)
-    L, U = zeros(n, n), zeros(n, n)
-    for i in 1:n, j in 1:i
-        U[j, i] = A[j, i] - L[j, 1:j-1]'U[1:j-1, i]
-        L[i, j] = (A[i, j] - L[i, 1:j-1]'U[1:j-1, j]) / U[j, j]
-    end
-    ### END SOLUTION
-    return L, U
-end;
-
-# + nbgrader={"grade": true, "grade_id": "my_lu_tests", "locked": true, "points": 3, "schema_version": 3, "solution": false, "task": false}
-ref_lu(A) = LinearAlgebra.lu(A, NoPivot())
-@assert my_lu(diagm([1; 2; 3])) == (diagm([1; 1; 1]), diagm([1; 2; 3]))
-@assert my_lu([2 -1 0; -1 2 -1; 0 -1 2])[1] ≈ [1 0 0; -1/2 1 0; 0 -2/3 1]
-@assert my_lu([2 -1 0; -1 2 -1; 0 -1 2])[2] ≈ [2 -1 0; 0 3/2 -1; 0 0 4/3]
-@assert (C = [1 2 3 4; 4 3 2 1; 1 2 1 2; 1 5 4 1]; my_lu(C)[1] ≈ ref_lu(C).L)
-@assert (C = [1 2 3 4; 4 3 2 1; 1 2 1 2; 1 5 4 1]; my_lu(C)[2] ≈ ref_lu(C).U)
-@assert (C = randn(100, 100); my_lu(C)[1] ≈ ref_lu(C).L)
-@assert (C = randn(100, 100); my_lu(C)[2] ≈ ref_lu(C).U)
-# -
-
-# 2. We now assume that the real positive definite matrix `A` has a bandwidth `b` assumed to be much smaller than `n`.
-#    Rewrite the LU decomposition function by taking advantage of the bandwidth.
-#
-#    <details>
-#        <summary>
-#            <em><font color='gray'>Hint (click to display)</font></em>
-#        </summary>
-#
-#    Recall that the bandwidth is the smallest natural number $b$ such that $a_{ij} = 0$ for all $i,j \in \{1, \dots, n\}^2$ such that $|i-j| > b$.
-#    </details>
-
-# + nbgrader={"grade": false, "grade_id": "my_banded_lu", "locked": false, "schema_version": 3, "solution": true, "task": false}
-function my_banded_lu(A, b)
-    ### BEGIN SOLUTION
-    n = size(A, 1)
-    L, U = zeros(n, n), zeros(n, n)
-    for i in 1:n, j in max(1, i-b):i
-        U[j, i] = A[j, i] - L[j, max(j-b, 1):j-1]'U[max(j-b, 1):j-1, i]
-        L[i, j] = (A[i, j] - L[i, max(j-b, 1):j-1]'U[max(j-b, 1):j-1, j]) / U[j, j]
-    end
-    ### END SOLUTION
-    return L, U
-end;
-
-# + nbgrader={"grade": true, "grade_id": "cell-24fb0131261b7be2", "locked": true, "points": 2, "schema_version": 3, "solution": false, "task": false}
-@assert begin C = randn(100, 100); my_banded_lu(C, 99)[1] ≈ ref_lu(C).L end
-@assert begin C = randn(100, 100); my_banded_lu(C, 99)[2] ≈ ref_lu(C).U end
-
-### BEGIN HIDDEN TESTS
-_generate_banded(n, b) = [abs(i - j) ≤ b ? randn() : 0. for i in 1:n, j in 1:n]
-@assert (C = _generate_banded(10, 2); my_banded_lu(C, 2)[1] ≈ ref_lu(C).L)
-@assert (C = _generate_banded(10, 2); my_banded_lu(C, 2)[2] ≈ ref_lu(C).U)
-@assert (C = _generate_banded(10, 3); my_banded_lu(C, 3)[1] ≈ ref_lu(C).L)
-@assert (C = _generate_banded(10, 3); my_banded_lu(C, 3)[2] ≈ ref_lu(C).U)
-@assert (C = _generate_banded(1000, 1); my_banded_lu(C, 1)[1] ≈ ref_lu(C).L)
-@assert (C = _generate_banded(1000, 1); my_banded_lu(C, 1)[2] ≈ ref_lu(C).U)
-### END HIDDEN TESTS
-# -
-
-# 3. Create a function `generate_banded(n, b)` to generate a random square matrix of size `n` with a given bandwidth `b`.
-
-# + nbgrader={"grade": false, "grade_id": "cell-30b31cd2999ed291", "locked": false, "schema_version": 3, "solution": true, "task": false}
-function generate_banded(n, b)
-    ### BEGIN SOLUTION
-    A = zeros(n, n)
-    for i in 1:n
-        for j in max(1, i-b):min(n, i+b)
-            A[i, j] = randn()
-        end
-    end
-    return A
-    ### END SOLUTION
-end;
-
-# + nbgrader={"grade": true, "grade_id": "generate_banded", "locked": true, "points": 2, "schema_version": 3, "solution": false, "task": false}
-@assert generate_banded(10, 2)[1, 5] == 0
-@assert generate_banded(10, 2)[2, 5] == 0
-@assert generate_banded(10, 2)[3, 5] != 0
-@assert generate_banded(10, 2)[4, 5] != 0
-@assert generate_banded(10, 2)[5, 5] != 0
-@assert generate_banded(10, 2)[6, 5] != 0
-@assert generate_banded(10, 2)[7, 5] != 0
-@assert generate_banded(10, 2)[8, 5] == 0
-@assert generate_banded(10, 2)[9, 5] == 0
-# -
-
-# 4. Using `generate_banded`, test your implementation of `my_banded_lu`
-#    for `n = 100` and values of `b` equal to 2, 3, and 10.
-#    <details>
-#        <summary>
-#            <em><font color='gray'>Hint (click to display)</font></em>
-#        </summary>
-#
-#    You can use the `lu` function from the `LinearAlgebra` library,
-#    with the argument `NoPivot()`, corresponding to the `ref_lu` function defined above,
-#    as a reference function.
-#    You can also use the `@assert` macro for your tests.
-#    </details>
-
-# + nbgrader={"grade": true, "grade_id": "cell-9dd7b3831c6e1227", "locked": false, "points": 1, "schema_version": 3, "solution": true, "task": false}
-### BEGIN SOLUTION
-# See hidden tests above
-### END SOLUTION
-
-# + [markdown] jp-MarkdownHeadingCollapsed=true nbgrader={"grade": false, "grade_id": "cell-6be64d5472c97788", "locked": true, "schema_version": 3, "solution": false, "task": false}
-# ### <font color='green'>Iterative methods</font>
-# -
-
-# ### <font color='orange'>[Exercise 3]</font> Richardson's iteration
+# ### <font color='orange'>[Exercise 1]</font> Richardson's iteration
 #
 # Consider the following linear system:
 # $$
@@ -340,7 +145,7 @@ plot!(0:length(xs) - 1, errors, label="Error")
 ### END SOLUTION
 # -
 
-# ### <font color='orange'>[Exercise 4]</font> Basic iterative method for the Euler-Bernoulli beam
+# ### <font color='orange'>[Exercise 2]</font> Basic iterative method for the Euler-Bernoulli beam
 #
 # The objective of this exercise is to solve the Euler-Bernoulli beam equation in one dimension,
 # with homogeneous Dirichlet boundary conditions:
