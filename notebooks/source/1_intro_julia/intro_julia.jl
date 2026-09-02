@@ -60,7 +60,7 @@ a + b
 # ### <font color='green'>Manipulation of strings</font>
 # -
 
-# - Strings are defined in Julia between double quotes `"`. In contrast with Python, single quote `'` are used for single characters only.
+# - Strings are defined in Julia between double quotes `"`. In contrast with Python, single quotes `'` are used for single characters only.
 
 s = "Hello world!"
 
@@ -77,13 +77,13 @@ print(s1^5)
 # - Interpolation within a string can be obtained using `$`
 
 col = "red" ; x = 20_000 ; discount = 5
-s = "My $col car cost $(x*(1-discount/100)) €"
+s = "My $col car costs $(x*(1-discount/100)) €"
 print(s)
 
 s = "Hello world!"
-ordinal_suffix(i) = i == 1 ? "st" : i == 2 ? "nd" : "th"
-for (i, c) ∈ enumerate(s) 
-    println("The character at $i$(ordinal_suffix(i)) place is $c") 
+ordinal_suffix(i) = i == 1 ? "st" : i == 2 ? "nd" : i == 3 ? "rd" : "th"
+for (i, c) ∈ enumerate(s)
+    println("The character in $i$(ordinal_suffix(i)) place is $c")
 end
 
 # > Note that LaTeX strings can be built thanks to the [LaTeXStrings](https://github.com/JuliaStrings/LaTeXStrings.jl) package, imported above and used further in this notebook.
@@ -93,11 +93,11 @@ end
 # -
 
 # #### <font color='orange'>[Exercise 1]</font>
-# Write a function that returns the sum of the `n` first integers using a `for` loop.
+# Write a function that returns the sum of the squares of the first `n` positive integers using a `for` loop.
 #
 # > *Hints:*
 # >  - read the documentation of `function` (open a REPL and type `?` followed by the searched word, here `function`),
-# >  - a range of integers from `m` to `n` simply writes `m:n` <mark>(unlike Python bounds are included here in the range)</mark>.
+# >  - a range of integers from `m` to `n` is simply written `m:n` <mark>(unlike in Python, both bounds are included in the range)</mark>.
 
 # + nbgrader={"grade": false, "grade_id": "squares", "locked": false, "schema_version": 3, "solution": true, "task": false}
 function sum_of_squares(n)
@@ -189,7 +189,7 @@ end;
 f(x) = cos(x) * exp(-abs(x))
 plot(f, xlims=(-5, 5))
 
-# - Another, often more flexible, option is pass it $x$ and $y$ arrays:
+# - Another, often more flexible, option is to pass it $x$ and $y$ arrays:
 
 f(x) = cos(x) * exp(-abs(x))
 x = -5:.01:5
@@ -229,7 +229,7 @@ end
 gif(anim, fps=10)
 
 # #### <font color='orange'>[Exercise 3]</font>
-# Create an animation illustrating the motion a golf ball whose position in the $x,y$ plane with position
+# Create an animation illustrating the motion of a golf ball whose position in the $x,y$ plane is
 # $$
 # \begin{aligned}
 # x(t) &= u_0 t, \\
@@ -344,15 +344,15 @@ a = Float16(1.0)
 
 # A **byte**, abbreviated with a capital B, is a unit that consists of 8 bits.
 # This is the unit that is usually used to describe the amount of memory available in commercial products;
-# for example, a laptop typically has around 8GB or 16GB of RAM memory.
+# for example, a laptop typically has around 8 GB or 16 GB of RAM.
 # It is often useful to have a rough idea of how much space mathematical objects take in memory.
 # For example, a 1000 x 1000 matrix of `Float64` numbers requires $8 \times 10^6$ bytes to store,
-# and a 10000 x 10000 matrix of `Float64` numbers requires almost 800MB of RAM.
+# and a 10000 x 10000 matrix of `Float64` numbers requires almost 800 MB of RAM.
 
 A = zeros(10_000, 10_000)
 @show Base.summarysize(A);
 
-# To develop our understanding of floating point format,
+# To develop our understanding of floating point formats,
 # let us plot on the same graph the spacing between
 # successive `Float16`, `Float32` and `Float64` numbers
 # in the range $[1, 10^4]$. Notice that the density of
@@ -403,7 +403,7 @@ plot!(xscale=:log2, xlabel="x", ylabel="Δx/x (in ε units)")
 
 @show 1 + eps()/3      # the result is 1
 @show 1 + 2*eps()/3    # the result is 1 + ε
-@show .1 + .2 == .3    # this is False
+@show .1 + .2 == .3    # this is false
 
 # The errors caused by this rounding process are called **roundoff errors**.
 # They are particularly impactful for the calculation of derivatives.
@@ -428,7 +428,7 @@ plot(δs, err, xscale=:log10, yscale=:log10, label=L"|d(\delta) - f'(1)|", size=
 plot!([eps()], seriestype=:vline, label = L"\varepsilon")
 plot!([sqrt(eps())], seriestype=:vline, label = L"\sqrt{\varepsilon}")
 
-# For very small $\delta$ of the order of the machine $\varepsilon$, 
+# For very small $\delta$ of the order of the machine epsilon $\varepsilon$,
 # the approximation obtained is completely wrong.
 # Do you understand the following observations?
 
@@ -440,7 +440,7 @@ plot!([sqrt(eps())], seriestype=:vline, label = L"\sqrt{\varepsilon}")
 # so that the roundoff errors can be reduced and true error, 
 # coming from the inexact nature of many algorithms even in exact arithmetic,
 # can be observed.
-# The `BigFloat` in Julia is an arbitrary precision format.
+# The `BigFloat` type in Julia is an arbitrary precision format.
 # The corresponding number of significant bits can be set by using the `setprecision` function.
 
 # +
@@ -461,7 +461,7 @@ display(u)
 
 # - Note the difference with
 
-u = [1 2 3] # defines a Matrix of 1 line
+u = [1 2 3] # defines a Matrix with one row
 display(u)
 @show typeof(u)
 
@@ -473,7 +473,7 @@ A = [1 2 3
 
 A = [1 2 3; 4 5 6; 7 8 9]
 
-# - Extraction of a column or a line
+# - Extraction of a column or a row
 # > **Note:** in `Julia`, indices start at `1` as in `Fortran` (**not `0` as in `Python` or `C`**)
 
 A[1,:]
@@ -538,7 +538,7 @@ hcat(A, A, A)
 vcat(A, A, A)
 
 # - Components are stored column-wise and can be accessed by single index even for multidimensional arrays
-# - `eachindex` and `CartesianIndices` allow to iterate over all the indices of an array (single index for the former, multi-index for the latter)
+# - `eachindex` and `CartesianIndices` allow iteration over all the indices of an array (single index for the former, multi-index for the latter)
 # - A `CartesianIndex` can be converted into a `Tuple`
 # - `...` is the splat operator (see the documentation)
 
@@ -562,7 +562,7 @@ for i in 1:size(A, 1)
 end
 println()
 
-for i in 1:size(A, 1), j in 1:size(A, 2)
+for i in 1:size(A, 1), j in 1:size(A, 2)
     println("A[$i, $j] = ", A[i, j])
 end
 # -
@@ -574,7 +574,7 @@ display(B)
 @show B isa Matrix 
 ;
 
-# - Arrays are mutable (if the type is consistent), tuple are not!
+# - Arrays are mutable (if the type is consistent); tuples are not!
 
 v = [1, 2]
 @show typeof(v)
@@ -588,16 +588,16 @@ t = (1, 2)
 @show t[1] ;
 # t[1] = 3 # error since t is not mutable
 
-# - Definition of a void array and *a posteriori* construction
+# - Definition of an empty array and *a posteriori* construction
 #
 # > Note the difference between `push!` and `append!` (it is recalled that for both `!` expresses that by convention, not obligation, the argument is modified)
 
-v = [] # void vector containing any type (not optimal!)
+v = [] # empty vector whose elements can have any type (not optimal!)
 @show typeof(v)
 push!(v, 1)
 append!(v, [2.5, 3.6]) # pushes each item of the vector [2.5, 3.6]
 @show v
-push!(v, [4.1, 5.2]) # pushes a vector as new item
+push!(v, [4.1, 5.2]) # pushes a vector as a new item
 @show v ;
 @show v[end]
 @show v[end-1] ;
@@ -607,7 +607,7 @@ push!(v, [4.1, 5.2]) # pushes a vector as new item
 v = Float64[]
 @show typeof(v)
 push!(v, 1)
-append!(v, [2//3, π]) # pushes each item of the vector [2//3, π] and convert on-the-fly to Float64
+append!(v, [2//3, π]) # pushes each item of the vector [2//3, π] and converts it on the fly to Float64
 @show v
 # push!(v, [4.3, 5.7]) # throws an error since [4.3, 5.7] is not of type Float64
 ;
@@ -640,7 +640,7 @@ B .= 99 # .= assigns all the coefficients of the array to 99
 
 A = [10i+j for i in 1:6, j in 1:8]
 display(A)
-A[1:2:end, 2:2:end] .= 0 # components of odd line and even column are set to 0
+A[1:2:end, 2:2:end] .= 0 # entries in odd rows and even columns are set to 0
 display(A)
 ;
 
@@ -696,11 +696,13 @@ B[subi,subj]*u[subj]
 #
 # Write a function which computes the comatrix of a matrix explicitly from the determinant of submatrices.
 #
-# It is recalled that the component $C_{ij}$ of the comatrix of $A$ is obtained as the determinant of the submatrix obtained from $A$ by removing its $i^\textrm{th}$ row and $j^\textrm{th}$ column multiplied by $(-1)^{i+j}.$ The determinant of a small dense matrix is computed by the function `det` available in the library `LinearAlgebra`.
+# Recall that the component $C_{ij}$ of the comatrix of $A$ is $(-1)^{i+j}$ times the determinant of the submatrix obtained from $A$ by removing its $i^\textrm{th}$ row and $j^\textrm{th}$ column. The determinant of a small dense matrix is computed by the function `det` available in the library `LinearAlgebra`.
 
 # + nbgrader={"grade": false, "grade_id": "comatrix", "locked": false, "schema_version": 3, "solution": true, "task": false}
 using LinearAlgebra
 function comatrix(A)
+    C = zero(A)
+    ### BEGIN SOLUTION
     for ij ∈ CartesianIndices(A)
         i, j = Tuple(ij)
         C[ij] = (-1)^(i+j)*det(A[1:end .!= i, 1:end .!= j])
@@ -752,7 +754,7 @@ mrMoustache = Cat("MrMoustache")
 # -
 
 # To conclude this session,
-# let us illustrate the power of multiple disptach using two other examples.
+# let us illustrate the power of multiple dispatch using two other examples.
 # First, let us create a specific type for the identity matrix,
 # and redefine the operations `+` and `*` on matrices so that they work with this new type.
 
