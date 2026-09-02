@@ -1,0 +1,334 @@
+---
+title: "Floating-Point Arithmetic"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 1400
+        height: 800
+        chalkboard: false
+        transition: convex
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        slide-number: h.v
+        eval: false
+        echo: true
+        preview-links: auto
+        toc: false
+        embed-resources: true
+
+revealjs-plugins:
+  - verticator
+  - pointer
+
+bibliography: ../biblio/scientific_computing.bib
+link-citations: true
+csl: ../biblio/elsevier-harvard.csl
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.12
+execute:
+  freeze: auto
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+# Introduction
+
+
+- Numerical algorithms usually assume exact operations.
+- On computers, only a subset of real numbers can be stored.
+- Many operations are [approximate]{.emph} → this leads to [round-off errors]{.alert}.
+
+. . .
+
+**Chapter structure:**
+
+- Binary representation of real numbers
+
+- Floating-point formats
+
+- Arithmetic operations
+
+- IEEE 754 encoding
+
+
+# Binary Representation of Real Numbers
+
+
+A real number $x$ in an integer base $\beta \geq 2$ can be written as
+
+
+$$x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \quad a_k \in \{0, \dots, \beta-1\}$$
+
+
+- Humans: usually base 10
+- Computers: usually base 2
+
+
+## Common Bases
+
+**Base 2 (binary)**
+
+- Digits are 0 or 1
+- Easy to store in circuits
+- Multiplying/dividing by 2 = bit shifts
+
+. . .
+
+<br>
+**Base 16 (hexadecimal)**
+
+- Digits: 0–9, A–F
+- Compact representation
+- Used in colors, IPv6 addresses
+
+
+## Conversion algorithm (Decimal → Binary)
+
+Algorithm to convert a number $x \in [0,1)$ to binary:
+
+
+```text
+Initialize i = 1
+While x ≠ 0:
+    Multiply x by 2
+    If x ≥ 1:
+        bᵢ = 1
+        x = x - 1
+    Else:
+        bᵢ = 0
+    i = i + 1
+```
+. . .
+
+- Bits $b_1, b_2, …$ form the output $x = (0.b_1 b_2 …)_2$
+- If a nonzero value of $x$ repeats, the binary representation is infinite and periodic
+- A base-2 representation can be infinite even when the base-10 representation is finite
+
+## Example: $1/3$ in Binary
+<br>
+
+| i | $x$ | $2x$ | Bits so far |
+|---|-----------|------|-------------|
+| 1 | 1/3 | 2/3 | 0.**0** |
+| 2 | 2/3 | 4/3 | 0.0**1** |
+| 3 | 1/3 | 2/3 | 0.01**0** |
+| 4 | 2/3 | 4/3 | 0.010**1** |
+| 5 | 1/3 | 2/3 | 0.0101**0** |
+
+<br>
+
+. . .
+
+Pattern repeats → $(1/3)_{10} = (0.\overline{01})_2$
+
+# Set of Representable Values
+
+
+- Computers store only a subset of real numbers.
+- The IEEE 754 standard defines floating-point formats. A simplified model for the finite values is
+
+
+$$
+\begin{aligned}
+F(p,E_{\min},E_{\max}) = \{0\} \cup \big\{&(-1)^s 2^E
+    (b_0.b_1 b_2 \dots b_{p-1})_2 : \\
+    &s,b_i \in \{0,1\},\quad E_{\min} \leq E \leq E_{\max},
+    \quad b_0=1 \text{ if } E>E_{\min}\big\}.
+\end{aligned}
+$$
+
+. . .
+
+**Parameters**:
+
+- $p$: number of significant bits (**precision**)
+- $E_{\min}, E_{\max}$: minimum and maximum exponents
+- IEEE 754 also includes signed zeros, infinities, and NaNs
+
+
+## Components of a Floating-Point Number
+
+
+For nonzero $x \in F(p, E_{\min}, E_{\max})$:
+
+- $s$ → **sign**
+- $E$ → **exponent**
+- $b_0.b_1 b_2 \dots b_{p-1}$ → **significand**
+- $b_0$: leading bit
+
+
+## Common Formats
+
+<br>
+
+| Format | Precision $p$ | $E_{\min}$ | $E_{\max}$ |
+|-------------------|---------------|-----------|-----------|
+| Half (Float16) | 11 | -14 | 15 |
+| Single (Float32) | 24 | -126 | 127 |
+| Double (Float64) | 53 | -1022 | 1023 |
+
+<br>
+
+. . .
+
+- $F_{16} \subset F_{32} \subset F_{64}$
+- Half-precision introduced in IEEE 754-2008
+- In Julia, `Float16`, `Float32`, `Float64` (default)
+
+
+## Relative Error and Machine Epsilon
+
+:::{.callout-tip icon=false}
+## Definition of the [machine epsilon]{.emph}
+$$
+\varepsilon = 2^{-(p-1)}
+$$
+:::
+
+- Depends on the floating-point format (through parameter $p$)
+- In Julia, `eps(Float16)`, `eps(Float32)`, `eps(Float64)`
+- Gives the spacing of representable numbers at 1
+- **Example:** The next representable number after 1 is $1 + \varepsilon$
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+x = 1.0
+println(nextfloat(x) - x)
+println(eps(Float64))
+```
+
+## Absolute Density of Floating-Point Numbers
+
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+import Plots
+using LaTeXStrings
+Plots.resetfontsizes()
+Plots.scalefontsizes(1.5)
+Plots.default(titlefont = "computer modern",
+              legendfont = "computer modern",
+              linewidth = 2,
+              top_margin=20Plots.mm, 
+              bottom_margin=20Plots.mm)
+```
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+eps_64 = eps(Float64)
+exp_min, exp_max = -4, 4
+exponents = exp_min:.01:exp_max
+x_64 = Float64.(2.0.^exponents)
+successors_64 = nextfloat.(x_64)
+distance_64 = successors_64 - x_64
+
+Plots.plot(x_64, distance_64, label=L"\Delta(x)~\mathrm{(Float64)}")
+Plots.plot!(xaxis=:log, yaxis=:log, size=(900,500))
+Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i in exp_min:exp_max])
+Plots.xlabel!(L"x")
+```
+
+. . .
+
+- More numbers near 0 → denser representation.
+- Spacing grows with $|x|$.
+
+## Relative Density of Floating-Point Numbers
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+eps_64 = eps(Float64)
+exp_min, exp_max = -1024, -1016
+exponents = exp_min:.01:exp_max
+x_64 = Float64.(2.0.^exponents)
+successors_64 = nextfloat.(x_64)
+distance_64 = successors_64 - x_64
+
+Plots.plot(x_64, (distance_64./x_64) / eps_64, xaxis=:log, label=L"\frac{\Delta(x)}{x}",
+           bottom_margin=2Plots.mm, size=(900,500), yrange=(0, 5))
+Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i in exp_min:exp_max])
+Plots.plot!([2^(-1022)], seriestype=:vline, label = false)
+yticks = [0, 1, 2, 3, 4]
+Plots.yticks!(yticks, [latexstring(string(i) * "\\, \\varepsilon_M") for i in yticks])
+Plots.xlabel!(L"x")
+```
+. . .
+
+- Relative spacing lies between $\frac{1}{2} \varepsilon$ and $\varepsilon$ in the [normal range]{.emph}
+- In the subnormal range (very small numbers), the relative spacing can be larger
+
+# Arithmetic Operations and Rounding
+
+- Floating-point arithmetic is **not exact** in general because of limited precision.
+
+- With the default IEEE 754 mode, the exact result of a basic arithmetic operation is rounded to the [nearest]{.emph} representable number (ties to even).
+
+- Each intermediate operation may introduce a small **[round-off error]{.alert}**.
+
+- Errors may [accumulate]{.alert} in sequences of operations, though they can also cancel.
+
+. . .
+
+```{julia}
+#| echo: true
+#| eval: true
+ε = eps()
+@show .1 + .2 == .3     
+@show sqrt(2)^2 == 2    
+@show exp(ε) == 1 + ε   
+@show exp(ε/2) == 1 + ε 
+@show exp(ε/3) == 1;
+```
+
+# Encoding of Floating-Point Numbers
+
+- Set of finite representable numbers specified by $(p, E_{\min}, E_{\max})$
+- [Encoding]{.emph} = how they are actually stored
+- Encoding does not affect magnitude or propagation of round-off errors.
+
+## Unique Representation Rules
+
+:::{.callout-note icon=false}
+## Unique Representation
+The representation of a nonzero finite number as $(-1)^s 2^E (b_0.b_1 … b_{p-1})_2$ is unique by requiring that
+
+- Either $E > E_{\min}$ and the leading bit $b_0 = 1$
+- Or $E = E_{\min}$, in which case $b_0$ may be 0
+:::
+
+. . .
+
+<br>
+
+- **Storage in memory**: `Float16`, `Float32`, `Float64` use 16, 32, 64 bits.
+- Example layout (32-bit Float32):
+    + Sign: 1 bit
+    + Encoded exponent: 8 bits
+    + Fraction field: 23 bits (the leading significand bit is implicit for normal numbers)
