@@ -1,0 +1,1103 @@
+---
+title: "Solving nonlinear systems numerically"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 2000
+        height: 1000
+        chalkboard: false
+        transition: convex
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        callout-icon: false
+        slide-number: c/t
+        toc: false
+        toc-depth: 1
+        embed-resources: true
+        # html-math-method: katex
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.11
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+using Plots
+using LaTeXStrings
+Plots.default(label=nothing,
+              fontfamily="Computer Modern",
+              background_color=:white,
+              foreground_color=:black,
+              linewidth=2,
+              xlabelfontsize=18,
+              ylabelfontsize=18,
+              legendfontsize=18,
+              xtickfontsize=18,
+              ytickfontsize=18);
+```
+
+# Introduction
+
+## Objective
+
+{{< include ../config/_macros_revealjs.tex >}}
+{{< include ../config/_macros_colors.tex >}}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+:::{.callout-note}
+## Goal of this chapter
+Study numerical methods to find solutions to
+$$
+\vect f(\vect x) = \vect 0,
+$$
+where
+$\vect f\colon \real^n \to \real^n$ (number of unknows = number of equations).
+:::
+
+::: {.fragment}
+:::{.callout-warning}
+## Example applications
+- Calculate $\sqrt{2}$ by solving $x^2 = 2$;
+
+- Solve two point boundary value problems, e.g.
+
+  $$
+  u''(t) = f\bigl(t, u(t)\bigr), \qquad u(0) = u(1) = 0.
+  $$
+
+- Solve nonlinear partial differential equations, e.g.
+  $$
+  \nabla \cdot \bigl(\alpha(u)\nabla u \bigr) = f.
+  $$
+:::
+:::
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="45%"}
+
+::: {.fragment}
+:::{.callout-warning}
+## Remark
+A linear system of the form $\mat A \vect x = \vect b$ can be recast in this form with
+$$
+\vect f(\vect x) = \mat A \vect x - \vect b.
+$$
+With this notation, Richardson's method for linear systems rewrites
+$$
+\vect x_{k+1} = \vect x_k - \omega \vect f(\vect x_k).
+$$
+**Questions**:
+
+- Is such a method convergent for general nonlinear equations?
+
+- How fast is the convergence?
+
+- What is the optimal value of $\omega$.
+
+:::
+:::
+
+:::
+::::
+
+
+## Simplest approach: the bisection method {auto-animate=true}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+:::{.callout-note}
+## Setting and idea
+Suppose that $f\colon [a, b] \to \real$ is continuous and
+$f(a) \leq 0 \leq f(b).$
+
+$\thus$ Then there is a root of $f$ in $[a, b]$. Let $x = \frac{a + b}{2}$.
+
+- If $f(a)f(x) \leq 0$, then there is a root of $f$ in $[a, x]$;
+
+- If $f(a)f(x) > 0$, then there is a root of $f$ in $[x, b]$.
+:::
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+function bisection(f, a, b, ε = 1e-10)
+    @assert f(a) * f(b) ≤ 0
+    while abs(b - a) ≥ ε
+        x = (a + b) / 2
+        a, b = f(a) * f(x) ≤ 0 ? [a, x] : [x, b]
+    end
+    return (a + b) / 2
+end
+
+println(cbrt(2))
+bisection(x -> x^3 - 2, 0, 2)
+```
+:::
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="49%"}
+::: {.fragment}
+:::{.callout-note}
+# Convergence
+It holds that
+$$
+    |b_i - a_i| = \frac{|b - a|}{2^i}
+$$
+Both sequences $(a_i)$ and $(b_i)$ converge to a root $x_*$ of $f$.
+:::
+:::
+
+$~$
+
+::: {.fragment}
+:::{.callout-tip}
+# Comments
+
+- Works only in the [one-dimensional]{.red} setting;
+
+- Robust but slow…
+:::
+:::
+
+:::
+::::
+
+## Simplest approach: the bisection method {auto-animate=true}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+function animate_bisection(f, a, b, ε = 1e-3)
+    anim = Animation()
+    i = 0
+    while abs(b - a) ≥ ε
+        plot(f; xlims=(-.5, 2.4), size=(900, 600))
+        plot!([a; b], [0; 0])
+        scatter!([a; b], [0; 0])
+        annotate!(-.25, 10, text(L"i = " * "$i", :left))
+        annotate!(-.25, 9, text(L"|b_i-a_i| = " * "$(abs(b - a))", :left))
+        frame(anim)
+        x = (a + b) / 2
+        scatter!([x], [0])
+        a, b = f(a) * f(x) ≤ 0 ? [a, x] : [x, b]
+        frame(anim)
+        i += 1
+    end
+    gif(anim, "bisection.gif", fps=1)
+end
+animate_bisection(x -> x^3 - 2, 0, 2)
+```
+
+## Quantifying the convergence speed
+
+:::: {.columns}
+
+::: {.column width="45%"}
+:::{.callout-note}
+## Definition
+We say that a sequence $(\vect x_k)_{k\in \nat}$ converges to $\vect x_*$
+
+- [linearly]{.blue} if
+  $$
+  \lim_{k\to\infty} \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}} \in (0, 1).
+  $$
+
+- [superlinearly]{.blue} if
+  $$
+  \lim_{k\to\infty} \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}} = 0.
+  $$
+
+- [with order $q$]{.blue} if $\vect x_k \to \vect x_*$ and
+  $$
+  \lim_{k\to\infty} \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}^q} \in (0, \infty).
+  $$
+  If $q = 2$, we say the sequence converges [quadratically]{.blue}.
+:::
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+:::{.callout-tip}
+## Examples
+- Most iterative methods for linear equations converge linearly.
+
+- The bisection method converges linearly.
+:::
+:::
+:::
+
+::::
+
+# Dual numbers and automatic differentiation
+
+## Definition of Dual Numbers
+
+- A **dual number** is an expression of the form:  
+  $$
+  z = a + b \varepsilon, \quad a, b \in \mathbb{R}, \quad \varepsilon^2 = 0
+  $$
+- Here, $\varepsilon$ is an **infinitesimal**, not a real number.  
+- The set of all dual numbers is denoted by $\mathbb{D}$ and forms a **commutative algebra** over $\mathbb{R}$.
+
+---
+
+## Arithmetic with Dual Numbers
+
+- **Addition:**  
+  $$
+  (a + b\varepsilon) + (c + d\varepsilon) = (a+c) + (b+d)\varepsilon
+  $$  
+- **Multiplication:**  
+  $$
+  (a + b\varepsilon)(c + d\varepsilon) = ac + (ad + bc)\varepsilon
+  $$  
+- **Inverse (if $a \neq 0$):**  
+  $$
+  (a + b\varepsilon)^{-1} = \frac{1}{a} - \frac{b}{a^2}\varepsilon
+  $$
+
+---
+
+## Motivation: Automatic Differentiation
+
+- Consider a smooth function $f : \mathbb{R} \to \mathbb{R}$.  
+- Extend $f$ to dual numbers formally via **Taylor expansion**:  
+  $$
+  f(a + b\varepsilon) := f(a) + b f'(a)\varepsilon
+  $$  
+- Then evaluating $f(a + 1\varepsilon)$ gives both $f(a)$ and $f'(a)$ simultaneously:  
+  $$
+  f(a + \varepsilon) = f(a) + f'(a)\varepsilon
+  $$  
+- Works naturally with **composition of functions**:  (chain rule is applied automatically)
+  $$
+  f(g(a + \varepsilon)) = f(g(a) + g'(a)\varepsilon) = f(g(a)) + f'(g(a)) g'(a)\varepsilon
+  $$  
+- This is the foundation for **forward-mode automatic differentiation**.
+
+# Fixed-point methods
+
+## Fixed-point methods {auto-animate=true}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+:::{.callout-note}
+## Idea
+Rewrite
+
+$$\vect f(\vect x) = \vect 0 \qquad \Leftrightarrow \qquad \vect F(\vect x) = \vect x$$
+
+and use iterative scheme
+
+$$
+\vect x_{k+1} = \vect F(\vect x_k)
+$$
+:::
+
+::: {.fragment}
+:::{.callout-tip}
+## Examples (more on these in the next section)
+
+- Chord method: for $\alpha \neq 0$
+  $$
+  \vect F(\vect x) = \vect x - \frac{\vect f(\vect x)}{\alpha}
+  $$
+  $\thus$ In the linear setting, this is Richardson's iteration with $\omega = \alpha^{-1}$.
+
+- Newton--Raphson method:
+  $$
+  \vect F(\vect x) = \vect x - \mat J_f(\vect x)^{-1} \vect f(\vect x),
+  $$
+  where $\mat J_f(\vect x)$ is the Jacobian matrix of $\vect f$ at $\vect x$.
+
+:::
+:::
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="51%"}
+::: {.fragment}
+:::{.callout-note}
+## Proposition: convergence under Lipschitz assumption
+If $\vect F$ is Lipschitz continuous with $L < 1$,
+$$
+\forall (\vect x, \vect y) \in \real^n \times \real^n, \qquad
+\norm{\vect F(\vect x) - \vect F(\vect y)} \leq L \norm{\vect x - \vect y}
+$$
+then
+
+- There exists a unique fixed point $\vect x_*$ of $\vect F$.
+
+- The sequence $(\vect x_k)_{k\in \nat}$ converges exponentially to $\vect x_*$:
+  $$
+  \forall k \in \nat, \qquad
+  \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+  $$
+:::
+:::
+
+::: {.fragment}
+:::{.callout}
+## Sketch of proof
+- Show that $(\vect x_k)$ is Cauchy, thus convergent to some $\vect x_* \in \real^n$.
+
+- Show that $\vect F(\vect x_*) = \vect x_*$.
+
+- Deduce exponential convergence from $\vect x_{k+1} - \vect x_* = \vect F(\vect x_k) - \vect F(\vect x_*)$.
+:::
+:::
+
+:::
+
+::::
+
+## Relaxing the global Lipschitz assumption
+
+:::: {.columns}
+
+::: {.column width="10%"}
+
+:::
+::: {.column width="60%"}
+:::{.callout-note}
+## Proposition: [local]{.green} convergence under [local]{.green} Lipschitz condition
+Assume that $\vect x_*$ is a fixed point of $\vect F$ and
+$$
+\forall \vect x \in B_{\delta}(\vect x_*), \qquad
+\norm{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*}
+$$ {#eq-locallipschitz}
+for $L < 1$. If $\vect x_0 \in B_{\delta}(\vect x_*)$, then $\vect x_k \in B_{\delta}(\vect x_*)$ for all $k \in \nat$ and
+$$
+\norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+$$
+:::
+
+$~$
+
+::: {.fragment}
+:::{.callout-note}
+## Proposition: local convergence criteria based on the Jacobian
+Assume that $\vect F$ is differentiable at a fixed point $\vect x_*$.
+
+- There is $\delta > 0$ such that @eq-locallipschitz is satisfied
+  [iff]{.blue} $\norm{\mat J_F(\vect x_*)} < 1$.
+
+- There is $\delta > 0$ such that @eq-locallipschitz is satisfied [in some induced norm]{.red} [iff]{.blue} $\rho\bigl(\mat J_F(\vect x_*)\bigr) < 1$.
+
+:::
+:::
+:::
+
+
+::::
+
+## Fixed-point methods: superlinear convergence
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="75%"}
+:::{.callout-note}
+## Proposition: superlinear convergence
+Assume that $\vect x_*$ is a fixed point of $\vect F$ and that $\mat J_F(\vect x_*) = 0$.
+If $\vect x_k \to \vect x_*$ as $k \to \infty$,
+then
+$$
+    \lim_{k \to \infty} \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}} = 0.
+$$
+:::
+
+::: {.fragment}
+:::{.callout-warning}
+## Remark
+Under the assumption, there is $\delta > 0$ such that $(\vect x_k)_{k\geq 0}$ is a sequence converging to $\vect x_*$ for all $\vect x_0 \in B_{\delta}(\vect x_*)$.
+:::
+:::
+
+::: {.fragment}
+:::{.callout}
+## Proof
+It holds that
+$$
+    \frac{\norm{\vect x_{k+1} - \vect x_*}}{\norm{\vect x_k - \vect x_*}}
+    = \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)}}{\norm{\vect x_k - \vect x_*}}
+    =  \frac{\norm{\vect F(\vect x_{k}) - \vect F(\vect x_*) - \mat J_F(\vect x_*) (\vect x_k - \vect x_*)}}{\norm{\vect x_k - \vect x_*}}.
+$$
+Since $\vect x_k - \vect x_* \to \vect 0$ as $k \to \infty$,
+the right-hand side converges to 0 by definition of the Jacobian matrix.
+:::
+:::
+
+
+:::
+::::
+
+# Examples of fixed point method
+
+## The chord method
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+:::{.callout-note}
+## Description of the method
+
+The chord method is the iteration
+$$
+\vect x_{k+1} = \vect x_k - \mat A^{-1} \vect f(x_k),
+$$
+with $\mat A \in \real^{n \times n}$ an invertible matrix parameter.
+:::
+
+$~$
+
+::: {.fragment}
+:::{.callout-warning}
+## Remarks
+
+- This is a fixed-point method with $\vect F(\vect x) = \vect x - \mat A^{-1} \vect f(\vect x)$.
+
+- Clearly $\vect F(\vect x) = \vect x$ if and only if $\vect f(\vect x) = \vect 0$.
+
+- When $n = 1$, the iteration reads
+  $$
+  x_{k+1} = x_k - \frac{f(x_k)}{\alpha},
+  $$
+  $\thus$ In the linear setting, this is Richardson's iteration.
+:::
+:::
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+:::{.callout-important}
+
+## Convergence study when [$n=1$]{.blue}
+In this case
+$$
+F(x) = x - \frac{f(x)}{\alpha}, \qquad F'(x) = 1 - \frac{f'(x)}{\alpha}
+$$
+We deduce:
+
+- The iteration converges locally close to the fixed point if
+  $$
+  \left| 1 - \frac{f'(x_*)}{\alpha} \right| < 1.
+  $$
+  $\thus \alpha$ must be
+  of the same sign as $f'(x_*)$
+  and sufficiently large:
+  $$
+  \left|\alpha\right|>\frac{\left|f'(x_*)\right|}{2}
+  $$
+
+- The convergence is superlinear if
+  $$
+  \alpha = f'(x_*)
+  $$
+
+:::
+:::
+:::
+
+::::
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-line-numbers: false
+function animate_fixed_point(F, ann="")
+    anim = Animation()
+    plot(F; label="F(x)", xlims=(-2, 3), aspect_ratio=:equal, legend = :outertopleft)
+    plot!(y -> y, label="x", xlims=(-2, 3))
+    annotate!(1.,-1.7, text(ann, :blue, 20))
+    x = 2.5
+    for i in 1:15
+        newx = F(x)
+        for j in 1:3
+            scatter!([x], [x])
+            j == 1 && @goto doframe
+            plot!([x; x], [x; F(x)])
+            scatter!([x; x], [x; F(x)])
+            j == 2 && @goto doframe
+            plot!([x; F(x)], [F(x); F(x)])
+            scatter!([F(x)], [F(x)])
+            @label doframe
+            frame(anim)
+        end
+        x = newx
+    end
+    gif(anim, "fixed_point.gif", fps=3)
+end;
+```
+
+## Fixed-point methods: geometric interpretation with $F$ {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="50%"}
+$$
+F(x) = x - \frac{1}{\alpha}\tanh(x-1), \qquad x_* = 1,
+$$
+:::
+::: {.column width="40%"}
+$$
+F'(x_*) = 1 - \frac{1}{\alpha\,\cosh^2(x-1)}=1-\frac{1}{\alpha}
+$$
+:::
+::::
+
+```{julia}
+#| echo: false
+#| eval: true
+β = 1
+animate_fixed_point(x -> x - tanh(x- 1)/β, L"α=1\quad;\quad|F′(x_*)|=0")
+```
+
+## Fixed-point methods: geometric interpretation with $F$ {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="50%"}
+$$
+F(x) = x - \frac{1}{\alpha}\tanh(x-1), \qquad x_* = 1,
+$$
+:::
+::: {.column width="40%"}
+$$
+F'(x_*) = 1 - \frac{1}{\alpha\,\cosh^2(x-1)}=1-\frac{1}{\alpha}
+$$
+:::
+::::
+
+```{julia}
+#| echo: false
+#| eval: true
+β = 2
+animate_fixed_point(x -> x - tanh(x- 1)/β, L"α=2\quad;\quad|F′(x_*)|=\frac{1}{2}")
+```
+
+## Fixed-point methods: geometric interpretation with $F$ {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="50%"}
+$$
+F(x) = x - \frac{1}{\alpha}\tanh(x-1), \qquad x_* = 1,
+$$
+:::
+::: {.column width="40%"}
+$$
+F'(x_*) = 1 - \frac{1}{\alpha\,\cosh^2(x-1)}=1-\frac{1}{\alpha}
+$$
+:::
+::::
+
+```{julia}
+#| echo: false
+#| eval: true
+β = 1/2
+animate_fixed_point(x -> x - tanh(x- 1)/β, L"α=\frac{1}{2}\quad;\quad|F′(x_*)|=1")
+```
+
+## Fixed-point methods: geometric interpretation with $F$ {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="50%"}
+$$
+F(x) = x - \frac{1}{\alpha}\tanh(x-1), \qquad x_* = 1,
+$$
+:::
+::: {.column width="40%"}
+$$
+F'(x_*) = 1 - \frac{1}{\alpha\,\cosh^2(x-1)}=1-\frac{1}{\alpha}
+$$
+:::
+::::
+
+```{julia}
+#| echo: false
+#| eval: true
+β = 1/4
+animate_fixed_point(x -> x - tanh(x- 1)/β, L"α=\frac{1}{4}\quad;\quad|F′(x_*)|=3")
+```
+
+
+
+```{julia}
+#| echo: false
+#| eval: true
+using LaTeXStrings
+
+function animate_chord(f, α, niter=20, fps=2)
+    anim = Animation()
+    x = 4
+    for i in 1:niter
+        newx = x - f(x)/α(x)
+        for j in 1:4
+            kwargs = (xlims=(-3, 5), ylims=(-1, 1))
+            plot(f; kwargs..., label=L"f(x)")
+            plot!(y -> 0, size=(900, 600), legend=:outertopright)
+            scatter!([x], [f(x)])
+            annotate!(-2, 0.8, "Itération $i")
+            annotate!(3, -0.8, "x = $x")
+            j == 1 && @goto doframe
+            plot!(y -> f(x) + α(x)*(y - x))
+            j == 2 && @goto doframe
+            scatter!([newx], [0])
+            j == 3 && @goto doframe
+            scatter!([newx], [f(newx)])
+            j == 4 && @goto doframe
+            @label doframe
+            frame(anim)
+        end
+        x = newx
+    end
+    gif(anim, "newton_raphson.gif", fps=fps)
+end;
+```
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-line-numbers: false
+function chord(f, α, x; ε = 1e-12, maxiter = 10^7)
+    for i in 1:maxiter
+        x = x - f(x) / α
+        if abs(f(x)) < ε
+            return x, i
+        end
+    end
+    return "Failed to converge!"
+end;
+```
+
+## The chord method: geometric interpretation with $f$ {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="30%"}
+:::{.callout-note}
+## Geometric interpretation
+At each iteration:
+
+- Approximate $f(x)$ by the straight line
+  $$
+  \widehat f_k(x) =  f(x_k) + \alpha (x - x_k)
+  $$
+
+- Let $x_{k+1}$ be the root of $\widehat f_k$.
+:::
+:::
+
+::: {.column width="70%"}
+::: {.fragment}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+s = 1
+f(x) = tanh(.3(x - s))
+α(x) = 1
+animate_chord(f, α, 10, 1)
+```
+:::
+:::
+::::
+
+## The chord method: geometric interpretation {auto-animate=true}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+s = 1
+f(x) = tanh(.3(x - s))
+α(x) = 1
+animate_chord(f, α, 10, 1)
+```
+
+## The chord method: numerical experiment
+
+:::: {.columns}
+
+::: {.column width="45%"}
+```{julia}
+#| echo: true
+#| eval: false
+#| code-line-numbers: false
+function chord(f, α, x; ε = 1e-12, maxiter = 10^7)
+    for i in 1:maxiter
+        x = x - f(x) / α
+        if abs(f(x)) < ε
+            return x, i
+        end
+    end
+    error("Failed to converge!")
+end
+```
+
+::: {.fragment}
+:::{.callout-tip}
+## Toy problem
+Let us apply the chord method to
+$$
+f(x) = x^2 - 2.
+$$
+In this case
+$$
+F(x) = x - \frac{x^2 - 2}{\alpha},
+\qquad F'(x) = 1 - \frac{2x}{\alpha}.
+$$
+Here $x_* = \sqrt{2}$ and $f'(x_*) = 2\sqrt{2}$.
+:::
+:::
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="40%"}
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+chord(x -> x^2 - 2, 2√2, 1)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+chord(x -> x^2 - 2, √2 - .01, 1)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+chord(x -> x^2 - 2, √2 + .01, 1)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+chord(x -> x^2 - 2, 10, 1)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+chord(x -> x^2 - 2, 100, 1)
+```
+:::
+
+:::
+::::
+
+## The Newton-Raphson method
+
+:::: {.columns}
+
+::: {.column width="50%"}
+:::{.callout-note}
+## Motivation
+
+- The chord method is optimal with $\mat A = \mat J_f(\vect x_*)$;
+
+- However, $\vect x_*$ is unknown a priori…
+
+- **Newton-Raphson method**: use
+  $$
+  \mat A = \mat A(k) = \mat J_f(\vect x_k).
+  $$
+  which leads to the iteration
+  $$
+  \vect x_{k+1} = \vect x_k - \mat J_f(\vect x_k)^{-1} \vect f(\vect x_k)
+  $$
+:::
+
+::: {.fragment}
+:::{.callout-tip}
+## One-dimensional version
+In dimension one, the Newton-Raphson iteration reads
+$$
+x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
+$$
+:::
+:::
+:::
+
+::: {.column width="3%"}
+
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+:::{.callout-warning}
+## Remarks
+- The method requires to solve a linear system at each step.
+
+- The iteration is well defined only if $\vect J_f(\vect x_k)$ is nonsingular.
+
+- The method is a fixed point iteration with
+  $$
+  \vect F(\vect x) = \vect x - \mat J_f(\vect x)^{-1} \vect f(\vect x).
+  $$
+
+- **Dimension 1**: If $f'(x_*) \neq 0$, then
+  $$
+  F'(x_*) = 0.
+  $$
+  $\thus$ local superlinear convergence.
+
+- **Dimension $n$**: If $\mat J_f(\vect x_*)$ is nonsingular,
+  then
+  $$
+  \mat J_F(\vect x_*) = \mat 0.
+  $$
+  $\thus$ local superlinear convergence.
+:::
+:::
+:::
+
+::::
+
+## The Newton-Raphson method: convergence analysis
+
+:::: {.columns}
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="65%"}
+
+:::{.callout-note}
+## Theorem: Quadratic convergence
+Assume that $f \in C^2(\real)$, that $f'(x_*) \neq 0$,
+and that the Newton-Raphson iteration converges to $x_*$.
+Then
+$$
+    \lim_{k \to \infty}
+    \frac{\abs{x_{k+1} - x_*}}{\abs{x_{k} - x_*}^2}
+    = \left| \frac{f''(x_*)}{2 f'(x_*)} \right|.
+$$
+:::
+
+::: {.fragment}
+:::{.callout}
+## Proof
+We note that
+$$
+    x_{k+1} - x_*
+    = x_{k} - \frac{f(x_k)}{f'(x_k)}  - x_*
+    = \frac{1}{f'(x_k)} \underbrace{\Bigl(f'(x_k)(x_{k} - x_*) - f(x_k)\Bigr)}_{= \frac{1}{2} f''(\xi_k) (x_{k} - x_*)^2}.
+$$
+for some $\xi_k$ between $x_k$ and $x_*$.
+We conclude that
+$$
+    x_{k+1} - x_*  = \frac{f''(\xi_k) (x_k - x_*)^2}{2f'(x_k)}.
+$$
+:::
+:::
+
+:::
+
+::::
+
+
+## The Newton-Raphson method: numerical experiment
+
+:::: {.columns}
+
+::: {.column width="45%"}
+```{julia}
+#| echo: true
+#| eval: true
+#| code-line-numbers: false
+function newton_raphson(f, df, x, maxiter; ε = 1e-12)
+    for i in 1:maxiter
+        x -= f(x) / df(x)
+        if abs(f(x)) < ε
+            return x, i
+        end
+    end
+    return "Failed to converge!"
+end;
+```
+
+::: {.fragment}
+:::{.callout-tip}
+## Toy problem
+Let us apply the Newton-Raphson method to
+$$
+f(x) = (x^2 - 2)(x - 3)^4.
+$$
+
+- Single roots $\sqrt{2}$ and $-\sqrt{2}$.
+
+- Quadruple root $3$.
+
+  $\thus$ superlinear convergence does not apply.
+:::
+:::
+
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+println(√2)
+```
+:::
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+# Import package for automatic differentiation
+using Zygote
+
+g(x) = (x^2 - 2) * (x - 3)^4
+dg = g'
+maxiter = 100
+newton_raphson(g, dg, 1, maxiter)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+newton_raphson(g, dg, 100, maxiter)
+```
+:::
+
+$~$
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+newton_raphson(g, dg, -100, maxiter)
+```
+:::
+
+:::
+::::
+
+
+## The Newton-Raphson method: geometric illustration {auto-animate=true}
+
+:::: {.columns}
+::: {.column width="40%"}
+:::{.callout-note}
+## Geometric interpretation
+At each iteration:
+
+- Approximate $f(x)$ by its tangent at $x_k$
+  $$
+  \widehat f_k(x) =  f(x_k) + f'(x_k) (x - x_k)
+  $$
+
+- Let $x_{k+1}$ be the root of $\widehat f_k$.
+:::
+:::
+
+::: {.column width="3%"}
+
+:::
+
+::: {.column width="55%"}
+
+::: {.fragment}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+using Zygote
+animate_chord(f, f', 5, 1)
+```
+:::
+
+:::
+::::
+
+## The Newton-Raphson method: geometric illustration {auto-animate=true}
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+using Zygote
+animate_chord(f, f', 5, 1)
+```

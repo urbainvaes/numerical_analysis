@@ -1,0 +1,12 @@
+/*-- scss:rules --*/
+
+.reveal div.sourceCode {
+padding: .2em;
+font-size: 1.2em;
+}
+
+/*-- scss:mixins --*/
+
+@mixin bodyBackground() {
+  @include radial-gradient(rgb(240, 228, 221), rgb(255, 255, 255));
+}

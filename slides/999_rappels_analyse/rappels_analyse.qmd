@@ -1,0 +1,115 @@
+---
+title: "Rappels d'analyse"
+subtitle: "Cours ENPC - Pratique du calcul scientifique"
+# author: "Jean-François Barthélémy"
+# date: "14 april 2023"
+# institute: "Cerema UMR MCD"
+format:
+    revealjs:
+        theme: ../../config/custom.scss
+        width: 1600
+        height: 900
+        chalkboard: false
+        transition: convex
+        smaller: false
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        # logo: "images/UMR MCD-couleur-300dpi.png"
+        slide-number: false
+        # footer: <https://julialang.org>
+        preview-links: auto
+        include-in-header: 
+            - ../../config/_head_color.html
+            # - ../../config/_head_pseudocode.html
+        # include-after-body: _after_pseudocode.html
+        toc: false
+        embed-resources: true
+
+revealjs-plugins:
+  - pointer
+
+bibliography: ../../biblio/scientific_computing.bib
+link-citations: true
+csl: ../../biblio/elsevier-harvard.csl
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.8
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  error: false
+#   daemon: 3600
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings
+Plots.pgfplotsx()
+
+Plots.default(fontfamily="Computer Modern",
+              titlefontsize=20,
+              xlabelfontsize=20,
+              ylabelfontsize=20,
+              legendfontsize=16,
+              xtickfontsize=16,
+              ytickfontsize=16,
+              linewidth=2,
+              markersize=7,
+              framestyle=:box,
+              label=nothing,
+              grid=true)
+```
+
+## Formules de Taylor {.smaller}
+
+{{< include ../../config/_macros_revealjs.tex >}}
+
+::: {.callout-note appearance="minimal"}
+
+- Théorème de Taylor-Lagrange
+
+Soit $f$ une application de l'intervalle $[a,b]$ dans $\R$ de classe $\mathcal{C}^n$ ($n ∈ \N$) telle que $f^{(n+1)}$ existe sur $]a,b[$. Alors il existe $c ∈ ]a,b[$ tel que
+
+$$
+f(b)=f(a)+\sum_{k=1}^n \frac{(b-a)^k}{k!} f^{(k)}(a) + \frac{(b-a)^{n+1}}{(n+1)!} f^{(n+1)}(c)
+$$
+
+Corollaire : si $|f^{(n+1)}(x)|≤M$ pour tout $x ∈ ]a,b[$ alors
+
+$$
+\left\lvert f(b)-f(a)-\sum_{k=1}^n \frac{(b-a)^k}{k!} f^{(k)}(a)  \right\rvert ≤ M\, \frac{(b-a)^{n+1}}{(n+1)!}
+$$
+
+- Formule de Taylor-Lagrange avec reste intégral
+
+Soit $f$ une application de l'intervalle $[a,b]$ dans $\R$ de classe $\mathcal{C}^{n+1}$ ($n ∈ \N$), alors
+$$
+f(b)=f(a)+\sum_{k=1}^n \frac{(b-a)^k}{k!} f^{(k)}(a) + \int_{x=a}^b \frac{(b-x)^{n}}{n!} f^{(n+1)}(x) \d x
+=f(a)+\sum_{k=1}^n \frac{(b-a)^k}{k!} f^{(k)}(a) + \frac{(b-a)^{n+1}}{n!} \int_{x=a}^b (1-t)^{n} f^{(n+1)}\left(a+t(b-a)\right) \d t
+$$
+
+- Formule de Taylor-Young
+
+Soit $I$ un intervalle de $\R$, $a ∈ \mathring{I}$ et $f\colon\,I → \R$. On suppose que $f$ est de classe $\mathcal{C}^n$ ($n ∈ \N$). Alors $f$ admet un développement limité en $a$ donné par
+$$
+f(a+h)=f(a)+\sum_{k=1}^n \frac{h^k}{k!} f^{(k)}(a) + \mathcal{o}(h^n)
+$$
+
+:::
+

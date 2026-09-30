@@ -1,0 +1,819 @@
+---
+title: "Numerical integration"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 1600
+        height: 900
+        chalkboard: false
+        transition: convex
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        slide-number: h.v
+        preview-links: auto
+        toc: false
+        embed-resources: true
+
+revealjs-plugins:
+  - verticator
+  - pointer
+
+bibliography: ../biblio/scientific_computing.bib
+link-citations: true
+csl: ../biblio/elsevier-harvard.csl
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.12
+execute:
+  freeze: auto
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings
+# Plots.pgfplotsx()
+
+# Plots.default(fontfamily="Computer Modern",
+#               titlefont = "Computer Modern",
+#               legendfont = "Computer Modern",
+#               titlefontsize=20,
+#               xlabelfontsize=20,
+#               ylabelfontsize=20,
+#               legendfontsize=16,
+#               xtickfontsize=16,
+#               ytickfontsize=16,
+#               linewidth=4,
+#               markersize=7,
+#               framestyle=:box,
+#               grid=true,
+#               background_color=:transparent,
+#               foreground_color=:black,
+#               top_margin=5Plots.mm,
+#               bottom_margin=12Plots.mm,
+#               left_margin=12Plots.mm,
+#               right_margin=5Plots.mm,
+# )
+Plots.default(label=nothing,background_color=:transparent,foreground_color=:black)
+;
+```
+
+
+# Introduction
+
+{{< include ../config/_macros_revealjs.tex >}}
+{{< include ../config/_macros_colors.tex >}}
+
+## The problem {.smaller}
+
+:::{.callout-note icon="false"}
+## Goal: compute numerically
+$$
+    I = \int_{\Omega} u(\vect x) \, \d \vect x, \qquad \Omega \subset \R^d, \quad u\colon \Omega \to \R
+$$
+:::
+
+:::incremental
+- We focus on the **1D** setting $\Omega = [a, b]$, with $u$ Riemann-integrable. Then
+  $$
+  I = \lim_{h \to 0} \sum_{i=0}^{n-1} u(t_i) (x_{i+1} - x_i),
+  \qquad a = x_0 < \dots < x_n = b, \quad t_i \in [x_i, x_{i+1}],
+  $$
+  where $h$ is the maximum spacing.
+
+- All methods in this chapter are **deterministic** approximations of the form
+  $$
+  \widehat I = \sum_{i=0}^{n} w_i \, u(x_i)
+  $$
+  with **integration points** $x_i$ and **integration weights** $w_i$.
+
+- Often there is a small parameter $h$ to refine: we write $\widehat I_h$, and call $E_h = I - \widehat I_h$ the **integration error**.
+:::
+
+## Degree of precision and change of variable {.smaller}
+
+:::{.callout-note icon="false"}
+## Definition: degree of precision
+The *degree of precision* of an integration method is the largest integer $d$ such that the integration error is zero for all polynomials of degree at most $d$.
+:::
+
+:::incremental
+- Without loss of generality, $[a, b] = [-1, 1]$: use the bijection
+  $$
+  \zeta\colon [-1, 1] \to [a, b]; \quad y \mapsto \frac{b+a}{2} + \frac{b-a}{2} y
+  $$
+  so that
+  $$
+    \int_{a}^{b} u(x) \, \d x
+    = \int_{-1}^{1} u\bigl(\zeta(y)\bigr) \, \zeta'(y) \, \d y
+    = \frac{b-a}{2}\int_{-1}^{1} u \circ \zeta (y) \, \d y.
+  $$
+
+- **Question:** how to choose $x_i$ and $w_i$ to get a small error?
+:::
+
+# The closed Newton–Cotes method
+
+## Construction {.smaller}
+
+:::{.callout-note icon="false"}
+## Main idea
+Given equidistant nodes $-1 = x_0 < \dots < x_n = 1$,
+
+1. construct the polynomial interpolant $\widehat u$ of $u$ at the nodes,
+2. integrate $\widehat u$ exactly.
+:::
+
+:::incremental
+- With the Lagrange polynomials $\varphi_i(x) = \prod_{j \neq i} \frac{x - x_j}{x_i - x_j}$,
+$$
+I \approx \int_{-1}^{1} \widehat u(x) \, \d x
+= \sum_{i=0}^{n} u(x_i) \underbrace{\int_{-1}^{1}  \varphi_i (x)  \, \d x}_{w_i}.
+$$
+
+- The weights do not depend on $u$: they can be computed **a priori**.
+
+- Exact for polynomials of degree $\leq n$ by construction, so the degree of precision is **at least** $n$.
+:::
+
+## Newton–Cotes weights via Polynomials.jl  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+using Polynomials
+
+nodes(n) = [-1 + 2i//n for i in 0:n]
+
+function lagrange(nodes, i)
+    q = fromroots(nodes[1:end .!= i])
+    q / q(nodes[i])
+end
+
+weight(nodes, i) = integrate(lagrange(nodes, i), -1, 1)
+
+for n ∈ (1,2,3,4)
+    nd = nodes(n)
+    println("n = $n: ", [weight(nd, i) for i ∈ eachindex(nd)])
+end
+```
+:::
+
+::: {.column width="55%"}
+
+| $n$ | $d$ | Method | Integration formula |
+| --- | --- | ------ | ------------------- |
+| 1 | 1 | Trapezoidal | $u(-1) + u(1)$ |
+| 2 | 3 | Simpson | $\frac{1}{3} u(-1) + \frac{4}{3} u(0) + \frac{1}{3} u(1)$ |
+| 3 | 3 | Simpson 3/8 | $\frac{1}{4} u(-1) + \frac{3}{4} u(-\frac13) + \frac{3}{4} u(\frac13) + \frac{1}{4} u(1)$ |
+| 4 | 5 | Boole | $\frac{7}{45} u(-1) + \frac{32}{45} u(-\frac{1}{2}) + \frac{12}{45} u(0) + \frac{32}{45} u(\frac{1}{2}) + \frac{7}{45} u(1)$ |
+
+:::
+
+::::
+
+## Degree of precision of symmetric rules {.smaller}
+
+:::{.callout-note icon="false"}
+## Remark
+Simpson's rule is based on a quadratic interpolant, but has degree of precision $d = 3$.
+:::
+
+:::incremental
+- Any rule with nodes and weights **symmetric** around $x = 0$ is exact for odd functions, in particular $x^3$:
+  $$
+  \tfrac{1}{3} (-1)^3 + \tfrac{4}{3} (0)^3 + \tfrac{1}{3} (1)^3 = 0 = \int_{-1}^1 x^3 \, \d x.
+  $$
+
+- Likewise, Boole's rule has degree of precision $5$.
+
+- In principle, one can reach arbitrary degree of precision by increasing $n$. **In practice:**
+
+  - the weights become **imbalanced**, some turn **negative** ⇒ roundoff errors get amplified;
+  - if the interpolant does not converge to $u$ (Runge), the approximate integral may not converge **even in exact arithmetic**.
+
+- *Open* Newton–Cotes methods use equidistant nodes that exclude the endpoints.
+:::
+
+## Failure of Newton–Cotes: Runge's function {.smaller}
+
+...  even with many nodes, because polynomial interpolation does not always converge.
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+import Polynomials
+Plots.default(linewidth=2)
+n = 12 ; X = LinRange(-1, 1, n)
+f(x) = 1 / (1 + 25 * x^2)
+p = Polynomials.fit(X, f.(X))
+x = -1:0.005:1
+Plots.plot(x, f.(x), label="Runge function")
+Plots.plot!(legend=:topright, size=(900,500))
+Plots.plot!(x, p.(x), fillrange = 0 .* x, fillalpha = 0.35, label="Newton-Cotes with " * string(n) * " nodes")
+Plots.scatter!(X, f.(X), label="Interpolation nodes")
+```
+::: footer
+Source: [lecture notes by B. K. Nguyen](https://nguyen.me.uk)
+:::
+
+## Failure of Newton–Cotes: error and weights {.smaller}
+
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+using LinearAlgebra
+Plots.default(linewidth=2)
+f(x) = 1 / (1 + 25 * x^2)
+# Newton-Cotes weights via the Vandermonde system  ∑ wᵢ xᵢ^k = ∫ x^k
+function nc_weights(n)
+    X = range(-1, 1, n+1)
+    V = [xi^k for k in 0:n, xi in X]
+    m = [iseven(k) ? 2/(k+1) : 0.0 for k in 0:n]
+    X, V \ m
+end
+ns = 2:2:30
+err = [abs(sum(w .* f.(X)) - 2atan(5)/5) for n in ns for (X, w) in [nc_weights(n)]]
+neg = [minimum(nc_weights(n)[2]) for n in ns]
+p1 = Plots.plot(ns, err, yscale=:log10, marker=:o, xlabel="n", title="Integration error", size=(600,400))
+p2 = Plots.plot(ns, neg, marker=:o, xlabel="n", title="Smallest weight", size=(600,400))
+Plots.plot(p1, p2, size=(1300,420), bottom_margin=8Plots.mm, left_margin=8Plots.mm)
+```
+
+The error for Runge's function does not go to zero, and negative weights appear.
+
+# Composite methods with equidistant nodes
+
+## Idea: piecewise interpolation {.smaller}
+
+:::{.callout-note icon="false"}
+## Composite approach
+Partition $[a, b]$ into subintervals, and apply a rule from the previous section on each one.
+(Relies on piecewise polynomial interpolation from the chapter on interpolation.)
+:::
+
+:::incremental
+- Here $a = x_0 < \dots < x_n = b$ are equidistant, $x_{i+1} - x_i = h$.
+
+- The change of variable gives, for the trapezoidal rule on $[x_i, x_{i+1}]$,
+  $$
+    \int_{x_i}^{x_{i+1}} u(x) \, \d x
+    = \frac{h}{2} \int_{-1}^{1} u \circ \zeta (y) \, \d y
+    \approx \frac{h}{2} \bigl(u(x_i) + u(x_{i+1})\bigr).
+  $$
+
+- Summing over all subintervals:
+  $$
+  \begin{align}
+      \int_{a}^{b} u(x) \, \d x
+      &\approx \frac{h}{2}\sum_{i=0}^{n-1} \bigl( u(x_i) + u(x_{i+1}) \bigr) \\
+      &= \frac{h}{2} \bigl( u(x_0) + 2 u(x_1) + \dotsb + 2 u(x_{n-1}) + u(x_n) \bigr)
+  \end{align}
+  $$
+:::
+
+## Composite trapezoidal rule: error {.smaller}
+
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+function composite_trapezoidal(u, a, b, n)
+    h = (b-a)/n ; xᵢ = LinRange(a, b, n+1) ; uₓ = u.(xᵢ)
+    return (h/2) * sum([uₓ[1]; uₓ[end]; 2uₓ[2:end-1]])
+end
+composite_trapezoidal(x->1/(1+x^2), 0, 1, 50)   # exact value: π/4
+```
+
+:::{.callout-important icon="false"}
+## Theorem (integration error, composite trapezoidal rule)
+Assume $u \in C^2[a, b]$. Then
+$$
+\bigl\lvert I - \widehat I_h \bigr\rvert
+\leq \frac{b-a}{12} C_2 h^2,
+\qquad
+C_2 := \sup_{\xi \in [a, b]} \lvert u''(\xi)\rvert.
+$$
+:::
+
+<details><summary>Proof</summary>
+With $\widehat u_h$ the piecewise linear interpolant, the interpolation error formula gives
+$$
+\int_{x_{i}}^{x_{i+1}} (u - \widehat u_h) \, \d x
+= \frac{1}{2} \int_{x_{i}}^{x_{i+1}} u''\bigl(\xi(x)\bigr) (x - x_{i}) (x - x_{i+1}) \, \d x,
+$$
+hence, since $(x - x_i)(x_{i+1} - x)\geq 0$ on $[x_i, x_{i+1}]$,
+$\bigl\lvert \int_{x_i}^{x_{i+1}} (u - \widehat u_h) \bigr\rvert \leq \frac{C_2}{2}\int_{x_i}^{x_{i+1}} (x - x_i)(x_{i+1} - x) \, \d x = C_2 \frac{h^3}{12}$.
+Summing the $n = (b-a)/h$ contributions gives the result.
+</details>
+
+## Composite trapezoidal rule: example {.smaller}
+
+:::{.callout-note icon="false"}
+## Example: $\int_0^1 x^2 \, \d x$
+With $x_i = ih$ and $n = 1/h$,
+$$
+\widehat I_h = \frac h 2\left( 2 h^2 \sum_{i = 1}^{n - 1} i^2 + 1\right)
+= \frac h 2 \left( \frac {h^2} 3 (2 n^3 - 3 n^2 + n) + 1 \right)
+= \frac 1 3 + \frac {h^2} 6,
+$$
+so the error is exactly $h^2/6$: it is $\bigo(h^2)$, and the power of $h$ in the theorem is **optimal**.
+:::
+
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+hs = [2.0^-k for k in 1:8]
+errs = [abs(composite_trapezoidal(x->x^2, 0, 1, Int(1/h)) - 1/3) for h in hs]
+Plots.plot(hs, errs, xscale=:log10, yscale=:log10, marker=:o, label="error", xlabel="h", size=(700,350))
+Plots.plot!(hs, hs.^2 ./ 6, ls=:dash, label="h²/6")
+```
+
+## Composite Simpson's rule {.smaller}
+
+For an **odd** number $n+1$ of equidistant nodes ($n$ even), apply Simpson's rule on each $[x_{2i}, x_{2i+2}]$:
+
+$$
+\int_{x_{2i}}^{x_{2i+2}} u \, \d x \approx \frac{h}{3} \Bigl(u(x_{2i}) + 4 u(x_{2i+1}) +  u(x_{2i+2})\Bigr)
+$$
+
+$$
+\widehat I_h = \frac{h}{3} \Bigl( u(x_0) + 4 u(x_1) + 2 u(x_2) + 4 u(x_3) + \dotsb + 2 u(x_{n-2}) + 4 u(x_{n-1}) + u(x_n)\Bigr)
+$$
+
+This integrates the piecewise **quadratic** interpolant.
+
+:::{.callout-important icon="false"}
+## Theorem
+Assume $u \in C^4[a, b]$. Then
+$$
+\bigl\lvert I - \widehat I_h \bigr\rvert
+\leq (b-a)\frac{C_4 h^4}{180},
+\qquad
+C_4 := \sup_{[a,b]} \lvert u^{(4)}\rvert.
+$$
+:::
+
+## Composite Simpson's rule: proof {.smaller}
+
+**Key idea:** the naive interpolation error estimate only gives $h^3$; the extra order comes from the degree of precision $3$ of Simpson's rule.
+
+:::incremental
+- On $[x_{2i}, x_{2i+2}]$, let $\widehat u_2$ interpolate at $x_{2i}, x_{2i+1}, x_{2i+2}$ and $\widehat u_3(\cdot\,;\alpha)$ at these nodes **and** an extra $\alpha$:
+  $$
+  \int (u - \widehat u_2) = \int (u - \widehat u_3(\cdot\,;\alpha)) + \underbrace{\int (\widehat u_3 - \widehat u_2)}_{=\,0}
+  $$
+
+- The last term vanishes since $\widehat u_3 - \widehat u_2 \in \mathbb P_3$ is zero at the three Simpson nodes, and Simpson's rule is exact on $\mathbb P_3$.
+
+- By the interpolation error theorem, for any admissible $\alpha$,
+  $$
+  \Bigl\lvert \int (u - \widehat u_2) \Bigr\rvert \leq \frac{C_4}{24} \int_{x_{2i}}^{x_{2i+2}} \bigl\lvert (x-x_{2i})(x- x_{2i+1}) (x-x_{2i+2}) (x - \alpha) \bigr\rvert \, \d x
+  $$
+
+- Let $\alpha \to x_{2i+1}$: the integral tends to $\int (x-x_{2i})(x-x_{2i+1})^2(x_{2i+2}-x)\,\d x = \frac{4}{15}h^5$. So the local error is at most $\frac{C_4}{90}h^5$.
+
+- Summing $n/2$ local errors: $\frac{n}{2}\frac{C_4 h^5}{90} = (b-a)\frac{C_4 h^4}{180}$. $\qquad\blacksquare$
+:::
+
+## Composite rules in general {.smaller}
+
+Any rule $\int_{-1}^{1} u \approx \sum_{j=0}^{N} w_j u(x_j)$ admits a composite version on $[a, b]$ with $M$ subintervals, $h = \frac{b-a}{M}$:
+
+$$
+\int_{a}^{b} u(x) \, \d x
+\approx \frac{h}{2} \sum_{i=0}^{M - 1} \sum_{j=0}^{N} w_j \, u \left( a + ih + \frac{h}{2} + \frac{x_j h}{2} \right)
+$$
+
+It has the same degree of precision as the single-interval rule.
+
+:::{.callout-important icon="false"}
+## Theorem: degree of precision ⇒ order of convergence
+If the single-interval rule has degree of precision $d$, then for $u \in C^{d+1}[a, b]$ and all $M \geq 1$,
+$$
+\lvert I - \widehat I_h \rvert \leq c\, h^{d+1},
+\qquad c = \frac{C_{d+1} (b-a)}{(d+1)!} \left(1 + \frac{1}{2} \sum_{j=0}^{N} \lvert w_j \rvert \right).
+$$
+:::
+
+<details><summary>Proof sketch</summary>
+On each $[z_i, z_{i+1}]$, replace $u$ by its Taylor polynomial $p_i$ of degree $d$ (both the exact and approximate integrals of $p_i$ agree). The remainder is $\leq \frac{C_{d+1}}{(d+1)!} h^{d+1}$ pointwise; so the local error is
+$\leq \frac{C_{d+1}}{(d+1)!} h^{d+2}\bigl(1 + \frac12\sum_j \lvert w_j\rvert\bigr)$.
+Sum the $M = (b-a)/h$ local errors.
+</details>
+
+- The power of $h$ is optimal; the constant is not. This motivates the degree of precision as a quality metric.
+
+## Estimating the error a posteriori {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Let $\widehat I_{2h}$ and $\widehat I_h$ be composite Simpson approximations. If the error scales as $h^4$,
+$$
+I - \widehat I_{h} \approx \tfrac{1}{16} (I - \widehat I_{2h}).
+$$
+Since $I - \widehat I_{2h} = (I - \widehat I_h) + (\widehat I_h - \widehat I_{2h})$, we get
+$$
+I - \widehat I_{2h} \approx \tfrac{16}{15} (\widehat I_h - \widehat I_{2h}),
+$$
+and hence
+
+:::{.callout-note icon="false"}
+## A posteriori estimate
+$$
+\abs{I - \widehat I_{h}} \approx \frac{1}{15} \abs{\widehat I_h - \widehat I_{2h}}
+$$
+:::
+
+The right-hand side does **not** need the exact integral.
+:::
+
+::: {.column width="50%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+function composite_simpson(u, a, b, n)
+    x = LinRange(a, b, n + 1) ; ux = u.(x) ; h = x[2] - x[1]
+    return (h/3) * sum([ux[1]; ux[end]; 4ux[2:2:end-1]; 2ux[3:2:end-2]])
+end
+u(x) = cos(x) ; a, b = 0, π/2 ; I = 1.0
+ns = [8, 16, 32, 64, 128]
+Î = composite_simpson.(u, a, b, ns)
+for i in 2:length(ns)
+    println("Exact: $(I - Î[i]),  Approx: $((Î[i] - Î[i-1])/15)")
+end
+```
+:::
+
+::::
+
+# Richardson extrapolation and Romberg's method
+
+## Richardson extrapolation: idea {.smaller}
+
+Accelerate the convergence of $J(h) \to J_* = J(0)$ as $h \to 0$, given values at $h, h/2, h/4, \dots$
+
+:::incremental
+- Taylor: $J(\eta) = J(0) + J'(0) \eta + \frac{J''(0)}{2} \eta^2 + \dotsb$
+
+- **Eliminate the linear term.** Ansatz $J_1(h/2) = \alpha J(h) + \beta J(h/2)$:
+  $$
+  J_1(h/2) = (\alpha + \beta) J(0) + J'(0) h \left(\alpha + \tfrac{1 - \alpha}{2}\right) + \bigo(h^2)
+  $$
+  Requiring $\alpha + \beta = 1$ and $\alpha + \frac{1-\alpha}{2} = 0$ gives $\alpha = -1$:
+  $$
+  \boxed{J_1(h/2) = 2J(h/2) - J(h)}
+  $$
+
+- **Geometric interpretation:** $J_1(h/2)$ is the $y$-intercept of the line through $(h/2, J(h/2))$ and $(h, J(h))$.
+
+- **Next order:** $J_1(h/2) = J(0) - J''(0)\frac{h^2}{4} + \bigo(h^3)$, so
+  $$
+  J_2(h/4) = \frac{4 J_1(h/4) - J_1(h/2)}{3} = J(0) + \bigo(h^3)
+  $$
+  — the $y$-intercept of the quadratic interpolating $J$ at $h/4, h/2, h$.
+:::
+
+## Richardson extrapolation: general scheme {.smaller}
+
+:::: {.columns}
+
+::: {.column width="48%"}
+$$
+\begin{array}{llll}
+J(h) \\
+J(h/2) & J_1(h/2) \\
+J(h/4) & J_1(h/4) & J_2(h/4) \\
+J(h/8) & J_1(h/8) & J_2(h/8) & J_3(h/8) \\[2pt]
+\bigo(h) & \bigo(h^2) & \bigo(h^3) & \bigo(h^4)
+\end{array}
+$$
+
+Each entry combines its left and upper-left neighbours:
+$$
+J_i(h/2^i) = \frac{2^i J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^i - 1}
+$$
+
+If $J$ has only **even** powers of $h$ in its expansion:
+$$
+J_i(h/2^i) = \frac{2^{2i} J_{i-1} (h/2^i) - J_{i-1}(h/2^{i-1})}{2^{2i} - 1},
+$$
+with errors $\bigo(h^2), \bigo(h^4), \bigo(h^6), \dots$
+:::
+
+::: {.column width="52%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+J(h) = 1 + sin(h)
+J_1(h) = 2J(h) - J(2h)
+J_2(h) = (4J_1(h) - J_1(2h))/3
+J_3(h) = (8J_2(h) - J_2(2h))/7
+```
+
+```{julia}
+#| echo: false
+#| eval: true
+h = 0.01:0.01:1.0
+Plots.plot(h, J.(h), label="J", linewidth=3)
+Plots.plot!(h, J_1.(h), label="J₁", linewidth=3)
+Plots.plot!(h, J_2.(h), label="J₂", linewidth=3)
+Plots.plot!(h, J_3.(h), label="J₃", linewidth=3, size=(700,400), legend=:topleft, xlabel="h")
+```
+:::
+
+::::
+
+## Romberg's method {.smaller}
+
+:::{.callout-note icon="false"}
+## Romberg = Richardson applied to the composite trapezoidal rule
+$J(h) = \widehat I_h^{\rm trap}$ for $h \in \{\frac{b-a}{n} : n \in \nat\}$, using the **even-power** variant.
+:::
+
+:::{.callout-important icon="false"}
+## Lemma
+If $u \in C^\infty[a, b]$, then for all $k \in \nat$,
+$J(h) = I + \alpha_1 h^2 + \alpha_2 h^4 + \dots + \alpha_k h^{2k} + \bigo(h^{2k+2})$.
+:::
+
+<details><summary>Proof sketch</summary>
+On $[x_i, x_{i+1}]$, replace $u$ by its Taylor polynomial $p_i$ of degree $2k+1$ around the midpoint $x_{i+1/2}$. Odd powers of $(x - x_{i+1/2})$ integrate to zero (exact integral) and cancel in the trapezoidal rule by symmetry. So both $I^{(i)}[p_i]$ and $\widehat I_h^{(i)}[p_i]$ contain only odd powers of $h$ beyond $h$ (namely $h^3, h^5, \dots$); summing $n \propto 1/h$ terms gives even powers.
+</details>
+
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+function romberg(u, a, b, K)
+    R = zeros(K+1, K+1)
+    for i in 0:K
+        R[i+1, 1] = composite_trapezoidal(u, a, b, 2^i)
+        for j in 1:i
+            R[i+1, j+1] = (4^j * R[i+1, j] - R[i, j]) / (4^j - 1)
+        end
+    end
+    R
+end
+R = romberg(cos, 0, π/2, 5)
+Plots.plot(abs.(R[2:end, 1] .- 1), yscale=:log10, marker=:o, label="trapezoidal")
+for j in 2:4
+    Plots.plot!(j:6, abs.(R[j:end, j] .- 1) .+ 1e-17, marker=:o, label="Romberg level $(j-1)")
+end
+Plots.plot!(size=(900,380), xlabel="refinement level", ylabel="error", legend=:bottomleft)
+```
+
+# Methods with non-equidistant nodes
+
+## Gauss–Legendre: counting degrees of freedom {.smaller}
+
+- Newton–Cotes: nodes fixed, only the weights are free.
+
+- In $\widehat I = \sum_{i=0}^n w_i u(x_i)$ there are $2n+2$ unknowns (nodes and weights) ⇒ we may hope for degree of precision $2n+1$.
+
+:::incremental
+- By linearity, exactness on $\mathbb P_{2n+1}$ is equivalent to exactness on monomials: the nonlinear system
+  $$
+  \sum_{i=0}^{n} w_i x_i^{d} = \int_{-1}^{1} x^d \, \d x, \qquad d = 0, \dotsc, 2n+1
+  $$
+  has $2n+2$ equations and $2n+2$ unknowns. The resulting rule is the **Gauss–Legendre quadrature**.
+
+- **Example** ($n+1 = 2$): $\;w_0 + w_1 = 2,\; w_0 x_0 + w_1 x_1 = 0,\; w_0 x_0^2 + w_1 x_1^2 = \frac{2}{3},\; w_0 x_0^3 + w_1 x_1^3 = 0$, with solution
+  $$
+  -x_0 = x_1 = \frac{\sqrt 3}{3}, \qquad w_0 = w_1 = 1.
+  $$
+:::
+
+## Connection with orthogonal polynomials {.smaller}
+
+Let $L_0, L_1, \dots$ be the Legendre polynomials: orthogonal for $\langle f, g \rangle = \int_{-1}^1 f g \, \d x$, with $\deg L_k = k$.
+
+:::{.callout-important icon="false"}
+## Theorem
+For every $n$, the system has a **unique** solution. The nodes are the roots of $L_{n+1}$, the weights are
+$$
+w_i = \int_{-1}^{1} \ell_i(x) \, \d x,
+$$
+with $\ell_i$ the Lagrange polynomials for the nodes, and all weights are **positive**.
+:::
+
+:::incremental
+- **Existence.** Take $p \in \mathbb P_{2n+1}$ and divide: $p = q L_{n+1} + r$ with $q, r \in \mathbb P_n$. Then $\int q L_{n+1} = 0$ by orthogonality, and $q L_{n+1}$ vanishes at the nodes, so the error for $p$ equals the error for $r$. But $r = \sum r(x_i) \ell_i$, so $\int r = \sum w_i r(x_i)$: zero error.
+
+- **Uniqueness.** If the rule is exact on $\mathbb P_{2n+1}$, then $q = \prod (x - x_i)$ satisfies $\int q x^d = \sum_i w_i q(x_i) x_i^d = 0$ for $d \leq n$, hence $q \propto L_{n+1}$. Exactness on $\ell_j$ gives $w_j = \int \ell_j$.
+
+- **Positivity.** $\ell_j^2 \in \mathbb P_{2n}$, so $0 < \int \ell_j^2 = \sum_i w_i \ell_j(x_i)^2 = w_j$.
+:::
+
+## Convergence of Gauss–Legendre {.smaller}
+
+:::{.callout-important icon="false"}
+## Theorem
+If $u \in C([-1, 1])$ then $\widehat I_n(u) \to I(u)$ as $n \to \infty$.
+:::
+
+:::incremental
+- Positivity of the weights is **crucial**, and since the rule is exact for $u = 1$: $\sum_i \lvert w_i \rvert = \sum_i w_i = 2$.
+
+- Given $\varepsilon > 0$, Weierstrass gives a polynomial $p$ with $\max \lvert p - u \rvert \leq \varepsilon$. For $n$ large enough, $\widehat I_n(p) = I(p)$, so
+  $$
+  \lvert \widehat I_n(u) - I(u) \rvert \leq \underbrace{\lvert \widehat I_n(u - p) \rvert}_{\leq 2 \varepsilon} + \underbrace{\lvert I(p - u) \rvert}_{\leq 2 \varepsilon} = 4\varepsilon.
+  $$
+
+- **Contrast with Newton–Cotes:** there, no convergence for general continuous functions (Runge), because the weights are of mixed sign.
+:::
+
+## Computing the nodes: Golub–Welsch {.smaller}
+
+:::: {.columns}
+
+::: {.column width="42%"}
+The roots of $L_{n+1}$ are the eigenvalues of a **symmetric tridiagonal** matrix, with zero diagonal and off-diagonal entries
+$$
+\alpha_i = \frac{i}{\sqrt{4i^2 - 1}}, \qquad i = 1, \dots, n,
+$$
+which come from the three-term recurrence of the (orthonormal) Legendre polynomials.
+
+The weights are $w_i = 2 \, (v_i[1])^2$ where $v_i$ is the normalized eigenvector associated with node $x_i$.
+
+See the lecture notes (Section on orthogonal polynomials).
+:::
+
+::: {.column width="58%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+using LinearAlgebra
+function gauss_legendre(n)
+    E = eigen(SymTridiagonal(zeros(n+1), [i/sqrt(4i^2-1) for i ∈ 1:n]))
+    return E.values, 2 .* E.vectors[1, :].^2
+end
+for n ∈ 0:2
+    x, w = gauss_legendre(n)
+    println("n=$n  xᵢ=$(round.(x; digits=8))  wᵢ=$(round.(w; digits=8))")
+end
+```
+:::
+
+::::
+
+## Gauss–Legendre versus composite rules {.smaller}
+
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+u(x) = exp(x) * cos(3x) ; a, b = 0.0, 2.0
+Iex = let F(x) = exp(x) * (cos(3x) + 3sin(3x)) / 10; F(b) - F(a) end
+function gauss(u, a, b, n)
+    x, w = gauss_legendre(n)
+    (b-a)/2 * sum(w .* u.(@. (a+b)/2 + (b-a)/2 * x))
+end
+N = 2:2:40
+e_gauss = [abs(gauss(u, a, b, n) - Iex) for n in N]
+e_simp  = [abs(composite_simpson(u, a, b, n) - Iex) for n in N]
+e_trap  = [abs(composite_trapezoidal(u, a, b, n) - Iex) for n in N]
+Plots.plot(N .+ 1, max.(e_trap, 1e-17), yscale=:log10, xscale=:log10, marker=:o, label="composite trapezoidal")
+Plots.plot!(N .+ 1, max.(e_simp, 1e-17), marker=:o, label="composite Simpson")
+Plots.plot!(N .+ 1, max.(e_gauss, 1e-17), marker=:o, label="Gauss–Legendre",
+            xlabel="number of nodes", ylabel="error", size=(900,420), legend=:bottomleft)
+```
+
+## Extension to higher dimensions {.smaller}
+
+:::incremental
+- Gauss–Legendre is ubiquitous in numerical methods for PDEs, in particular the **finite element method**.
+
+- **Tensor-product** generalization: for $u\colon [-1, 1]^2 \to \R$,
+  $$
+  \int_{-1}^{1} \int_{-1}^{1} u(x, y) \, \d y \, \d x \approx \sum_{i=0}^{n} \sum_{j=0}^{n} w_i w_j \, u(x_i, x_j).
+  $$
+
+- Same degree of precision as the 1D rule; works in any dimension $d$.
+
+- But the cost scales as $n^d$: **curse of dimensionality**. Deterministic rules of this type are not suited to high-dimensional problems.
+:::
+
+# Introduction to probabilistic integration methods
+
+## The Monte Carlo method {.smaller}
+
+:::: {.columns}
+
+::: {.column width="55%"}
+Let $I = \int_0^1 u(x)\,\d x = \expect[u(X)]$ with $X \sim \mathcal U(0, 1)$.
+
+:::{.callout-note icon="false"}
+## Monte Carlo estimator
+$$
+\widehat I_N = \frac{1}{N} \sum_{n=1}^{N} u(X_n), \qquad X_n \ \text{i.i.d.} \sim \mathcal U(0, 1)
+$$
+:::
+
+$\widehat I_N$ is itself a random variable, called an **estimator** of $I$.
+
+:::incremental
+- **Unbiased:** $\expect[\widehat I_N] = \frac1N \sum_n \expect[u(X_n)] = I$.
+- **Variance:** with $\sigma^2 = \var[u(X)]$ and independence,
+  $$
+  \var[\widehat I_N] = \frac{1}{N^2}\sum_{n,m} \expect\bigl[(u(X_n) - I)(u(X_m) - I)\bigr] = \frac{\sigma^2}{N}.
+  $$
+:::
+:::
+
+::: {.column width="45%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+N = 1000
+u(x) = x^2
+X = rand(N)
+Î = (1/N) * sum(u.(X))
+```
+
+```{julia}
+#| echo: false
+#| eval: true
+Ns = 10 .^ (1:0.25:6) .|> round .|> Int
+errs = [mean_err for N in Ns for mean_err in [sum(abs(sum(u.(rand(N)))/N - 1/3) for _ in 1:20)/20]]
+Plots.plot(Ns, errs, xscale=:log10, yscale=:log10, marker=:o, label="MC error (avg of 20 runs)", xlabel="N", size=(650,380))
+Plots.plot!(Ns, 0.3 ./ sqrt.(Ns), ls=:dash, label="∝ N^{-1/2}")
+```
+:::
+
+::::
+
+## Convergence and confidence interval {.smaller}
+
+:::{.callout-important icon="false"}
+## Chebyshev's inequality
+If $Z$ has mean $m$ and variance $s^2$, then $\proba[\lvert Z - m \rvert \geq k s] \leq 1/k^2$ for all $k > 0$.
+:::
+
+:::incremental
+- Applied to $\widehat I_N$ (with $k = \varepsilon/\sqrt{\var[\widehat I_N]}$):
+  $$
+  \proba\bigl[\lvert \widehat I_N - I \rvert \geq \varepsilon \bigr] \leq \frac{\sigma^2}{N \varepsilon^2} \xrightarrow[N \to \infty]{} 0
+  $$
+  i.e. $\widehat I_N$ converges **in probability** to $I$.
+
+- **Confidence interval.** Choose $\varepsilon$ such that the right-hand side equals $\alpha$: $\varepsilon = \sqrt{\sigma^2 / (N\alpha)}$. Then
+  $$
+  \proba\bigl[I \in (\widehat I_N - \varepsilon, \widehat I_N + \varepsilon)\bigr] \geq 1 - \alpha,
+  $$
+  so $\left(\widehat I_N - \sqrt{\frac{\sigma^2}{N\alpha}},\; \widehat I_N + \sqrt{\frac{\sigma^2}{N\alpha}}\right)$ is a $(1-\alpha)$ confidence interval for $I$.
+
+- The error is $\bigo(N^{-1/2})$ **independently of the dimension**: this is why Monte Carlo methods dominate in high dimension.
+:::
+
+# Summary
+
+## Summary {.smaller}
+
+| Method | Nodes | Degree of precision | Error |
+| ------------------ | ---------------- | -------------- | ---------------------------------------------------- |
+| Newton–Cotes ($n$ large) | equidistant | $\geq n$ | may diverge (Runge), negative weights |
+| Composite trapezoidal | equidistant | 1 | $\bigo(h^2)$ |
+| Composite Simpson | equidistant | 3 | $\bigo(h^4)$ |
+| Romberg | equidistant | increasing | $\bigo(h^{2k})$ for smooth $u$ |
+| Gauss–Legendre | roots of $L_{n+1}$ | $2n+1$ | converges for all $u \in C$; positive weights |
+| Monte Carlo | random | — | $\bigo(N^{-1/2})$, dimension-independent |
+
+- **Composite rules** and **Gauss quadrature** for smooth low-dimensional problems; **Monte Carlo** in high dimension.

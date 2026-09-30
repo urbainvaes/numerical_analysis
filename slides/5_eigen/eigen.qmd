@@ -1,0 +1,352 @@
+---
+title: "Solving eigenvalue problems numerically"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 2100
+        height: 1000
+        chalkboard: false
+        transition: convex
+        # min-scale: 1
+        # max-scale: 1
+        smaller: false
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        callout-icon: false
+        slide-number: c/t
+        include-in-header:
+            - ../config/_head_color.html
+            - ../config/_head_align.html
+        toc: false
+        toc-depth: 1
+        embed-resources: true
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.10
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings
+using LinearAlgebra
+Plots.default(label=nothing,
+              legendfontsize=16,
+              background_color=:transparent,
+              foreground_color=:black,
+              linewidth=2);
+```
+
+## Objective {.smaller}
+
+{{< include ../config/_macros_revealjs.tex >}}
+{{< include ../config/_macros_colors.tex >}}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+:::{.callout-note}
+## Goal of this chapter {.smaller}
+Study numerical methods to find the eigenpairs $(\vect v_i, \vect \lambda_i)\in \complex^n \times \complex$ satisfying
+$$
+\mat A \vect v_i= \lambda_i \vect v_i,
+$$
+where
+$\mat A \in \complex^{n \times n}$.
+:::
+
+$~$
+
+::: {.fragment}
+- **Simplifying assumption** throughout this chapter: the matrix $\mat A$ is diagonalizable.
+:::
+
+::: {.fragment}
+- **Notation**: eigenvalues $|\lambda_1| \geq \dotsc \geq |\lambda_n|$,
+  normalized eigenvectors $\vect v_1, \dotsc, \vect v_n$.
+  $$
+  \mat A \mat V = \mat V \mat D,
+  \qquad \mat V = \begin{pmatrix} \vect v_1 & \dots & \vect v_n \end{pmatrix},
+  \qquad \mat D = {\rm diag}(\lambda_1, \dotsc, \lambda_n).
+  $$
+:::
+
+::: {.fragment}
+- **Finding all the eigenvalues of a matrix is expensive,**
+  even with the best methods:
+
+  ```julia
+  using LinearAlgebra
+  A = rand(2000, 2000)
+  @time eigen(A)
+  ```
+
+  ```{julia}
+  #| echo: false
+  #| eval: true
+  println("6.694395 seconds")
+  ```
+  $\thus$ We first focus on methods for finding just one or a few eigenpairs.
+:::
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="40%"}
+
+:::{.fragment}
+:::{.callout-tip}
+## Program of today
+- **Simple vector iterations**
+
+  calculate just one eigenpair
+
+- **Simultaneous iteration**
+
+  calculate multiple eigenpairs at the same time
+
+- **Application: PageRank**
+
+  find the invariant distribution of a Markov chain
+:::
+:::
+
+:::{.fragment}
+:::{.callout-note}
+## Remark: can we calculate the roots of the characteristic polynomial?
+Cost of calculating the characteristic polynomial scales as ${\color{red}n!}$
+
+  $\thus$ not a viable approach…
+:::
+:::
+
+:::
+
+::::
+
+## The power iteration {.smaller}
+
+::: {.column width="60%"}
+
+:::{.callout-warning}
+# Power iteration
+The **power iteration** is a method for finding $\color{blue}(\lambda_1, v_1)$:
+$$
+\fcolorbox{blue}{lightgreen}{$
+\vect x_{k+1} = \frac{\mat A \vect x_{k}}{\norm{\mat A \vect x_{k}}}
+$}
+$$
+Given $\vect x_k \approx \vect v_1$,
+the eigenvalue is calculated from the Rayleigh quotient:
+$$
+\fcolorbox{blue}{lightgreen}{$
+  \lambda_{1} \approx \frac{\vect x_{k}^* \mat A \vect x_k}{\vect x_k^* \vect x_k}
+$}
+$$
+:::
+
+::: {.fragment}
+- Normalization is necessary to avoid numerical `Inf`.
+:::
+
+::: {.fragment}
+```{julia}
+#| echo: true
+#| eval: true
+A = [2 1; 1 2]
+x = rand(2)
+for i in 1:20
+    x = A*x
+    x /= √(x'x)
+end
+println("Eigenvector: $x, eigenvalue: $(x'A*x)")
+```
+:::
+:::
+
+## Convergence of the power iteration {.smaller}
+
+:::: {.columns}
+
+::: {.column width="46%"}
+**Notation**: let $\angle$ denote the acute angle between $\vect x$ and $\vect y$:
+$$
+    \angle(\vect x, \vect y)
+    = \arccos\left( \frac{\abs{\vect x^* \vect y}}{\sqrt{\vect x^* \vect x} \sqrt{\vect y^* \vect y}}\right).
+$$
+
+Since the eigenvectors of $\mat A$ span $\complex^n$,
+any vector $\vect x_0$ may be decomposed as
+$$
+    \vect x_0 = \alpha_1 \vect v_1 + \dotsb + \alpha_n \vect v_n.
+$$
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+:::{.callout-note}
+## Proposition: convergence of the power iteration started from $\vect x_0$
+Suppose that $\abs{\lambda_1} > \abs{\lambda_2}$ and $\alpha_1 \neq 0$.
+Then $(\vect x_k)_{k \geq 0}$ satisfies
+$$
+    \lim_{k \to \infty} \angle(\vect x_k, \vect v_1) = 0.
+$$
+The sequence $(\vect x_k)$ is said to converge [essentially]{.blue} to $\vect v_1$.
+$~$
+:::
+:::
+:::
+
+::::
+
+. . .
+
+::: {.column width="15%"}
+:::
+::: {.column width="70%"}
+:::{.callout-tip}
+# Proof
+By construction
+$$
+\vect x_k
+= \frac{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}{\norm{\lambda_1^k \alpha_1 \vect v_1 + \dotsb + \lambda_n^k \alpha_n \vect v_n}}
+= \frac{\lambda_1^k \alpha_1}{|\lambda_1^k \alpha_1|} \frac{\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_n }{\left\lVert\vect v_1 + \frac{\lambda_2^k \alpha_2}{\lambda_1^k \alpha_1} \vect v_2 +  \dotsb + \frac{\lambda_n^k \alpha_n}{\lambda_1^k \alpha_1} \vect v_n\right\rVert}.
+$$
+Therefore
+$$
+    \vect x_k \left(\frac{|\lambda_1^k \alpha_1|}{\lambda_1^k \alpha_1}\right) \xrightarrow[k \to \infty]{} \vect v_1.
+$$
+(Notice that the bracketed factor on the left-hand side is a scalar of modulus 1.)
+:::
+
+The dominant error term scales as $\color{red} |\lambda_2/\lambda_1|^k$.
+:::
+
+
+## Inverse and Rayleigh quotient iteration {.smaller}
+
+:::: {.columns}
+::: {.column width="49%"}
+
+Suppose that $\mu \notin \sigma(\mat A)$ and $|\lambda_J - \mu| < |\lambda_K - \mu| \leq |\lambda_j - \mu|$ for all $j \neq J$.
+
+::: {.fragment}
+:::{.callout-warning}
+# Inverse iteration: to find $\lambda_J$, the eigenvalue that is nearest $\mu$
+Let $\mat B = (\mat A - \mu \mat I)^{-1}$.
+The inverse iteration around $\mu \in \complex$ is given by
+$$
+\fcolorbox{blue}{lightgreen}{$
+\vect x_{k+1} = \frac{\mat B \vect x_{k}}{\norm{\mat B \vect x_{k}}}.
+$}
+$$
+Given $\vect x_k \approx \vect v_J$,
+the eigenvalue is calculated from the Rayleigh quotient:
+$$
+\fcolorbox{blue}{lightgreen}{$
+  \lambda_{J} \approx \frac{\vect x_{k}^* \mat A \vect x_k}{\vect x_k^* \vect x_k}
+$}
+$$
+:::
+:::
+
+::: {.fragment}
+- The dominant eigenvalue of $\mat B$ is given by $(\lambda_J - \mu)^{-1}$.
+
+- The associated eigenvector is $\vect v_J$.
+
+- Use `\` operator instead of calculating the inverse:
+
+  ```{julia}
+  #| echo: true
+  #| eval: true
+  A = [2 1; 1 2]
+  x = rand(2)
+  μ = 0
+  B = A - μ*I
+  for i in 1:10
+      x = B\x
+      x /= √(x'x)
+  end
+  println("Eigenvector: $x, eigenvalue: $(x'A*x)")
+  ```
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="45%"}
+
+:::{.fragment}
+**Can we adapt $\mu$ during the iteration to accelerate convergence?**
+:::
+
+:::{.fragment}
+- Error of the inverse iteration scales as $\color{red} \left|\frac{\lambda_J - \mu} {\lambda_K - \mu}\right|^k$.
+
+  $\thus$ suggests letting
+$$
+\fcolorbox{blue}{lightgreen}{$
+\mu_k = \frac{\vect x_k^* \mat A \vect x_k}{\vect x_k^* \vect x_k}.
+$}
+$$
+
+  This leads to the [Rayleigh quotient iteration]{.blue}.
+
+:::
+:::{.fragment}
+
+- If convergence occurs, the associated eigenvalue converges [cubically]{.blue}:
+
+  $$
+      |\lambda^{(k+1)} - \lambda_J| \leq C |\lambda^{(k)} - \lambda_J|^3.
+  $$
+
+  $\thus$ Number of significant digits is roughly tripled at each iteration.
+
+```{julia}
+#| echo: true
+#| eval: true
+A = [2 1; 1 2]
+setprecision(500)
+x = BigFloat.([1.2; 0.9])
+μ = 0
+for i in 1:6
+    x = (A - μ*I)\x
+    x /= √(x'x)
+    μ = x'A*x
+    println(μ)
+end
+```
+:::
+:::
+
+::::

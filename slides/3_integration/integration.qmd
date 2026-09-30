@@ -1,0 +1,730 @@
+---
+title: "Intégration numérique (quadrature)"
+subtitle: "Cours ENPC - Pratique du calcul scientifique"
+# author: "Jean-François Barthélémy"
+# date: "14 april 2023"
+# institute: "Cerema UMR MCD"
+format:
+    revealjs:
+        theme: ../../config/custom.scss
+        width: 1600
+        height: 900
+        chalkboard: false
+        transition: convex
+        smaller: false
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        callout-icon: false
+        # logo: "images/UMR MCD-couleur-300dpi.png"
+        slide-number: c/t
+        # footer: <https://julialang.org>
+        preview-links: auto
+        include-in-header: 
+            - ../../config/_head_color.html
+            # - ../../config/_head_pseudocode.html
+        # include-after-body: _after_pseudocode.html
+        toc: false
+        embed-resources: true
+
+revealjs-plugins:
+  - pointer
+
+bibliography: ../../biblio/scientific_computing.bib
+link-citations: true
+csl: ../../biblio/elsevier-harvard.csl
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.10
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  error: false
+#   daemon: 3600
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings
+# Plots.pgfplotsx()
+
+# Plots.default(fontfamily="Computer Modern",
+#               titlefont = "Computer Modern",
+#               legendfont = "Computer Modern",
+#               titlefontsize=20,
+#               xlabelfontsize=20,
+#               ylabelfontsize=20,
+#               legendfontsize=16,
+#               xtickfontsize=16,
+#               ytickfontsize=16,
+#               linewidth=4,
+#               markersize=7,
+#               framestyle=:box,
+#               grid=true,
+#               background_color=:transparent,
+#               foreground_color=:black,
+#               top_margin=5Plots.mm, 
+#               bottom_margin=12Plots.mm,
+#               left_margin=12Plots.mm, 
+#               right_margin=5Plots.mm,
+# )
+Plots.default(label=nothing,background_color=:transparent,foreground_color=:black)
+;
+```
+
+## Le problème {.smaller}
+
+{{< include ../../config/_macros_revealjs.tex >}}
+{{< include ../../config/_macros_colors.tex >}}
+
+:::{.callout-note icon="false"}
+## Objectif : calculer numériquement
+$$
+    I := \int_{\Omega} u(\vect x) \, \d \vect x
+$$
+où $\Omega \subset  \R^d$ et $u\colon \Omega \to \R$.
+:::
+
+:::incremental
+- Pour simplifier on se concentre sur le cas **1D** :  $\Omega = [-1, 1] \subset \R$
+
+- Le cas général **1D** sur $[a,b]$ exploite la bijection
+  $$
+    \begin{array}{rrcl}
+        \zeta\colon &[-1, 1] &\to& [a, b] \\
+                    &y &\mapsto& \frac{b+a}{2} + \frac{b-a}{2} y
+    \end{array}
+  $$
+  de sorte que
+  $$
+      \int_{a}^{b} u(x) \, \d x
+    = \int_{-1}^{1} u\bigl(\zeta(y)\bigr) \, \zeta'(y) \, \d y
+    = \frac{b-a}{2}\int_{-1}^{1} u \circ \zeta (y) \, \d y,
+  $$
+
+- **Question:** peut-on approximer $I$ par une somme de la forme
+
+  $$
+     \widehat I = \sum_{i=0}^n w_i \, u(x_i) \quad ?
+  $$
+:::
+
+## La méthode de Newton-Cotes fermée {.smaller}
+
+:::{.callout-note icon="false"}
+## Idée principale
+- Calculer l'interpolation polynomiale $\widehat u$ de $u$ en des nœuds équidistants $-1 = x_0 < x_1 < \dots < x_{n-1} < x_n = 1$.
+
+- Puis calculer l'approximation
+
+  $$
+     \widehat I \approx \int_{-1}^{1} \widehat u(x) \, \d x
+  $$
+:::
+
+:::incremental
+
+- Expression explicite du polynôme interpolant :
+$$
+\widehat u(x) = \sum_{i=0}^{n} u(x_i) \varphi_i(x),
+\qquad \text{où} \qquad
+\varphi_{i}(x) = \prod_{\substack{j = 0\\ j \neq i}}^{n} \frac {x - x_j} {x_i - x_j}.
+$$
+
+- On en déduit
+$$
+\widehat I
+= \int_{-1}^{1} \widehat u(x) \, \d x
+= \sum_{i=1}^n w_i u(x_i),
+\qquad \text{avec} \qquad
+w_i := \int_{-1}^{1} \varphi_i(x) \, \d x.
+$$
+:::
+
+## Poids de Newton-Cotes par calcul formel  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="42%"}
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+using SymPy
+@syms x
+
+nodes(n) = Sym[-1 + 2i//n for i in 0:n]
+
+lagrange(nodes, i) = prod(x .- nodes[1:end .!= i]) /
+                     prod(nodes[i] .- nodes[1:end .!= i]) 
+
+for n ∈ (1,2,4)
+  nd = nodes(n) ; println("**********") ; @show n ; println(nd)
+  println([integrate(lagrange(nd, i),(x, -1, 1)) for i ∈ eachindex(nd)])
+end
+```
+:::
+
+::: {.column width="58%"}
+$$
+w_i := \int_{-1}^{1} \varphi_i(x) \, \d x
+$$
+
+$$~$$
+
+| Méthode      | Formule d'intégration |
+| ---------   | --------------  |
+| Trapézoïdal | $\widehat I = u(-1) + u(1)$ |
+| Simpson     | $\widehat I = \frac{1}{3} u(-1) + \frac{4}{3} u(0) + \frac{1}{3} u(1)$ |
+| Boole       | $\widehat I = \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{4}{15} u(0) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1)$ |
+
+$$~$$
+:::
+
+::::
+
+::: footer
+Source : [cours de B. K. Nguyen](https://nguyen.me.uk)
+:::
+
+## La méthode de Newton-Cotes fermée : exemples {.smaller}
+
+$$~$$
+
+| $n$  | $d$    | Méthode      | Formule d'intégration |
+| ---- | ------ | ---------   | -------------------------|
+| 1    | 1      | Trapézoïdal | $\widehat I = u(-1) + u(1)$ |
+| 2    | 3      | Simpson     | $\widehat I = \frac{1}{3} u(-1) + \frac{4}{3} u(0) + \frac{1}{3} u(1)$ |
+| 4    | 5      | Boole       | $\widehat I = \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{4}{15} u(0) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1)$ |
+
+$$~$$
+
+:::incremental
+- $n =$ **degré** polynomial de construction
+
+- $d =$ **degré de précision** $=$ le plus haut degré polynomial tel que l'intégration est exacte
+
+  $n=2 ⇒ d=3$ car $\int_{x=-1}^1 x^3 \d x = \frac{1}{3} (-1)^3 + \frac{4}{3} (0)^3 + \frac{1}{3} (1)^3=0$
+
+- En principe, on peut construire des règles d'intégration de degré arbitrairement élevé moyennant d'augmenter le nombre de nœuds d'intégration.
+
+:::
+
+## Échec de la méthode de Newton-Cotes {.smaller}
+
+...  même avec beaucoup de nœuds car l'interpolation polynomiale ne converge pas toujours.
+```{julia}
+#| echo: true
+#| code-fold: true
+#| eval: true
+import Polynomials
+import Plots
+Plots.default(linewidth=2)
+n = 12 ; X = LinRange(-1, 1, n)
+f(x) = 1 / (1 + 25 * x^2)
+p = Polynomials.fit(X, f.(X))
+x = -1:0.005:1
+Plots.plot(x, f.(x), label="Fonction de Runge")
+Plots.plot!(legend=:topright, size=(900,500))
+Plots.plot!(x, p.(x), fillrange = 0 .* x, fillalpha = 0.35, label="Newton-cotes avec " * string(n) * " nœuds")
+Plots.scatter!(X, f.(X), label="Nœuds d'interpolation")
+```
+::: footer
+Source : [cours de B. K. Nguyen](https://nguyen.me.uk)
+:::
+
+## Méthode de Newton-Cotes composite {.smaller}
+
+:::: {.columns}
+
+::: {.column width="44%"}
+::: {.callout-note icon="false"}
+## Idée : s'appuyer sur l'interpolation par morceaux
+
+- Rappel sur l'erreur pour une interpolation polynomiale, nœuds équidistants
+  $$
+  \fcolorbox{bleu_C}{bleu_light_C}{$
+  e_n(x) := u(x) - \widehat u(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} (x-x_0) \dotsc (x - x_n)
+  $}
+  $$
+
+  $$
+  \fcolorbox{bleu_C}{bleu_light_C}{$
+  \begin{align}
+  &E_n := \sup_{x ∈ [a, b]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{n+1}}{4(n+1)} 
+  \left(\frac{b-a}{n} \right)^{n+1}\\
+  &\text{avec }
+  C_{n+1} = \sup_{x ∈ [a, b]} \left\lvert u^{(n+1)}(x) \right\rvert
+  \text{ et }
+  h = \frac{b-a}{n}
+  \end{align}
+  $}
+  $$
+
+- Rappel sur l'erreur pour une interpolation par morceaux
+
+  - intervalle $[a,b]$ discrétisé avec $n+1$ nœuds, $h=\frac{b-a}{n}$
+
+  - polynôme de degré $m$ sur $[x_{i},x_{i+1}]$
+
+  - erreur
+    $$
+    \fcolorbox{bleu_C}{bleu_light_C}{$
+    \sup_{x ∈ [x_{i},x_{i+1}]} \bigl\lvert e_n(x) \bigr\rvert \leq \frac{C_{m+1}}{4(m+1)} \left(\frac{h}{m}\right)^{m+1}
+    $}
+    $$
+
+  - $n$ a vocation à tendre vers l'infini, pas $m$
+
+  - $m$ est fixé petit donc l'erreur est majorée uniformément par $C h^{m+1}$
+
+:::
+:::
+
+::: {.column width="56%"}
+::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## Règle composite trapézoïdale $\color{red}{m=1}$
+
+- $n+1$ nœuds équidistants $a=x_0< x_1< \dotsc < x_n=b$, pas $h=\frac{b-a}{n}$
+
+- Intégration trapézoïdale sur $[x_{i},x_{i+1}]$
+
+  $$
+      \int_{x_i}^{x_{i+1}} u(x) \, \d x
+    = \frac{h}{2} \int_{-1}^{1} u \circ \zeta (y) \, \d y
+    \approx \frac{h}{2} \bigl( u \circ \zeta(-1)  + u \circ \zeta(1) \bigr)
+    = \frac{h}{2} \bigl(u(x_i) + u(x_{i+1})\bigr)
+  $$
+
+- application sur chaque sous-intervalle
+
+  $$
+  \begin{align}
+      \int_{a}^{b} u(x) \, \d x
+      &= \sum_{i=0}^{n-1} \int_{x_i}^{x_{i+1}} u(x) \, \d x
+      \approx
+      \frac{h}{2}\sum_{i=0}^{n-1} \bigl( u(x_i) + u(x_{i+1}) \bigr) \\
+      &= \frac{h}{2} \bigl( u(x_0) + 2 u(x_1) + 2 u(x_2) + \dotsb + 2 u(x_{n-2}) + 2 u(x_{n-1}) + u(x_n) \bigr)
+  \end{align}
+  $$
+
+:::
+
+::: {.callout-tip icon=false} 
+## Exercice : démontrer le théorème suivant
+On suppose $u \in \mathcal{C}^2([a, b])$ et $\widehat I_h$ désigne l'approximation trapézoïdale de l'intégrale $I$ de $u$. On a alors
+$$        
+\bigl\lvert I - \widehat I_h \bigr\rvert
+\leq \frac{b-a}{12} C_2 h^2,
+\qquad
+C_2 := \sup_{\xi \in [a, b]} \lvert u''(\xi)\rvert
+$$
+:::
+
+:::
+
+::: {.fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+function composite_trapezoidal(u, a, b, n)
+    h = (b-a)/n ; xᵢ = LinRange(a, b, n+1) ; uₓ = u.(xᵢ)
+    return (h/2) * sum([uₓ[1]; uₓ[end]; 2uₓ[2:end-1]])
+end
+4composite_trapezoidal(x->1/(1+x^2), 0, 1, 50)
+```
+
+:::
+
+
+:::
+
+::::
+
+## Règle de Simpson composite {.smaller}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+::: {.callout-note icon="false"}
+## Construction de la règle
+
+- $n+1$ nœuds équidistants $a=x_0< x_1< \dotsc < x_n=b$, pas $h=\frac{b-a}{n}$
+
+- $n$ pair ⇒ nombre pair d'intervalles et nombre impair de nœuds
+
+::: incremental
+- Découpage 
+  $$
+  \int_{a}^{b} u(x) \, \d x
+  =\sum_{i=0}^{n/2-1} \int_{x_{2i}}^{x_{2i+2}} u(x) \, \d x
+  $$
+
+- Rappel : Simpson sur $[-1,1]$
+  $$
+  \int_{-1}^{1} u(x) \, \d x \approx \frac{1}{3} \bigl(u(-1) + 4 u(0) +  u(1)\bigr)
+  $$
+
+- Donc sur $[x_{2i},x_{2i+2}]$
+  $$
+  \begin{align}
+  \int_{x_{2i}}^{x_{2i+2}} u(x) \, \d x & \approx \frac{x_{2i+2}-x_{2i}}{2} × \frac{1}{3} \Bigl(u(x_{2i}) + 4 u(x_{2i+1}) +  u(x_{2i+2})\Bigr)\\
+  & \approx \frac{h}{3} \Bigl(u(x_{2i}) + 4 u(x_{2i+1}) +  u(x_{2i+2})\Bigr)
+  \end{align}
+  $$
+
+- Règle de Simpson composite
+  $$
+  \widehat I_h \approx 
+  \frac{h}{3} \Bigl( u(x_0) + 4 u(x_1) + 2 u(x_2) + 4 u(x_3) + 2 u(x_4) + \dotsb + 2 u(x_{n-2}) + 4 u(x_{n-1}) + u(x_n)\Bigr)
+  $$
+:::
+
+:::
+:::
+
+::: {.column width="40%"}
+::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## Contrôle de l'erreur
+On suppose $u \in \mathcal{C}^4([a, b])$. On a alors
+$$        
+\bigl\lvert I - \widehat I_h \bigr\rvert
+\leq \frac{b-a}{180} C_4 h^4,
+\qquad
+C_4 := \sup_{\xi \in [a, b]} \lvert u^{(4)}(\xi)\rvert
+$$
+
+- Démonstration dans le polycopié.
+
+- La démonstration exploite le fait que le degré de précision de la règle de Simpson est 3 et non 2.
+
+:::
+:::
+:::
+
+::::
+
+
+## Méthode avec nœuds non-équidistants : quadrature gaussienne {.smaller}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+::: {.callout-note icon="false"}
+## Problématique
+
+::: incremental
+- Intégration de Newton-Cotes ⇒ nœuds fixés, seuls degrés de liberté = poids
+
+- Pour un degré de précision de $2n+1$ avec Newton-Cotes, il faut $2n+2$ nœuds
+
+- Si on optimise aussi les nœuds, on peut espérer un degré de précision de $2n+1$ avec $n+1$ nœuds et $n+1$ poids soit $2n+2$ inconnues et autant d'équations
+  $$
+  \sum_{i=0}^{n} w_i x_i^{d} = \int_{-1}^{1} x^d \, \d x, \qquad d = 0, \dotsc, 2n+1
+  $$
+
+- Mais il existe une méthode plus efficace pour identifier nœuds et poids...
+:::
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## Les polynômes orthogonaux
+
+::: incremental
+- Généralisation au calcul de l'intégrale sur un intervalle $\mathcal{I}$ (pas nécessairement borné) pondérée par une fonction $w$ continue avec $w(x)>0$ pour tout $x\in\mathcal{I}$.
+
+  On veut donc trouver $(r_i)_{(i=0,\dots,n)}$ et $(w_i)_{(i=0,\dots,n)}$ tels que
+  $$
+  \int_{\mathcal{I}} P(x) w(x) \d x = \sum_{i=0}^{n} w_i P(r_i)
+  \qquad
+  \forall P \in\R_{2n+1}[X]
+  $$
+
+- On introduit le produit scalaire 
+  $$
+  \begin{array}{rccl}
+  ⟨•,•⟩_w :&
+  \mathcal{C}(\mathcal{I})×\mathcal{C}(\mathcal{I})&→&\R \\
+  &(f,g)&↦&⟨f,g⟩_w=\int_{\mathcal{I}} f(x) g(x) w(x) \d x
+  \end{array}
+  $$
+
+- Procédé de Gram-Schmidt sur les polynômes $1$, $X$, $X^2$, ... ⇒ polynômes orthonormés $(φ_i)_{(i=0,1,\ldots)}$ avec $\mathrm{deg}(φ_i)=i$ et donc $⟨φ_i,φ_j⟩_w=δ_{ij}$
+:::
+
+:::
+:::
+
+:::
+
+::: {.column width="55%"}
+::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## Construction théorique des points et poids
+
+::: incremental
+
+- Relations de récurrence $∀ i ∈ \{0,1,\ldots\} \quad X φ_i = α_i φ_{i-1} + β_i φ_i + α_{i+1} φ_{i+1}$
+
+  avec $α_i=⟨X φ_i, φ_{i-1}⟩_w$, $β_i=⟨X φ_i, φ_i⟩_w$ et $φ_{-1}=0$ (par convention)
+
+  <details> <summary><em><font color='gray'>Éléments de preuve</font></em></summary>
+
+  ∙ Remarquer que $X φ_i$, de degré $i+1$ se décompose en $X φ_i=\sum_{k=0}^{i+1} γ_k φ_k$
+
+  ∙ Identifier $γ_k=⟨X φ_i, φ_k⟩_w=⟨φ_i, X φ_k⟩_w$, nul si $k+1<i$ (i.e. $k<i-1$)
+
+  </details>
+
+  <details> <summary>Système linéaire</summary>
+   $$
+    \underbrace{
+   \begin{pmatrix}
+        x φ_0(x) \\
+        x φ_1(x) \\
+        \vdots \\
+        x φ_{n-1}(x) \\
+        x φ_n(x)
+    \end{pmatrix}
+    }_{x \mathsf{Φ}(x)}
+    =
+    \underbrace{
+    \begin{pmatrix}
+        β_0 & α_1 \\
+        α_1 & β_1 & α_2    &         & 0 \\
+            &     & \ddots & \ddots  & \ddots \\
+            & 0   &        & α_{n-1} & β_{n-1} & α_n \\
+            &     &        &         & α_n     & β_n
+    \end{pmatrix}
+    }_{\mathsf A}
+    \underbrace{
+    \begin{pmatrix}
+        φ_0(x) \\
+        φ_1(x) \\
+        \vdots \\
+        φ_{n-1}(x) \\
+        φ_n(x)
+    \end{pmatrix}
+    }_{\mathsf{Φ}(x)}
+    +
+    \begin{pmatrix}
+        0 \\
+        0 \\
+        \vdots \\
+        0 \\
+        α_{n+1} φ_{n+1}(x)
+    \end{pmatrix}
+   $$
+  </details>
+
+- Soient $r_0, r_1, \ldots, r_n$ les racines (distinctes) de $φ_{n+1}$.
+  
+  $(\mathsf{Φ}(r_i))_{(i=0,\dots,n)}$ forme une base orthogonale (au sens du produit scalaire canonique de $\mathbb{R}^{n+1}$) diagonalisante de $\mathsf A$.
+
+  <details> <summary><em><font color='gray'>Éléments de preuve</font></em></summary>
+
+  ∙ Considérer $∫_{\mathcal{I}}φ_{n+1}(x)(x-x_1)\ldots(x-x_k) w(x) \d x$ si $φ_{n+1}$ change de signe aux $(x_i)_{(i=1,\dots,k<n+1)}$
+
+  ∙ L'orthogonalité de la base diagonalisante résulte de la symétrie de $\mathsf A$
+
+  </details>
+
+- On a alors $\mathsf{D}=\mathsf{P}\mathsf{P}^T$ avec $\mathsf{D}$ diagonale et 
+   $$
+    \mathsf{P} =
+    \begin{pmatrix}
+        φ_0(r_0) & φ_1(r_0) & \dots & φ_n(r_0) \\
+        φ_0(r_1) & φ_1(r_1) & \dots & φ_n(r_1) \\
+        \vdots & \vdots & \dots & \vdots \\
+        φ_0(r_n) & φ_1(r_n) & \dots & φ_n(r_n)
+    \end{pmatrix}
+    \qquad
+    d_{ii}=\lVert\mathsf{Φ}(r_i)\rVert^2=\sum_{j=0}^n φ_j(r_i)^2
+   $$
+
+- On introduit le produit scalaire sur l'espace des polynômes de degré inférieur ou égal à $n$
+   $$
+   \begin{array}{rccl}
+   ⟨•,•⟩_{n+1} :&
+   \mathbb{R}_n[X]×\mathbb{R}_n[X]&→&\mathbb{R} \\
+   &(P,Q)&↦&⟨P,Q⟩_{n+1}=\sum_{i=0}^n w_i P(r_i) Q(r_i)
+   \end{array}
+   \quad\textrm{ avec } w_i=\frac{1}{d_{ii}}
+   $$
+
+   $(φ_i)_{(i=0,\ldots,n)}$ base orthonormale de $⟨•,•⟩_{n+1}$ car $\mathsf{P}^T\mathsf{D}^{-1}\mathsf{P}=\mathsf{I}$
+
+- $∀ (P,Q)∈\mathbb{R}_n[X]^2 \quad  ⟨P,Q⟩_{w}=⟨P,Q⟩_{n+1}$ puis $Q=1$ ⇒ $\int_{\mathcal{I}} P(x) w(x) \d x = \sum_{i=0}^{n} w_i P(r_i)$
+
+- Vrai pour $P∈\mathbb{R}_{2n+1}[X]$ par division euclidienne $P=φ_{n+1}Q+R$ avec $\mathrm{deg}(Q)$ et $\mathrm{deg}(R)≤n$
+
+:::
+
+:::
+:::
+:::
+
+::::
+
+## Exemples de quadrature gaussienne {.smaller}
+
+$$
+\int_{\mathcal{I}} P(x) {\color{red}w(x)} \, \d x=\sum_{i=0}^{n} w_i P(r_i)
+\qquad
+\forall P \in\R_{2n+1}[X]
+$$
+
+
+| Domaine d'intégration      | Pondération $w(x)$            | Famille de polynômes orthogonaux |
+| -------------------------- | ----------------------------- | -------------------------------- |
+|  $[–1, 1]$                 | 1                             | 	Legendre                        |
+|  $]–1, 1[$                 | $(1-x)^α (1+x)^β$, $α,β>-1$   |  Jacobi                          |
+|  $]–1, 1[$                 | $\frac{1}{\sqrt{1-x^2}}$      |  Tchebychev (premier type)       |
+|  $]–1, 1[$                 | $\sqrt{1-x^2}$                |  Tchebychev (second type)        |
+|  $\R^+$                    | $\e^{-x}$                     |  Laguerre                        |
+|  $\R$                      | $\e^{-x^2}$                   |  Hermite                         |
+
+
+## Implémentation concrète {.smaller}
+
+:::: {.columns}
+
+::: {.column width="42%"}
+::: {.callout-note icon="false"}
+## Résumé de la méthode
+
+$$
+\int_{\mathcal{I}} P(x) w(x) \, \d x=\sum_{i=0}^{n} w_i P(r_i)
+\qquad
+\forall P \in\R_{2n+1}[X]
+$$
+
+::: incremental
+
+- Identifier la famille échelonnée de polynômes orthonormés jusqu'au degré $n$ satisfisant
+  $X φ_i = α_i φ_{i-1} + β_i φ_i + α_{i+1} φ_{i+1}$
+
+- Former la matrice $\mathsf A$
+  $$
+  \mathsf A=
+  \begin{pmatrix}
+      β_0 & α_1 \\
+      α_1 & β_1 & α_2    &         & 0 \\
+          &     & \ddots & \ddots  & \ddots \\
+          & 0   &        & α_{n-1} & β_{n-1} & α_n \\
+          &     &        &         & α_n     & β_n
+  \end{pmatrix}
+  $$
+
+- Points $r_i$ donnés par les valeurs propres de $\mathsf A$
+
+- Poids $w_i=\frac{1}{\lVert\mathsf{Φ}(r_i)\rVert^2}$ avec $\mathsf{Φ}(r_i)=\left(φ_0(r_i),\ldots,φ_n(r_i)\right)^T$ vec. pr. de $\mathsf A$
+
+  ⚠ Vecteurs propres issus des algorithmes de diagonalisation définis à une homothétie près (p. ex. normalisés pour la norme euclidienne de $\mathbb{R}^{n+1}$). 
+  
+  On peut s'en sortir par la valeur connue de $φ_0(r_i)=\mathsf{Φ}(r_i)[1]$.
+  
+  Ainsi si $(\mathsf{E}_i)_{(i=0,\ldots,n)}$ sont des vecteurs propres de $\mathsf{A}$, on déduit
+
+  $$
+  w_i=\frac{1}{\lVert\mathsf{Φ}(r_i)\rVert^2}=\frac{\mathsf{E}_i[1]^2}{φ_0(r_i)^2}\,\frac{1}{\lVert\mathsf{E}_i\rVert^2}
+  $$
+
+- Autres méthodes d'identification (ex : poids par polynômes de Lagrange)
+
+:::
+
+:::
+:::
+
+::: {.column width="58%"}
+::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## Application à Gauss-Legendre : $\mathcal{I}=[-1,1]$ et $w=1$
+
+::: incremental
+
+- Formule de Rodrigues $L_i(x)=\frac{1}{i!2^i}\frac{\mathrm{d}^i}{\mathrm{d} x^i}\left((x^2-1)^i\right)$
+
+- Le degré de $L_i$ est $i$ et $L_i$ a la même parité que $i$ : $L_i(-x)=(-1)^i L_i(x)$
+
+- Le coefficient dominant de $L_i$ est $\frac{(2i)!}{i!^2 2^i}=\frac{{2i \choose i}}{2^i}$
+
+- Par Leibniz, $L_i(x)=\frac{1}{2^i} \sum_{k=0}^i {i\choose k}^2 (x+1)^{i-k} (x-1)^k$ puis $L_i(1)=1$ et $L_i(-1)=(-1)^i$
+
+- $L_i$ est orthogonal à tout polynôme de $\mathbb{R}_{i-1}[X]$ au sens du produit scalaire $⟨•,•⟩_w$
+
+  <details> <summary><em><font color='gray'>Indication de preuve</font></em></summary>
+  Appliquer $i$ intégrations par parties en observant que les valeurs prises en $1$ et $-1$ par $\frac{\mathrm{d}^k}{\mathrm{d} x^k}\left((x^2-1)^n\right)$ pour $k<i$ sont nulles
+  </details>
+
+- $\lVert L_i \rVert^2=⟨L_i,L_i⟩_w=\frac{2}{2i+1}$
+
+  <details> <summary><em><font color='gray'>Indication de preuve</font></em></summary>
+  ∙ Remarquer que $⟨L_i,L_i⟩_w=\frac{(2i)!}{i!^2 2^i}⟨L_i,X^i⟩$ puis intégrations par parties
+  
+  ∙ Exploiter le résultat de l'intégrale de Wallis $\int_{θ=0}^{\frac{π}{2}}\sin^{2i+1}{θ}\,\d θ=\frac{i!^2 2^{2i}}{(2i+1)!}$
+  </details>
+
+- Récurrence : $L_0=1, \quad L_1=X, \quad (2i+1)X L_i = i L_{i-1} + (i+1)L_{i+1}\;(i≥1)$
+
+   <details> <summary><em><font color='gray'>Indication de preuve</font></em></summary>
+   Considérer une décomposition adéquate de $X L_i$, exploiter les propriétés d'orthogonalité, de parité et de termes dominants
+   </details>
+
+- $φ_i=\frac{L_i}{\lVert L_i \rVert}=\sqrt{\frac{2i+1}{2}}L_i$ ⇒ $φ_0=\frac{1}{\sqrt{2}}, \quad φ_1=\sqrt{\frac{3}{2}}X, \quad X φ_i = α_i φ_{i-1} + α_{i+1} φ_{i+1} \;\textrm{ avec } α_i=\frac{i}{\sqrt{4i^2-1}}$
+
+
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| code-fold: false
+#| eval: true
+#| code-line-numbers: false
+using LinearAlgebra
+gauss_legendre(n) = (E=eigen(SymTridiagonal(zeros(n+1),[i/sqrt(4i^2-1) for i ∈ 1:n])) ;
+                                                      (E.values, 2(E.vectors[1,:]).^2) )
+for n ∈ 0:2 x,w=gauss_legendre(n); println("n=$n xᵢ=$(round.(x;digits=8)) wᵢ=$(round.(w;digits=8))") end
+```
+:::
+
+:::
+
+::::
+
+
+
+
+<!-- ## References {.smaller .unnumbered .appendix}
+
+::: {#refs}
+::: -->

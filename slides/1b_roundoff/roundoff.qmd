@@ -1,5 +1,5 @@
 ---
-title: "Floating-Point Arithmetic"
+title: "Floating point arithmetic"
 subtitle: "Numerical Analysis"
 author: "Urbain Vaes"
 institute: "NYU Paris"
@@ -51,7 +51,7 @@ execute:
 
 - Numerical algorithms usually assume exact operations.
 - On computers, only a subset of real numbers can be stored.
-- Many operations are [approximate]{.emph} → this leads to [round-off errors]{.alert}.
+- Many operations are [approximate]{.emph} → leads to [round-off errors]{.alert}.
 
 . . .
 
@@ -59,17 +59,19 @@ execute:
 
 - Binary representation of real numbers
 
-- Floating-point formats
+- Floating point formats
 
 - Arithmetic operations
 
-- IEEE 754 encoding
+- IEEE 754 encoding (Inf, -Inf, NaN)
+
+- Integer formats
 
 
 # Binary Representation of Real Numbers
 
 
-A real number $x$ in an integer base $\beta \geq 2$ can be written as
+A real number $x$ in base $\beta$ can be written as:
 
 
 $$x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \quad a_k \in \{0, \dots, \beta-1\}$$
@@ -99,7 +101,7 @@ $$x = \pm \sum_{k=-n}^{\infty} a_k \beta^{-k}, \quad a_k \in \{0, \dots, \beta-1
 
 ## Conversion algorithm (Decimal → Binary)
 
-Algorithm to convert a number $x \in [0,1)$ to binary:
+Algorithm to convert a decimal fraction $x$ to binary:
 
 
 ```text
@@ -115,9 +117,9 @@ While x ≠ 0:
 ```
 . . .
 
-- Bits $b_1, b_2, …$ form the output $x = (0.b_1 b_2 …)_2$
-- If a nonzero value of $x$ repeats, the binary representation is infinite and periodic
-- A base-2 representation can be infinite even when the base-10 representation is finite
+- Bits $b_1, b_2, …$ form the bits of the output $x = (0.b_1 b_2 …)_2$
+- If $x$ repeats, binary representation is infinite 
+- Base 2 representation can be infinite even if base 10 representation is finite
 
 ## Example: $1/3$ in Binary
 <br>
@@ -140,16 +142,11 @@ Pattern repeats → $(1/3)_{10} = (0.\overline{01})_2$
 
 
 - Computers store only a subset of real numbers.
-- The IEEE 754 standard defines floating-point formats. A simplified model for the finite values is
+- IEEE 754 standard defines floating point formats:
 
 
 $$
-\begin{aligned}
-F(p,E_{\min},E_{\max}) = \{0\} \cup \big\{&(-1)^s 2^E
-    (b_0.b_1 b_2 \dots b_{p-1})_2 : \\
-    &s,b_i \in \{0,1\},\quad E_{\min} \leq E \leq E_{\max},
-    \quad b_0=1 \text{ if } E>E_{\min}\big\}.
-\end{aligned}
+F(p, E_{min}, E_{max}) = \Big\{ (-1)^s 2^E (b_0.b_1 b_2 \dots b_{p-1})_2 \Big\}
 $$
 
 . . .
@@ -157,14 +154,14 @@ $$
 **Parameters**:
 
 - $p$: number of significant bits (**precision**)
-- $E_{\min}, E_{\max}$: minimum and maximum exponents
-- IEEE 754 also includes signed zeros, infinities, and NaNs
+- $E_{min}, E_{max}$: minimum and maximum exponents
+- Special values: **Inf, -Inf, NaN**
 
 
-## Components of a Floating-Point Number
+## Components of a Floating Point Number
 
 
-For nonzero $x \in F(p, E_{\min}, E_{\max})$:
+For $x \in F(p, E_{min}, E_{max})$:
 
 - $s$ → **sign**
 - $E$ → **exponent**
@@ -176,7 +173,7 @@ For nonzero $x \in F(p, E_{\min}, E_{\max})$:
 
 <br>
 
-| Format | Precision $p$ | $E_{\min}$ | $E_{\max}$ |
+| Format | Precision $p$ | $E_{min}$ | $E_{max}$ |
 |-------------------|---------------|-----------|-----------|
 | Half (Float16) | 11 | -14 | 15 |
 | Single (Float32) | 24 | -126 | 127 |
@@ -200,10 +197,10 @@ $$
 $$
 :::
 
-- Depends on the floating-point format (through parameter $p$)
+- Depends on the floating point format (through parameter $p$)
 - In Julia, `eps(Float16)`, `eps(Float32)`, `eps(Float64)`
-- Gives the spacing of representable numbers at 1
-- **Example:** The next representable number after 1 is $1 + \varepsilon$
+- Indicates the maximum relative spacing between representable numbers
+- **Example:** The next number from 1 is $1 + \varepsilon$ 
 
 ```{julia}
 #| echo: true
@@ -214,7 +211,7 @@ println(nextfloat(x) - x)
 println(eps(Float64))
 ```
 
-## Absolute Density of Floating-Point Numbers
+## Absolute Density of Floating Point Numbers
 
 
 ```{julia}
@@ -256,7 +253,7 @@ Plots.xlabel!(L"x")
 - More numbers near 0 → denser representation.
 - Spacing grows with $|x|$.
 
-## Relative Density of Floating-Point Numbers
+## Relative Density of Floating Point Numbers
 
 ```{julia}
 #| echo: false
@@ -281,18 +278,18 @@ Plots.xlabel!(L"x")
 ```
 . . .
 
-- Relative spacing lies between $\frac{1}{2} \varepsilon$ and $\varepsilon$ in the [normal range]{.emph}
-- In the subnormal range (very small numbers), the relative spacing can be larger
+- Relative spacing oscillates between $\frac{1}{2} \varepsilon$ and $\varepsilon$ in [normalized region]{.emph}
+- In denormalized region (very small numbers), the relative spacing can be larger
 
 # Arithmetic Operations and Rounding
 
-- Floating-point arithmetic is **not exact** in general because of limited precision.
+- Floating point arithmetic is **not exact** due to limited precision.
 
-- With the default IEEE 754 mode, the exact result of a basic arithmetic operation is rounded to the [nearest]{.emph} representable number (ties to even).
+- **[Rounding]{.emph}:** result of any operation is rounded to [nearest]{.emph} representable number.
 
 - Each intermediate operation may introduce a small **[round-off error]{.alert}**.
 
-- Errors may [accumulate]{.alert} in sequences of operations, though they can also cancel.
+- Errors [accumulate]{.alert} in sequences of operations.
 
 . . .
 
@@ -307,9 +304,9 @@ Plots.xlabel!(L"x")
 @show exp(ε/3) == 1;
 ```
 
-# Encoding of Floating-Point Numbers
+# Encoding of Floating Point Numbers
 
-- Set of finite representable numbers specified by $(p, E_{\min}, E_{\max})$
+- Set of representable numbers specified by $(p, E_{min}, E_{max})$
 - [Encoding]{.emph} = how they are actually stored
 - Encoding does not affect magnitude or propagation of round-off errors.
 
@@ -317,10 +314,10 @@ Plots.xlabel!(L"x")
 
 :::{.callout-note icon=false}
 ## Unique Representation
-The representation of a nonzero finite number as $(-1)^s 2^E (b_0.b_1 … b_{p-1})_2$ is unique by requiring that
+The representation of a representable number as $(-1)^s 2^E (b_0.b_1 … b_{p-1})_2$ is unique by requiring that
 
-- Either $E > E_{\min}$ and the leading bit $b_0 = 1$
-- Or $E = E_{\min}$, in which case $b_0$ may be 0
+- Either $E > E_{min}$ and leading bit $b_0 = 1$
+- Or $E = E_{min}$, then $b_0$ may be 0
 :::
 
 . . .
@@ -331,4 +328,4 @@ The representation of a nonzero finite number as $(-1)^s 2^E (b_0.b_1 … b_{p-1
 - Example layout (32-bit Float32):
     + Sign: 1 bit
     + Encoded exponent: 8 bits
-    + Fraction field: 23 bits (the leading significand bit is implicit for normal numbers)
+    + Encoded significand: 23 bits

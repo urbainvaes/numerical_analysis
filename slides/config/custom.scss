@@ -1,0 +1,30 @@
+/*-- scss:rules --*/
+
+h1.title {
+    font: Monaco;
+    color: blue;
+    font-size: 2em;
+}
+
+.alert {
+    color: red;
+}
+
+.emph {
+    color: blue;
+}
+
+.good {
+    color: green;
+}
+
+.reveal div.sourceCode {
+  padding: .2em;
+  font-size: 1.2em;
+}
+
+div {
+  &.callout {
+    font-size: 1.7rem !important;
+  }
+}

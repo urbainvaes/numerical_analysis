@@ -1,0 +1,125 @@
+::: {.hidden}
+$$
+\newcommand{\C}{{\mathbb{{C}}}}
+\newcommand{\R}{{\mathbb{{R}}}}
+\newcommand{\Q}{{\mathbb{{Q}}}}
+\newcommand{\Z}{{\mathbb{{Z}}}}
+\newcommand{\N}{{\mathbb{{N}}}}
+
+\newcommand{\uv}[1]{{\underline{{#1}}}}
+\newcommand{\uu}[1]{{\symbf{{#1}}}}
+\newcommand{\uuuu}[1]{{\symbfit{{#1}}}}
+\newcommand{\ve}[1]{{\uv{{e}}_{{#1}}}}
+\newcommand{\exe}[2]{{\ve{#1}\otimes\ve{#2}}}
+\newcommand{\exse}[2]{{\ve{#1}\sotimes\ve{#2}}}
+\newcommand{\x}{{\uv{{x}}}}
+\newcommand{\y}{{\uv{{y}}}}
+\newcommand{\uvu}{{\uv{{u}}}}
+\newcommand{\uvt}{{\uv{{t}}}}
+\newcommand{\uvn}{{\uv{{n}}}}
+\newcommand{\uvm}{{\uv{{m}}}}
+\newcommand{\uvl}{{\uv{{l}}}}
+\newcommand{\uvxi}{{\uv{{ξ}}}}
+\newcommand{\uvnu}{{\uv{{ν}}}}
+\newcommand{\uvtau}{{\uv{{τ}}}}
+\newcommand{\uvzeta}{{\uv{{ζ}}}}
+\newcommand{\uvkappa}{{\uv{{κ}}}}
+\newcommand{\uvbeta}{{\uv{{β}}}}
+\newcommand{\uvN}{{\uv{{N}}}}
+\newcommand{\uvK}{{\uv{{K}}}}
+\newcommand{\nxn}{{\uvn\otimes\uvn}}
+\newcommand{\mxm}{{\uvm\otimes\uvm}}
+\newcommand{\lxl}{{\uvl\otimes\uvl}}
+\newcommand{\eps}{{\uu{{ε}}}}
+\newcommand{\E}{{\uu{{E}}}}
+\newcommand{\sig}{{\uu{{σ}}}}
+\newcommand{\Sig}{{\uu{{Σ}}}}
+\newcommand{\cod}{{\uv{{b}}}}
+\newcommand{\trans}[1]{{{}^{t}{#1}}}
+\newcommand{\sotimes}{{\stackrel{s}{\otimes}}}
+\newcommand{\sboxtimes}{\stackrel{s}{\boxtimes}}
+\newcommand{\ud}{{\mathrm{d}}}
+
+\DeclareMathOperator{\arcosh}{arcosh}
+\DeclareMathOperator{\divz}{div}
+\DeclareMathOperator{\divu}{\uv{div}}
+\DeclareMathOperator{\hess}{hess}
+\DeclareMathOperator{\gradu}{\uv{grad}}
+\DeclareMathOperator{\graduu}{\uu{grad}}
+\DeclareMathOperator{\Mat}{Mat}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\ISO}{ISO}
+\DeclareMathOperator{\e}{e}
+\DeclareMathOperator{\Dirac}{δ}
+\DeclareMathOperator{\Heaviside}{H}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\Rank}{Rank}
+\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\Vect}{Vect}
+\DeclareMathOperator{\Rg}{Rg}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Floathalf}{{\texttt{Float16}}}
+\DeclareMathOperator{\Floatsimple}{{\texttt{Float32}}}
+\DeclareMathOperator{\Floatdouble}{{\texttt{Float64}}}
+\DeclareMathOperator{\Inthalf}{{\texttt{Int16}}}
+\DeclareMathOperator{\Intsimple}{{\texttt{Int32}}}
+\DeclareMathOperator{\Intdouble}{{\texttt{Int64}}}
+
+\newcommand{\jump}[1]{{\left[\!\left[{{#1}}\right]\!\right]}}
+
+% \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+% \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+% \DeclarePairedDelimiter{\ip}{\langle}{\rangle}
+\DeclarePairedDelimiter{\vecnorm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\newcommand{\abs}[1]{{\lvert {#1} \rvert}}
+\newcommand{\norm}[1]{{\lVert {#1} \rVert}}
+\newcommand{\ip}[1]{{\langle {#1} \rangle}}
+
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\cond}{cond}
+\DeclareMathOperator{\arccosh}{arccosh}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\col}{col}
+\DeclareMathOperator{\spectrum}{spectrum}
+\DeclareMathOperator*{\trace}{tr}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\fl}{fl}
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+\newcommand{\mymarks}[1]{(\textbf{#1 marks})}
+\newcommand{\mymark}{(\textbf{1 mark})~}
+\newcommand{\mybonus}[1]{(\textbf{Bonus +#1})~}
+\renewcommand{\d}{\mathrm d}
+\renewcommand{\i}{\mathrm i}
+\renewcommand{\t}{T}
+\newcommand{\D}{\mathrm D}
+\newcommand{\real}{\mathbf R}
+\newcommand{\poly}{\mathbf P}
+\newcommand{\bigo}{\mathcal O}
+\newcommand{\complex}{\mathbf C}
+\newcommand{\nat}{\mathbf N}
+\newcommand{\integer}{\mathbf Z}
+\newcommand{\floating}{\mathbf F}
+\newcommand{\madd}{\mathbin{\widehat +}}
+\newcommand{\mdiv}{\mathbin{\widehat /}}
+\newcommand{\mtimes}{\mathbin{\widehat *}}
+\newcommand{\msub}{\mathbin{\widehat -}}
+\newcommand{\vect}[1]{\mathbf{\boldsymbol{#1}}}
+\newcommand{\mat}{\mathsf}
+\newcommand{\placeholder}{\mathord{\color{black!33}\bullet}}%
+\newcommand{\moreinfo}{\texorpdfstring{{\normalfont \color{lightred}$^{\text{\faSearchPlus}}$}}{}}
+\newcommand{\laplacian}{\triangle}
+\newcommand{\expect}{\mathbf E}
+\newcommand{\var}{\mathbf V}
+\newcommand{\proba}{\mathbf P}
+\newcommand{\thus}{{\color{green} \rightarrow}}
+
+
+$$
+:::

@@ -1,0 +1,20 @@
+/*-- scss:rules --*/
+
+.reveal div.sourceCode {
+padding: .2em;
+font-size: 1.2em;
+}
+
+div.callout-warning.callout-style-default .callout-title {
+  background-color: #ffffff;
+}
+
+div.callout-warning {
+    border-left-color: #f0ad00 !important;
+}
+
+/*-- scss:mixins --*/
+
+@mixin bodyBackground() {
+  @include radial-gradient(rgb(240, 228, 221), rgb(255, 255, 255));
+}

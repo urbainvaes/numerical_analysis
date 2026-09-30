@@ -1,0 +1,1343 @@
+---
+title: "Solving linear systems numerically"
+subtitle: "Numerical Analysis"
+author: "Urbain Vaes"
+institute: "NYU Paris"
+format:
+    revealjs:
+        theme: [default, ../config/custom.scss]
+        width: 1600
+        height: 1100
+        chalkboard: false
+        transition: convex
+        # min-scale: 1
+        # max-scale: 1
+        smaller: false
+        progress: true
+        touch: true
+        keyboard: true
+        mouse-wheel: true
+        controls: true
+        controls-layout: edges
+        navigation-mode: vertical
+        callout-appearance: default
+        callout-icon: false
+        slide-number: c/t
+        preview-links: auto
+        include-in-header:
+            - ../config/_head_color.html
+            - ../config/_head_align.html
+        toc: true
+        toc-depth: 1
+        embed-resources: true
+
+revealjs-plugins:
+  - pointer
+
+editor:
+    render-on-save: true
+
+jupyter: julia-1.10
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  error: false
+  keep-ipynb: false
+
+---
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+import Plots
+using LaTeXStrings, LinearAlgebra
+Plots.default(label=nothing,
+              legendfontsize=16,
+              background_color=:transparent,
+              foreground_color=:black,
+              linewidth=2);
+```
+
+## Objective {.smaller}
+
+{{< include ../config/_macros_revealjs.tex >}}
+{{< include ../config/_macros_colors.tex >}}
+
+:::{.callout-note}
+## Goal of this chapter
+Study numerical methods for the linear equation
+$$
+\mat A \vect x = \vect b,
+$$
+where
+$\mat A \in \complex^{n \times n}$
+and
+$b \in \complex^n.$
+:::
+
+Two classes of methods:
+
+. . .
+
+- **Direct methods**:
+
+  * LU decomposition (for general invertible matrices);
+
+  * Cholesky decomposition (for symmetric positive definite matrices)
+
+. . .
+
+- **Iterative methods**:
+
+  * Basic iterative methods based on a splitting;
+
+  * Conjugate gradients;
+
+  * And many more: GMRES, BiCGStab, etc.
+
+. . .
+
+Before discussing these methods, we introduce the concept of **conditioning**.
+
+# Conditioning of linear systems {.smaller}
+
+. . .
+
+- Assume that we wish to calculate numerically the solution $(1, -1)^\t$ of
+$$
+    \mat A \vect x :=
+    \begin{pmatrix}
+        1 & 1 \\
+        1 & 1 - 10^{-12}
+    \end{pmatrix}
+    \begin{pmatrix}
+        x_1 \\
+        x_2
+    \end{pmatrix} =
+    \begin{pmatrix}
+        0 \\
+        10^{-12}
+    \end{pmatrix} =: \vect b.
+$$
+
+. . .
+
+- In Julia, we can calculate the solution with the `\` operator
+  ```{julia}
+  #| echo: true
+  #| eval: true
+  #| code-fold: false
+  #| code-line-numbers: false
+  A = [1 1; 1 (1-1e-12)]
+  b = [0; 1e-12]
+  x = A\b
+  ```
+  Why is the relative error much larger than the *machine epsilon*?
+
+. . .
+
+- Julia solves not $\mat A \vect x = \vect b$ but
+$$(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = (\vect b + \Delta \vect b)$$
+where $\Delta \mat A$ and $\Delta \vect b$ are roundoff errors,
+and $\Delta \vect x$ is the resulting perturbation of the solution.
+
+[**Question**]{.red}: Can we estimate $\frac{\norm{\Delta \vect x}}{\norm{\vect x}}$ in terms of $\frac{\norm{\Delta \mat A}}{\norm{\mat A}}$
+and $\frac{\norm{\Delta \vect b}}{\norm{\vect b}}$?
+
+## Recalls: vector and matrix norms (1/3) {.smaller}
+
+. . .
+
+Given $p \in [1, \infty]$,
+the $p$-norm of a vector $\vect x \in \complex^n$ is defined as follows:
+$$
+    \norm{\vect x}_p :=
+    \begin{cases}
+        \left( \sum_{i=1}^{n} \abs{x_i}^p \right)^{\frac{1}{p}} & \text{if $p < \infty$}, \\
+        \max \Bigl\{ \abs{x_1}, \dotsc, \abs{x_n} \Bigr\} & \text{if $p = \infty$}.
+    \end{cases}
+$$
+In Julia, calculate $\norm{\vect x}_p$ using `norm(x, p)`.
+
+. . .
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+Plots.plot(aspect_ratio=:equal, xlims=(-1.1,1.1), ylims=(-1.1, 1.1))
+Plots.plot!(framestyle=:origin, grid=true, legend=:outertopright)
+Plots.plot!(title="Unit circle in different norms")
+Plots.plot!([0, 1, 0, -1, 0], [-1, 0, 1, 0, -1], label=L"$p = 1$ (taxicab norm)")
+Plots.plot!(t -> cos(t), t -> sin(t), 0, 2π, label=L"$p = 2$ (Euclidean norm)")
+Plots.plot!([1, 1, -1, -1, 1], [1, -1, -1, 1, 1], label=L"p = \infty")
+```
+
+## Recalls: vector and matrix norms (2/3) {.smaller}
+
+The operator norm on matrices induced by the vector $p$-norm is given by
+$$
+\norm{\mat A}_{p} := \sup_{\norm{\vect x}_{p} \leq 1} \norm{\mat A \vect x}_{p}
+$$
+It follows from the definition that $\norm{\mat A \mat B}_p \leq \norm{\mat A}_p \norm{\mat B}_p$.
+In Julia, calculate $\norm{\mat A}_p$ using `opnorm(A, p)`.
+
+. . .
+
+:::{.callout-warning}
+## Exercises
+Show that
+
+- The matrix 2-norm is given by $\sqrt{\lambda_{\rm max}(\mat A^* \mat A)}$.
+
+- The matrix 1-norm is the maximum absolute column sum:
+
+  $$\norm{\mat A}_1 = \max_{1 \leq j \leq n}  \sum_{i=1}^{n} \abs{a_{ij}}.$$
+
+- The matrix $\infty$-norm is the maximum absolute row sum:
+
+  $$\norm{\mat A}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{a_{ij}}.$$
+:::
+
+
+## Recalls: vector and matrix norms (3/3) {.smaller}
+
+From matrix norms,
+we define the **condition number** of a matrix as
+$$
+\kappa_p(\mat A) = \norm{\mat A}_p \norm{\mat A^{-1}}_p
+$$
+
+. . .
+
+**Properties**:
+
+- $\kappa_p(\mat I) = 1$
+
+- $\kappa_p(\mat A) \geq 1$
+
+- $\kappa_p(\alpha \mat A) = \kappa_p(\mat A)$
+
+. . .
+
+In Julia, calculate the condition number using `cond(A, p)`.
+
+## Conditioning of linear systems {.smaller}
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+:::{.callout-note}
+## Proposition
+Let $\vect x + \Delta \vect x$ denote the solution to
+$$
+\mat A (\vect x + \Delta \vect x) = \vect b + \Delta \vect b
+$$
+The following inequality holds:
+$$
+\frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+\leq \kappa(\mat A) \frac{\norm{\Delta \vect b}}{\norm{\vect b}}
+$$
+:::
+
+:::{.fragment}
+:::{.callout-tip}
+# Proof
+It holds by definition of $\Delta \vect x$ that $\mat A \Delta \vect x = \Delta \vect b$.
+Therefore
+$$
+\begin{aligned}
+    \norm{\Delta \vect x}
+    &= \norm{\mat A^{-1} \Delta \vect b}
+    \leq \norm{\mat A^{-1}} \norm{\Delta \vect b} \\
+    &= \frac{\norm{\mat A \vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}
+    \leq \frac{\norm{\mat A} \norm{\vect x}}{\norm{\vect b}} \norm{\mat A^{-1}} \norm{\Delta \vect b}.
+\end{aligned}
+$$
+Rearranging, we obtain the statement.
+
+:::
+:::
+
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="45%"}
+
+:::{.fragment}
+:::{.callout-note}
+## Proposition
+Let $\vect x + \Delta \vect x$ denote the solution to
+$$
+(\mat A + \Delta \mat A) (\vect x + \Delta \vect x) = \vect b
+$$
+If $\mat A$ is invertible and $\norm{\Delta \mat A} < \frac{1}{2} \norm{\mat A^{-1}}^{-1}$,
+then
+$$
+\frac{\norm{\Delta \vect x}}{\norm{\vect x}}
+\leq 2\kappa(\mat A) \frac{\norm{\Delta \mat A}}{\norm{\mat A}}
+$$
+:::
+:::
+
+:::{.fragment}
+[Conclusion]{.red}: $\kappa(\mat A)$ measures sensitivity to perturbations:
+
+- useful to estimate the impact of round-off errors;
+
+- influences convergence speed of methods (see later).
+
+- When $\kappa_p(\mat A) \gg 1$, the system is called **ill-conditioned**.
+:::
+
+
+:::
+
+::::
+
+#  Direct methods {.smaller}
+
+- First calculate the $\mat L \mat U$ decomposition of $\mat A$ with
+
+  * $\mat U$ upper triangular matrix;
+
+  * $\mat L$ unit lower triangular.
+
+. . .
+
+- Then solve
+  $\mat L \vect y = \vect b$
+  using *forward substitution*.
+
+  ```julia
+  y = copy(b)
+  for i in 2:n
+      for j in 1:i-1
+          y[i] -= L[i, j] * y[j]
+      end
+  end
+  ```
+
+. . .
+
+- Finally, solve
+  $\mat U \vect x = \vect y$
+  using *backward substitution*.
+
+. . .
+
+:::{.callout-note}
+## Remark: The LU decomposition [may not exist]{.red}
+In practice, use decomposition
+$\mat P \mat A = \mat L \mat U$,
+with $\mat P$ a permutation matrix.
+
+- Guaranteed to exist if $\mat A$ is invertible;
+
+- More numerically stable.
+:::
+
+
+## LU decomposition by Gaussian elimination {.smaller}
+$$
+\underbrace{
+\begin{pmatrix}
+  2 &  1 & -1 \\
+ -3 & -1 &  2 \\
+ -2 &  1 &  2
+\end{pmatrix}
+}_{\mat A}
+$$
+
+. . .
+
+$$
+\underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ {\color{red}\frac{3}{2}} & 1 & 0 \\
+ {\color{red}{1}} & 0 & 1
+\end{pmatrix}
+}_{=: \, \mat M_1}~
+\underbrace{
+\begin{pmatrix}
+  2 &  1 & -1 \\
+ -3 & -1 &  2 \\
+ -2 &  1 &  2
+\end{pmatrix}
+}_{\mat A}
+=
+\begin{pmatrix}
+  2 &  1 & -1 \\
+  {\color{red} 0} & \frac{1}{2} &  \frac{1}{2} \\
+  {\color{red} 0} &  2 &  1
+\end{pmatrix}
+$$
+
+. . .
+
+$$
+\underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ 0 & 1 & 0 \\
+ 0 & {\color{blue} -4} & 1
+\end{pmatrix}
+}_{=: \, \mat M_2}~
+\underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ {\color{red}\frac{3}{2}} & 1 & 0 \\
+ {\color{red}{1}} & 0 & 1
+\end{pmatrix}
+}_{=: \, \mat M_1}~
+\underbrace{
+\begin{pmatrix}
+  2 &  1 & -1 \\
+ -3 & -1 &  2 \\
+ -2 &  1 &  2
+\end{pmatrix}
+}_{\mat A}
+=
+\underbrace{
+\begin{pmatrix}
+  2 &  1 & -1 \\
+  {\color{red} 0} & \frac{1}{2} &  \frac{1}{2} \\
+  {\color{red} 0} &  {\color{blue} 0} &  -1
+\end{pmatrix}
+}_{=: \, \mat U}
+$$
+
+. . .
+
+Gaussian transformations $\mat M_1$, $\mat M_2$ are simple to invert and multiply. In particular
+$$ \mat A =  \mat M_1^{-1} \mat M_2^{-1} \mat U
+= \underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ {\color{red}-\frac{3}{2}} & 1 & 0 \\
+ {\color{red}{-1}} & 0 & 1
+\end{pmatrix}
+}_{=: \, \mat M_1^{-1}}~
+\underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ 0 & 1 & 0 \\
+ 0 & {\color{blue} 4} & 1
+\end{pmatrix}
+}_{=: \, \mat M_2^{-1}}~
+\mat U
+= \underbrace{
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ {\color{red}-\frac{3}{2}} & 1 & 0 \\
+ {\color{red}{-1}} & {\color{blue} 4} & 1
+\end{pmatrix}
+}_{\mat M_1^{-1} \mat M_2^{-1} =: \, \mat L}~
+\mat U
+$$
+
+## LU decomposition: computational cost {.smaller}
+
+```{julia}
+#| echo: true
+#| eval: false
+#| code-fold: false
+#| code-line-numbers: false
+# A is an invertible matrix of size n x n
+L = [r == c ? 1.0 : 0.0 for r in 1:n, c in 1:n]
+U = copy(A)
+for c in 1:n-1, r in c+1:n
+   U[c, c] == 0 && error("Pivotal entry is zero!")
+   L[r, c] = U[r, c] / U[c, c]
+   U[r, c:end] -= U[c, c:end] * L[r, c]
+end
+# L is unit lower triangular and U is upper triangular
+```
+
+$~$
+
+. . .
+
+- Computational cost: $\frac{2}{3} n^3 + \mathcal O(n^2)$ floating point operations (flops);
+
+- In comparison, the computational cost of forward/backward substitution scales as $\mathcal O(n^2)$;
+
+- The LU decomposition can be reused for different right-hand sides;
+
+- If $\mat A$ is a banded matrix, so are $\mat L$ and $\mat U$,
+  with the same bandwidth;
+
+- $\mat L$ and $\mat U$ are [not necessarily sparse]{.red} when $\mat A$ is sparse.
+
+
+## Direct method for symmetric positive definite $\mat A$ {.smaller}
+
+- It is more efficient to calculate the *Cholesky factorization* [$\mat A = \mat C \mat C^*$]{.bleubox} with $\mat C$ lower triangular with positive diagonal elements.
+
+. . .
+
+- Determination of $\mat C$ by identification column by column, first the diagonal term then the other terms:
+  $$a_{ij}=\sum_{k=1}^{\min{(i,j)}}c_{ik}\overline{c_{jk}} \quad ⇒\quad ∀j=1\ldots n\quad c_{jj}=\sqrt{a_{jj}-\sum_{k=1}^{j-1}\lvert c_{jk}\rvert^2} \quad\textrm{ and }\quad ∀i=j+1\ldots n \quad c_{ij}=\frac{a_{ij}-\sum_{k=1}^{j-1}c_{ik}\overline{c_{jk}}}{c_{jj}}$$
+
+:::: {.columns}
+
+::: {.column width="34%" .fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+#| output: false
+function cholesky(A)
+    n = size(A, 1)
+    C = copy(LowerTriangular(A))
+    for j ∈ 1:n
+        Cⱼₖ = C[j, 1:j-1]
+        C[j,j] -= Cⱼₖ'Cⱼₖ
+        C[j,j] = √C[j,j]
+        for i ∈ j+1:n
+            C[i,j] -= Cⱼₖ'C[i, 1:j-1]
+            C[i,j] = C[i,j]/C[j,j]
+        end
+    end
+    return C
+end
+
+```
+:::
+
+::: {.column width="66%" .fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+using Polynomials
+function generate_defpos_matrix(n)
+    A = rand(n,n)
+    return A'A+I
+end
+
+A = generate_defpos_matrix(2^7) ; C = cholesky(A)
+# println("||A - CC*||_∞ = ", norm(A-C'C, Inf))
+
+nb_samples = 10
+mean(x) = sum(x)/length(x)
+Plots.plot(xaxis=:log10, yaxis=:log10, xlabel="n", ylabel="CPU time", legend=:topleft, size=(900,400))
+tf = Float64[] ; tb = Float64[]
+tn = 2 .^(7:10)
+for n in tn
+    A = generate_defpos_matrix(n)
+    push!(tf, mean(@elapsed cholesky(A) for _ in 1:nb_samples))
+end
+Pf = fit(log10.(tn),log10.(tf),1) ; af = round(coeffs(Pf)[2]; digits=2)
+Plots.plot!(tn, tf, marker=:o, label="Dense matrix "*latexstring("n^{$(af)}"))
+
+
+```
+:::
+
+::::
+
+## Cholesky for banded matrices {.smaller}
+
+- $\mat A$ is a banded matrix i.e. it exists $b\in\N$ such that $a_{ij}=0$ if $|i-j|>b$.
+
+. . .
+
+- It follows that $\mat C$ is also a banded matrix with the same bandwidth.
+
+$$∀j=1\ldots n\quad c_{jj}=\sqrt{a_{jj}-\sum_{k=\max{(1,j-b)}}^{j-1}\lvert c_{jk}\rvert^2} \quad\textrm{ and }\quad ∀i=j+1\ldots \min{(n,j+b)} \quad c_{ij}=\frac{a_{ij}-\sum_{k=\max{(1,j-b)}}^{j-1}c_{ik}\overline{c_{jk}}}{c_{jj}}$$
+
+
+:::: {.columns}
+
+::: {.column width="34%" .fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+#| output: false
+function cholesky_banded(A, b)
+    n = size(A, 1)
+    C = copy(LowerTriangular(A))
+    for j ∈ 1:n
+        m, M = max(1,j-b), min(n,j+b)
+        Cⱼₖ = C[j, m:j-1]
+        C[j,j] -= Cⱼₖ'Cⱼₖ
+        C[j,j] = √C[j,j]
+        for i ∈ j+1:M
+            C[i,j] -= Cⱼₖ'C[i, m:j-1]
+            C[i,j] = C[i,j]/C[j,j]
+        end
+    end
+    return C
+end
+
+```
+:::
+
+::: {.column width="66%" .fragment .fade-up}
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: true
+#| code-line-numbers: false
+
+function generate_banded_matrix(n, b)
+    C = [j≤i≤j+b ? rand() : zero(Float64) for i in 1:n, j in 1:n]
+    return C*C'+I
+end
+
+n = 10 ; b = 4
+A = generate_banded_matrix(n,b)
+C = cholesky_banded(A,b)
+# println("||A - CC*||_∞ = ", norm(A-C'C, Inf))
+
+nb_samples = 10
+mean(x) = sum(x)/length(x)
+Plots.plot(xaxis=:log10, yaxis=:log10, xlabel="n", ylabel="CPU time", legend=:topleft, size=(900,400))
+tf = Float64[] ; tb = Float64[]
+tn = 2 .^(7:10)
+for n in tn
+    A = generate_banded_matrix(n, b)
+    push!(tf, mean(@elapsed cholesky(A) for _ in 1:nb_samples))
+    push!(tb, mean(@elapsed cholesky_banded(A,b) for _ in 1:nb_samples))
+end
+Pf = fit(log10.(tn),log10.(tf),1) ; af = round(coeffs(Pf)[2]; digits=2)
+Plots.plot!(tn, tf, marker=:o, label="Dense matrix "*latexstring("n^{$(af)}"))
+ntn = 2 .^(11:12)
+for n in ntn
+    A = generate_banded_matrix(n, b)
+    push!(tb, mean(@elapsed cholesky_banded(A,b) for _ in 1:nb_samples))
+end
+append!(tn,ntn)
+Pb = fit(log10.(tn),log10.(tb),1) ; ab = round(coeffs(Pb)[2]; digits=2)
+Plots.plot!(tn, tb, marker=:diamond, label="Banded matrix "*latexstring("n^{$(ab)}"))
+
+```
+:::
+
+::::
+
+
+
+
+# Iterative methods {.smaller}
+
+**Motivation**:
+General-purpose direct methods are
+
+- [exact]{.green} up to roundoff errors
+
+- but [computationally expensive]{.red}: $\mathcal O(n^3)$ flops for full matrices...
+
+- Additionally, they require the storage of $\mat L$ and $\mat U$.
+
+$~$
+
+. . .
+
+In contrast, iterative methods
+
+- are usually [approximate]{.red} (but there are exceptions);
+
+- usually have a cost per iteration scaling as $\mathcal O(n^2)$ at most;
+
+  $\rightarrow$ often [computationally more economical]{.green}
+
+- can be stopped at any point when the residual $\mat A \vect x - \vect b$ is sufficiently small;
+
+$~$
+
+## A first iterative method
+
+:::{.callout-warning}
+## Richardson's method
+\begin{align*}
+\vect x^{(k + 1)} = \vect x^{(k)} + \omega (\vect b - \mat A \vect x^{(k)})
+\end{align*}
+:::
+
+. . .
+
+:::{.callout-note}
+## Proposition
+Assume $\omega \neq 0$.
+If $(\vect x^{(k)})$ converges in the iteration above,
+then it converges towards the solution of
+\begin{align*}
+\mat A \vect x = \vect b.
+\end{align*}
+:::
+
+. . .
+
+**Questions:**
+
+- Does this method converge and how quickly?
+
+- What is a good stopping criterion?
+
+## Spectral radius and Gelfand's lemma {.smaller}
+
+:::{.callout-note}
+## Definition
+The spectral radius of $\mat A \in \complex^{n \times n}$ is given by
+$$
+\rho(\mat A) := \max_{\lambda \in \spectrum A} \abs{\lambda}
+$$
+:::
+
+**Remarks**:
+
+- $\rho(A)$ is not a norm;
+
+- $\rho(A) \leq \norm{\mat A}$ for any induced matrix norm.
+
+. . .
+
+:::{.callout-note}
+## Theorem: Gelfand's formula
+For any $\mat A \in \complex^{n \times n}$ and any matrix norm $\norm{\cdot}$,
+$$
+\lim_{k \to \infty} \norm{\mat A^k}^{1/k} = \rho(\mat A).
+$$
+:::
+- In particular $\norm{\mat A^k} \to 0$ as $k \to \infty$ iff $\rho(\mat A) < 1$.
+
+- The smaller $\rho(\mat A)$, the faster the convergence.
+
+## Analysis of Richardson's method {.smaller}
+\begin{align*}
+\vect x^{(k + 1)} = \vect x^{(k)} + \omega (\vect b - \mat A \vect x^{(k)})
+\end{align*}
+
+:::{.callout-note}
+## Proposition
+The Richardson iteration converges to the real solution for every choice of $\vect x^{(0)}$ if and only if
+\begin{align*}
+\rho(\mat I - \omega \mat A) = \max_{\lambda \in \spectrum A} \abs {1 - \omega \lambda} < 1.
+\end{align*}
+:::
+
+. . .
+
+:::{.callout-tip}
+## Proof
+We notice that
+$$
+\vect x^{(k+1)} - \vect x_*
+= \vect x^{(k)} - \vect x_* + \omega (\mat A \vect x_* - \mat A \vect x^{(k)})
+= (\mat I - \omega \mat A) \left( \vect x^{(k)} - \vect x_* \right).
+$$
+Therefore
+$$
+\vect x^{(k)} - \vect x_* = (\mat I - \omega \mat A)^k \left( \vect x^{(0)} - \vect x_* \right)
+$$
+The "only if" part of the statement is clear,
+and the "if" part follows from the equivalence
+$$
+\norm{\mat B^k} \xrightarrow[k \to \infty]{} 0
+\quad \Leftrightarrow \quad \rho(B) < 1.
+$$
+:::
+
+**Corollary**: It is necessary for convergence that all the eigenvalues have nonzero real parts of the same sign.
+
+## Analysis of Richardson's method {.smaller}
+
+By Gelfand's formula, for all $\varepsilon > 0$ there is $K \in \nat$ such that
+$$
+\forall k \geq K, \qquad
+\norm{\vect x^{(k)} - \vect x_*} \leq \bigl( \rho(\mat I - \omega \mat A) + \varepsilon \bigr)^k \norm{\vect x^{(0)} - \vect x_*}.
+$$
+
+We consider the particular case where $\mat A \in \real^{n \times n}$ is [symmetric positive definite]{.red}.
+
+. . .
+
+:::{.callout-warning}
+## Remark: link to optimization
+
+When $\mat A$ is Hermitian positive definite,
+the solution to $\mat A \vect x = \vect b$ is the minimizer
+$$
+f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+$$
+In this case, Richardson's iteration may be rewritten as
+$$
+\vect x^{(k+1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}).
+$$
+:::
+
+$~$
+
+. . .
+
+:::{.callout-tip}
+## Exercise: find $\omega$ that minimizes $\rho(\mat I - \omega \mat A)$
+Simple calculations lead to
+$$
+\omega_* = \frac{2}{\lambda_{\min}(\mat A) + \lambda_{\max}(\mat A)}, \qquad
+\rho(\mat I - \omega_* \mat A) = \frac{\kappa_2(\mat A) - 1}{\kappa_2(\mat A) + 1}
+$$
+:::
+
+## Illustration of Richardson's method {.smaller}
+
+:::: {.columns}
+
+::: {.column width="34%"}
+Consider the linear system
+$$
+\begin{pmatrix}
+2 & 1 \\ 1 & 2
+\end{pmatrix}
+\begin{pmatrix}
+x_1 \\ x_2
+\end{pmatrix}
+=
+\begin{pmatrix}
+7 \\ 8
+\end{pmatrix}
+$$
+
+- The exact solution is $(2, 3)^\t$;
+
+- The eigenvalues of $\mat A$ are 1 and 3;
+
+- The condition number $\kappa_2(\mat A)$ is 3;
+
+- The optimal $\omega$ is $\frac{1}{2}$.
+:::
+
+::: {.column width="65%"}
+**Contour plot** of
+$$f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.$$
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+ω = .05
+x = [0; 0]
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 0]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], markersize=10)
+```
+:::
+::::
+
+## Illustration of Richardson's method: $\omega = .2$ {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+ω = .2
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], label="Solution", markersize=10)
+plot!([], [], color=:blue, label="Richardson's iteration", legend=:none)
+anim = @animate for i in 1:15
+    global x, xnew
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    x = xnew
+    xnew = x - ω * (A*x - b)
+end
+gif(anim, fps=4)
+```
+
+## Illustration of Richardson's method: $\omega = .6$ {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+ω = .6
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], label="Solution", markersize=10)
+plot!([], [], color=:blue, label="Richardson's iteration", legend=:none)
+anim = @animate for i in 1:15
+    global x, xnew
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    x = xnew
+    xnew = x - ω * (A*x - b)
+end
+gif(anim, fps=4)
+```
+
+## Illustration of Richardson's method: optimal $\omega = .5$ {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+ω = .5
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], label="Solution", markersize=10)
+plot!([], [], color=:blue, label="Richardson's iteration", legend=:none)
+anim = @animate for i in 1:15
+    global x, xnew
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    x = xnew
+    xnew = x - ω * (A*x - b)
+end
+gif(anim, fps=4)
+```
+
+## More general basic iterative methods {.smaller}
+
+Consider the splitting
+$$
+\mat A = {\color{green}\mat M} - {\color{blue} \mat N}
+$$
+where $\mat M$ is invertible and easy to invert.
+Then
+$$
+\mat A \vect x_* = \vect b \quad \Leftrightarrow \quad
+{\color{green}\mat M} \vect x_* = {\color{blue} \mat N} \vect x_* + \vect b
+$$
+which suggests the iterative method
+$$
+{\color{green}\mat M} \vect x^{(k+1)} = {\color{blue} \mat N} \vect x^{(k)} + \vect b
+$$
+
+. . .
+
+:::{.callout-tip}
+## Standard basic iterative methods (here $\mat A = \mat L + \mat D + \mat U$)
+- Richardson's iteration corresponds to the particular splitting
+
+$$
+\mat A = \underbrace{{\color{green}\frac{1}{\omega} \mat I }}_{\mat M} - \underbrace{\left({\color{blue} \frac{1}{\omega} \mat I - \mat A}\right)}_{\mat N}
+$$
+
+- Jacobi's iteration: $\mat A = {\color{green}\mat D} - ({\color{blue}-\mat L - \mat U})$.
+
+- Gauss Seidel's iteration: $\mat A = ({\color{green}\mat D + \mat L}) - ({\color{blue}- \mat U})$
+
+- Relaxation method: $\mat A = \left({\color{green}\frac{\mat D}{\omega} + \mat L }\right) - \left({\color{blue}\frac{1 - \omega}{\omega} \mat D - \mat U} \right)$.
+  $~$(Coincides with Gauss-Seidel when $\omega = 1$)
+:::
+
+## Convergence of general basic iterative method {.smaller}
+
+:::{.callout-note}
+## Proposition: convergence of the splitting method
+- The iteration
+  $$
+  {\color{green}\mat M} \vect x^{(k+1)} = {\color{blue} \mat N} \vect x^{(k)} + \vect b
+  $$
+  converges for any initial $\vect x^{(0)}$
+  if and only if $\rho({\color{green}\mat M}^{-1} {\color{blue} \mat N}) < 1$.
+
+- In addition, for any $\varepsilon > 0$ there exists $K > 0$ such that
+  $$
+      \forall k \geq K,
+      \qquad
+      \norm{\vect x^{(k)} - \vect x_*} \leq \bigl(\rho({\color{green}\mat M}^{-1} {\color{blue} \mat N}) + \varepsilon\bigr)^k \norm{\vect x^{(0)} - \vect x_*}.
+  $$
+:::
+
+. . .
+
+:::{.callout-tip}
+## Proof
+Subtracting the equations
+$$
+\begin{aligned}
+{\color{green}\mat M} \vect x^{(k+1)} &= {\color{blue} \mat N} \vect x^{(k)} + \vect b \\
+{\color{green}\mat M} \vect x_* &= {\color{blue} \mat N} \vect x_* + \vect b
+\end{aligned}
+$$
+and rearranging gives
+$$
+\vect x^{(k+1)} - \vect x_*
+= {\color{green}\mat M}^{-1} {\color{blue} \mat N} (\vect x^{(k)} - \vect x_*)
+= \dots = ({\color{green}\mat M}^{-1} {\color{blue} \mat N})^{k+1} (\vect x^{(0)} - \vect x_*).
+$$
+The "only if" part of the first item is simple.
+The other claims follow from Gelfand's formula:
+$$
+\forall \mat B \in \complex^{n \times n}, \qquad
+\lim_{k \to \infty} \norm{\mat B^k}^{1/k} = \rho(\mat B).
+$$
+:::
+
+## Concrete convergence guarantees {.smaller}
+
+Settings where [$\rho(\mat M^{-1} \mat N) < 1$]{.red} are identified on a case by case basis:
+
+- Richardson's iteration, [sufficient condition]{.green}: $\mat A$ symmetric positive definite;
+
+- Jacobi's iteration, [sufficient condition]{.green}: $\mat A$ strictly row or column diagonally dominant:
+
+$$
+    \lvert a_{ii} \rvert > \sum_{j \neq i} \lvert a_{ij} \rvert \quad \forall i
+    \qquad \text{ or } \qquad
+    \lvert a_{jj} \rvert > \sum_{i \neq j} \lvert a_{ij} \rvert \quad \forall j.
+$$
+
+- Gauss Seidel's iteration, [sufficient condition]{.green}: $\mat A$ strictly row or column diagonally dominant;
+
+- Relaxation method, [sufficient condition]{.green}: $\mat A$ symmetric positive definite and $\omega \in (0, 2)$;
+
+- Relaxation method, [necessary condition]{.blue}: $\omega \in (0, 2)$;
+
+- ...
+
+## Improving upon Richardson's iteration {.smaller}
+
+**We suppose again, until the end of this lecture, that $\mat A$ is [symmetric positive definite]{.red}**
+
+We recall Richardson's iteration:
+\begin{align*}
+\vect x^{(k + 1)} = \vect x^{(k)} - \omega \nabla f(\vect x^{(k)}), \qquad f(\vect x) := \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+\end{align*}
+
+:::{.callout-note}
+## Proposition
+For any $\vect d \in \real^n$, it holds that
+$$
+\argmin_{\omega \in \real} f \left(\vect x - \omega \vect d \right) = \frac{\vect d^\t \vect r}{\vect d^\t \mat A \vect d},
+\qquad \vect r = \mat A \vect x - \vect b.
+$$
+:::
+
+We can improve upon Richardson's iteration by letting
+$$
+    \vect x^{(k + 1)} = \vect x^{(k)} - \omega_{\color{red}k} \nabla f(\vect x^{(k)}),
+    \qquad \omega_{\color{red}k} := \frac{\vect d_k^\t \vect d_k}{\vect d_k^\t \mat A \vect d_k},
+    \qquad \vect d_k := \mat A \vect x^{(k)} - \vect b.
+$$
+
+This is the [steepest descent]{.green} method with optimal step.
+
+## Illustration of steepest descent {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], label="Solution", markersize=10)
+plot!([], [], color=:blue, label="Richardson's iteration", legend=:none)
+anim = @animate for i in 1:6
+    global x, xnew
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    x = xnew
+    r = A*x - b
+    ω = r'r / (r'A*r)
+    xnew = x - ω*r
+end
+gif(anim, fps=4)
+```
+
+## Further improvement: the [conjugate directions]{.blue} method {.smaller}
+
+First note that
+$$
+f(\vect x)
+= \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x
+= \frac{1}{2} \norm{\vect x - \vect x_*}_{\mat A}^2 + \text{constant},
+\qquad \norm{\vect y}_{\mat A} := \sqrt{\ip{\vect y, \vect y}_{\mat A}},
+\qquad \ip{\vect x, \vect y}_{\mat A} := \vect x^\t \mat A \vect y.
+$$
+Given $n$ [conjugate]{.blue} directions $\{\vect d_0, \dotsc, \vect d_{n-1}\}$ such that $\ip{\vect d_i, \vect d_j}_{\mat A} = \delta_{ij}$,
+we have
+$$
+\vect x_* - \vect x^{(0)}
+= \sum_{i=0}^{n-1} \vect d_i \vect d_i^\t \mat A (\vect x_* - \vect x^{(0)})
+= \sum_{i=0}^{n-1} \vect d_i \vect d_i^\t ({\color{green}\vect b} - \mat A \vect x^{(0)})
+$$
+
+. . .
+
+$\color{green}\rightarrow$ the $\mat A$-projections of $\vect x_* - \vect x^{(0)}$ can be calculated even though $\vect x_*$ is unknown!
+
+. . .
+
+```julia
+# Assume `ds` is a list of n conjugate directions
+x = zeros(n)
+for k in 1:n
+    d = ds[k]
+    r = A*x - b
+    ω = d'r / (d'A*d)  # Denominator = 1 if `d` is normalized
+    x -= ω * d
+end
+```
+
+. . .
+
+**Minimization property**: by construction,
+
+- $\vect x^{(k)} - \vect x^{(0)}$ is the $\mat A$-orthogonal projection of $\vect x_* - \vect x^{(0)}$ onto $\Span\{\vect d_0, \dotsc, \vect d_{k-1}\}$.
+
+- Therefore, $\vect x^{(k)}$ minimizes $f(\vect x^{(k)})$ over the [full affine subspace]{.green} $\vect x^{(0)} + \Span\{\vect d_0, \dotsc, \vect d_{k-1}\}$.
+
+
+## Conjugate directions: example {.smaller}
+
+- Consider again the linear system
+  $$
+  \begin{pmatrix}
+  2 & 1 \\ 1 & 2
+  \end{pmatrix}
+  \begin{pmatrix}
+  x_1 \\ x_2
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+  7 \\ 8
+  \end{pmatrix}
+  $$
+
+- (non-normalized) Conjugate directions calculated by Gram-Schmidt:
+  $$
+  \vect d_0 =
+  \begin{pmatrix}
+  1 \\ 0
+  \end{pmatrix}, \qquad
+  \vect d_1 =
+  \begin{pmatrix}
+  -1 \\ 2
+  \end{pmatrix}.
+  $$
+
+. . .
+
+```{julia}
+#| echo: true
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using LinearAlgebra
+n = 2
+A = [2.0 1.0; 1.0 2.0]
+b = [7.0; 8.0]
+x = zeros(n)
+ds = [[1.0; 0.0], [-1.0; 2.0]]
+for i in 1:n
+    d = ds[i]
+    r = A*x - b
+    ω = d'r / (d'A*d)  # Denominator useful if `d` is not normalized
+    x -= ω*d
+    println("Residual: $(norm(A*x - b))")
+end
+```
+
+## Conjugate directions: illustration {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], markersize=10)
+plot!([], [], color=:blue)
+ds = [[1.0; 0.0], [-1.0; 2.0]]
+anim = @animate for i in 1:3
+    global x, xnew
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    if i <= 2
+        x = xnew
+        r = A*x - b
+        d = ds[i]
+        ω = d'r / (d'A*d)  # Denominator useful if `d` is not normalized
+        xnew = x - ω*d
+    end
+end
+gif(anim, fps=1)
+```
+
+. . .
+
+- In general, convergence in [at most $n$ iterations]{.green};
+
+. . .
+
+- **Question**: how to generate conjugate directions ?
+
+  ${\color{green} \rightarrow}$ the **conjugate gradient method** enables to generate conjugate directions on the fly.
+
+## Conjugate gradient method
+
+- **Idea**: generate conjugate direction $\vect d_k$ by applying Gram-Schmidt to $\vect r^{(0)}, \vect r^{(1)}, \dotsc, \vect r^{(k)}$.
+
+. . .
+
+- Cost of calculating a new direction $\vect d_k$ seemingly scales as $\mathcal O(k)$,
+  but in fact $\color{green} \mathcal O(1)$.
+
+. . .
+
+
+- **Convergence**: exact in $n$ iterations, and otherwise faster than Richardson's iteration:
+
+:::{.callout-note}
+## Theorem
+Suppose that $\mat A$ is symmetric positive definite.
+Then
+$$
+    \forall k \geq 0, \qquad
+    \norm{\vect x^{(k)} - \vect x_*}_{\mat A} \leq  2 \left( \frac{{\color{red}\sqrt{\kappa_2(\mat A)}} - 1}{{\color{red}\sqrt{\kappa_2(\mat A)}} + 1} \right)^{k} \norm{\vect x^{(0)} - \vect x_*}_{\mat A},
+$$
+:::
+
+## Conjugate gradient method: illustration {.smaller}
+
+```{julia}
+#| echo: false
+#| eval: true
+#| code-fold: false
+#| code-line-numbers: false
+using Plots
+using LaTeXStrings
+
+A = [2.0 1.0; 1.0 2.0]
+sol = [2.0; 3.0]
+b = A * sol
+f(x, y) = 1/2 * [x; y]' * A * [x; y] - b' * [x; y]
+
+xlims = (-4, 8)
+ylims = (-1, 7)
+xplot = LinRange(xlims..., 100)
+yplot = LinRange(ylims..., 100)
+x = [-2; 2]
+xnew = x
+d = r = A*x - b
+plot(xlims=xlims, ylims=ylims)
+contour!(xplot, yplot, f, levels=20, color=:turbo, lw=1, fill=true, aspect_ratio=1)
+scatter!([sol[1]], [sol[2]], markersize=10)
+plot!([], [], color=:blue)
+anim = @animate for i in 1:3
+    global x, xnew, d, r
+    plot!([x[1], xnew[1]], [x[2], xnew[2]], color=:blue, lw=3, label=nothing)
+    scatter!([x[1], xnew[1]], [x[2], xnew[2]], color=:yellow, label=nothing)
+    if i <= 2
+        x = xnew
+        ω = d'r / (d'A*d)  # Denominator useful if `d` is not normalized
+        xnew = x - ω*d
+        r = A*xnew - b
+        β = r'A*d/(d'A*d)
+        d = r - β*d
+    end
+end
+gif(anim, fps=1)
+```

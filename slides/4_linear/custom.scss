@@ -1,0 +1,12 @@
+/*-- scss:rules --*/
+
+.reveal div.sourceCode {
+padding: .2em;
+font-size: 1.5em;
+}
+
+div {
+  &.callout {
+    font-size: 1.3rem !important;
+  }
+}
