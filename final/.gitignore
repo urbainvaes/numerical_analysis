@@ -1,0 +1,3 @@
+build/*
+!build/*.pdf
+_minted*
