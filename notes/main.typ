@@ -8,16 +8,22 @@
 #show: book.with(title: "Lecture notes in Numerical Analysis", author: "Urbain Vaes")
 
 #if enpc {
-  panic("The ENPC title page and syllabus have not been converted yet")
+  include "frontmatter/title_enpc.typ"
+} else {
+  include "frontmatter/title_nyu.typ"
 }
-
-#include "frontmatter/title_nyu.typ"
 
 #show: frontmatter
 #part("license", output: false)
 #include "frontmatter/license.typ"
-#part("syllabus_nyu", output: false)
-#include "frontmatter/syllabus_nyu.typ"
+#if enpc {
+  // As in main.tex, the ENPC syllabus is not included:
+  // part("syllabus_enpc", output: false)
+  // include "frontmatter/syllabus_enpc.typ"
+} else {
+  part("syllabus_nyu", output: false)
+  include "frontmatter/syllabus_nyu.typ"
+}
 #part("acknowledgements", output: false)
 #include "frontmatter/acknowledgements.typ"
 #part("notations_enpc")
@@ -49,6 +55,9 @@
 
 #part("odes")
 #include "mainmatter/odes.typ"
+
+#part("optimization")
+#include "mainmatter/optimization.typ"
 
 #show: appendix
 #part("matrices")

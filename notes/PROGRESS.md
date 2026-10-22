@@ -1,17 +1,19 @@
 # Conversion progress
 
 ## Done
-All chapters of the NYU version (frontmatter, introduction, chapters 1-7,
-appendices A-C, bibliography) are converted and included in `main.typ`. The
+All chapters (frontmatter, introduction, chapters 1-8, appendices A-C,
+bibliography) and the ENPC title page and syllabus are converted and included
+in `main.typ`; `typst compile --input enpc=true` builds the ENPC version.
+Chapter 8 (optimization), commented out in `main.tex`, is included; it has no
+LaTeX build to compare against. As in `main.tex`, the ENPC syllabus is
+converted but not included. The
 book compiles without errors or warnings. For every chapter, the numbering of
 equations, theorem-like environments, exercises, figures, tables, algorithms
 and tasks matches the LaTeX PDF exactly. Chapter 1 was compared page by page
 with the LaTeX PDF; the other chapters were checked by their conversion agents
-and by spot checks. The Typst book has 234 pages (LaTeX: 227).
+and by spot checks. The Typst book has 242 pages with chapter 8 (LaTeX, without it: 227).
 
 ## Remaining
-- ENPC title page and syllabus (`\ifenpc`); `optimization` (commented out in
-  `main.tex`).
 - Known differences:
   - inline matrices are smaller than in LaTeX;
   - `\ge` (upright in LaTeX) is rendered slanted by the global `≥ → ⩾` rule;
