@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\newcommand{\julia}[1]{\mintinline{julia}{#1}}
+
+\begin{document}
+\begin{enumerate}
+
+    \item
+        Let $\varepsilon$ denote the machine epsilon for the \julia{Float64} format.
+        If $x \in \mathbf R$ is such that $0 < x < \varepsilon$,
+        then $x$ may or may not be representable in the \julia{Float64} format.
+
+    \item
+        Machine addition is commutative,
+        meaning that $a \widehat + b = b \widehat + a$
+        for any \julia{Float64} point numbers $a$ and $b$.
+
+    \item
+        If \julia{x} is a $\julia{Float64}$ and \julia{y} is a $\julia{Float32}$ number,
+        then the result of \julia{x + y} is a \julia{Float32} number.
+
+    \item
+        The only polynomial~$p$ of degree at most 3 such that $p(-1) = p(0) = p(1) = 0$ is the 
+        cubic polynomial~$p(x) = x^3 - x$.
+
+    \item
+        Given $x_0 < x_1 < x_2$
+        and $y_0, y_1, y_2 \in \mathbb R$,
+        the unique quadratic interpolating polynomial through these data points is given by
+        \[
+            p(x) = 
+            \frac{(x - x_1) (x-x_2)}{(x_0 - x_1) (x_0 - x_2)} y_0
+            +
+            \frac{(x - x_0) (x-x_2)}{(x_1 - x_0) (x_1 - x_2)} y_1
+            +
+            \frac{(x - x_0) (x-x_1)}{(x_2 - x_0) (x_2 - x_1)} y_2.
+        \]
+
+    \item
+        Given $x_0 < \dotsc < x_n$
+        and $y_0, \dotsc, y_n \in \mathbb R$,
+        the constant polynomial $p$ that minimizes $\sum_{i=0}^{n} |y_i - p(x_i)|^2$
+        is given by
+        \[
+            p(x) = \frac{1}{n+1} \sum_{i=0}^{n} y_i.
+        \]
+    \item
+        Let $f(x) = \cos(2x)$, 
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        In Julia, if \julia{A} is a matrix,
+        then \julia{A[:, iseven.(1:end)]} gives the matrix obtained by keeping only the columns with even indices. 
+
+    \item
+        The degree of precision of the Gauss--Legendre quadrature rule with $n$ points is equal to $2n - 1$.
+
+    \item
+        The degree of precision of the following integration rule is 3. 
+        \begin{minted}{julia}
+    function I_approx(a, b, n)
+        x = LinRange(a, b, n + 1)
+        h = x[2] - x[1]
+        return h * sum(f, x[1:n] .+ h/2)
+    end
+        \end{minted}
+
+\end{enumerate}
+\end{document}
+
+
+

@@ -1,0 +1,296 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\ifdefined\showsolutions\lhead{Instructor copy}\fi
+\chead{Graded quiz 4 -- Numerical integration}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+\usepackage{xcolor}
+\newcommand{\answer}[1]{%
+    \ifdefined\showsolutions
+        \par\smallskip
+        {\small\color{blue!60!black}#1\par}
+    \fi
+}
+
+% Box in the answer grid, ticked in the solutions when the argument is 1.
+\newcommand{\gridbox}[1]{%
+    \ifdefined\showsolutions
+        \ifnum#1=1 {\color{blue!60!black}$\boxtimes$}\else$\square$\fi
+    \else
+        $\square$%
+    \fi
+}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified.)
+\ifdefined\showsolutions
+{\small\color{blue!60!black}Questions 1--15: 1 point for a correct answer, 0 otherwise.\par}
+\fi
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+
+    \smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{16}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & B \\
+        \hline
+        True  & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} \\
+        False & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 2:
+        \[
+            \int_{-1}^{1} f(x) \, \d x \approx \frac{1}{2} f(-1) + f(0) + \frac{1}{2} f(1)\,.
+        \]
+        \answer{\textbf{False.}
+        The rule is exact for~$1$ ($\frac12 + 1 + \frac12 = 2$) and, by symmetry, for~$x$.
+        For~$x^2$ it gives $\frac12 + \frac12 = 1 \neq \frac23$, so the degree of precision is~$1$.}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 1:
+        \[
+            \int_0^1 f(x) \, \d x \approx f(0) + \frac{1}{2} f'(0)\,.
+        \]
+        \answer{\textbf{True.}
+        The rule is exact for~$1$ (it gives~$1$) and for~$x$ (it gives $0 + \frac12 = \frac12$).
+        For~$x^2$ it gives $0 \neq \frac13$.}
+
+    \item
+        \textbf{Degree of precision.}
+        Let $x_1 < \dotsb < x_n$ be distinct nodes in $[-1, 1]$.
+        If the quadrature rule
+        \[
+            \int_{-1}^{1} f(x) \, \d x \approx \sum_{i=1}^{n} w_i f(x_i)
+        \]
+        has degree of precision at least~$n - 1$, then its weights are given by
+        \[
+            w_i = \int_{-1}^{1} \ell_i(x) \, \d x,
+            \qquad
+            \ell_i(x) = \prod_{\substack{j = 1 \\ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j},
+            \qquad i = 1, \dotsc, n.
+        \]
+        \answer{\textbf{True.}
+        The Lagrange polynomial~$\ell_i$ belongs to $\mathcal P_{n-1}$, so the rule is exact for~$\ell_i$.
+        Since $\ell_i(x_j) = \delta_{ij}$, this gives
+        \[
+            \int_{-1}^{1} \ell_i(x) \, \d x = \sum_{j=1}^{n} w_j \ell_i(x_j) = w_i.
+        \]}
+
+    \item
+        \textbf{Gaussian integration.}
+        The following quadrature rule is the two-point Gauss--Legendre rule:
+        \begin{equation}
+            \label{eq:gauss2}
+            \int_{-1}^{1} f(x) \, \d x \approx f\left(-\frac{1}{\sqrt{3}}\right) + f\left(\frac{1}{\sqrt{3}}\right).
+        \end{equation}
+        \answer{\textbf{True.}
+        The nodes of the two-point Gauss--Legendre rule are the roots of the Legendre polynomial $P_2(x) = \frac{1}{2} (3x^2 - 1)$,
+        that is $\pm \frac{1}{\sqrt{3}}$.
+        Exactness for~$1$ gives $w_1 + w_2 = 2$, and exactness for~$x$ gives $w_1 = w_2$, so $w_1 = w_2 = 1$.}
+
+    \item
+        \textbf{Composite quadrature.}
+        Suppose that $f \in C^{\infty}[a, b]$ and let~$I_n[f]$ denote the approximation of the integral $I[f] \coloneq \int_a^b f(x) \, \d x$
+        obtained with the composite two-point Gauss--Legendre rule with~$n$ cells, that is
+        \[
+            I_n[f] = \frac{h}{2} \sum_{i=0}^{n-1} \left( f\left(m_i - \frac{h}{2\sqrt{3}}\right) + f\left(m_i + \frac{h}{2\sqrt{3}}\right) \right),
+            \qquad h = \frac{b-a}{n}, \qquad m_i = a + \left(i + \frac{1}{2}\right) h\,.
+        \]
+        Then there exists a constant~$C \in (0, \infty)$ such that
+        \[
+            \forall n \in \{1, 2, \dotsc\}, \qquad \Bigl\lvert I[f] - I_n[f] \Bigr\rvert \leq \frac{C}{n^4}\,.
+        \]
+        \emph{Hint:} Compute or recall the degree of precision of the rule~\eqref{eq:gauss2},
+        and use the theorem relating the degree of precision of a quadrature rule to the order of convergence, with respect to~$h$, of the associated composite rule.
+        \answer{\textbf{True.}
+        The two-point Gauss--Legendre rule is exact for~$1$, $x$ and~$x^3$ by symmetry,
+        and for~$x^2$ since $\frac13 + \frac13 = \frac23$; it is not exact for~$x^4$ ($\frac29 \neq \frac25$).
+        Its degree of precision is~$d = 3$, so the composite rule converges with order $d + 1 = 4$ with respect to~$h$,
+        that is, the error is $O(h^4) = O(n^{-4})$.}
+
+    \item
+        \textbf{Composite quadrature.}
+        With the notation of the previous item, it holds that $I_n[f] = I[f]$ for all $n \geq 1$
+        whenever~$f$ is a polynomial of degree at most~3.
+        \answer{\textbf{True.}
+        On each cell, the rule is the two-point Gauss--Legendre rule mapped to that cell, which is exact for polynomials of degree at most~$3$.
+        Summing over the cells, the composite rule is exact for these polynomials too.}
+
+    \item
+        \textbf{Composite quadrature.}
+        Assume that the error of a composite quadrature rule with~$n$ cells behaves like $C n^{-2}$ for large~$n$,
+        and that the error obtained with $n = 100$ cells is approximately $10^{-2}$.
+        Then the error obtained with $n = 1000$ cells is approximately $10^{-6}$.
+        \answer{\textbf{False.}
+        Multiplying~$n$ by~$10$ divides the error by $10^2 = 100$, so the error is approximately $10^{-4}$.
+        (Here $C \approx 10^{-2} \times 100^2 = 100$; the value $10^{-6} = 1000^{-2}$ would correspond to $C = 1$.)}
+
+    \item
+        \textbf{Gaussian integration.}
+        The one-point Gauss--Legendre rule on $[-1, 1]$ is the midpoint rule
+        \[
+            \int_{-1}^1 f(x) \, \d x \approx 2 f(0)\,.
+        \]
+        \answer{\textbf{True.}
+        The one-point rule must be exact for~$1$ and~$x$: this gives $w_1 = 2$ and $w_1 x_1 = 0$, so $x_1 = 0$.
+        (Equivalently, $x_1 = 0$ is the root of the Legendre polynomial $P_1(x) = x$.)}
+
+    \item
+        \textbf{Gaussian integration.}
+        The nodes of the~$n$-point Gauss--Legendre rule on $[-1, 1]$ are equally spaced.
+        \answer{\textbf{False.}
+        The nodes are the roots of the Legendre polynomial of degree~$n$, which are not equally spaced in general.
+        For instance, for~$n = 3$ the nodes are~$0$ and $\pm \sqrt{3/5}$.}
+
+    \item
+        \textbf{Gaussian integration.}
+        As for closed Newton--Cotes rules, the~$n$-point Gauss--Legendre rule has some negative weights when~$n$ is large enough.
+        \answer{\textbf{False.}
+        All the weights of the Gauss--Legendre rule are positive, for every~$n$.
+        Indeed, the Lagrange polynomial $\ell_i$ associated with the nodes satisfies $\ell_i^2 \in \mathcal P_{2n-2}$,
+        which is integrated exactly, so
+        \[
+            0 < \int_{-1}^{1} \ell_i(x)^2 \, \d x = \sum_{j=1}^{n} w_j \ell_i(x_j)^2 = w_i.
+        \]}
+
+    \item
+        \textbf{Gaussian integration.}
+        Let $x_1, \dotsc, x_n$ and $w_1, \dotsc, w_n$ denote the nodes and weights of the~$n$-point Gauss--Legendre rule on $[-1, 1]$.
+        Then the~$n$-point Gauss--Legendre rule on a general interval~$[a, b]$ is given by
+        \[
+            \int_a^b f(x) \, \d x \approx \sum_{i=1}^{n} w_i f\left( a + \frac{b-a}{2} (x_i + 1) \right).
+        \]
+        \answer{\textbf{False.}
+        The nodes are correctly mapped, but the weights must be multiplied by $\frac{b-a}{2}$,
+        the Jacobian of the affine change of variables.
+        For instance, with~$f = 1$ the formula gives $\sum_i w_i = 2$ instead of~$b - a$.}
+
+    \item
+        \textbf{Gaussian integration.}
+        There exist a node $x_2 \in (-1, 1]$ and weights $w_1, w_2$ such that the rule
+        \[
+            \int_{-1}^{1} u(x) \, \d x \approx w_1 u(-1) + w_2 u(x_2)
+        \]
+        has a degree of precision equal to~$2$.
+        \answer{\textbf{True.}
+        Exactness for~$1$, $x$ and~$x^2$ gives the equations
+        \[
+            w_1 + w_2 = 2, \qquad
+            - w_1 + w_2 x_2 = 0, \qquad
+            w_1 + w_2 x_2^2 = \frac{2}{3}.
+        \]
+        The second equation gives $w_1 = w_2 x_2$, and then the first gives $w_2 = \frac{2}{1 + x_2}$.
+        Substituting in the third equation, $w_2 x_2 (1 + x_2) = 2 x_2 = \frac23$, so $x_2 = \frac13$, $w_2 = \frac32$ and $w_1 = \frac12$.
+        The rule is not exact for~$x^3$, since it gives
+        \[
+            -\frac12 + \frac32 \cdot \frac{1}{27} = -\frac{4}{9} \neq 0 = \int_{-1}^1 x^3 \, \d x,
+        \]
+        so its degree of precision is exactly~$2$.
+        (This is the two-point Gauss--Radau rule.)}
+
+    \item
+        \textbf{Richardson extrapolation.}
+        \label{q:richardson_trapezoidal}
+        Let~$T(h)$ be the composite trapezoidal approximation of $I \coloneq \int_a^b f(x) \, \d x$ with step size~$h$,
+        and assume that $T(h) = I + c_2 h^2 + c_4 h^4 + O(h^6)$ with $c_2 \neq 0$.
+        Then the approximation
+        \[
+            R(h) \coloneq 2 T(h) - T(2h)
+        \]
+        satisfies
+        \[
+            \bigl\lvert R(h) - I \bigr\rvert = O(h^4)\,.
+        \]
+        \answer{\textbf{False.}
+        We have
+        \[
+            R(h) = 2 T(h) - T(2h) = I + c_2 (2 - 4) h^2 + O(h^4) = I - 2 c_2 h^2 + O(h^4),
+        \]
+        which is still second order.
+        The correct combination is $\frac{4 T(h) - T(2h)}{3}$.}
+
+    \item
+        \textbf{Richardson extrapolation.}
+        With the notation and assumptions of question~\ref{q:richardson_trapezoidal}, it holds that
+        \[
+            I - T(h) = \frac{T(h) - T(2h)}{3} + O(h^4)\,.
+        \]
+        In other words, the error of~$T(h)$ can be estimated from~$T(h)$ and~$T(2h)$.
+        \answer{\textbf{True.}
+        We have
+        \[
+            T(h) - T(2h) = c_2 (1 - 4) h^2 + O(h^4) = -3 c_2 h^2 + O(h^4),
+            \qquad
+            I - T(h) = -c_2 h^2 + O(h^4).
+        \]}
+
+    \item
+        \textbf{Julia.}
+        The following code implements the composite midpoint rule with~$n$ points:
+        \begin{minted}{julia}
+function M(f, a, b, n)
+    h = (b - a) / n
+    x = LinRange(a + h/2, b - h/2, n + 1)
+    return h * sum(f, x)
+end
+        \end{minted}
+        \answer{\textbf{False.}
+        \texttt{LinRange(a + h/2, b - h/2, n + 1)} contains~$n + 1$ points,
+        whereas there are only~$n$ midpoints.
+        The correct code uses \texttt{LinRange(a + h/2, b - h/2, n)}.}
+
+    \item \textbf{Bonus.}
+        Let $f \in C^{\infty}(\mathbb R)$ and $x \in \mathbb R$,
+        and let~$D(h)$ denote the central finite difference approximation of~$f'(x)$:
+        \[
+            D(h) = \frac{f(x + h) - f(x - h)}{2h}\,.
+        \]
+        Then the approximation
+        \[
+            \frac{4 D(h) - D(2h)}{3}
+        \]
+        satisfies
+        \[
+            \left\lvert \frac{4 D(h) - D(2h)}{3} - f'(x) \right\rvert = O(h^4) \qquad \text{as } h \to 0\,.
+        \]
+        \emph{Justify briefly.}
+        \answer{\textbf{True.}
+        By Taylor's formula,
+        \[
+            f(x \pm h) = f(x) \pm f'(x) h + \frac{f''(x)}{2} h^2 \pm \frac{f'''(x)}{6} h^3 + \frac{f^{(4)}(x)}{24} h^4 \pm \frac{f^{(5)}(x)}{120} h^5 + O(h^6),
+        \]
+        so the even terms cancel in~$D(h)$ and
+        \[
+            D(h) = f'(x) + \frac{f'''(x)}{6} h^2 + O(h^4),
+            \qquad
+            D(2h) = f'(x) + \frac{4 f'''(x)}{6} h^2 + O(h^4).
+        \]
+        Therefore $4 D(h) - D(2h) = 3 f'(x) + O(h^4)$: the~$h^2$ term cancels.}
+\end{enumerate}
+
+\end{document}

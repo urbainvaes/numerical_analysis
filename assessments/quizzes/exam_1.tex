@@ -1,0 +1,176 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+
+\begin{document}
+\begin{enumerate}
+
+    \item
+        \textbf{(T/F)}
+        Let $\varepsilon$ denote the machine epsilon for the \julia{Float64} format.
+        If $x \in \mathbf R$ is such that $0 < x < \varepsilon$,
+        then $x$ cannot be represented in the \julia{Float64} format.
+
+    \item
+        \textbf{(T/F)}
+        Machine multiplication is commutative,
+        meaning that $a \widehat * b = b \widehat * a$
+        for any \julia{Float64} point numbers~$a$ and~$b$.
+
+    \item
+        \textbf{(T/F)}
+        If \julia{x} is a \julia{Float16} and \julia{y} is a \julia{Float32} number,
+        then the result of \julia{x + y} is a \julia{Float64} number.
+
+    \item
+        \textbf{(T/F)}
+        The only polynomial~$p$ of degree at most 3 such that $p(-1) = p(0) = p(1) = 1$ is the
+        constant polynomial~$p(x) = 1$.
+
+    \item
+        \textbf{(T/F)}
+        Given $x_0 < x_1 < x_2 < x_3$
+        and $y_0, y_1, y_2, y_3 \in \mathbb R$,
+        the unique polynomial passing through these data points is given by
+        \begin{align*}
+            p(x) &=
+            \frac{(x - x_1) (x-x_2)(x - x_3)}{(x_0 - x_1) (x_0 - x_2)(x_0 - x_3)} y_0
+            +
+            \frac{(x - x_0) (x-x_2) (x-x_3)}{(x_1 - x_0) (x_1 - x_2)(x_1-x_3)} y_1 \\
+                 &\qquad
+                 + \frac{(x - x_0) (x-x_1)(x-x_3)}{(x_2 - x_0) (x_2 - x_1)(x_2-x_3)} y_2
+                 + \frac{(x - x_0) (x-x_1)(x-x_2)}{(x_3 - x_0) (x_3 - x_1)(x_3 - x_2)} y_3.
+        \end{align*}
+
+    \item
+        Given $x_0 < \dotsc < x_n$
+        and $y_0, \dotsc, y_n \in \mathbb R$,
+        prove that the constant polynomial $p$ that minimizes 
+        the expression $\sum_{i=0}^{n} |y_i - p(x_i)|^2$ is given by
+        \[
+            p(x) = \frac{1}{n+1} \sum_{i=0}^{n} y_i.
+        \]
+        \vspace{2cm}
+
+    \item
+        \textbf{(T/F)}
+        Let $f(x) = \exp(2x)$,
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at~$n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leqslant x \leqslant 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        \textbf{(T/F)}
+        In Julia, if \julia{A} is a 10 by 10 matrix,
+        then \julia{A[isodd.(1:end), :]} gives the matrix obtained by keeping only the rows with odd indices.
+
+    \item
+        \textbf{(T/F)}
+        The degree of precision of the Gauss--Legendre quadrature rule with $n + 1$ points is equal to~$2n$.
+
+    \item
+        Describe in words what the following code does.
+        \begin{minted}{julia}
+    function I_approx(f, a, b, n)
+        x = LinRange(a, b, n + 1)
+        h = x[2] - x[1]
+        return h * sum(f, x[1:n] .+ h/2)
+    end
+        \end{minted}
+        \vspace{2.5cm}
+\end{enumerate}
+
+\newpage
+In the next questions,
+we consider the following linear system:
+\begin{equation}
+    \label{eq:linear_system}
+    \mat A \vect x = \vect b,
+    \qquad \mat A \in \real^{n \times n},
+    \qquad \vect b \in \real^n.
+\end{equation}
+\begin{enumerate}
+    \item
+        Suppose that \julia{A} is a 10 by 10 upper triangular matrix,
+        and that \julia{b} is a vector of size 10.
+        Complete the following implementation of the backward substitution algorithm:
+\begin{minted}{julia}
+    # Suppose that A and b have already been defined
+    x = zero(b)
+    # YOUR CODE BELOW
+\end{minted}
+    \vspace{2cm}
+
+    \item
+        How many floating point operations does your implementation require?
+
+    \item
+        Suppose that~$\mat A$ is symmetric and positive definite.
+        Describe step by step an efficient direct method for solving~\eqref{eq:linear_system} in this case.
+        \vspace{2cm}
+
+
+    \item 
+        \textbf{(T/F)}
+        Suppose that~$\mat A$ is symmetric and positive definite.
+        Then there exists a unique solution $\vect x_*$ to~\eqref{eq:linear_system}
+        and, furthermore,
+        \[
+            \vect x_* \in \argmin_{\vect x \in \real^n} \left( \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x \right).
+        \]
+
+    \item
+        \textbf{(T/F)}
+        The Gauss--Seidel basic iterative method is convergent if and only if the matrix~$\mat A$ is strictly diagonally dominant.
+\end{enumerate}
+
+Until the end of the quiz, we consider the following scalar, nonlinear equation,
+where the function $f$ is \emph{twice continuously differentiable}:
+\begin{equation}
+    \label{eq:nonlinear}
+    f(x) = 0,
+    \qquad f\colon \real \to \real,
+    \qquad x \in \real.
+\end{equation}
+\begin{enumerate}
+    \item
+        \textbf{(T/F)}
+        If $f'(x) > 1$ for all $x \in \real$,
+        then there exists a unique solution to~\eqref{eq:nonlinear}.
+
+    \item
+        \textbf{(T/F)}
+        Suppose that $f'(x) > 1$ for all $x \in \real$
+        and that the following converges to some~$x_* \in \real$ when started from~$x_0 = 1$.
+        Then $f(x_*) = 0$.
+        \begin{equation}
+            \label{eq:newton-raphson}
+            x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}.
+        \end{equation}
+
+    \item
+        \textbf{(T/F)}
+        If $f(0) f(1) > 0$,
+        then there cannot exists a solution $x_* \in (0, 1)$ to~\eqref{eq:nonlinear}.
+
+    \item
+        \textbf{(2 marks)}
+        Suppose that iteration~\eqref{eq:newton-raphson} converges to some~$x_* \in \real$.
+        Prove that
+        \[
+            \lim_{k \to \infty} \left\lvert \frac{x_{k+1} - x_*}{x_{k} - x_*} \right\rvert = \left\lvert \frac{f''(x_*)}{2f'(x_*)} \right\rvert.
+        \]
+\end{enumerate}
+\end{document}
+
+
+

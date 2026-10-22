@@ -1,0 +1,339 @@
+\documentclass[10pt]{article}
+\usepackage{fontawesome}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[outputdir=build,newfloat]{minted}
+\usepackage{mdframed}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\theoremstyle{definition}
+\newtheorem{question}{{\normalfont \faGears}~Question}
+\newtheorem{compexercise}{{\normalfont \faLaptop}~Computer exercise}
+\theoremstyle{remark}
+\newtheorem*{protosolution}{Solution}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\setlist[enumerate]{font=\bfseries}
+\input{../../macros}
+
+
+\definecolor{lightgreen}{HTML}{f1faf8}
+\newenvironment{solutionframe}
+{%
+    \begin{mdframed}[
+        leftmargin=1cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightgreen,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
+\newenvironment{solution}
+{\pushQED{\qed}\renewcommand{\qedsymbol}{$\triangle$}
+\begin{solutionframe}\small \begin{protosolution}}
+{\popQED\end{protosolution}\end{solutionframe}}
+
+\begin{document}
+
+\title{Numerical Analysis: Midterm \\
+\small{(\textbf{40 marks})}}
+\author{Urbain Vaes}
+\maketitle
+
+\begin{question}
+    [Floating point arithmetic, \textbf{10 marks}]
+    True or false?
+    \begin{enumerate}
+        \item
+            Let $(\placeholder)_2$ denote binary representation.
+            It holds that
+            \(
+                (0.1011)_2 + (0.0101)_2 = 1.
+            \)
+
+        \item
+            Let $(\placeholder)_3$ denote base 3 representation.
+            It holds that
+            \(
+                (1000)_3 \times (0.002)_3 = 2.
+            \)
+
+        \item
+            A natural number with binary representation $(b_4 b_3 b_2 b_1 b_0)_2$ is even if and only if $b_0 = 0$.
+
+        \item
+            In Julia, \julia{Float64(.4) == Float32(.4)} evaluates to \julia{true}.
+
+        \item
+            Machine addition~$\madd$ is a commutative operation.
+            More precisely, given any two double-precision floating point numbers $x \in \floating_{64}$ and $y \in \floating_{64}$,
+            it holds that
+            \(
+                x \madd y = y \madd x.
+            \)
+
+        \item
+            Let $\floating_{32}$ and $\floating_{64}$ denote respectively the sets of single and double precision floating point numbers.
+            It holds that $\floating_{32} \subset \floating_{64}$.
+
+        \item
+            In Julia, \julia{eps(Float16)} returns the smallest strictly positive number that can be represented exactly in the \julia{Float16} format.
+
+        \item
+            Let $\floating_{64}$ be the set of double precision floating point numbers.
+            For any $x \in \real$ such that~$x \in \floating_{64}$,
+            it holds that $x + 1 \in \floating_{64}$.
+
+        \item
+            Let $x \in \real$ and $y \in \real$ be two numbers that are exactly representable in the \julia{Float64} format.
+            Then $x \madd y = x + y$: machine addition is exact in this case.
+
+        \item
+            It holds that $(0.\overline{2200})_3 = (0.9)_{10}$.
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation and approximation, \textbf{10 marks}]
+    Are the following assertions true or false?
+    Throughout this exercise, we use the notation
+    $x^n_i = i/n$.
+    The notation~$\poly(n)$ denotes the set of polynomials of degree less than or equal to~$n$.
+    We proved in class that,
+    for any function $u \colon \real \to \real$ and for all $n \in \nat_{>0}$,
+    there exists a unique polynomial~$p_n \in \poly(n)$ such that
+    \begin{equation}
+        \label{eq:interpolation}
+        \forall i \in \{0, \dotsc, n\}, \qquad
+        p_n(x^n_i) = u (x^n_i).
+    \end{equation}
+
+    \begin{enumerate}
+        \item
+            If $u$ is not the zero function,
+            then the degree of $p_n$ is exactly~$n$.
+
+        \item
+            If $u(x) = 2x + 1$,
+            then $p_n = u$ for all $n \in \{1, 2, 3, \dotsc\}$.
+
+        \item
+            Fix $u(x) = 1 + \sin(57\pi x)$. Then $p_3(x) = 1$.
+
+        \item
+            Fix $u(x) = (2x - 1)^3$.
+            Then $p_2(x) = 2x - 1$.
+
+        \item
+            Fix $n \in \nat_{>0}$ and suppose that $u\colon \real \to \real$ is a smooth function.
+            There exists a constant~$K > 0$ independent of~$x$ such that
+            \[
+                \forall x \in \real,
+                \qquad u(x) - p_n(x) = K \prod_{i=0}^{n} \left(x - x^n_i\right).
+            \]
+
+        \item
+            It holds that
+            \[
+                \forall x \in [0, 1], \qquad
+                \Bigl\lvert (x - x^n_0) \dotsc (x - x^n_n) \Bigr\rvert 
+                \leq n! \left(\frac{1}{n}\right)^{n+1}.
+            \]
+
+        \item
+            In Julia, assuming that $n$ and the function $u$ have already been defined,
+            the following code enables to calculate the interpolating polynomial~$p_n$ of $u$:
+            \begin{minted}{julia}
+    using Polynomials
+    # Assume `n=5` and `u` have already been defined
+    x = LinRange(0, 1, n + 1)
+    p = fit(x, u)
+            \end{minted}
+
+        \item
+            Let $\Delta$ denote the finite difference operator:
+            for a function $f \colon \real \to \real$,
+            the function $\Delta f \colon \real \to \real$ is defined as
+            \[
+                \Delta f(x) = f(x + 1) - f(x).
+            \]
+            Then $f \in \poly(n)$ if and only if $\Delta^{n+1} f = 0$.
+            Here $\Delta^{n+1}$ denotes the composition of $n+1$ applications of the operator~$\Delta$.
+
+        \item
+            In Julia, the following code enables to fit the data \julia{x} and \julia{y} by a straight line.
+            \begin{minted}{julia}
+    using Polynomials
+    x = [1, 2, 3, 4]
+    y = [16, 9, 4, 1]
+    p = fit(x, y, 1)
+            \end{minted}
+
+        \item
+            Using Chebyshev instead of equidistant points can improve on the quality of the interpolation.
+\end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Numerical integration, \textbf{10 marks}]
+    The Gauss--Legendre quadrature formula with~$n$ nodes is an approximate integration formula of the form
+    \begin{equation}
+        \label{gauss_legendre}
+        I(u) := \int_{-1}^{1} u(x) \, \d x \approx \sum_{i=1}^{n} w_i \, u(x_i) =: \widehat I_n(u),
+    \end{equation}
+    which is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+    (Note that the nodes are here numbered starting from 1.)
+
+    \begin{enumerate}
+        \item
+            \mymarks{5}
+            Find the nodes and weights of the Gauss--Legendre rule with $n=3$ nodes,
+            without using any formula (unless you prove it beforehand).
+
+            \textbf{Hint:}
+            Recall that a necessary and sufficient condition in order for~\eqref{gauss_legendre} to be satisfied for any polynomial~$p \in \poly(5)$ is that
+            \[
+                \int_{-1}^{1} x^d \, \d x= \sum_{i=1}^{n} w_i x_i^d,
+                \qquad \text{ for all $d \in \{0, 1, 2, 3, 4, 5\}$}.
+            \]
+            Furthermore, given the symmetry of the problem,
+            it is reasonable to look for a solution of the following form,
+            which enables to reduce the number of unknowns.
+            \[
+                (x_1, x_2, x_3, w_1, w_2, w_3)
+                = (-x, 0, x, w_1, w_2, w_1).
+            \]
+
+        \item \mymarks{5} Are the following assertions true of false :
+            \begin{itemize}
+                \item
+                    The degree of precision of the composite trapezium rule is~$2$.
+
+                \item
+                    The composite Simpson rule can be used to integrate exactly a quadratic polynomial.
+
+                \item
+                    The degree of precision of the following rule is~$1$:
+            \begin{minted}{julia}
+    function my_integrate(f, a, b)
+        x = LinRange(a, b, 100)
+        h = x[2] - x[1]
+        return h * sum(f, x[1:end-1])
+    end
+            \end{minted}
+
+                \item
+                    The degree of precision of the following integration rule is 2:
+                    \[
+                        \int_{-1}^{1} f(x) \, \d x \approx
+                        2 f(0) + \frac{1}{3} f''(0).
+                    \]
+
+                \item
+                    Suppose that $u \colon \real \to \real$ is a smooth function,
+                    and let $\widehat I_n(u)$ denote an approximation of
+                    the integral $I(u) := \int_{-1}^{1} u(x) \, \d x$
+                    by the composite trapezium approximation with $n$ points.
+                    Let
+                    \[
+                        \widehat J_n(u) = 2 \widehat I_{2n}(u) - \widehat I_n(u).
+                    \]
+                    It holds that
+                    \[
+                        \lim_{n \to \infty} n^2 \left\lvert I(u) - \widehat J_n(u) \right\rvert
+                        = 0.
+                    \]
+            \end{itemize}
+
+    \end{enumerate}
+\end{question}
+
+\begin{compexercise}
+    [Interpolation, \textbf{10 marks}]
+    Consider the following data:
+    \begin{table}[h!]
+        \centering
+        \begin{tabular}{|c|c|}
+            \hline
+            \textbf{Time (hours)} & \textbf{Temperature (°C)} \\
+            \hline
+            6  & 10.5 \\
+            \hline
+            9  & 15.0 \\
+            \hline
+            12 & 20.2 \\
+            \hline
+            15 & 25.1 \\
+            \hline
+            18 & 22.8 \\
+            \hline
+            21 & 17.4 \\
+            \hline
+        \end{tabular}
+        \caption{Recorded temperatures at different times of the day.}
+    \end{table}
+
+    We wish to approximate the temperature as a smooth function of time.
+    To this end, calculate the interpolating polynomial~$p_{\rm int}$, 
+    as well as the best quadratic polynomial approximation~$p_{\rm app}$ (in the sense that the sum of square errors is minimized).
+    You may use the \julia{Polynomials} library.
+    Plot on the same graph:
+    \begin{itemize}
+        \item The data points using \julia{scatter};
+        \item The polynomial $p_{\rm int}$ interpolating the data points;
+        \item The quadratic polynomial $p_{\rm app}$ that best approximates the data,
+            in the sense of least squares.
+    \end{itemize}
+\end{compexercise}
+
+\begin{compexercise}
+    [Numerical integration, \textbf{10 marks}]
+    Boole's integration rule reads
+    \[
+        \int_{-1}^{1} u(x) \, \d x
+        \approx \frac{7}{45} u(-1) + \frac{32}{45} u\left(-\frac{1}{2}\right) + \frac{12}{45} u\left(0\right) + \frac{32}{45} u\left(\frac{1}{2}\right) + \frac{7}{45} u(1).
+    \]
+    \begin{itemize}
+        \item
+            Write a function \julia{comp_boole(u, a, b, N)},
+            which returns an approximation of the integral
+            \[
+                I(u) = \int_{a}^{b} u(x) \, \d x
+            \]
+            obtained by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying Boole's rule within each cell.
+
+        \item
+            Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
+            Plot the evolution of the error for $N \in \{1, \dotsc, 200\}$.
+
+        \item
+            Estimate the order of convergence with respect to $N$, i.e.\ find~$\alpha$ such that
+            \[
+                \lvert \widehat I_{N} - I \rvert \propto C N^{-\alpha},
+            \]
+            where $I$ denotes the exact value of the integral
+            and $\widehat I_{N}$ denotes its approximation by the composite Boole's rule.
+            Use the method you prefer in order to find~$\alpha$.
+            You can, for example, 
+            use the function \julia{fit} from the \julia{Polynomials} package to find a linear approximation
+            of the form
+            \[
+                \log \lvert \widehat I_{N} - I \rvert \approx \log (C) - \alpha \log(N).
+            \]
+    \end{itemize}
+\end{compexercise}
+
+\end{document}

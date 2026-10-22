@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\newcommand{\julia}[1]{\mintinline{julia}{#1}}
+
+\begin{document}
+\begin{enumerate}
+
+    \item
+        The only polynomial of any degree such that $p(0) = 0$ and $p(1) = 1$ is the linear polynomial $p(x) = x$.
+
+    \item
+        Given $x_0 < x_1 < \dotsc < x_n \in \mathbb R$
+        and $y_0, y_1, \dotsc , y_n \in \mathbb R$,
+        which of the following assertions may be false?
+        \begin{itemize}[label=$\circ$]
+            \item
+                there exists a polynomial $p \in \mathcal P_{n+1}$ such that $p(x_i) = y_i$ for all $i \in \{0, 1, \dotsc, n\}$.
+            \item
+                there exists a unique polynomial $p \in \mathcal P_{n+1}$ such that $p(x_i) = y_i$ for all $i \in \{0, 1, \dotsc, n\}$.
+            \item
+                there exists a polynomial $p \in \mathcal P_{n}$ such that $p(x_i) = y_i$ for all $i \in \{0, 1, \dotsc, n\}$.
+            \item
+                there exists a unique polynomial $p \in \mathcal P_{n}$ such that $p(x_i) = y_i$ for all $i \in \{0, 1, \dotsc, n\}$.
+        \end{itemize}
+
+    \item
+        In interpolation, the choice of interpolating points does not affect the accuracy of the interpolation.
+
+    \item
+        In polynomial interpolation, using Chebyshev nodes can help reduce the interpolation error compared to using equidistant nodes.
+
+    \item
+        Gregory--Newton interpolation is well-suited for incremental interpolation.
+
+    \item
+        Suppose that $f \colon [-1, 1] \to \mathbb R$ is a smooth function,
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        Let $(f_0, f_1, f_2, f_3, \dotsc) = (1, 1, 2, 3, \dotsc)$ denote the Fibonacci sequence.
+        Does there exist a polynomial~$p$ such that
+        \[
+            \forall n \in \mathbb N, \qquad
+            f_n = p(n) \, ?
+        \]
+        \emph{%
+            Hint: If this is true, then there must be $d \in \mathbb N$ such that $(\Delta^d f)_i = 0$ for all $i$,
+            because application of the difference operator $\Delta$ to a polynomial decreases its degree by 1.
+        }
+
+    \item
+        In Julia, if \julia{A} is a matrix, then \julia{A[:, 1]} gives the first column of \julia{A}.
+
+    \item
+        In Julia, if \julia{A} is a matrix, then \julia{A[:, 2:end]} gives the full matrix \julia{A}.
+
+    \item
+        What is \julia{p} in the following code?
+        \begin{itemize}[label=$\circ$]
+            \item The interpolating polynomial.
+            \item The Lagrange polynomial associated with $x = 4$.
+            \item The Lagrange polynomial associated with $x = 8$.
+            \item None of the above.
+        \end{itemize}
+        \begin{minted}{julia}
+using Plots
+x = [2, 4, 6, 8, 10]
+p(z) = prod((z .- x[1:end .!== 4]) ./ (x[4] .- x[1:end .!== 4]))
+plot(p, xlims=(0, 12))
+scatter!(x, p)
+        \end{minted}
+\end{enumerate}
+\end{document}

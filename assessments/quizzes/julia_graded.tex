@@ -1,0 +1,237 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+% \usepackage[cache=true,outputdir=build]{minted}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % clear default
+\lhead{Name: } % student writes name
+\chead{Quiz 1 -- Introduction to Julia}   % quiz title
+\rhead{\today}
+
+% \DeclareUnicodeCharacter{3B8}{θ}
+% \DeclareUnicodeCharacter{3B4}{$\bm{\delta}$}
+% \DeclareUnicodeCharacter{3BB}{$\lambda$}
+% \DeclareUnicodeCharacter{3BC}{$\mu$}
+% \DeclareUnicodeCharacter{3BC}{$\pi$}
+% \DeclareUnicodeCharacter{3C3}{$\sigma$}
+% \DeclareUnicodeCharacter{3C0}{$\pi$}
+% \DeclareUnicodeCharacter{3D5}{$\bm{\phi}$}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+% \textbf{Your name:} \\[.5cm]
+
+% \begin{center}
+%     \Large{\bf\textsc{Quiz 0 (Introduction to Julia)}}
+% \end{center}
+
+True or false? (unless otherwise specified)
+
+\begin{enumerate}
+
+    \item
+        In the Julia REPL, the key \julia{;} enables to access \emph{package mode},
+        from where software libraries can be installed and uninstalled.
+
+    \item
+        In Julia, the first piece of code below (left) produces an error,
+        while the second (right) plots the sine function
+        (assuming that package \julia{Plots} is already installed).
+
+        \begin{minted}{julia}
+    import Pkg                using Plots
+    Pkg.add("Plots")          plot(sin)
+    plot(cos + sin)               
+        \end{minted}
+
+    \item
+        Complete the following code so that \julia{f(n)} returns the $n$-th element~$f_n$ of the Fibonacci sequence~$(f_1, f_2, f_3, \dotsc)$. 
+        Recall that, by definition, $f_1 = f_2 = 1$ and $f_{n} = f_{n-1} + f_{n-2}$ for $n \geq 3$.
+        \begin{minted}{julia}
+    f(n) = n in (1, 2) ? 1 : 
+        \end{minted}
+
+    \item
+        In Julia, the following boolean expression is \julia{true}:
+        \begin{minted}{julia}
+    sin([1.0, 2.0, 3.0]) == [sin(1.0), sin(2.0), sin(3.0)]
+        \end{minted}
+
+    \item
+        In the following code, the value of \julia{a} is 15.
+        (You may find it useful to read the documentation for the \julia{sum} function to answer this question.)
+
+        \begin{minted}{julia}
+    a = sum(n -> n^2 - 1, [1, 2, 3])
+        \end{minted}
+
+    \item
+        In Julia, the command \julia{[1, 2, 3] .* [1, 2, 3]} returns the array \julia{[1, 4, 9]}.
+
+    \item
+        In the following code,
+        the variable \julia{a} is an array (more precisely, a \julia{Vector}) containing~$\sqrt{34}$ and~$\sqrt{160}$.
+        \begin{minted}{julia}
+    hypotenuse(x, y) = sqrt(x^2 + y^2)
+    a = hypotenuse.([3, 5], [4, 12])
+        \end{minted}
+
+    \item
+        The following piece of code prints \julia{2}.
+
+        \begin{minted}{julia}
+    f(x::Float64) = 1
+    f(x::Int) = 2.0
+    @show f(f(1))
+        \end{minted}
+
+
+    \item
+        In a Jupyter notebook, the output displayed below a cell comes from the last expression evaluated in that cell. If that expression returns a value 
+        (like a number, a string or a plot object), Jupyter automatically displays it.
+
+    \item
+        The following program prints the value 15.
+
+        \begin{minted}{julia}
+    result = 0
+    for i in 1:5
+        result = result + i
+    end
+    println(result)
+        \end{minted}
+
+    \item 
+        In Julia, arrays are indexed starting from \julia{1}, not \julia{0}.
+ 
+    \item
+        In Julia, \julia{=} is the equality operator, while \julia{==} is the assignment operator.
+
+    \item
+        In Julia, a function can be defined using the syntax \julia{f(x) = x^2}
+
+    \item
+        \textbf{Bonus.} The following code produces an assertion error
+        \begin{minted}{julia}
+    v = [[1, 2, 3], [2, 3, 4], [4, 5, 6]]
+    sum.(v) == [6, 9, 15]
+        \end{minted}
+
+    % \item
+    %     What is the value of \julia{s} in the following piece of code?
+    %     \begin{minted}{julia}
+    % struct Wolf end; struct Dog end
+    % meet(a::Wolf, b::Wolf) = "Two wolves meet: they howl together."
+    % meet(a::Wolf, b::Dog) = "A wolf meets a dog: the wolf growls and the dog is scared."
+    % meet(a::Dog, b::Wolf) = meet(b, a)
+    % meet(a::Dog, b::Dog) = "Two dogs meet: they wag their tails."
+    % raksha, akela = Wolf(), Wolf()
+    % s = meet(raksha, akela)
+    %     \end{minted}
+
+    % \item
+    %     Assume from now on that \julia{A} is a matrix and \julia{b} is a vector,
+    %     which were created by the following commands
+    %     \begin{minted}{julia}
+    % A = randn(7, 7)
+    % b = randn(7)
+    %     \end{minted}
+
+    %     The command \julia{A[:, 3]} selects the third row of matrix~\julia{A}.
+
+    % \item
+    %     The command \julia{A[1:5, :]} returns the submatrix containing the first five \textbf{columns} of~\julia{A}.
+
+    % \item
+    %     The command \julia{A[1, :] + b} returns the sum of the first row of \julia{A} and the vector \julia{b}.
+
+    % \item
+    %     The command \julia{b[1:end .== 5]} returns the fifth element of \julia{b}.
+
+    % \item
+    %     The command \julia{b[b .> 0]} returns a vector containing all and only the positive elements of \julia{b}.
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\noindent Questions 1--13: 1 point for a correct answer, 0 otherwise.
+
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{False.}
+        The key \julia{]} gives access to \emph{package mode};
+        the key \julia{;} gives access to \emph{shell mode}.
+
+    \item \textbf{True.}
+        With \julia{import Pkg} and \julia{using Plots}, only the module
+        \julia{Pkg} is brought into scope by the first line, while
+        \julia{plot} is available after \julia{using Plots}.
+        Hence the first snippet raises an \julia{UndefVarError}
+        (and \julia{plot(cos + sin)} would fail even with \julia{plot}
+        loaded), while the second plots the sine function.
+
+    \item
+        The missing code is \julia{f(n - 1) + f(n - 2)}:
+        \begin{minted}{julia}
+    f(n) = n in (1, 2) ? 1 : f(n - 1) + f(n - 2)
+        \end{minted}
+
+    \item \textbf{True.}
+        \julia{sin} broadcast over an array applies \julia{sin}
+        elementwise, so both sides produce the same vector.
+
+    \item \textbf{False.}
+        The sum is $(1-1) + (4-1) + (9-1) = 0 + 3 + 8 = 11$, not 15.
+
+    \item \textbf{True.}
+        \julia{.*} multiplies the arrays elementwise, giving
+        \julia{[1*1, 2*2, 3*3] = [1, 4, 9]}.
+
+    \item \textbf{False.}
+        Broadcasting gives
+        \julia{[sqrt(3^2 + 4^2), sqrt(5^2 + 12^2)] = [sqrt(25), sqrt(169)] = [5, 13]}.
+
+    \item \textbf{False.}
+        \julia{f(1)} dispatches to the \julia{Int} method and returns
+        \julia{2.0}; \julia{f(2.0)} then dispatches to the \julia{Float64}
+        method and returns \julia{1}.
+        So the program prints \julia{1}, not \julia{2}.
+
+    \item \textbf{True.}
+        Jupyter displays the value of the last expression evaluated in a
+        cell, if that expression returns a value.
+
+    \item \textbf{True.}
+        The loop adds the integers $1 + 2 + 3 + 4 + 5 = 15$ and prints 15.
+
+    \item \textbf{True.}
+        Julia arrays are 1-indexed.
+
+    \item \textbf{False.}
+        \julia{==} is the equality operator and \julia{=} is the
+        assignment operator; the statement has them reversed.
+
+    \item \textbf{True.}
+        A short form function definition \julia{f(x) = x^2} is valid Julia.
+
+    \item \textbf{False.}
+        \julia{sum.(v)} broadcasts the sum over the outer vector and
+        equals \julia{[6, 9, 15]}, so the comparison in the snippet is
+        \julia{true} and no assertion error is produced.
+\end{enumerate}
+\fi
+
+\end{document}

@@ -1,0 +1,213 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+% \usepackage[cache=true,outputdir=build]{minted}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % clear default
+\lhead{Name: } % student writes name
+\chead{Quiz 2 -- Floating point arithmetic}   % quiz title
+\rhead{\today}
+
+% \DeclareUnicodeCharacter{3B8}{θ}
+% \DeclareUnicodeCharacter{3B4}{$\bm{\delta}$}
+% \DeclareUnicodeCharacter{3BB}{$\lambda$}
+% \DeclareUnicodeCharacter{3BC}{$\mu$}
+% \DeclareUnicodeCharacter{3BC}{$\pi$}
+% \DeclareUnicodeCharacter{3C3}{$\sigma$}
+% \DeclareUnicodeCharacter{3C0}{$\pi$}
+% \DeclareUnicodeCharacter{3D5}{$\bm{\phi}$}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+% \textbf{Your name:} \\[.5cm]
+
+% \begin{center}
+%     \Large{\bf\textsc{Quiz 0 (Introduction to Julia)}}
+% \end{center}
+
+True or false? (unless otherwise specified)
+
+\begin{enumerate}
+
+    \item
+        Let $(\placeholder)_2$ denote binary representation.
+        It holds that
+        \[
+            (0.1011)_2 + (0.0101)_2 = 1.
+        \]
+
+    \item
+        Let $(\placeholder)_7$ denote base 7 representation.
+        It holds that
+        \[
+            (1000)_7 \times (2)_7 = (2000)_7.
+        \]
+
+    \item
+        Let $p \in \nat$.
+        The set
+        \(
+            \bigl\{ (b_0. b_1 b_2 \dots b_{p-1})_2 \colon b_i \in \{0, 1\} \bigr\} \subset \real
+        \)
+        contains $2^{p}$ distinct real numbers.
+
+    \item
+        The machine epsilon of a floating point format is the smallest strictly positive number that can be represented exactly in the format.
+
+    \item
+        Let $\varepsilon$ denote the machine epsilon for the \julia{Float64} format.
+        Any $x \in \mathbf R$ such that $-\varepsilon < x < \varepsilon$
+        cannot be represented in the \julia{Float64} format.
+
+    \item
+        Machine multiplication is commutative,
+        meaning that $a \,{\widehat *}\, b = b \,{\widehat *}\, a$
+        for any \julia{Float64} point numbers~$a$ and~$b$.
+
+    \item
+        If \julia{x} is a \julia{Float16} and \julia{y} is a \julia{Float64} number,
+        then the result of \julia{x + y} is a \julia{Float64} number.
+
+    \item
+        The real number \julia{0.0} can be represented exactly in the \julia{Float32} format.
+
+    \item
+        It holds that
+        \[
+            (0.\overline{011})_2 = \frac{3}{4}.
+        \]
+
+    \item
+        In Julia, \julia{Float64(x) == Float32(x)} is \julia{true} if \julia{x} is a rational number.
+
+    \item
+        The value of the machine epsilon for \julia{Float64} format is the same as for the \julia{Float32} format.
+
+    \item
+        The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is always equal to the machine epsilon.
+
+    \item
+        \textbf{All} the natural numbers can be represented exactly in the double precision floating point format~\julia{Float64}.
+
+    \item
+        Machine addition in the \julia{Float64} format is associative but not commutative.
+
+    \item
+        In Julia, \julia{Float64(.4) == Float32(.4)} evaluates to \julia{true}.
+
+    \item
+        \textbf{(Bonus)}
+        In Julia \julia{10 + eps() == 1} evaluates to \julia{true}.
+
+        \emph{Explain briefly why:}
+        \vspace{2.5cm}
+
+    \item
+        \textbf{(Bonus)}
+         In Julia \julia{sqrt(1 + eps()) == 1 + eps()} evaluates to \julia{false}.
+
+        \emph{Explain briefly why:}
+         \vspace{2.5cm}
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{True.}
+        $(0.1011)_2 = 1/2 + 1/8 + 1/16 = 11/16 = 0.6875$ and
+        $(0.0101)_2 = 1/4 + 1/16 = 5/16 = 0.3125$, whose sum is 1.
+
+    \item \textbf{True.}
+        In base 7, multiplying by $(2)_7$ multiplies the value by 2:
+        $(1000)_7 = 7^3$, and $2 \cdot 7^3 = (2000)_7$.
+
+    \item \textbf{False.}
+        There are \emph{two} choices for $b_0$ in addition to the
+        $p$ fractional bits, so the set contains $2^{p+1}$ distinct real
+        numbers, not $2^p$.
+
+    \item \textbf{False.}
+        The machine epsilon is the distance between $1$ and the next
+        representable number. The smallest strictly positive number in the
+        format can be much smaller (a subnormal number).
+
+    \item \textbf{False.}
+        For example, the numbers in the subnormal range near $2^{-1074}$
+        are much smaller in magnitude than $\varepsilon \approx 10^{-16}$
+        and are all representable in the \julia{Float64} format.
+
+    \item \textbf{True.}
+        The rounding function is symmetric in its arguments, so machine
+        multiplication is commutative.
+
+    \item \textbf{True.}
+        \julia{Float16} and \julia{Float64} are promoted to
+        \julia{Float64} before the addition, so the result is a
+        \julia{Float64}.
+
+    \item \textbf{True.}
+        The number \julia{0.0} (with zero significand and any exponent) is
+        representable in every format, in particular in \julia{Float32}.
+
+    \item \textbf{False.}
+        Let $S = (0.\overline{011})_2$. The repeating block is $011$,
+        whose value is $3/8$, so
+        $S = (3/8) \cdot (1 + 1/8 + 1/64 + \dotsb) = (3/8)/(1 - 1/8) = 3/7$.
+        The number equals $3/7$, not $3/4$.
+
+    \item \textbf{False.}
+        Most rational numbers (e.g.\ $x = 0.1$) are not exactly
+        representable, and the nearest \julia{Float64} and \julia{Float32}
+        values generally differ.
+
+    \item \textbf{False.}
+        \julia{eps(Float64) = 2^{-52}} while
+        \julia{eps(Float32) = 2^{-23}}; the two values differ.
+
+    \item \textbf{False.}
+        The spacing between consecutive numbers grows with the exponent:
+        it equals $\varepsilon$ only near 1, and is smaller (or larger)
+        elsewhere.
+
+    \item \textbf{False.}
+        Integers larger than $2^{53}$ cannot all be represented exactly,
+        because the \julia{Float64} mantissa has only 53 bits.
+
+    \item \textbf{False.}
+        Machine addition in \julia{Float64} is commutative but \emph{not}
+        associative (rounding can make the two groupings differ).
+
+    \item \textbf{False.}
+        The decimal number $0.4$ is not exactly representable in binary,
+        and its nearest \julia{Float64} and \julia{Float32} values differ,
+        so the comparison evaluates to \julia{false}.
+
+    \item \textbf{False.}
+        \julia{eps()} is much smaller than 10, so \julia{10 + eps()}
+        rounds back to \julia{10.0}, which is not equal to 1.
+
+    \item \textbf{True.}
+        The true value of $\sqrt{1 + \varepsilon}$ lies just below the
+        midpoint $1 + \varepsilon/2$ between two consecutive representable
+        numbers (the spacing near 1 is $\varepsilon$), so it rounds
+        (by round-to-nearest-even) to \julia{1.0},
+        while \julia{1 + eps()} equals $1 + \varepsilon$.
+        Hence the two values differ and the comparison is \julia{false}.
+\end{enumerate}
+\fi
+
+\end{document}

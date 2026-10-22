@@ -1,0 +1,117 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+
+\begin{document}
+Throughout this quiz,
+we consider the following linear system for large~$n$:
+\begin{equation}
+    \label{eq:linear_system}
+    \mat A \vect x = \vect b,
+    \qquad \mat A \in \real^{n \times n},
+    \qquad \vect b \in \real^n.
+\end{equation}
+We assume throughout that \textbf{matrix $\mat A$ is symmetric and positive definite,}
+and we denote by~$\vect x_*$ the exact solution to the linear system~\eqref{eq:linear_system}.
+Are the following statements true or false?
+\begin{enumerate}
+
+    \item
+        The matrix~$\mat A$ is invertible.
+
+    \item
+        The matrix~$\mat A$ is diagonalizable.
+
+    \item
+        The eigenvalues of $\mat A$ are all strictly positive.
+
+    \item
+        The spectral radius~$\rho(\mat A)$ is strictly positive.
+
+    \item
+        There exists a unique lower triangular matrix $\mat C \in \real^{n \times n}$ such that $\mat A = \mat C \mat C^\t$.
+
+    \item
+        The condition number~$\kappa_2(\mat A)$ is less than or equal to the spectral radius~$\rho(A)$.
+
+    \item
+        Richardson's iterative method is convergent for $\omega = 0.01$.
+
+    \item
+        For a splitting $\mat A = \mat M - \mat N$
+        with~$\mat M$ an invertible matrix,
+        consider the iterative method
+        \begin{equation}
+            \label{eq:iterative}
+            \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b.
+        \end{equation}
+        Richardson's iteration is a particular case of this iterative method.
+
+    \item
+        If $\rho(\mat M^{-1} \mat N) < 1$, 
+        then the basic iterative method~\eqref{eq:iterative} is convergent.
+
+    \item
+        Let $\mat M_{\rm GS} - \mat N_{\rm GS}$ denote the Gauss--Seidel splitting.
+        The basic iterative method~\eqref{eq:iterative} is convergent for this splitting.
+
+    \item
+        If~$\mat M = \mat A$ and~$\mat N = 0$ in~\eqref{eq:iterative},
+        then the iterative method converges in just one iteration,
+        which however amounts to solving the initial problem~\eqref{eq:linear_system}.
+
+    \item
+        Assume that $\mat A$ is symmetric and positive definite.
+        Then $\vect x_*$ is a solution of~\eqref{eq:linear_system} \emph{if and only if}
+        $\vect x_*$ is a minimizer of the following convex function:
+        \[
+            f(\vect x) = \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x.
+        \]
+
+    \item
+        Let $\vect e^{(k)} = \vect x^{(k)} - \vect x_*$ and $\vect r^{(k)} = \mat A \vect x^{(k)} - \vect b$ denote the error and residual,
+        respectively.
+        Then
+        \[
+            \lVert \vect e^{(k)} \rVert 
+            \le
+             \norm{\mat A} \, \lVert \vect r^{(k)} \rVert
+        \]
+
+    \item
+        If the residual $\vect r^{(k)}$ is zero,
+        then so is the error~$\vect e^{(k)}$. 
+
+    \item
+        The following iterative method is convergent:
+        \begin{equation}
+            \label{eq:iterative}
+            \vect x^{(k+1)} = \vect x^{(k)} - \left( \frac{(\vect r^{(k)})^T \vect r^{(k)}}{(\vect r^{(k)})^T \mat A \vect r^{(k)}}\right)
+            \vect r^{(k)}.
+        \end{equation}
+
+    \item
+        In Julia, \julia{A[:, 3]} selects the third row of matrix~\julia{A}.
+
+    \item
+        In Julia, \julia{A[1:5, :]} returns the submatrix containing the first five rows of~\julia{A}.
+
+    \item
+        In Julia, \julia{A[1, :] + b} returns the sum of the first row of \julia{A} and the vector \julia{b}.
+
+    \item
+        In Julia, \julia{b[1:end .== 5]} returns the fifth element of \julia{b}.
+
+    \item
+        In Julia, \julia{b[b .> 0]} returns a vector containing all and only the positive elements of \julia{b}.
+\end{enumerate}
+\end{document}
+
+
+

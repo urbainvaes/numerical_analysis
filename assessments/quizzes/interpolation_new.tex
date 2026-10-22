@@ -1,0 +1,100 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 2 -- Interpolation}
+\rhead{\today}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified)
+
+\begin{enumerate}
+
+    \item
+        The only polynomial of any degree such that $p(-1) = 1$, $p(0) = 0$ and $p(1) = 1$ is the quadratic polynomial $p(x) = x^2$.
+
+    \item
+        Let $p \in \mathcal P_3$ be given by $p(x) = x^3 + 3x^2 - x + 1$ and let $q \in \mathcal P_2$ denote the polynomial interpolation of~$p$ at $x_0 = 0$, $x_1 = 1$ and $x_2 = 2$.
+        Then there exists a constant $C \neq 0$ such that error satisfies
+        \[
+            \forall x \in \mathbb R, \qquad
+            p(x) - q(x) = C (x-x_0) (x-x_1) (x-x_2)
+        \]
+
+    \item
+        Given $x_0 < x_1 < \dotsc < x_n \in \mathbb R$
+        and $y_0, y_1, \dotsc , y_n \in \mathbb R$,
+        there exist infinitely many polynomials~$p \in \mathcal P_{n+1}$ such that $p(x_i) = y_i$ for all $i \in \{0, 1, \dotsc, n\}$.
+
+    \item
+        In interpolation, the choice of interpolating points can have an influence on the interpolation error.
+
+    \item
+        Suppose that $f \colon [-1, 1] \to \mathbb R$ is given by $f(x) = e^x$,
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        There exists a polynomial~$p$ such that
+        \[
+            \forall n \in \mathbb N, \qquad
+            p(n) = 2^n \, .
+        \]
+        \emph{
+            Hint: Let $s(n) = 2^n$. If $s$ were a polynomial,
+            there would exist $\alpha \in \mathbb N$ such that $\Delta^{\alpha} s = 0$.
+        }
+
+    \item
+        In Julia, if \julia{A} is a matrix,
+        then \julia{A[:, 1:2]} gives the submatrix containing the first two rows of \julia{A}.
+
+    \item
+        In Julia, if \julia{A} is a matrix,
+        then \julia{A[1:end .!= 2, 1:end .!= 2]} gives the matrix obtained by removing the second column and the second row.
+
+    \item
+        In Julia, typing \julia{]} in a REPL (command line) enables to access package mode,
+        from which new packages can be installed.
+
+    \item
+        In the following code,
+        \julia{p} is the interpolating polynomial through the data in \julia{x} and \julia{y}.
+        \begin{minted}{julia}
+using Plots
+x = [0, 1, 2, 3]
+y = [1, 2, 1, 2]
+
+function p(x)
+    return (y[1]
+            + diff(y)[1] * x
+            + 1/2 * diff(diff(y))[1] * x * (x-1)
+            + 1/6 * diff(diff(diff(y)))[1] * x * (x-1) * (x-2))
+end
+
+plot(p, xlims=(0, 5))
+scatter!(x, y)
+        \end{minted}
+
+    \item \textbf{Bonus}: Obtain an explicit expression for $S(N) := \sum_{n=0}^{N} n^3$ by Gregory--Newton interpolation.
+\end{enumerate}
+
+\end{document}

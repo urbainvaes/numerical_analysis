@@ -1,0 +1,212 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{fancyhdr}
+\newcommand{\julia}[1]{\mintinline{julia}{#1}}
+\setminted{fontsize=\small,autogobble}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\ifdefined\showsolutions\lhead{Instructor copy}\fi
+\chead{Graded quiz 2 -- Introduction to Julia}
+\rhead{\today}
+\cfoot{\thepage}
+
+\usepackage{xcolor}
+\newcommand{\answer}[1]{%
+    \ifdefined\showsolutions
+        \par\smallskip
+        {\small\color{blue!60!black}#1\par}
+    \fi
+}
+% Box in the answer grid, ticked in the solutions when the argument is 1.
+\newcommand{\gridbox}[1]{%
+    \ifdefined\showsolutions
+        \ifnum#1=1 {\color{blue!60!black}$\boxtimes$}\else$\square$\fi
+    \else
+        $\square$%
+    \fi
+}
+
+\begin{document}
+
+True or false? (unless otherwise specified.)
+Assume any explicitly named package is installed.
+An expression that raises an error does not evaluate to \julia{true}.
+\ifdefined\showsolutions
+{\small\color{blue!60!black}Questions 1--15: 1 point for a correct answer, 0 otherwise.\par}
+\fi
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{15}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\
+        \hline
+        True  & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} \\
+        False & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}[itemsep=8pt]
+    \item
+        The expression \julia{"ab" * "cd" * "!"} returns the string \julia{"abcd!"}.
+        \answer{\textbf{True.}
+        \julia{*} concatenates strings.
+        The result is \julia{"abcd!"}.}
+
+    \item
+        The following code produces a single plot containing both curves,
+        rather than replacing the first curve with the second.
+        \begin{minted}{julia}
+            using Plots
+            plot(x -> x^2, xlims=(-1, 1), label="square")
+            plot!(x -> x^3, label="cube")
+        \end{minted}
+        \answer{\textbf{True.}
+        \julia{plot!} adds a series to the current plot,
+        which already contains the square function.}
+
+    \item
+        The expression \julia{eps()/2 + eps()/2 == eps()} evaluates to \julia{true}.
+        \answer{\textbf{True.}
+        For \julia{Float64}, \julia{eps()} is $2^{-52}$
+        and \julia{eps()/2} is $2^{-53}$. Both are exactly representable,
+        and adding the two halves gives \julia{eps()} exactly.}
+
+    \item
+        The expression \julia{typeof(1 + 2.0) == Float64} evaluates to \julia{true}.
+        \answer{\textbf{True.}
+        The integer is promoted for this addition;
+        the result is \julia{3.0}, of type \julia{Float64}.}
+
+    \item
+        If \julia{u = [1, 2]} and \julia{v = [3, 4]}, then \julia{[u v]}
+        returns the matrix \julia{[1 2; 3 4]}.
+        \answer{\textbf{False.}
+        Horizontal concatenation places \julia{u} and
+        \julia{v} in the columns, giving \julia{[1 3; 2 4]}.}
+
+    \item
+        If \julia{A = [1 2 3; 4 5 6]}, then \julia{A[2, 3]} returns \julia{6}.
+        \answer{\textbf{True.}
+        The first index selects the row and the second
+        selects the column. The entry in row 2, column 3 is 6.}
+
+    \item
+        The following code assigns the vector \julia{[2, 5]} to \julia{w}.
+        \begin{minted}{julia}
+            v = [-3, 2, 0, 5, -1]
+            w = v[v .> 0]
+        \end{minted}
+        \answer{\textbf{True.}
+        The mask selects the strictly positive entries,
+        giving \julia{[2, 5]}.}
+
+    \item
+        The following code assigns the vector \julia{[1, 3, 5]} to \julia{a}.
+        \begin{minted}{julia}
+            f(x, y) = x - 2y
+            a = f.([3, 5, 7], 1)
+        \end{minted}
+        \answer{\textbf{True.}
+        The scalar second argument is used in each call:
+        \julia{f(3, 1)}, \julia{f(5, 1)}, and \julia{f(7, 1)}.}
+
+    \item
+        The expression \julia{sum(length, ["Julia", "is", "fun"])} returns \julia{3}.
+        \answer{\textbf{False.}
+        The expression sums the string lengths,
+        giving $5+2+3=10$, rather than counting the strings.}
+
+    \item
+        The command \julia{A = [i + 2j for i in 1:2, j in 1:3]}
+        produces the matrix \julia{A = [3 5 7; 4 6 8]}.
+        \answer{\textbf{True.}
+        Evaluating \julia{i + 2j} for each row index
+        \julia{i} and column index \julia{j} gives \julia{[3 5 7; 4 6 8]}.}
+
+    \item
+        After the following definitions, \julia{f(f(1))} returns \julia{2.0}.
+        \begin{minted}{julia}
+            f(x::Float64) = 1
+            f(x::Int) = 2.0
+        \end{minted}
+        \answer{\textbf{False.}
+        The inner call \julia{f(1)} returns \julia{2.0}.
+        The outer call therefore uses the \julia{Float64} method and returns \julia{1}.}
+\end{enumerate}
+
+\newpage
+\begin{enumerate}[resume,itemsep=8pt]
+    \item
+        The call \julia{odd_sum(5)} returns \julia{9}.
+        \begin{minted}{julia}
+            function odd_sum(n)
+                s = 0
+                for k in 1:n
+                    if isodd(k)
+                        s += k
+                    end
+                end
+                return s
+            end
+        \end{minted}
+        \answer{\textbf{True.}
+        The accumulator adds the odd integers $1+3+5=9$.}
+
+    \item
+        The expression \julia{LinRange(0, 1, 4) == [0, 0.2, 0.4, 0.6, 0.8, 1]}
+        evaluates to \julia{true}.
+        \answer{\textbf{False.}
+        \julia{LinRange(0, 1, 4)} has four equally spaced
+        entries, including both endpoints.
+        The vector in the question has six entries instead.}
+
+    \item
+        With the following definition, the expression \julia{f(n)} returns
+        the $n$-th Fibonacci number for positive integers~$n$
+        (assuming no integer overflow).
+        Recall that the Fibonacci numbers are defined as
+        $f_1=f_2=1$ and $f_k=f_{k-1}+f_{k-2}$ for $k\geq3$.
+        \begin{minted}{julia}
+            f(n) = n <= 2 ? 1 : f(n-1) + f(n-2)
+        \end{minted}
+        \answer{\textbf{True.}
+        The ternary expression returns 1 for the base cases
+        $n=1$ and $n=2$. For $n\geq3$, the recursive calls implement
+        the Fibonacci recurrence $f_n=f_{n-1}+f_{n-2}$.}
+
+    \item
+        If \julia{v = [2, 4, 6, 8]}, then \julia{v[2:end] == [2, 4, 6]} evaluates to \julia{true}.
+        \answer{\textbf{False.}
+        \julia{end} denotes the last index, which is 4.
+        The slice selects entries 2 through 4, giving \julia{[4, 6, 8]}.}
+\end{enumerate}
+
+\noindent\textbf{Bonus (2 points).}
+Give the values of \julia{a} and \julia{b} after the following code,
+and briefly explain why the results differ.
+\begin{minted}{julia}
+    v = [[1, 2, 3], [2, 3, 4], [4, 5, 6]]
+    a = sum.(v)
+    b = sum(v)
+\end{minted}
+\noindent\textit{Answer and explanation:}
+\ifdefined\showsolutions\else\vspace{2cm}\fi
+\answer{\julia{a = [6, 9, 15]} and \julia{b = [7, 10, 13]}.
+The broadcast \julia{sum.(v)} applies \julia{sum} to each inner vector
+independently, returning the vector of the sums $6$, $9$ and $15$.
+In contrast, \julia{sum(v)} adds the three vectors together with the
+\julia{+} operator, i.e.\ \julia{[1,2,3] + [2,3,4] + [4,5,6]},
+yielding the single vector \julia{[7, 10, 13]}.
+Award 0.5 points for each correct final value and 0.5 points for each
+correct explanation (elementwise sum versus vector addition).}
+\end{document}

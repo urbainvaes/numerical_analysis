@@ -1,0 +1,244 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\ifdefined\showsolutions\lhead{Instructor copy}\fi
+\chead{Graded quiz 4 -- Numerical integration}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+\usepackage{xcolor}
+\newcommand{\answer}[1]{%
+    \ifdefined\showsolutions
+        \par\smallskip
+        {\small\color{blue!60!black}#1\par}
+    \fi
+}
+% Box in the answer grid, ticked in the solutions when the argument is 1.
+\newcommand{\gridbox}[1]{%
+    \ifdefined\showsolutions
+        \ifnum#1=1 {\color{blue!60!black}$\boxtimes$}\else$\square$\fi
+    \else
+        $\square$%
+    \fi
+}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified.)
+\ifdefined\showsolutions
+{\small\color{blue!60!black}Questions 1--15: 1 point for a correct answer, 0 otherwise.\par}
+\fi
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+
+    \smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{16}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & B \\
+        \hline
+        True  & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} \\
+        False & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 3:
+        \begin{equation}
+            \label{eq:two_point_rule}
+            \int_{-1}^{1} f(x) \, \d x \approx f\left(-\frac{1}{3}\right) + f\left(\frac{1}{3}\right)\,.
+        \end{equation}
+        \answer{\textbf{False.}
+        The rule is exact for $1$, $x$ and $x^3$ by symmetry, but for $x^2$ it gives $\frac{2}{9} \neq \frac{2}{3}$.
+        Its degree of precision is $1$.}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 1:
+        \[
+            \int_{-1}^{1} f(x) \, \d x \approx 2 f(0) - f(-1) + f(1)\,.
+        \]
+        \answer{\textbf{False.}
+        For $f(x) = x$ the rule gives $2 \cdot 0 + 1 + 1 = 2$, whereas the integral is $0$.
+        The degree of precision is $0$.}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following rule is 5:
+        \[
+            \int_{-1}^1 f(x) \, \d x \approx 2f(0) + \frac{1}{3} f''(0) + \frac{1}{60} f^{(4)}(0)\,.
+        \]
+        \answer{\textbf{True.}
+        By symmetry the rule is exact for odd monomials.
+        It is exact for $1$ ($2$), for $x^2$ ($\frac{1}{3} \cdot 2 = \frac{2}{3}$) and for $x^4$ ($\frac{1}{60} \cdot 24 = \frac{2}{5}$).
+        It is not exact for $x^6$, for which it gives $0$ instead of $\frac{2}{7}$, so the degree of precision is exactly $5$.}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 3:
+        \[
+            \int_{-1}^{1} f(x) \, \d x \approx \frac{4}{3} f\left(-\frac{1}{2}\right) - \frac{2}{3} f(0) + \frac{4}{3} f\left(\frac{1}{2}\right)\,.
+        \]
+        \answer{\textbf{True.}
+        The rule is exact for $1$ ($\frac{4}{3} - \frac{2}{3} + \frac{4}{3} = 2$) and for $x^2$ ($\frac{4}{3} \cdot \frac{1}{4} \cdot 2 = \frac{2}{3}$),
+        and by symmetry for $x$ and $x^3$.
+        It is not exact for $x^4$: it gives $\frac{1}{6}$ instead of $\frac{2}{5}$.}
+
+    \item
+        \textbf{Degree of precision.}
+        For any natural number $N > 0$ and distinct nodes $x_0 < \dotsc < x_N$,
+        there exist weights $w_0, \dotsc, w_N$ such that the quadrature rule
+        \[
+            \int_{-1}^{1} u(x) \, \d x \approx \sum_{n=0}^{N} w_n u(x_n)
+        \]
+        has a degree of precision at least equal to $N$.
+        \answer{\textbf{True.}
+        Take $w_n = \int_{-1}^1 \ell_n(x) \, \d x$, where $\ell_n$ are the Lagrange polynomials.
+        The rule then integrates exactly the interpolant of $u$, which is equal to $u$ for every $u \in \mathcal P_N$.}
+
+    \item
+        \textbf{Degree of precision.}
+        The closed Newton--Cotes rule with 3 equally spaced points (Simpson's rule) is exact for all polynomials of degree up to 3.
+        \answer{\textbf{True.}
+        Simpson's rule is exact for quadratics by construction and, by symmetry, also for $x^3$.}
+
+    \item
+        \textbf{Composite quadrature.}
+        Simpson's composite integration rule is exact for every polynomial~$f$, whatever its degree.
+        \answer{\textbf{False.}
+        The composite rule is exact only for polynomials of degree at most $3$.
+        For instance, it is not exact for $x^4$.}
+
+    \item
+        \textbf{Composite quadrature.}
+        With $h = \frac{b-a}{n}$ and $x_i = a + ih$, the following formula is the composite version, with $n$ cells, of the quadrature rule~\eqref{eq:two_point_rule}:
+        \begin{equation}
+            \label{eq:composite_two_point}
+            \int_a^b f(x) \, \d x \approx \frac{h}{2} \sum_{i=0}^{n-1} \left( f\left(x_i + \frac{h}{3}\right) + f\left(x_i + \frac{2h}{3}\right) \right)\,.
+        \end{equation}
+        \answer{\textbf{True.}
+        Mapping $[-1, 1]$ to the cell $[x_i, x_{i+1}]$ sends the nodes $\pm\frac{1}{3}$ to $x_i + \frac{h}{2} \pm \frac{h}{6}$, that is, to $x_i + \frac{h}{3}$ and $x_i + \frac{2h}{3}$,
+        and the weights $1$ become $\frac{h}{2}$.}
+
+    \item
+        \textbf{Convergence estimate.}
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezoidal rule
+        with $n+1$ equidistant integration points.
+        Then there exists~$C \in (0, \infty)$ such that
+        \[
+             \forall n \in \{1, 2, \dotsc \}\,, \qquad
+             \Bigl\lvert I[f] - I_n[f] \Bigr\rvert \leq \frac{C}{n^2}\,, \qquad I[f] := \int_{a}^{b} f(x) \, \d x\,.
+        \]
+        \answer{\textbf{True.}
+        The error is bounded by $\frac{(b-a)^3}{12} \frac{\max\lvert f''\rvert}{n^2}$.}
+
+    \item
+        \textbf{Convergence estimate.}
+        With the notation of the previous item, it holds for every $f \in C^{\infty}[a, b]$ that
+        \[
+             \lim_{n \to \infty} n^2 \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0\,.
+        \]
+        \answer{\textbf{False.}
+        The order $2$ is sharp in general.
+        For $f(x) = x^2$ on $[0, 1]$ the error is exactly $\frac{1}{6 n^2}$, so $n^2 \lvert I[f] - I_n[f] \rvert = \frac{1}{6}$ for all $n$.}
+
+    \item
+        \textbf{Convergence estimate.}
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite Simpson rule
+        with $n+1$ equidistant integration points, $n$ even.
+        Then it holds that
+        \[
+            \lim_{n \to \infty} n^2 \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0\,.
+        \]
+        \answer{\textbf{True.}
+        For $f \in C^4$ the error of the composite Simpson rule is $O(n^{-4})$, so $n^2 \lvert I[f] - I_n[f] \rvert = O(n^{-2}) \to 0$.}
+
+    \item
+        \textbf{Convergence estimate.}
+        Let $u(x) = (1 + 25 x^2)^{-1}$ and let
+        \[
+            I^T_N = \frac{1}{2N} \Bigl( u(x_0) + 2 u(x_1) + \dotsb + 2 u(x_{N-1}) + u(x_N) \Bigr)\,, \qquad x_i = \frac{i}{N}\,,
+        \]
+        be the composite trapezoidal approximation of $\int_0^1 u(x) \, \d x$.
+        Then $I^T_N$ diverges in the limit $N \to \infty$.
+        \answer{\textbf{False.}
+        The function is continuous, hence Riemann integrable, and $I^T_N$ is a Riemann sum that converges to the integral.}
+
+    \item
+        \textbf{Convergence estimate.}
+        Let $I_n[f]$ denote the right-hand side of the composite formula~\eqref{eq:composite_two_point}, with $n$ cells.
+        Then for every $f \in C^{\infty}[a, b]$ it holds that
+        \[
+            \lim_{n \to \infty} n^3 \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0, \qquad I[f] := \int_{a}^{b} f(x) \, \d x\,.
+        \]
+        \answer{\textbf{False.}
+        The rule has degree of precision $1$, so the error is of order $h^2 = O(n^{-2})$, and this is sharp.
+        For $f(x) = x^2$ on $[0, 1]$, each cell contributes an error $\frac{h^3}{18}$, so $\lvert I[f] - I_n[f] \rvert = \frac{1}{18 n^2}$
+        and $n^3 \lvert I[f] - I_n[f] \rvert = \frac{n}{18} \to \infty$.}
+
+    \item
+        \textbf{Julia.}
+        The following code implements the composite version, with $n$ cells, of the quadrature rule~\eqref{eq:two_point_rule}:
+        \begin{minted}{julia}
+function I_approx(f, a, b, n)
+    x = LinRange(a, b, n + 1)
+    h = (b - a) / n
+    m = x[1:n] .+ h/2
+    return h/2 * sum(f, m .- h/6) + h/2 * sum(f, m .+ h/6)
+end
+        \end{minted}
+        \answer{\textbf{True.}
+        On the cell with midpoint $m$ and width $h$, the change of variable $x = m + \frac{h}{2} t$ maps the rule on $[-1, 1]$ to
+        $\frac{h}{2} \bigl( f(m - \frac{h}{6}) + f(m + \frac{h}{6}) \bigr)$.
+        The code sums this over the $n$ cells, with midpoints \julia{m}.}
+
+    \item
+        \textbf{Julia.}
+        The following code correctly implements the composite Simpson rule with $n$ cells, where $n$ is even:
+        \begin{minted}{julia}
+function I_approx(f, a, b, n)
+    x = LinRange(a, b, n + 1)
+    h = (b - a) / n
+    return h/3 * (f(x[1]) + 2sum(f, x[2:2:end-1])
+                  + 4sum(f, x[3:2:end-2]) + f(x[end]))
+end
+        \end{minted}
+        \answer{\textbf{False.}
+        The weights are swapped.
+        In Julia, \julia{x[2:2:end-1]} are the nodes $x_1, x_3, \dotsc, x_{n-1}$ (in the 0-based numbering of the notes), which must get weight $\frac{4h}{3}$,
+        whereas \julia{x[3:2:end-2]} are $x_2, x_4, \dotsc, x_{n-2}$, which must get weight $\frac{2h}{3}$.
+        Here it is the opposite.}
+
+    \item \textbf{Bonus.}
+        There exist nodes $x_1, x_2, x_3$ and weights $w_1, w_2, w_3$ such that the rule
+        \[
+            \int_{-1}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2) + w_3 u(x_3)
+        \]
+        has a degree of precision equal to $12$.
+        \emph{Justify briefly.}
+        \answer{\textbf{False.}
+        Suppose the degree of precision were $12$ (in particular at least $6$) and set $q(x) = (x - x_1)^2 (x - x_2)^2 (x - x_3)^2 \in \mathcal P_6$.
+        Then the rule gives $0$ while $\int_{-1}^1 q \, \d x > 0$, a contradiction.
+        In general, $n$ nodes yield a degree of precision at most $2n - 1$, here $5$.}
+\end{enumerate}
+
+\end{document}

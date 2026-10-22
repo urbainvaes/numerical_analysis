@@ -1,0 +1,270 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 5 -- Integration (practice quiz 2)}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified.)
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+
+    \smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{16}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & B \\
+        \hline
+        True  & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+        False & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of the following quadrature rule is 3:
+        \[
+            \int_0^1 f(x) \, \d x \approx \frac{f(0) + f(1)}{2} - \frac{f'(1) - f'(0)}{12}\,.
+        \]
+
+    \item
+        \textbf{Degree of precision.}
+        The degree of precision of Simpson's $3/8$ rule,
+        \[
+            \int_0^3 f(x) \, \d x \approx \frac{3}{8} \Bigl( f(0) + 3 f(1) + 3 f(2) + f(3) \Bigr),
+        \]
+        is equal to 4.
+
+    \item
+        \textbf{Degree of precision.}
+        If the quadrature rule
+        \[
+            \int_{-1}^{1} f(x) \, \d x \approx \sum_{i=1}^{n} w_i f(x_i)
+        \]
+        has degree of precision at least $0$, then $w_1 + \dotsb + w_n = 2$.
+
+    \item
+        \textbf{Composite quadrature.}
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximation of the integral $I[f] \coloneq \int_a^b f(x) \, \d x$
+        obtained with the composite midpoint rule with $n$ cells, that is
+        \[
+            I_n[f] = h \sum_{i=0}^{n-1} f\left(x_i + \frac{h}{2}\right), \qquad h = \frac{b-a}{n}, \qquad x_i = a + i h\,.
+        \]
+        Then there exists a constant~$C \in (0, \infty)$ such that
+        \[
+            \forall n \in \{1, 2, \dotsc\}, \qquad \Bigl\lvert I[f] - I_n[f] \Bigr\rvert \leq \frac{C}{n^2}\,.
+        \]
+        \emph{Hint:} Compute the degree of precision of the midpoint rule $\int_{-1}^{1} f(x) \, \d x \approx 2 f(0)$,
+        and use the theorem relating the degree of precision of a quadrature rule to the order of convergence, with respect to~$h$, of the associated composite rule.
+
+    \item
+        \textbf{Composite quadrature.}
+        With the notation of the previous item, it holds that $I_n[f] = I[f]$ for all $n \geq 1$
+        whenever $f$ is a polynomial of degree at most 2.
+
+    \item
+        \textbf{Composite quadrature.}
+        Let $f \in C^{\infty}[a, b]$.
+        For large $n$, doubling the number of cells in the composite Simpson rule
+        reduces the error by approximately a factor $8$.
+
+    \item
+        \textbf{Composite quadrature.}
+        Let $f \colon [a, b] \to \mathbb R$ be a convex function,
+        and let $T_n$ denote the composite trapezoidal approximation of $\int_a^b f(x) \, \d x$ with $n$ cells.
+        Then $T_n \geq \int_a^b f(x) \, \d x$ for all $n \geq 1$.
+
+    \item
+        \textbf{Convergence estimate.}
+        Let $f \colon [0, 2] \to \mathbb R$ be the discontinuous function
+        \[
+            f(x) =
+            \begin{cases}
+                0 & \text{if } x < \sqrt{2}, \\
+                1 & \text{if } x \geq \sqrt{2},
+            \end{cases}
+        \]
+        and let $T_n$ denote the composite trapezoidal approximation of $\int_0^2 f(x) \, \d x$ with $n$ cells.
+        Then there exists~$C$ such that $\lvert \int_0^2 f(x) \, \d x - T_n \rvert \leq C / n^2$ for all $n \geq 1$.
+
+    \item
+        \textbf{Gaussian integration.}
+        The two-point Gauss--Legendre rule on $[-1, 1]$ has nodes $\pm 1/\sqrt{3}$ and both weights equal to $1$.
+
+    \item
+        \textbf{Gaussian integration.}
+        All the weights of the $n$-point Gauss--Legendre rule are positive.
+
+    \item
+        \textbf{Gaussian integration.}
+        The $n$-point Gauss--Legendre rule is exact for all polynomials of degree up to~$2n$.
+
+    \item
+        \textbf{Richardson extrapolation.}
+        Let $T(h)$ be the composite trapezoidal approximation of $\int_a^b f(x) \, \d x$ with step size $h$.
+        Then the approximation
+        \[
+            \frac{4 T(h) - T(2h)}{3}
+        \]
+        coincides with the composite Simpson approximation with step size $h$.
+
+    \item
+        \textbf{Gaussian integration.}
+        There exist nodes $x_1, x_2$ and weights $w_1, w_2$ such that the rule
+        \[
+            \int_{-1}^{1} u(x) \, \d x \approx w_1 u(x_1) + w_2 u(x_2)
+        \]
+        has a degree of precision equal to $3$.
+
+    \item
+        \textbf{Richardson extrapolation.}
+        Let $f \in C^{\infty}[a, b]$ and let $S(h)$ denote the composite Simpson approximation of $\int_a^b f(x) \, \d x$ with step size $h$.
+        Assuming that $S(h) = I + c_4 h^4 + c_6 h^6 + O(h^8)$, it holds that
+        \[
+            \frac{16 S(h) - S(2h)}{15} = I + O(h^6)\,.
+        \]
+
+    \item
+        \textbf{Julia.}
+        In the following code, \texttt{R(f, a, b, n)} returns the composite Simpson approximation of $\int_a^b f(x) \, \d x$ with $2n$ cells:
+        \begin{minted}{julia}
+function T(f, a, b, n)
+    x = LinRange(a, b, n + 1)
+    h = (b - a) / n
+    return h * (sum(f, x[2:end-1]) + (f(a) + f(b)) / 2)
+end
+
+R(f, a, b, n) = 2T(f, a, b, 2n) - T(f, a, b, n)
+        \end{minted}
+
+    \item \textbf{Bonus.}
+        Let $f \in C^{\infty}(\mathbb R)$ and $x \in \mathbb R$ be such that $f''(x) \neq 0$,
+        and let $D(h)$ denote the forward finite difference approximation of $f'(x)$:
+        \[
+            D(h) = \frac{f(x + h) - f(x)}{h}\,.
+        \]
+        Then the approximation
+        \[
+            \frac{D(h) + D(2h)}{2}
+        \]
+        satisfies $\left\lvert \frac{D(h) + D(2h)}{2} - f'(x) \right\rvert = O(h^2)$ as $h \to 0$.
+        \emph{Justify briefly.}
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\noindent Questions 1--15: 1 point for a correct answer, 0 otherwise.
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{True.}
+        The rule is exact for $1$, $x$, $x^2$ and $x^3$:
+        the right-hand sides are $1$, $\frac12$, $\frac12 - \frac{2}{12} = \frac13$ and $\frac12 - \frac{3}{12} = \frac14$.
+        For $x^4$ it gives $\frac12 - \frac{4}{12} = \frac16 \neq \frac15$.
+        (This is the trapezoidal rule with the first Euler--Maclaurin correction.)
+
+    \item \textbf{False.}
+        The rule is exact for polynomials of degree up to $3$ but not for $x^4$:
+        $\int_0^3 x^4 \, \d x = \frac{243}{5} = 48.6$, whereas the rule gives $\frac{3}{8} \cdot 132 = 49.5$.
+        The degree of precision is $3$.
+
+    \item \textbf{True.}
+        Degree of precision at least $0$ means that the rule is exact for $f = 1$,
+        that is $\sum_{i=1}^n w_i = \int_{-1}^1 1 \, \d x = 2$.
+
+    \item \textbf{True.}
+        The midpoint rule $2 f(0)$ is exact for $1$ and, by symmetry, for $x$, but not for $x^2$ (it gives $0 \neq \frac{2}{3}$),
+        so its degree of precision is $d = 1$.
+        The composite rule therefore converges with order $d + 1 = 2$:
+        the error on each cell is $O(h^{3})$, and summing over the $n$ cells gives an error $O(h^2) = O(n^{-2})$.
+        More precisely, the error is bounded by $\frac{(b-a)^3}{24} \frac{\max \lvert f'' \rvert}{n^2}$.
+
+    \item \textbf{False.}
+        The midpoint rule has degree of precision $1$, so the composite rule is exact for polynomials of degree at most~$1$, but not for $x^2$.
+        For instance, with $f(x) = x^2$ on $[0, 1]$ and $n = 1$, the rule gives $f(\frac12) = \frac14 \neq \frac13$.
+
+    \item \textbf{False.}
+        The error behaves like $C h^4 = C' n^{-4}$, so doubling $n$ reduces it by a factor of about $2^4 = 16$.
+
+    \item \textbf{True.}
+        On each cell, the trapezoidal rule integrates the linear interpolant of $f$, that is, the chord joining the endpoints of the graph.
+        Since $f$ is convex, this chord lies above the graph of $f$, so the approximation on each cell is greater than or equal to the exact integral.
+
+    \item \textbf{False.}
+        The error estimate in $C/n^2$ requires $f \in C^2$, which is not the case here.
+        Let $h = \frac{2}{n}$. Since $\sqrt{2}$ is irrational, it is never a node, and it lies in exactly one cell $[x_k, x_{k+1}]$.
+        On all the other cells $f$ is constant and the rule is exact.
+        On the cell containing $\sqrt{2}$, the exact integral is $x_{k+1} - \sqrt{2} \in (0, h)$ while the rule gives $\frac{h}{2}$.
+        The error is therefore $\bigl\lvert \frac{h}{2} - (x_{k+1} - \sqrt{2}) \bigr\rvert \leq \frac{h}{2} = \frac{1}{n}$,
+        and it is of order $\frac{1}{n}$ for many values of $n$:
+        whenever $\sqrt{2}$ lies in the first or last quarter of its cell, the error is at least $\frac{h}{4} = \frac{1}{2n}$, which is not $O(n^{-2})$.
+
+    \item \textbf{True.}
+        These are the roots of the Legendre polynomial $P_2(x) = \frac{1}{2}(3x^2 - 1)$.
+        Exactness for $1$ gives $w_1 + w_2 = 2$, and symmetry gives $w_1 = w_2 = 1$.
+
+    \item \textbf{True.}
+        The weights are $w_i = \int_{-1}^1 \ell_i(x)^2 \, \d x > 0$, since $\ell_i^2 \in \mathcal P_{2n-2}$ is integrated exactly and $\ell_i(x_j) = \delta_{ij}$.
+
+    \item \textbf{False.}
+        The degree of precision of the $n$-point Gauss--Legendre rule is exactly $2n - 1$.
+        No $n$-point rule can be exact for $\prod_{i}(x - x_i)^2$, a polynomial of degree $2n$.
+
+    \item \textbf{True.}
+        If $T(2h)$ is the trapezoidal rule with $n$ cells, then $T(h)$ uses $2n$ cells of width $h$, and $\frac{4 T(h) - T(2h)}{3}$ is exactly the composite Simpson rule on these $2n$ cells.
+
+    \item \textbf{True.}
+        Take the two-point Gauss--Legendre rule: $x_{1,2} = \mp 1/\sqrt{3}$ and $w_1 = w_2 = 1$.
+        It is exact for $1$, $x$, $x^3$ by symmetry, and for $x^2$: $\frac13 + \frac13 = \frac23$.
+        In general, $n$ nodes can yield a degree of precision up to $2n - 1 = 3$.
+
+    \item \textbf{True.}
+        $16 S(h) - S(2h) = 15 I + c_6 (16 - 64) h^6 + O(h^8)$, so the $h^4$ term cancels.
+        This is the second step of Romberg integration.
+
+    \item \textbf{False.}
+        The code uses the weights $2, -1$, which are appropriate for first-order errors,
+        whereas the error of the trapezoidal rule is an expansion in powers of $h^2$.
+        The combination \texttt{2T(f, a, b, 2n) - T(f, a, b, n)} does not cancel the $h^2$ term;
+        the correct formula is \texttt{(4T(f, a, b, 2n) - T(f, a, b, n)) / 3}.
+\end{enumerate}
+\noindent\textbf{Bonus.} (\textbf{False}.)
+By Taylor's formula,
+\[
+    f(x + h) = f(x) + f'(x) h + \frac{f''(x)}{2} h^2 + O(h^3),
+\]
+and therefore
+\[
+    D(h) = f'(x) + \frac{f''(x)}{2} h + O(h^2),
+    \qquad
+    D(2h) = f'(x) + f''(x) h + O(h^2).
+\]
+Consequently
+\[
+    \frac{D(h) + D(2h)}{2} = f'(x) + \frac{3}{4} f''(x) h + O(h^2),
+\]
+which is still first order since $f''(x) \neq 0$.
+The correct Richardson combination is $2 D(h) - D(2h) = f'(x) + O(h^2)$.
+\fi
+
+\end{document}

@@ -1,0 +1,175 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 5 -- Integration (practice quiz)}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified.)
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+
+    \smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{10}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+        \hline
+        True  & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+        False & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ & $\square$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}
+
+    \item
+        The degree of precision of the following quadrature rule is 1:
+        \[
+            \int_{-1}^{1} f(x) \, \d x
+            \approx 2 f(0).
+        \]
+
+    \item
+        The closed Newton--Cotes rule with $n+1$ points is exact for all polynomials of degree up to $n$.
+
+    \item
+        The trapezoidal approximation is always wrong if $f$ is not a polynomial.
+        That is to say, for every non-polynomial function $f$, it holds that
+        \[
+            \int_{-1}^1 f(x) \, \d x \neq f(-1) + f(1).
+        \]
+
+    \item
+        The degree of precision of the following quadrature rule is 1:
+        \[
+            \int_{-1}^1 f(x) \, \d x \approx f(1).
+        \]
+
+    \item
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezoidal rule
+        with $n+1$ equidistant integration points.
+        Then it holds that
+        \[
+            \lim_{n \to \infty} \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0, \qquad I[f] := \int_{a}^{b} f(x) \, \d x.
+        \]
+
+    \item
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezoidal rule
+        with $n+1$ equidistant integration points.
+        Then there exists $C$ such that
+        \[
+             \forall n \in \{1, 2, \dotsc \}, \qquad
+             \Bigl\lvert I[f] - I_n[f] \Bigr\rvert \leq \frac{C}{n^2}.
+        \]
+
+    \item
+        Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezoidal rule
+        with $n+1$ equidistant integration points.
+        Then it holds that
+        \[
+             \lim_{n \to \infty} n^2 \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0.
+        \]
+
+    \item
+        There exist $w_1$ and $w_2$ such that the degree of precision of the following rule is $2$:
+        \[
+            \int_{-1}^1 f(x) \, \d x \approx w_1 f(0) + w_2 f(1).
+        \]
+
+    \item
+        In Julia, the following code implements the composite trapezoidal rule with $n+1$ points:
+        \begin{minted}{julia}
+function I_approx(f, a, b, n)
+    x = LinRange(a, b, n + 1)
+    h = (b - a) / n
+    return h*sum(f, x[1:n] .+ h/2)
+end
+        \end{minted}
+
+    \item
+        In Julia, the following code implements the composite Simpson rule with $n+1$ points,
+        where $n$ is even:
+        \begin{minted}{julia}
+function I_approx(f, a, b, n)
+    x = LinRange(a, b, n + 1)
+    h = (b - a) / n
+    result = 0.
+    result += h/3 * f(x[1]) + h/3 * f(x[end])
+    result += 4h/3 * sum(f, x[2:2:end-1])
+    result += 2h/3 * sum(f, x[3:2:end-2])
+    return result
+end
+        \end{minted}
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{True.}
+        The rule is exact for $1$ and $x$ (by symmetry), but not for $x^2$:
+        $\int_{-1}^1 x^2 \, \d x = \frac{2}{3} \neq 0 = 2 \cdot 0^2$.
+
+    \item \textbf{True.}
+        The rule integrates exactly the interpolating polynomial of degree at most $n$,
+        which coincides with~$f$ when $f \in \mathcal P_n$.
+        (The degree of precision can be higher, for instance for Simpson's rule.)
+
+    \item \textbf{False.}
+        For example $f(x) = \sin(\pi x)$ is not a polynomial,
+        but $\int_{-1}^1 f(x) \, \d x = 0 = f(-1) + f(1)$.
+
+    \item \textbf{False.}
+        The rule is not even exact for constants:
+        for $f = 1$ the exact integral is $2$ but the rule gives $1$,
+        so the degree of precision is not $1$ (it is not even~$0$).
+
+    \item \textbf{True.}
+        For $f \in C^2[a, b]$, the error is bounded by $\frac{b-a}{12} C_2 h^2$ with $h = \frac{b-a}{n}$,
+        which tends to zero.
+
+    \item \textbf{True.}
+        This follows from the error bound $\frac{(b-a)^3}{12} \, \frac{C_2}{n^2}$.
+
+    \item \textbf{False.}
+        The error is of order $h^2$ and this is sharp in general.
+        For $f(x) = x^2$ on $[0, 1]$, the error is exactly $\frac{h^2}{6}$,
+        so $n^2 \lvert I[f] - I_n[f] \rvert = \frac{1}{6}$ for all~$n$.
+
+    \item \textbf{False.}
+        Exactness for $1$, $x$ and $x^2$ would require $w_1 + w_2 = 2$, $w_2 = 0$ and $w_2 = \frac{2}{3}$,
+        which is contradictory.
+        (Two free weights cannot achieve degree of precision $2$ here.)
+
+    \item \textbf{False.}
+        This code implements the composite \emph{midpoint} rule:
+        the function is evaluated at the midpoints \julia{x[1:n] .+ h/2} of the subintervals,
+        not at the nodes.
+
+    \item \textbf{True.}
+        The weights are $\frac{h}{3} \times (1, 4, 2, 4, \dotsc, 2, 4, 1)$:
+        the odd-indexed interior nodes (\julia{x[2:2:end-1]}) get weight $\frac{4h}{3}$
+        and the even-indexed interior nodes (\julia{x[3:2:end-2]}) get weight $\frac{2h}{3}$.
+\end{enumerate}
+\fi
+
+\end{document}

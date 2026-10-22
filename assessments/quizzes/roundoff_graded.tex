@@ -1,0 +1,208 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{../../macros}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\ifdefined\showsolutions\lhead{Instructor copy}\fi
+\chead{Graded quiz 1 -- Floating-point arithmetic}
+\rhead{\today}
+\usepackage{xcolor}
+\newcommand{\answer}[1]{%
+    \ifdefined\showsolutions
+        \par\smallskip
+        {\small\color{blue!60!black}#1\par}
+    \fi
+}
+% Box in the answer grid, ticked in the solutions when the argument is 1.
+\newcommand{\gridbox}[1]{%
+    \ifdefined\showsolutions
+        \ifnum#1=1 {\color{blue!60!black}$\boxtimes$}\else$\square$\fi
+    \else
+        $\square$%
+    \fi
+}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+True or false? (unless otherwise specified.)
+\ifdefined\showsolutions
+{\small\color{blue!60!black}Questions 1--15: 1 point for a correct answer, 0 otherwise.\par}
+\fi
+
+\begin{center}
+    \textbf{Answer grid}\par\smallskip
+
+    \smallskip
+    \normalsize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{|c|*{17}{c|}}
+        \hline
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & B1 & B2 \\
+        \hline
+        True  & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{1} \\
+        False & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{0} & \gridbox{1} & \gridbox{1} & \gridbox{0} & \gridbox{1} & \gridbox{0} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{enumerate}
+
+    \item
+        The binary number $(101.101)_2$ is equal to the decimal number $5.625$.
+        \answer{\textbf{True.}
+        $(101.101)_2 = 4 + 1 + 1/2 + 1/8 = 5.625$.}
+
+    \item
+        A real number has a finite representation in base 2 if and only if it is a
+        rational number.
+        \answer{\textbf{False.}
+        A binary expansion is finite if and only if the number is a
+        dyadic rational, i.e.\ of the form $m/2^k$ for integers
+        $m$ and $k$. Most rational numbers (e.g.\ $1/3$) require an
+        infinite expansion.}
+
+    \item
+        The binary representation of $\frac{1}{3}$ is $(0.\overline{01})_2$.
+        \answer{\textbf{True.}
+        $1/3 = 0.010101\dotsc_2$, i.e.\ $(0.\overline{01})_2$.}
+
+    \item
+        Let $(\placeholder)_2$ denote binary representation.
+        Then
+        \[
+            (1000000000)_2 \times (0.001)_2 = (1000000)_2.
+        \]
+        \answer{\textbf{True.}
+        $(0.001)_2 = 2^{-3}$, so
+        $2^9 \cdot 2^{-3} = 2^6 = (1000000)_2$.}
+
+    \item
+        It holds that
+        \[
+            (0.111111)_2 + (0.000001)_2 = (1.001)_2.
+        \]
+        \answer{\textbf{False.}
+        The last carry propagates through all the bits:
+        $(0.111111)_2 + (0.000001)_2 = (1.000000)_2 = 1$, not
+        $(1.001)_2$.}
+
+    \item
+        It holds that $(0.\overline{1100})_2 = \frac{4}{5}$.
+        \answer{\textbf{True.}
+        The repeating block is $1100$, whose value is $3/4$, so
+        $S = (3/4)/(1 - 1/16) = (3/4) \cdot (16/15) = 4/5$.}
+
+    \item
+        Let $\varepsilon_{32}$ denote the machine epsilon for the \julia{Float32} format,
+        i.e.\ \julia{eps(Float32)}.
+        Then the number~3 is representable exactly in this format,
+        and the next representable number in the \julia{Float32} format is
+        $3 + 2\varepsilon_{32}$.
+        \answer{\textbf{True.}
+        In \julia{Float32} the spacing near 3 is
+        $2 \cdot \varepsilon_{32}$ (the exponent is 1), so the next
+        representable number is $3 + 2\varepsilon_{32}$.}
+
+    \item
+        In Julia, \julia{Float64(3.25) == Float32(3.25)} evaluates to \julia{true}.
+        \answer{\textbf{True.}
+        $3.25 = 13/4$ is a dyadic rational, so it is represented exactly
+        in both formats and converting one to the other is exact.}
+
+    \item
+        The spacing (in absolute value) between successive half-precision (\julia{Float16})
+        floating point numbers is always greater than or equal to \julia{eps(Float16)}.
+        \answer{\textbf{False.}
+        For numbers below 1, e.g.\ between $1/2$ and 1, the spacing in
+        \julia{Float16} is $2^{-11}$, which is smaller than
+        \julia{eps(Float16) = 2^{-10}}.}
+
+    \item
+        In Julia, \julia{Float64(.6) == Float32(.6)} evaluates to \julia{true}.
+        \answer{\textbf{False.}
+        The decimal number $0.6$ is not exactly representable in binary,
+        and its nearest \julia{Float64} and \julia{Float32} values differ.}
+
+    \item
+        There exists $n \in \nat$ such that the machine epsilon for the \julia{Float64}
+        format equals $2^{-n}$.
+        In other words, the machine epsilon is an exact negative power of two.
+        \answer{\textbf{True.}
+        \julia{eps(Float64)} is $2^{-52} = \left(\frac{1}{2}\right)^{52}$,
+        an exact (negative) power of two.}
+
+    \item
+        In Julia, it holds that \julia{eps()/3 + eps()/3 + 1 > 1} evaluates to \julia{true}.
+        \answer{\textbf{True.}
+        Each \julia{eps()/3} is represented almost exactly, and twice the
+        value is about $2\varepsilon/3 \approx 1.48 \times 10^{-16}$,
+        which is larger than the rounding threshold
+        $\varepsilon/2 \approx 1.11 \times 10^{-16}$.
+        Adding this quantity to 1 therefore rounds upward to
+        $1 + \varepsilon$, so the left-hand side is strictly larger than 1.
+        (Confirmed in Julia.)}
+
+    \item
+        For any real number $x$ such that $x \in \floating_{64}$,
+        it holds that $2x \in \floating_{64}$.
+        \answer{\textbf{False.}
+        Doubling can fall outside the representable range (overflow to
+        $\infty$, underflow of subnormals) or introduce rounding: e.g.\
+        $2 \cdot x$ for the largest finite number is not finite.}
+
+    \item
+        Infinitely many distinct real numbers can be represented exactly in the~\julia{Float64}
+        format, but only finitely many can be represented exactly in the \julia{Float32} format.
+        \answer{\textbf{False.}
+        Both formats represent only finitely many real numbers exactly.}
+
+    \item
+        Let $x$ and $y$ be two numbers in $\floating_{64}$.
+        The result of the machine multiplication $x \mtimes y$ is sometimes exact and sometimes not,
+        depending on the values of $x$ and $y$.
+        \answer{\textbf{True.}
+        The rounded result of the multiplication is exact when the product
+        fits in the mantissa (e.g.\ powers of two) and is rounded otherwise.}
+
+    \item
+        \textbf{(Bonus)}
+        Does the Julia expression \julia{sqrt(1 + 2eps()) == 1} evaluate to \julia{true}
+        or \julia{false}?
+
+        \textit{Explain briefly:}
+        \ifdefined\showsolutions\else\vspace{1.5cm}\fi
+        \answer{\textbf{False.}
+        The true value of $\sqrt{1 + 2\varepsilon}$ is approximately
+        $1 + \varepsilon - \varepsilon^2/2$, which rounds to the nearest
+        representable number \julia{1 + eps()} (i.e.\ $1 + \varepsilon$),
+        not to 1.}
+
+    \item
+        \textbf{(Bonus)}
+        Does the Julia expression \julia{log2(2 + eps()) == 1} evaluate to \julia{true}
+        or~\julia{false}?
+
+        \textit{Explain briefly:}
+        \ifdefined\showsolutions\else\vspace{1.5cm}\fi
+        \answer{\textbf{True.}
+        $2 + \varepsilon$ lies exactly at the midpoint between the
+        consecutive representable numbers 2 and $2 + 2\varepsilon$
+        (the spacing near 2 is $2\varepsilon$), so with round-to-nearest-even
+        it rounds to 2. Consequently
+        $\log_2(2 + \varepsilon)$ computes $\log_2(2) = 1$ exactly.
+        (Confirmed in Julia.)}
+\end{enumerate}
+
+\end{document}

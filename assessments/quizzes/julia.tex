@@ -1,0 +1,235 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+% \usepackage[cache=true,outputdir=build]{minted}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % clear default
+\lhead{Name: } % student writes name
+\chead{Quiz 0 -- Introduction to Julia}   % quiz title
+\rhead{\today}
+
+% \DeclareUnicodeCharacter{3B8}{θ}
+% \DeclareUnicodeCharacter{3B4}{$\bm{\delta}$}
+% \DeclareUnicodeCharacter{3BB}{$\lambda$}
+% \DeclareUnicodeCharacter{3BC}{$\mu$}
+% \DeclareUnicodeCharacter{3BC}{$\pi$}
+% \DeclareUnicodeCharacter{3C3}{$\sigma$}
+% \DeclareUnicodeCharacter{3C0}{$\pi$}
+% \DeclareUnicodeCharacter{3D5}{$\bm{\phi}$}
+
+\begin{document}
+
+\pagestyle{empty}
+\thispagestyle{fancy}
+
+% \textbf{Your name:} \\[.5cm]
+
+% \begin{center}
+%     \Large{\bf\textsc{Quiz 0 (Introduction to Julia)}}
+% \end{center}
+
+% True or false? (unless otherwise specified)
+
+\begin{enumerate}
+    \item
+        In the Julia REPL, the key \julia{?} enables to access \emph{package mode},
+        from where software libraries can be installed and uninstalled.
+
+    \item
+        In the Julia REPL, the key \julia{]} enables to access \emph{help mode},
+        from where documentation can be accessed.
+
+    \item
+        In Julia, the first piece of code below (left) produces an error,
+        while the second (right) plots the sine function
+        (assuming that package \julia{Plots} is already installed).
+
+        \begin{minted}{julia}
+    import Plots            using Plots
+    plot(cos)               plot(sin)
+        \end{minted}
+
+    \item
+        Explain in words what the following function does? (Assume $n \geq 0$)
+        \begin{minted}{julia}
+    f(n) = n in (0, 1) ? 1 : n * f(n-1)
+        \end{minted}
+        \textbf{Explanation:}
+
+    \item
+        In Julia, the two following commands produce the same result:
+        \begin{minted}{julia}
+    v = cos.([1.0, 2.0, 3.0])
+    v = [cos(1.0), cos(2.0), cos(3.0)]
+        \end{minted}
+
+    \item
+        In Julia, the following code plots the function $t \mapsto \cos(t - 1)$
+        \begin{minted}{julia}
+    import Plots
+    shifted_cos(t, p) = cos(t - p)
+    Plots.plot(t -> shifted_cos(t, 1))
+        \end{minted}
+
+    \item
+        In Julia, the command \julia{+(7, 5)} returns 12,
+        while \julia{1 .+ [1, 2, 3]} returns the array \julia{[2, 3, 4]}.
+
+    \item
+        In the following piece of code,
+        the boolean expression on the last line evaluates to \julia{true}:
+
+        \begin{minted}{julia}
+    import Base.exp
+    exp(a::Vector) = exp(sum(a))
+    exp([1, 2, -3]) == 1
+        \end{minted}
+
+    \item
+        In the following piece of code,
+        the boolean expression on the last line evaluates to \julia{false}:
+
+        \begin{minted}{julia}
+    import Base.>
+    >(a::String, b::String) = length(a) > length(b)
+    "Good afternoon" > "world"
+        \end{minted}
+
+    \item
+        All the code that forms the standard library of the Julia programming language is free
+        both as in \emph{free beer} (the price is 0) but also as in \emph{free speech} (you are free to use, modify, and distribute the program).
+
+    \item
+        In a Jupyter notebook,
+        all the cells are independent.
+        In particular, a variable defined in one cell cannot be employed in any of the following cells.
+
+    \item
+        In a Jupyter notebook, the output displayed below a cell comes from the last expression evaluated in that cell. If that expression returns a value (like a number, string, DataFrame, or an image/plot object), Jupyter automatically displays it.
+
+    \item
+        Loops (\julia{while} and \julia{for}) are much slower in Julia than in Python,
+        and so they should be avoided as much as possible.
+
+    \item
+        What is the value of \julia{s} in the following piece of code?
+        \begin{minted}{julia}
+    struct Wolf end; struct Dog end
+    meet(a::Wolf, b::Wolf) = "Two wolves meet: they howl together."
+    meet(a::Wolf, b::Dog) = "A wolf meets a dog: the wolf growls and the dog is scared."
+    meet(a::Dog, b::Wolf) = meet(b, a)
+    meet(a::Dog, b::Dog) = "Two dogs meet: they wag their tails."
+    raksha, akela = Wolf(), Wolf()
+    s = meet(raksha, akela)
+        \end{minted}
+
+    % \item
+    %     Assume from now on that \julia{A} is a matrix and \julia{b} is a vector,
+    %     which were created by the following commands
+    %     \begin{minted}{julia}
+    % A = randn(7, 7)
+    % b = randn(7)
+    %     \end{minted}
+
+    %     The command \julia{A[:, 3]} selects the third row of matrix~\julia{A}.
+
+    % \item
+    %     The command \julia{A[1:5, :]} returns the submatrix containing the first five \textbf{columns} of~\julia{A}.
+
+    % \item
+    %     The command \julia{A[1, :] + b} returns the sum of the first row of \julia{A} and the vector \julia{b}.
+
+    % \item
+    %     The command \julia{b[1:end .== 5]} returns the fifth element of \julia{b}.
+
+    % \item
+    %     The command \julia{b[b .> 0]} returns a vector containing all and only the positive elements of \julia{b}.
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{False.}
+        The key \julia{]} gives access to \emph{package mode};
+        the key \julia{?} gives access to \emph{help mode}.
+
+    \item \textbf{False.}
+        The key \julia{]} gives access to \emph{package mode};
+        the key \julia{?} gives access to \emph{help mode}.
+
+    \item \textbf{True.}
+        With \julia{import Plots}, the function \julia{plot} is not in scope
+        (only the module \julia{Plots} is), so the first piece of code
+        raises an \julia{UndefVarError}.
+        With \julia{using Plots}, the function \julia{plot} is usable,
+        so the second piece of code plots the sine function.
+
+    \item
+        The function computes the factorial: \julia{f(n) = n!}.
+        Indeed, \julia{f(0) = f(1) = 1} and
+        \julia{f(n) = n * f(n - 1)} for $n \geq 2$.
+
+    \item \textbf{True.}
+        Broadcasting \julia{cos.} over an array thread the function
+        elementwise, and the two commands produce the same vector.
+
+    \item \textbf{True.}
+        The anonymous function \julia{t -> shifted_cos(t, 1)} fixes the
+        second argument to $1$, so the curve plotted is
+        $t \mapsto \cos(t - 1)$.
+
+    \item \textbf{True.}
+        \julia{+(7, 5)} is the function-call syntax for $7 + 5 = 12$, and
+        \julia{1 .+ [1, 2, 3]} adds $1$ to every entry,
+        giving \julia{[2, 3, 4]}.
+
+    \item \textbf{True.}
+        The new method for \julia{Base.exp} computes
+        \julia{exp(sum(a))}, and \julia{sum([1, 2, -3]) = 0}, so
+        the expression evaluates to \julia{exp(0) == 1}, which is
+        \julia{true}.
+
+    \item \textbf{False.}
+        With the given method, \julia{>} on strings compares their lengths,
+        and "Good afternoon" has length 14 while "world" has length 5.
+        Since $14 > 5$, the expression evaluates to \julia{true}, not
+        \julia{false}.
+
+    \item \textbf{True.}
+        Julia and its standard library are distributed under the
+        permissive MIT license.
+
+    \item \textbf{False.}
+        All the cells of a Jupyter notebook share the same kernel,
+        so variables defined in one cell remain available in the
+        following cells.
+
+    \item \textbf{True.}
+        Jupyter displays the value of the last expression evaluated in a
+        cell, if it returns a value.
+
+    \item \textbf{False.}
+        Julia is a just-in-time compiled language: loops are fast
+        (unlike in Python) and do not need to be avoided.
+
+    \item
+        The value of \julia{s} is the string
+        \julia{"Two wolves meet: they howl together."}
+        because both \julia{raksha} and \julia{akela} are \julia{Wolf}
+        objects, hence the most specific matching method is
+        \julia{meet(a::Wolf, b::Wolf)}.
+\end{enumerate}
+\fi
+
+\end{document}

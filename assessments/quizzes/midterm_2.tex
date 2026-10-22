@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\newcommand{\julia}[1]{\mintinline{julia}{#1}}
+
+\begin{document}
+\begin{enumerate}
+
+    \item
+        Let $\varepsilon$ denote the machine epsilon for the \julia{Float32} format.
+        It holds that $\varepsilon > 10^{-10}$.
+
+    \item
+        Machine multiplication is commutative:
+        it holds $a \widehat \times b = b \widehat \times a$
+        for any \julia{Float64} point numbers $a$ and $b$.
+
+    \item
+        If $x \in \mathbb R$ is exactly representable as a \julia{Float32} number,
+        then so is $-x$.
+
+    \item
+        The only polynomial~$p$ of degree at most 5 such that $p(0) = p(1) = p(2) = p(4) = 0$ is the
+        zero polynomial~$p(x) = 0$.
+
+    \item
+        Given $x_0 = 0$, $x_1 = 1$, $x_2 = 2$,
+        and $y_0, y_1, y_2 \in \mathbb R$,
+        the unique quadratic polynomial interpolating these data points is given by
+        \[
+            p(x) =
+            y_0 + (y_1 - y_0)  x  + \frac{1}{2} \bigl((y_2 - y_1) - (y_1 - y_0)\bigr) x(x-1).
+        \]
+
+    \item
+        Suppose that $\mathsf A \in \mathbb R^{20 \times 10}$ and $\mathbf b \in \mathbb R^{20}$.
+        Then there exists a unique solution to the linear system:
+        \[
+            \mathsf A^\top \mathsf A \boldsymbol \alpha = \mathsf A^\top \mathbf b.
+        \]
+    \item
+        Let $f(x) = \cos(2x)$,
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{x \in [0, \infty)} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        In Julia, if \julia{A} is a matrix,
+        then \julia{A[isodd.(1:end), iseven.(1:end)]} returns an empty matrix.
+
+    \item
+        The degree of precision of the composite Simpson quadrature rule with $n$ points is equal to $3n$.
+
+    \item
+        There exists a unique value of the weights $w_1, w_2, w_3, w_4$ such that the following integration rule has a degree of precision equal to~$3$:
+        \[
+            \int_{-1}^{1} u(x) \, \mathrm d x
+            \approx w_1 u(1)
+            + w_2 u \left(\frac{1}{2} \right)
+            + w_3 u \left(\frac{1}{3} \right)
+            + w_4 u \left(\frac{1}{4} \right)
+        \]
+
+\end{enumerate}
+\end{document}
+
+
+

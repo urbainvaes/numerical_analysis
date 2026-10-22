@@ -1,0 +1,310 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 9 -- Linear systems (graded)}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+
+\begin{document}
+% Throughout this quiz,
+% we consider the following linear system:
+% \begin{equation}
+%     \label{eq:linear_system}
+%     \mat A \vect x = \vect b,
+%     \qquad \mat A \in \real^{n \times n},
+%     \qquad \vect b \in \real^n.
+% \end{equation}
+
+True or false? (unless otherwise specified)
+\begin{enumerate}
+    \itemsep5pt
+    \item
+        If~$\mat A \in \real^{n \times n}$ is singular (non-invertible),
+        then for any vector~$\vect b \in \real^n$,
+        there exist infinitely many solutions to the linear system
+        \[
+            \mat A \vect x = \vect b \, .
+        \]
+
+    \item
+        Suppose that~$(\vect x_i)_{i \in \nat}$ is a sequence in $\real^n$ and that $\vect x_* \in \real^n$.
+        Then we have the equivalence
+        \[
+            \lim_{i \to \infty} \lVert \vect x_i - \vect x_* \rVert_{\infty} = 0
+            \qquad \Leftrightarrow \qquad
+            \lim_{i \to \infty} \lVert \vect x_i - \vect x_* \rVert_{1} = 0 \, .
+        \]
+
+    \item
+        For a vector norm $\norm{\placeholder}$ on~$\real^n$,
+        the \emph{subordinate} or \emph{induced} matrix norm is defined by
+        \begin{align*}
+            \norm{\mat M}
+            &\coloneq \max \bigl\{ \norm{\mat M \vect x} : \norm{\vect x} \leq 1 \bigr\} \, .
+        \end{align*}
+        Then it holds that
+        \(
+            \norm{\mat A \mat B} \leq \norm{\mat A} \norm{\mat B}
+        \)
+        for all
+        \(
+            \mat A, \mat B \in \real^{n \times n}.
+        \)
+
+    \item
+        Suppose that~$\mat A \in \real^{n \times n}$ is an invertible matrix and consider a splitting $\mat A = \mat M - \mat N$,
+        with $\mat M$ an invertible matrix.
+        Suppose that $\vect b \in \real^n$ is given and  $\vect x^{(0)} = \vect 0 \in \real^n$.
+        Consider the following iterative method:
+        \begin{equation}
+            \label{eq:iteration_bim}
+            \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b \, ,
+        \end{equation}
+        Denote by $\vect x_*$ the exact solution to the linear system~$\mat A \vect x = \vect b$,
+        and recall that, as we proved in class,
+        the error $\vect e^{(k)} \coloneq \vect x^{(k)}  - \vect x_*$  satisfies the equation
+        \begin{equation}
+            \label{eq:error_equation}
+            \vect e^{(k)} = (\mat M^{-1} \mat N)^k \vect e^{(0)} \, .
+        \end{equation}
+        Then the error satisfies the inequality
+        \[
+            \lVert \vect e^{(k)} \rVert_{\infty} \leq \lVert \mat M^{-1} \mat N \rVert_{\infty}^k \lVert \vect e^{(0)} \rVert_{\infty} \, .
+        \]
+
+    \item
+        For the iterative method~\eqref{eq:iteration_bim},
+        the approximation~$\vect x^{(k)}$ converges as~$k \to \infty$ to the exact solution~$\vect x_*$ \emph{if and only if}
+        the following inequality is satisfied: $\lVert \mat M^{-1} \mat N \rVert_{\infty} < 1$.
+
+    \item
+        The Jacobi method is an iterative method of the form~\eqref{eq:iteration_bim} for the splitting~$\mat M = \mat D$ and $\mat N = - \mat L - \mat U$,
+        where matrix $\mat D$ is the diagonal part of~$\mat A$,
+        and $\mat L, \mat U$ are the strictly lower and upper triangular parts,
+        respectively.
+        Then, for a general matrix~$\mat A$,
+        each iteration of this method requires~$\mathcal O(n)$ floating point operations.
+
+    \item
+        Assume that $\vect b \in \real^n$ and that $\mat A \in \real^{n \times n}$ is symmetric and positive definite.
+        Then a vector $\vect x_*$ satisfies the equation $\mat A  \vect x_* = \vect b$ \emph{if and only if}
+        \begin{equation}
+            \label{eq:function_f}
+            f(\vect x_*) = \min_{\vect x \in \real^n} f(\vect x),
+            \qquad \text{ where  }f(\vect x) \coloneq \frac{1}{2} \vect x^\t \mat A \vect x - \vect b^\t \vect x \, .
+        \end{equation}
+
+    \item
+        Assume that~$\vect b \in \real^n$ and that~$\mat A \in \real^{n \times n}$ is symmetric and positive definite.
+        Assume additionally that the vectors $(\vect e_1, \dots, \vect e_n)$ are $\mat A$-conjugate,
+        meaning that $\vect e_i^\t \mat A \vect e_j = 0$ if $i \neq j$,
+        and denote by~$\vect x_*$ the exact solution to the linear system~$\mat A \vect x = \vect b$.
+        Then it holds that
+        \[
+            \vect x_* = \frac{\vect e_1^\t \vect b}{\vect e_1^\t \mat A \vect e_1}
+            \vect e_1
+            + \dotsb + \frac{\vect e_n^\t \vect b}{\vect e_n^\t \mat A \vect e_n} \vect e_n \, .
+        \]
+
+    \item
+        Suppose that $\mat A \in \real^{2 \times 2}$ is symmetric,
+        with a positive eigenvalue and a negative eigenvalue.
+        Then the function~$f$ defined in~\eqref{eq:function_f} does not have a minimizer,
+        and furthermore
+        \[
+            \inf_{\vect x \in \real^n} f(\vect x) = - \infty \, .
+        \]
+
+
+    \item
+        The following code implements an iterative method for solving~$\mat A \vect x = \vect b$.
+        (Note that the matrix $\mat A$ here is symmetric and positive definite.)
+        In this case the method does not converge; the \julia{while} loop never terminates.
+        \begin{minted}{julia}
+    A = [4 1 0; 1 4 1; 0 1 4]
+    b = [1.; 2.; 3.]
+    x = [0.; 0.; 0.]
+    r = A*x - b
+    while sqrt(r'r) > 1e-12 * sqrt(b'b)
+        r = A*x - b
+        w = r'r / (r'*A*r)
+        x -= w * r
+    end
+        \end{minted}
+
+    \item
+        \textbf{Bonus}:
+        The following code implements a basic iterative method based on a splitting.
+        What is the name of the method implemented? Also give the explicit expressions of~$\mat M$ and~$\mat N$.
+        \begin{minted}{julia}
+    A = [4 1 0; 1 4 1; 0 1 4]
+    b = [1.; 2.; 3.]
+    x = [0.; 0.; 0.]
+    for k in 1:100
+        x[1] = (b[1] - A[1, 2] * x[2] - A[1, 3] * x[3]) / A[1, 1]
+        x[2] = (b[2] - A[2, 1] * x[1] - A[2, 3] * x[3]) / A[2, 2]
+        x[3] = (b[3] - A[3, 1] * x[1] - A[3, 2] * x[1]) / A[3, 3]
+    end
+        \end{minted}
+
+        \emph{Your answer:}
+        \vspace{2cm}
+
+    \item
+        \textbf{Bonus:}
+        Prove the equation~\eqref{eq:error_equation} satisfied by the error for the basic iterative method based on a splitting.
+
+        \emph{Your answer:}
+\end{enumerate}
+
+\newpage
+\subsection*{Solutions}%
+
+\begin{enumerate}
+    \item
+    \textbf{False.}
+    A singular matrix $\mat A$ does not necessarily yield infinitely many solutions.
+    The system $\mat A \vect x = \vect b$ has solutions only when
+    $\vect b \in \operatorname{range}(\mat A)$; otherwise it has no solution.
+    Example: if $\mat A = \mat 0$, then no solution exists unless $\vect b = \vect 0$.
+
+    \item
+    \textbf{True.}
+    In $\mathbb{R}^n$ all norms are equivalent.
+    In particular,
+    \[
+        \|\vect v\|_{\infty} \le \|\vect v\|_1 \le n \|\vect v\|_{\infty},
+    \]
+    so $\|\vect x_i - \vect x_*\|_{\infty} \to 0$ iff
+    $\|\vect x_i - \vect x_*\|_1 \to 0$.
+
+    \item
+    \textbf{True.}
+    For any $\vect x$ with $\|\vect x\|\le 1$,
+    \[
+        \|\mat A \mat B \vect x\|
+        = \|\mat A (\mat B \vect x)\|
+        \le \|\mat A\| \, \|\mat B \vect x\|
+        \le \|\mat A\| \, \|\mat B\|,
+    \]
+    and maximizing over $\|\vect x\|\le1$ gives
+    $\|\mat A \mat B\| \le \|\mat A\|\,\|\mat B\|$.
+
+    \item
+    \textbf{True.}
+    Using the error formula
+    $\vect e^{(k)} = (\mat M^{-1}\mat N)^k \vect e^{(0)}$ and
+    submultiplicativity,
+    \[
+        \|\vect e^{(k)}\|_{\infty}
+        \le \|(\mat M^{-1}\mat N)^k\|_{\infty} \, \|\vect e^{(0)}\|_{\infty}
+        \le \|\mat M^{-1}\mat N\|_{\infty}^k \|\vect e^{(0)}\|_{\infty}.
+    \]
+
+    \item
+    \textbf{False.}
+    The condition $\|\mat M^{-1}\mat N\|_{\infty} < 1$ is
+    \emph{sufficient} for convergence but not \emph{necessary}.
+    The correct necessary and sufficient condition is
+    $\rho(\mat M^{-1}\mat N) < 1$,
+    where $\rho(\cdot)$ denotes the spectral radius.
+
+    \item
+    \textbf{False.}
+    For a general dense matrix $\mat A$, one Jacobi iteration requires
+    $\mathcal{O}(n^2)$ operations:
+    each of the $n$ components requires summing approximately $n$ terms.
+    The cost is $\mathcal{O}(n)$ only for banded or sparse matrices.
+
+    \item
+    \textbf{True.}
+    Since $\mat A$ is symmetric positive definite,
+    $f(\vect x)$ is strictly convex and
+    \[
+        \nabla f(\vect x) = \mat A \vect x - \vect b.
+    \]
+    Thus $f$ is minimized exactly at points satisfying $\mat A \vect x_* = \vect b$.
+
+    \item
+    \textbf{True.}
+    Since the $\vect e_i$ form an $\mat A$-conjugate basis, write
+    $\vect x_* = \sum_{i=1}^n \alpha_i \vect e_i$.
+    Taking $\vect e_j^\top \mat A (\cdot)$ gives
+    $\vect e_j^\top \vect b = \alpha_j \vect e_j^\top \mat A \vect e_j$,
+    hence
+    \[
+        \vect x_*
+        = \sum_{i=1}^n
+        \frac{\vect e_i^\top \vect b}{\vect e_i^\top \mat A \vect e_i}
+        \vect e_i.
+    \]
+
+    \item
+    \textbf{True.}
+    If $\mat A$ has a positive and a negative eigenvalue,
+    then along the eigenvector $\vect v$ associated with the negative eigenvalue
+    $\lambda < 0$,
+    \[
+        f(t \vect v)
+        = \tfrac12 \lambda t^2 - t \vect v^\top \vect b \to -\infty
+        \quad \text{as } |t|\to\infty.
+    \]
+    Thus $f$ has no minimizer and $\inf f = -\infty$.
+
+    \item
+    \textbf{False (the claim of nonconvergence is false).}
+    The code implements the steepest–descent method with exact line search:
+    for $\mat A$ symmetric positive definite, this method always converges.
+    Thus the loop should terminate (modulo tolerance issues), not run forever.
+
+    \item[\textbf{Bonus 1.}]
+    The method is \textbf{Gauss--Seidel}.
+    With the splitting $\mat A = \mat D + \mat L + \mat U$,
+    the Gauss--Seidel iteration uses
+    \[
+        \mat M = \mat D + \mat L,
+        \qquad
+        \mat N = -\mat U,
+    \]
+    so that
+    \[
+        (\mat D + \mat L)\vect x^{(k+1)}
+        = -\mat U \vect x^{(k)} + \vect b.
+    \]
+
+    \item[\textbf{Bonus 2.}]
+    Starting from
+    \[
+        \mat M \vect x^{(k+1)} = \mat N \vect x^{(k)} + \vect b,
+    \]
+    and using the fact that
+    $\mat M \vect x_* = \mat N \vect x_* + \vect b$
+    (since $\mat A = \mat M - \mat N$ and $\mat A \vect x_* = \vect b$),
+    subtract the equations to obtain
+    \[
+        \mat M (\vect x^{(k+1)} - \vect x_*)
+        = \mat N (\vect x^{(k)} - \vect x_*).
+    \]
+    Hence
+    \[
+        \vect e^{(k+1)}
+        = \mat M^{-1}\mat N \, \vect e^{(k)}.
+    \]
+    Iterating yields
+    \[
+        \vect e^{(k)}
+        = (\mat M^{-1}\mat N)^k \vect e^{(0)}.
+    \]
+\end{enumerate}
+\end{document}

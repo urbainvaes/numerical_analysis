@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true,outputdir=build]{minted}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+
+\begin{document}
+    Throughout the quiz, we consider the following scalar, nonlinear equation:
+    \begin{equation}
+        \label{eq:nonlinear}
+        f(x) = 0,
+        \qquad f\colon \real \to \real,
+        \qquad x \in \real.
+    \end{equation}
+
+\begin{enumerate}
+
+    \item
+        Regardless of the specific form of~$f$,
+        there exists a unique solution to~\eqref{eq:nonlinear}.
+
+    \item
+        There may or may not exist a solution to~\eqref{eq:nonlinear},
+        depending on the specific form of~$f$.
+
+        \emph{If you answer true, justify with examples.}
+        \vspace{1cm}
+
+    \item
+        Suppose there exists a solution to~\eqref{eq:nonlinear}.
+        Then the solution is unique.
+
+        \emph{If you answer false, justify with an counterexample.}
+        \vspace{1cm}
+
+    \item
+        Suppose that $f$ is continuous and that $f(0) f(1) < 0$.
+        Then there exists a solution $x_* \in (0, 1)$ to~\eqref{eq:nonlinear}.
+
+    \item
+        Suppose that $f$ is continuous, that $f(0) f(1) < 0$,
+        and that the bisection method is employed with~$a = 0$ and $b = 1$ in order to find a root of $f$.
+        Then it takes fewer than 100 iterations to obtain a approximation of the solution with an error smaller that $10^{-10}$.
+
+    \item
+        Suppose that we employ the chord method in order to find a solution to~\eqref{eq:nonlinear}:
+        \begin{equation}
+            \label{eq:chord}
+            x_{k+1} = x_k - \frac{f(x_k)}{\alpha}.
+        \end{equation}
+        Then this method converges for any value of the parameter~$\alpha \in \real \setminus \{0\}$.
+
+    \item
+        Suppose that $f(x) = x$ and that~$\alpha = 2$.
+        Then the chord method~\eqref{eq:chord} converges.
+
+    \item
+        The chord method may be rewritten as a fixed point iteration of the form
+        \[
+            x_{k+1} = F_{\rm chord}(x_k)
+        \]
+        for an appropriate function $F_{\rm chord}$.
+        Write the expression of the function $F_{\rm chord}$:
+        \[
+            F_{\rm chord} (x) =
+        \]
+
+    \item
+        \textbf{(2 marks)}
+        Consider a general fixed point iteration of the form
+        \[
+            x_{k+1} = F(x_k).
+        \]
+        Suppose that $F(x_*) = 0$
+        and that $F$ is Lipschitz continuous with constant $L < 1$:
+        \[
+            \forall x, y \in \real, \qquad
+            \bigl\lvert F(x) - F(y) \bigr\rvert
+            \le L |x - y|.
+        \]
+        Prove that
+        \[
+            \lvert x_k - x_* \rvert \le
+            L^k \lvert x_0 - x_* \rvert.
+        \]
+\end{enumerate}
+\end{document}
+
+
+

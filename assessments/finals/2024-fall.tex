@@ -1,0 +1,376 @@
+\documentclass[10pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[capitalize,nameinlink]{cleveref}
+\usepackage{amssymb}
+\setlist[enumerate]{font=\bfseries}
+\theoremstyle{definition}
+\newtheorem{question}{Question}
+\theoremstyle{remark}
+\newtheorem*{solution}{Solution}
+\input{../../macros.tex}
+% \usepackage{tikz-cd}
+% \usetikzlibrary{graphs,graphdrawing}
+% \usetikzlibrary{backgrounds}
+
+\theoremstyle{plain}% default
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\crefname{figure}{Figure}{Figures}
+
+\begin{document}
+
+\title{Numerical Analysis: Final Exam \\
+\small{(\textbf{50 marks}, only the 4 best questions count)}}
+\author{Urbain Vaes}
+\date{December 2024}
+\maketitle
+
+\section*{Academic integrity pledge}
+\noindent $\square$ \textcolor{blue}{I certify that I will not give or receive any unauthorized help on this exam,
+and that all work will be my own. (Tick $\checkmark$ or copy the sentence on your answer sheet)}.
+
+
+\newpage
+\begin{question}
+    [Floating point arithmetic, \textbf{10 marks}]
+    $~$
+    \begin{enumerate}
+        \item
+            \textbf{(T/F)}
+            Let $(\placeholder)_2$ denote base 2 representation.
+            It holds that
+            \[
+                3 \times (0.0101)_2 = (0.1111)_2.
+            \]
+
+        \item
+            \textbf{(T/F)}
+            Does the following equality hold? Explain your reasoning.
+            \[
+                (0.\overline{011})_2 = \frac{3}{4}.
+            \]
+             \vspace{1.7cm}
+
+        \item
+            \textbf{(T/F)}
+            In Julia, \julia{Float64(x) == Float32(x)} is \julia{true} if \julia{x} is a rational number.
+
+        \item
+            \textbf{(T/F)}
+            The value of the machine epsilon for the double precision format is the same in Julia and Python.
+
+        \item
+            \textbf{(T/F)}
+            The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is equal to the machine epsilon.
+
+        \item
+            \textbf{(T/F)}
+            All the natural numbers can be represented exactly in the double precision floating point format~\julia{Float64}.
+
+        \item
+            \textbf{(T/F)}
+            Machine addition in the \julia{Float64} format is associative but not commutative.
+
+        \item
+            \textbf{(T/F)}
+            In Julia, let \julia{f(x) = (x == x/100.0) ? x : f(x/100.0)}.
+            Then \julia{f(a)} returns~\julia{0.0} for all finite number \julia{a} representable in the \julia{Float64} format.
+
+        \item
+            \mymark
+             In Julia \julia{exp(eps()) == 1 + eps()} evaluates to \julia{true}.
+             Explain briefly why.
+             \vspace{1.7cm}
+
+        \item
+            \mymark
+             In Julia \julia{sqrt(1 + eps()) == 1 + eps()} evaluates to \julia{false}.
+             Explain briefly why.
+             \vspace{1.7cm}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation, \textbf{10 marks}]
+    $~$
+    \begin{enumerate}
+        \item
+            \textbf{(T/F)}
+            The only polynomial~$p$ of degree at most 3 such that $p(-1) = p(0) = p(1) = 1$ is the
+            constant polynomial~$p(x) = 1$.
+
+        \item
+            \textbf{(T/F)}
+            In polynomial interpolation, using Chebyshev nodes can help reduce the interpolation error compared to using equidistant nodes.
+
+        \item
+            \textbf{(2 marks)}
+            Let $S(n) = \sum_{i=1}^{n} i$.
+            Given that $S(n)$ is a quadratic polynomial,
+            calculate the expression of~$S(n)$ by interpolation.
+            Include the details of your calculation.
+            \vspace{2.5cm}
+
+        \item
+            \textbf{(T/F)}
+            Given $x_0 < x_1 < x_2$
+            and $y_0, y_1, y_2 \in \mathbb R$,
+            the unique polynomial passing through these data points is given by
+            \begin{align*}
+                p(x) &=
+                \frac{(x - x_1) (x-x_2)}{(x_0 - x_1) (x_0 - x_2)} y_0
+                + \frac{(x - x_0) (x-x_2) }{(x_1 - x_0) (x_1 - x_2)} y_1
+                + \frac{(x - x_0) (x-x_1)}{(x_2 - x_0) (x_2 - x_1)} y_2.
+            \end{align*}
+
+        \item
+            \textbf{(T/F)}
+            Let $f(x) = \exp(5x)$,
+            and for any $n \in \mathbb N$,
+            let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at~$n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+            Then
+            \[
+                \lim_{n \to \infty} \left( \max_{-1 \leqslant x \leqslant 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+            \]
+
+        \item
+            \textbf{(2 marks)}
+            Given $x_0 < \dotsc < x_n$
+            and $y_0, \dotsc, y_n \in \mathbb R$,
+            prove that the constant polynomial $p$ that minimizes
+            the expression $\sum_{i=0}^{n} |y_i - p(x_i)|^2$ is given by
+            \[
+                p(x) = \frac{1}{n+1} \sum_{i=0}^{n} y_i.
+            \]
+            \vspace{1.0cm}
+
+        \item
+            \textbf{(2 marks)}
+            We wish to find $a, b, c$ such that the function $f(x) := a \cos(x) + b \sin(x) + c$
+            interpolates the data points $(0, 0), (1, 1), (2, 2)$.
+            Complete on paper the following code for calculating $a, b, c$.
+            \begin{minted}{julia}
+   x = [0.0, 1.0, 2.0]
+   y = [0.0, 1.0, 2.0]
+   # Your code below
+            \end{minted}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Integration, \textbf{10 marks}]
+    $~$
+    \begin{enumerate}
+        \item
+            \textbf{(T/F)}
+            The degree of precision of the following quadrature rule is 1:
+            \[
+                \int_{-1}^{1} f(x) \, \d x
+                \approx 2 f(0).
+            \]
+
+        \item
+            \textbf{(T/F)}
+            The closed Newton--Cotes rule with $n$ points is exact for all linear polynomials.
+
+        \item
+            \textbf{(T/F)}
+            The degree of precision of the following quadrature rule is 5:
+            \[
+                \int_{-1}^1 f(x) \, \d x \approx 2f(0) + \frac{2}{3} f''(0) + \frac{2}{5} f^{(4)}(0).
+            \]
+
+        \item
+            \textbf{(T/F)}
+            Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezium rule
+            with~$n$ integration points.
+            Then it holds that
+            \[
+                \lim_{n \to \infty} \Bigl\lvert I[f] - I_n[f] \Bigr\rvert = 0, \qquad I[f] := \int_{a}^{b} f(x) \, \d x.
+            \]
+
+        \item
+            \textbf{(T/F)}
+            Suppose that $f \in C^{\infty}[a, b]$ and let $I_n[f]$ denote the approximate integral of $f$ using the composite trapezium rule
+            with~$n$ integration points.
+            Then it holds that
+            \[
+                \lim_{n \to \infty} n^2 \Bigl\lvert I[f] - I_n[f] \Bigr\rvert < \infty.
+            \]
+
+        \item
+            \textbf{(2 marks)}
+            Calculate weights $w_1,w_2$ so that the degree of precision of the following rule is~$1$:
+            \[
+                \int_{-1}^1 f(x) \, \d x = w_1 f(0) + w_2 f(1).
+            \]
+
+        \item
+            \textbf{(2 marks)}
+            Implement the composite trapezium rule with $n$ points:
+            \begin{minted}{julia}
+    function I_approx(f, a, b, n)
+        x = LinRange(a, b, n)
+
+
+
+
+            \end{minted}
+
+        \item
+            \textbf{(1 mark)}
+            The following code implements the midpoint rule with $n$ points, but there is an error.
+            Spot and correct the error.
+            \begin{minted}{julia}
+    function I_approx(f, a, b, n)
+        x = LinRange(a, b, n)
+        h = (b - a) / n
+        return h * sum(f, x .+ h/2)
+    end
+            \end{minted}
+    \end{enumerate}
+\end{question}
+
+
+\newpage
+\begin{question}
+    [Iterative method for linear systems, \textbf{10 marks}]
+    Assume that $\mat A \in \real^{n \times n}$ is an \emph{invertible} matrix and that $\vect b \in \real^n$.
+    We wish to solve the linear system
+    \begin{equation}
+        \label{eq:linear_system}
+        \mat A \vect x = \vect b.
+    \end{equation}
+
+    \begin{enumerate}
+        \itemsep0pt
+        \item
+            \mymarks{3}
+            We first consider a basic iterative method where each iteration is of the form
+            \begin{equation}
+                \label{eq:iterative_scheme}
+                \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
+            \end{equation}
+            Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
+            and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
+            Let $\vect e_k := \vect x_k - \vect x_*$,
+            where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
+            Prove that the error satisfies
+            \[
+                \forall k \in \nat, \qquad
+                \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
+            \]
+            \vspace{2cm}
+
+        \item
+            \textbf{(T/F)}
+            If $\lVert \mat M^{-1} \mat N \rVert_2 < 1$,
+            then the iterative method~\eqref{eq:iterative_scheme} is convergent.
+
+        \item
+            \textbf{(T/F)}
+            The Gauss--Seidel iterative method
+            is a particular case of~\eqref{eq:iterative_scheme}.
+
+        \item
+            \mymarks{3}
+            Write down on paper a few iterations of the Jacobi method when
+            \[
+                \mat A =
+                \begin{pmatrix}
+                    1 & 2 \\
+                    0 & 1
+                \end{pmatrix},
+                \qquad
+                \vect b
+                =
+                \begin{pmatrix}
+                    1 \\
+                    1
+                \end{pmatrix},
+                \qquad
+                \vect x_0 =
+                \begin{pmatrix}
+                    0 \\
+                    0
+                \end{pmatrix}.
+            \]
+            Is the method convergent?
+            \vspace{2.5cm}
+
+        \item
+            \mymarks{2}
+            Suppose that~$\mat A$ is lower triangular.
+            Implement the forward substitution algorithm for solving~\eqref{eq:linear_system} in this case.
+            \begin{minted}{julia}
+    A = [1.0 0.0 0.0; 1.0 2.0 0.0; 1.0 2.0 3.0]
+    b = [1.0; 3.0; 6.0]
+            \end{minted}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Nonlinear equations, \textbf{10 marks}]
+    We consider the following iterative method for calculating~$\sqrt[3]{2}$:
+    \begin{equation}
+        \label{eq:iteration}
+        x_{k+1} = F(x_k), \qquad F(x) :=  \omega x + (1 - \omega) \frac{2}{x^2},
+    \end{equation}
+    with $\omega \in [0, 1]$ a fixed parameter.
+    \begin{enumerate}
+        \item
+            \mymarks{2}
+            Show that $x_* := \sqrt[3]{2}$ is a fixed point of the iteration~\eqref{eq:iteration}.
+            \vspace{2cm}
+
+        \item
+            \mymarks{4}
+            Write down a Julia program based on the iteration~\eqref{eq:iteration} for calculating~$\sqrt[3]{2}$.
+            Use an appropriate stopping criterion that does not require to know the value of~$\sqrt[3]{2}$.
+            \vspace{5cm}
+
+
+        \item
+            \textbf{(T/F)}
+            The iterative method~\eqref{eq:iteration} converges to $\sqrt[3]{2}$ for any $\omega \in [0, 1]$.
+
+        \item
+            \textbf{(T/F)}
+            The secant method is usually faster than the Newton--Raphson method.
+
+        \item
+            \textbf{(T/F)}
+            The following iteration converges to $\sqrt[3]{2}$ for all initialization $x_0$:
+            \[
+                x_{k+1} = x_k - \frac{x_k^3 - 2}{10}.
+            \]
+
+        \item
+            \mymark{}
+            Illustrate a few iterations of the Newton--Raphson iteration for finding~$\sqrt[3]{2}$ on the following figure (see next page),
+            where the function $f(x) = x^3 - 2$ is plotted.
+    \end{enumerate}
+\end{question}
+
+
+\newpage
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{newton-raphson.pdf}
+    \caption{You can use this figure to illustrate the Newton--Raphson method.}%
+    \label{fig:nr}
+\end{figure}
+
+\end{document}

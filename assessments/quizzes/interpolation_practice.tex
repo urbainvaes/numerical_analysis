@@ -1,0 +1,161 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 3 -- Interpolation and Approximation (practice quiz)}
+\rhead{\today}
+
+\begin{document}
+\begin{enumerate}
+
+    \item
+        Suppose that $x_0 < x_1 < \dotsb < x_n$ and $y_0, y_1, \dotsc, y_n$ are given real numbers.
+        Then there exists a unique polynomial $p \in \mathcal P_n$ such that $p(x_i) = y_i$ for all $i \in \{0, \dotsc, n\}$.
+
+    \item
+        Suppose that $f \colon [-1, 1] \to \mathbb R$ is given by $f(x) = \e^{-2x}$,
+        and for any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ equidistant points $-1 = x_0 < x_1 < \dotsc < x_n = 1$.
+        Then
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0.
+        \]
+
+    \item
+        Define $\mathcal F \colon \mathcal P_n \to \real$ as the function which,
+        to a polynomial $p \in \mathcal P_n$, associates its maximum absolute value over the interval $[-1, 1]$,
+        that is
+        \[
+            \mathcal F(p) = \max_{x \in [-1, 1]} \left\lvert p(x) \right\rvert \, .
+        \]
+        Then it holds that $\mathcal F(p) \geq \mathcal F(T_n)$ for all $p \in \mathcal P_n$,
+        where $T_n$ is the Chebyshev polynomial of degree~$n$.
+
+
+    \item
+        Suppose that $f \colon [-1, 1] \to \mathbb R$ is the Runge function $f(x) = \frac{1}{1 + 25 x^2}$.
+        For any $n \in \mathbb N$,
+        let $f_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at $n+1$ \emph{equidistant} points,
+        and let $g_n \in \mathcal P_n$ denote the polynomial interpolating~$f$ at the $n+1$ \emph{Chebyshev} points (the roots of $T_{n+1}$).
+        Then it holds that
+        \[
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = +\infty \, ,
+            \qquad
+            \lim_{n \to \infty} \left( \max_{-1 \leq x \leq 1} \bigl\lvert f(x) - g_n(x) \bigr\rvert \right) = 0 \, .
+        \]
+
+    \item
+        Suppose that $x_0 < x_1 < \dotsb < x_n$ and $y_0, y_1, \dotsc, y_n$ are given real numbers.
+        Then for any $m \in \{0, 1, \dotsc\}$,
+        there exists exactly one polynomial $p \in \mathcal P_m$ such that 
+        \[
+            \frac{1}{n} \sum_{i=0}^{n} \Bigl\lvert p(x_i) - y_i \Bigr\rvert^2 = 0.
+        \]
+
+    \item
+        Given $x_0 < x_1 < \dotsc < x_n \in \mathbb R$
+        and $y_0, y_1, \dotsc , y_n \in \mathbb R$,
+        and let $m \geq n$. 
+        There exists a unique $p \in \mathcal P_m$ such that the following quantity is minimized:
+        \[
+            \frac{1}{n} \sum_{i=0}^{n} \Bigl\lvert p(x_i) - y_i \Bigr\rvert^2.
+        \]
+
+    \item
+        Given $x_0 < x_1 < \dotsc < x_n \in \mathbb R$
+        and $y_0, y_1, \dotsc , y_n \in \mathbb R$ with $n = 10$,
+        there exists a unique polynomial $p(x) = ax + b$ that minimizes
+        \[
+            J(a, b) = \frac{1}{2} \sum_{i=0}^n \bigl\lvert y_i - p(x_i) \bigr\rvert^2.
+        \]
+
+    \item
+        In Julia, if \julia{v} is a vector of size 5,
+        then \julia{v[[1, 2, 5]]} returns a vector with the first, second and fifth element of \julia{v}.
+
+    \item
+        In Julia, if \julia{v} is a vector of size 5,
+        then \julia{v[[true, true, false, true, false]]} returns a vector with the first, second and fourth element of \julia{v}.
+
+    \item
+        In Julia, if \julia{A} is a $10\times10$ matrix,
+        then \julia{A[mod.(1:end, 2) .== 0, mod.(1:end, 2) .== 0]} gives the matrix obtained by removing the second column and the second row.
+\end{enumerate}
+
+\ifdefined\showsolutions
+\newpage
+\lhead{Instructor copy}
+\section*{Answer key}
+\begin{enumerate}[itemsep=8pt]
+    \item \textbf{True.}
+        This is the fundamental theorem of interpolation: the set of nodes
+        $x_0 < x_1 < \dotsb < x_n$ leads to a nonsingular Vandermonde
+        system, so there is a unique $p \in \mathcal P_n$ solving
+        $p(x_i) = y_i$ for all $i$.
+
+    \item \textbf{True.}
+        The function $x \mapsto \e^{-2x}$ is entire, so polynomial
+        interpolation on equidistant nodes converges uniformly on $[-1,1]$
+        as $n \to \infty$.
+
+    \item \textbf{False.}
+        The minimal property goes in the \emph{opposite} direction:
+        among monic polynomials of degree $n$, $T_n$ has the smallest
+        possible sup-norm on $[-1,1]$.
+        For example, the zero polynomial satisfies
+        $\mathcal F(0) = 0 < 1 = \mathcal F(T_n)$.
+
+    \item \textbf{True.}
+        This is the statement of the Runge phenomenon: interpolation at
+        equidistant points diverges for the Runge function, while
+        interpolation at the Chebyshev nodes (the roots of $T_{n+1}$)
+        converges uniformly.
+
+    \item \textbf{False.}
+        For $m < n$ interpolation with a degree-$m$ polynomial is in
+        general impossible (the condition imposes $n+1$ equalities), and
+        for $m > n$ the polynomial is not unique.
+
+    \item \textbf{False.}
+        When $m > n$ there are more coefficients than data points, so the
+        design matrix does not have full column rank and the
+        least-squares problem has infinitely many minimizers
+        (indeed the minimum can be zero, attained by the interpolating
+        polynomial).
+
+    \item \textbf{True.}
+        With 11 data points and only 2 unknown parameters $a, b$, the
+        normal equations are a $2 \times 2$ system whose matrix is
+        nonsingular as long as the nodes are not all identical, so the
+        minimizer is unique.
+
+    \item \textbf{True.}
+        Indexing a vector with a vector of indices selects the
+        corresponding entries in that order: here the first, second and
+        fifth elements of \julia{v}.
+
+    \item \textbf{True.}
+        Indexing with a Boolean mask of the same length keeps exactly the
+        entries in the positions where the mask is \julia{true}: the
+        first, second and fourth elements.
+
+    \item \textbf{False.}
+        \julia{mod.(1:end, 2) .== 0} produces the mask
+        \julia{[false, true, false, true, ...]}, which selects the
+        even-indexed rows and the even-indexed columns, giving the $5 \times 5$
+        submatrix of rows and columns $2, 4, 6, 8, 10$ --- not the matrix
+        obtained by deleting row 2 and column 2.
+\end{enumerate}
+\fi
+
+\end{document}

@@ -1,0 +1,139 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=.8in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[cache=true]{minted}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\input{../../macros}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Quiz 8 -- Linear systems (graded)}
+\rhead{\today}
+\renewcommand{\d}{\mathrm d}
+
+\begin{document}
+% Throughout this quiz,
+% we consider the following linear system:
+% \begin{equation}
+%     \label{eq:linear_system}
+%     \mat A \vect x = \vect b,
+%     \qquad \mat A \in \real^{n \times n},
+%     \qquad \vect b \in \real^n.
+% \end{equation}
+\begin{enumerate}
+    \item
+        If~$\mat A \in \real^{n \times n}$ is invertible, 
+        then for any~$\vect b \in \real^n$, there exists a unique solution to the linear system
+        \[
+            \mat A \vect x = \vect b \, .
+        \]
+
+    \item
+        For any vector~$\vect x \in \real^n$,
+        it holds that $\norm{\vect x}_1 \leq \norm{\vect x}_{\infty}$.
+        Recall that, by definition,
+        \[
+            \norm{\vect x}_1 \coloneq \lvert x_1 \rvert + \dotsb + \lvert x_n \rvert, \qquad \norm{\vect x}_{\infty} = \max\bigl\{|x_1|, \dotsc, |x_n|\bigr\} \, .
+        \]
+
+    \item
+        For a vector norm $\norm{\placeholder}$ on~$\real^n$ (for example a $p$-norm),
+        the \emph{subordinate} matrix norm is defined by
+        \begin{align*}
+            \norm{\mat A} 
+            &\coloneq \max \bigl\{ \norm{\mat A \vect x} : \norm{\vect x} \leq 1 \bigr\} \\
+            &= \max \left\{ \frac{\norm{\mat A \vect x}}{\norm {\vect x}} : \vect x \neq \vect 0 \right\} \, .
+        \end{align*}
+        We recall that the two definitions are equivalent.
+        Then it holds that 
+        \[
+            \forall \vect x \in \real^n, \qquad
+            \norm{\mat A \vect x} \leq \norm{\mat A} \norm{\vect x} \, .
+        \]
+
+    \item
+        Let~$\norm{\placeholder}$ denote a matrix $p$-norm, with $p \in [1, \infty)$.
+        Then for all $\mat A \in \real^{n \times n}$, 
+        it holds that $\norm{\mat A^2}_p < \norm{\mat A}_p^2$,
+        with a strict inequality.
+
+    \item
+        Consider the matrix
+        \[
+            \mat A = 
+            \begin{pmatrix}
+                5 & 1 \\ 1 & 5
+            \end{pmatrix} \, .
+        \]
+        Then it holds that $\norm{\mat A}_2 \leq 10$.
+        Recall that for a symmetric matrix~$\mat A$,
+        its 2-norm is given by the largest absolute eigenvalue.
+
+    \item
+        If all the eigenvalues of a general matrix~$\mat A$ (not necessarily symmetric) are positive,
+        then there exists a unique lower triangular matrix $\mat C \in \real^{n \times n}$ such that $\mat A = \mat C \mat C^\t$.
+
+    \item
+        The computational cost of solving the linear system~$\mat A \vect x = \vect b$,
+        with a diagonal matrix $\mat A \in \real^{n \times n}$ and a vector $\vect b \in \real^n$,
+        scales as~$2 n^3 + \mathcal O(n^2)$.
+
+    \item
+        The only matrix~$\mat A \in \real^{n \times n}$ such that~$\kappa_2(\mat A) = 1$ is the identity matrix.
+
+    \item
+        Let~$\mat A \in \real^{n \times n}$ be a symmetric matrix.
+        In this case, the matrix can be decomposed as
+        \[
+            \mat A = \mat Q \mat \Lambda \mat Q^\t \, ,
+        \]
+        for a diagonal matrix~$\mat \Lambda$ containing the eigenvalues and an orthogonal matrix~$\mat Q$.
+        Then $\mat A^k \to 0$ in the limit~$k \to \infty$ if and only if the spectral radius satisfies~$\rho(\mat A) < 1$.
+
+    \item
+        Suppose that $\mat A \in \real^{n \times n}$ is symmetric and positive definite,
+        and let $\vect b \in \real^n$.
+        Consider the following iterative method for solving the linear system $\mat A \vect x = \vect b$ \, :
+        \begin{equation}
+            \label{eq:richardson}
+            \vect x^{(k+1)} = \vect x^{(k)} + \omega \left( \vect b - \mat A \vect x^{(k)} \right).
+        \end{equation}
+        If~$\omega \neq 0$ and this iteration converges to some vector~$\vect x^{\infty} \in \real$,
+        then~$\vect x^{\infty}$ is the solution of the linear system.
+
+    \item
+        \textbf{Bonus}:
+        Suppose that $\mat A \in \real^{n \times n}$ is symmetric and positive definite.
+        We proved in class that the iteration~\eqref{eq:richardson} converges to the exact solution if and only if
+        \[
+            \rho(\mat I - \omega \mat A) \coloneq \max_{\lambda \in \sigma(\mat A)} \lvert 1 - \omega \lambda \rvert < 1.
+        \]
+        Assuming that all the eigenvalues of~$\mat A$ are contained in the interval~$[1, 2]$,
+        write a sufficient condition on the real parameter~$\omega$ to guarantee that the iteration converges.
+
+        \emph{Your answer:} It suffices that $\omega \in$
+        \vspace{1cm}
+
+    \item
+        \textbf{Bonus:}
+        Suppose again that $\mat A \in \real^{n \times n}$ is symmetric and positive definite.
+        We proved in class that the error for Richardson's iteration~\eqref{eq:richardson} satisfies
+        \[
+            \forall k \in \nat, \qquad
+            \left\lvert \vect x^{(k)} - \vect x_* \right\rvert
+            \leq 
+            \rho(\mat I - \omega \mat A)^k 
+            \left\lvert \vect x^{(0)} - \vect x_* \right\rvert \, .
+        \]
+        Assuming that all the eigenvalues of~$\mat A$ are contained in the interval~$[1, 2]$,
+        what value of $omega$ would you choose to optimize this bound,
+        that is to say to minimize the factor~$\rho(\mat I - \omega \mat A)$?
+
+        \emph{Your answer:}
+\end{enumerate}
+\end{document}

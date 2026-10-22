@@ -1,0 +1,787 @@
+\documentclass[11pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{cleveref}
+\usepackage{amssymb}
+\setlist[enumerate]{font=\bfseries}
+\theoremstyle{definition}
+\newtheorem{question}{Question}
+\theoremstyle{remark}
+\newtheorem*{solution}{Solution}
+\input{../../macros.tex}
+\begin{document}
+
+\title{Numerical Analysis: Final exam \\
+\small{(\textbf{50 marks}, only the 5 best questions count)}}
+\author{Urbain Vaes}
+\date{12 May 2022}
+\maketitle
+
+\begin{question}
+    [Floating point arithmetic, \textbf{10 marks}]
+    True or false? +1/-1
+    \begin{enumerate}
+        \item
+            Let $(\placeholder)_3$ denote base 3 representation.
+            It holds that
+            \[
+                (120)_3 + (111)_3 = (1001)_3.
+            \]
+        \item
+            Let $(\placeholder)_2$ denote binary representation.
+            It holds that
+            \[
+                (1000)_2 \times (0.1\overline{01})_2 = (101.\overline{01})_2.
+            \]
+
+        \item
+            In Julia, \julia{Float64(.25) == Float32(.25)} evaluates to \julia{true}.
+
+        \item
+            The spacing (in absolute value) between successive double-precision (\julia{Float64}) floating point numbers is constant.
+
+        \item
+            The machine epsilon is the smallest strictly positive number that can be represented in a floating point format.
+
+        \item
+            Let $\floating_{64} \subset \real$ denote the set of double-precision floating point numbers.
+            If $x \in \floating_{64}$, then~$x$ admits a finite decimal representation.
+
+        \item
+            Let $x$ be a real number. If $x \in \floating_{64}$, then $2x \in \floating_{64}$.
+
+        \item
+            The following equality holds
+            \[
+                (0.\overline{101})_2 = \frac{7}{3}.
+            \]
+
+        \item
+            In Julia, \julia{256.0 + 2.0*eps(Float64) == 256.0} evaluates to \julia{true}.
+
+        \item
+            The set~$\floating_{64}$ of double-precision floating point numbers contains twice as many real numbers
+            as the set~$\floating_{32}$ of single-precision floating point numbers.
+
+        \item
+            Let $x$ and $y$ be two numbers in $\floating_{64}$.
+            The result of the machine addition $x \madd y$ is sometimes exact and sometimes not,
+            depending on the values of $x$ and $y$.
+    \end{enumerate}
+\end{question}
+\begin{solution}
+    The correct answers are the following:
+    \begin{enumerate}
+        \item
+            True.
+            The equality can be checked by converting the numbers to base 10 and then adding them,
+            or by performing a long addition in base 3 directly.
+
+        \item
+            True.
+            Multiplication by $(1000)_2$ shifts the binary expansion 3 positions to the left.
+
+        \item
+            True, because $0.25 = (0.01)_2$ in binary,
+            which belongs to $\floating_{32} \cap \floating_{64}$.
+
+        \item
+            False. This is why they are called \emph{floating point} numbers.
+
+        \item
+            False. The machine epsilon is related to the \emph{relative} accuracy.
+
+        \item
+            True, because all the powers of 2 admit a decimal representation with finitely many digits.
+            Here we employ the word ``admit'' because the decimal expansion is not unique;
+            for example, $(0.1)_2 = (0.5)_10 = (0.4\overline{9})_10$.
+
+        \item
+            False. If the statement were true,
+            then there would be an infinite amount of floating point numbers.
+
+        \item
+            False. The left-hand side is $< 1$, and the right-hand side is $> 1$.
+
+
+        \item
+            True. The next floating point number after $256$ is $256 (1 + \varepsilon)$.
+
+        \item
+            False. It would take just one additional bit to store twice as many numbers.
+
+        \item
+            True. It depends on whether $x + y$ belongs to $\floating_{64}$ or not.
+    \end{enumerate}
+\end{solution}
+
+\newpage
+\begin{question}
+    [Iterative method for linear systems, \textbf{10 marks}]
+    Assume that $\mat A \in \real^{n \times n}$ is a nonsingular matrix and that $\vect b \in \real^n$.
+    We wish to solve the linear system
+    \begin{equation}
+        \label{eq:linear_system}
+        \mat A \vect x = \vect b
+    \end{equation}
+    using an iterative method where each iteration is of the form
+    \begin{equation}
+        \label{eq:iterative_scheme}
+        \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
+    \end{equation}
+    Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
+    and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
+
+    \begin{enumerate}
+        \item
+            (\textbf{3 marks})
+            Let $\vect e_k := \vect x_k - \vect x_*$,
+            where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
+            Prove that
+            \[
+                \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
+            \]
+
+        \item
+            (\textbf{3 marks})
+            Let $L = \norm{\mat M^{-1} \mat N}_{\infty}$.
+            Prove that
+            \begin{equation}
+                \label{eq:inequality_interpolation}
+                \forall k \in \nat, \qquad
+                \norm{\vect e_k}_{\infty} \leq L^k \norm{\vect e_0}_{\infty}.
+            \end{equation}
+
+        \item
+            (\textbf{1 mark})
+            Is the condition $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ necessary
+            for convergence when $\vect x_0 \neq \vect x_*$?
+
+        \item
+            (\textbf{3 marks})
+            Assume that $\mat A$ is strictly row diagonally dominant, in the sense that
+            \[
+                \forall i \in \{1, \dotsc, n\}, \qquad
+                \lvert a_{ii} \rvert > \sum_{j=1, j\neq i}^{n} \lvert a_{ij} \rvert.
+            \]
+            Show that, in this case, the inequality $\norm{\mat M^{-1} \mat N}_{\infty} < 1$ holds for the Jacobi method,
+            i.e.\ when $\mat M$ contains just the diagonal of~$\mat A$.
+            You may take for granted the following expression for the~$\infty$-norm of a matrix $\mat X \in \real^{n \times n}$:
+            \[
+                \norm{\mat X}_{\infty} = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs{x_{ij}}.
+            \]
+
+        \item
+            (\textbf{Bonus +1})
+            Write down a few iterations of the Jacobi method when
+            \[
+                \mat A =
+                \begin{pmatrix}
+                    1 & 2 \\
+                    0 & 1
+                \end{pmatrix},
+                \qquad
+                \vect b
+                \begin{pmatrix}
+                    1 \\
+                    1
+                \end{pmatrix},
+                \qquad
+                \vect x_0 =
+                \begin{pmatrix}
+                    0 \\
+                    0
+                \end{pmatrix}.
+            \]
+            Is the method convergent?
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    \begin{enumerate}
+        \item
+            We have
+            \[
+                \left\{
+                    \begin{aligned}
+                        \mat M \vect x_{k+1} &= \mat N \vect x_{k} + \vect b \\
+                        \mat M \vect x_{*} &= \mat N \vect x_{*} + \vect b.
+                    \end{aligned}
+                \right.
+            \]
+            The second equation holds because $\vect x_*$ is a solution to~\eqref{eq:linear_system}.
+            Subtracting the second equation from the first,
+            and multiplying both sides by $\mat M^{-1}$,
+            we obtain the required result.
+
+        \item
+            By induction we have
+            \[
+                \vect e_k = (\mat M^{-1} \mat N)^k \vect e_0.
+            \]
+            By definition of the $\norm{\placeholder}_{\infty}$ operator norm,
+            we deduce that
+            \[
+                \norm{\vect e_k}_{\infty} \leq \norm{(\mat M^{-1} \mat N)^k}_{\infty} \norm{\vect e_0}_{\infty}.
+            \]
+            Since the norm $\norm{\placeholder}_{\infty}$ is submultiplicative,
+            we conclude that
+            \[
+                \norm{\vect e_k}_{\infty} \leq \norm{\mat M^{-1} \mat N}_{\infty}^k \norm{\vect e_0}_{\infty}
+                = L^k \norm{\vect e_0}_{\infty}.
+            \]
+
+        \item
+            No. The condition is sufficient, because $\rho(\mat M^{-1} \mat N) \leq \norm{\mat M^{-1} \mat N}_{\infty}$,
+            but not necessary.
+            See the bonus question for an example where convergence occurs but $\norm{\mat M^{-1} \mat N}_{\infty} > 1$.
+
+        \item
+            We have that
+            \[
+                (\mat M^{-1} \mat N)_{ij} =
+                \begin{cases}
+                    0 & \text{if $i = j$} \\
+                    \frac{a_{ij}}{a_{ii}} & \text{if $i \neq j$}.
+                \end{cases}.
+            \]
+            By strict diagonal dominance, we deduce
+            \[
+                \forall  i \in \{1, \dotsc, n\},
+                \qquad
+                \sum_{j=1}^{n} \abs*{(\mat M^{-1} \mat N)_{ij}}
+                = \sum_{j=1, j\neq i}^{n} \abs*{\frac{a_{ij}}{a_{ii}}}
+                = \frac{1}{\abs{a_{ii}}}\sum_{j=1, j\neq i}^{n} \abs*{a_{ij}} < 1.
+            \]
+            Therefore, we conclude that
+            \[
+                \norm{\mat M^{-1} \mat N}_{\infty}
+                = \max_{1 \leq i \leq n} \sum_{j=1}^{n} \abs*{(\mat M^{-1} \mat N)_{ij}}  < 1.
+            \]
+
+        \item
+            In this case
+            \[
+                \mat M^{-1} \mat N =
+                \begin{pmatrix}
+                    0 & 2 \\ 0 & 0
+                \end{pmatrix},
+            \]
+            which is a nilpotent matrix and so $\vect e_2 = (\mat M^{-1} \mat N)^2 \vect e_0 = \vect 0$;
+            the method converges in two iterations.
+    \end{enumerate}
+\end{solution}
+
+\newpage
+\begin{question}
+    [Nonlinear equations, \textbf{10 marks}]
+    Assume that $\vect x_* \in \real^n$ is a solution to the equation
+    \[
+        \vect F(\vect x) = \vect x,
+    \]
+    where $\vect F\colon \real^n \to \real^n$ is a smooth nonlinear function.
+    We consider the following fixed-point iterative method for approximating~$\vect x_*$:
+    \begin{equation}
+        \label{eq:fixed_point}
+        \vect x_{k+1} = \vect F(\vect x_k).
+    \end{equation}
+    \begin{enumerate}
+        \item
+            (\textbf{8 marks})
+            Assume in this part that $\vect F$ satisfies the local Lipschitz condition
+            \begin{equation}
+                \label{eq:local_lipschitz}
+                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+                \norm[big]{\vect F(\vect x) - \vect F(\vect x_*)} \leq L \norm{\vect x - \vect x_*},
+            \end{equation}
+            with $0 \leq L < 1$ and $\delta > 0$.
+            Here $B_{\delta}(\vect x_*)$ denotes the open ball of radius $\delta$ centered at~$\vect x_*$.
+            Show that the following statements hold:
+            \begin{itemize}
+                \item (\textbf{2 marks}) There is no fixed point of $\vect F$ in $B_{\delta}(\vect x_*)$ other than $\vect x_*$.
+                \item (\textbf{2 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then all the iterates $(\vect x_k)_{k \in \nat}$ belong to $B_{\delta}(\vect x_*)$.
+                \item (\textbf{3 marks}) If $\vect x_0 \in B_{\delta}(\vect x_*)$, then the sequence $(\vect x_k)_{k \in \nat}$ converges to~$\vect x_*$ and
+                    \[
+                        \forall k \in \nat, \qquad
+                        \norm{\vect x_k - \vect x_*} \leq L^k \norm{\vect x_0 - \vect x_*}.
+                    \]
+            \end{itemize}
+
+        \item
+            (\textbf{3 marks})
+            Explain with an example how the iterative scheme~\eqref{eq:fixed_point} can be employed for solving a nonlinear equation of the form
+            \[
+                \vect f(\vect x) = \vect 0.
+            \]
+
+        \item
+            (\textbf{Bonus +1})
+            Let~$\mat J_F\colon \real^n \to \real^{n\times n}$ denote the Jacobian matrix of $\vect F$.
+            Show that if
+            \begin{equation*}
+                \forall \vect x \in B_{\delta}(\vect x_*), \qquad
+                \norm[big]{\mat J_F(\vect x)} \leq L,
+            \end{equation*}
+            then the local Lipschitz condition~\eqref{eq:local_lipschitz} is satisfied.
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item {}
+            \begin{itemize}
+
+                \item
+                    Assume by contradiction that there was another fixed point $\vect y_*$.
+                    Then, using the Lipschitz continuity, it would hold that
+                    \[
+                        \norm{\vect y_* - \vect x_*} = \norm{\vect F(\vect y_*) - \vect F(\vect x_*)} \leq L \norm{\vect y_* - \vect x_*},
+                    \]
+                    which is a contradiction because $L < 1$.
+
+                \item
+                    The first iterate $\vect x_0$ is in $B_{\delta}(\vect x_*)$ by assumption.
+                    Reasoning by induction we assume that all the iterates up to $\vect x_k$ belong to $B_{\delta}(\vect x_*)$.
+                    Then, since $\vect F(\vect x_*) = \vect x_*$ by definition of $\vect x_*$,
+                    we have
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} = \norm{\vect F(\vect x_{k}) - \vect F(\vect x_*)} \leq L \norm{\vect x_{k} - \vect x_*} < L \delta < \delta,
+                    \]
+                    implying that $\vect x_{k+1}$ is also in $B_{\delta}(\vect x_*)$.
+                    Note that we used the induction hypothesis twice: in the first inequality,
+                    because we need to know that $\vect x_k \in B_{\delta}(\vect x_*)$ in order to apply the local Lipschitz continuity~\eqref{eq:local_lipschitz},
+                    and then in the second inequality for the bound $\norm{\vect x_{k} - \vect x_*} < \delta$.
+
+                \item
+                    In the previous item, we showed that
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*}.
+                    \]
+                    Iterating this inequality,
+                    we deduce that
+                    \[
+                        \norm{\vect x_{k+1} - \vect x_*} \leq L \norm{\vect x_{k} - \vect x_*} \leq \dotsc \leq L^{k+1} \norm{\vect x_{0} - \vect x_*}.
+                    \]
+            \end{itemize}
+
+        \item
+            A possible approach is to use the Newton--Raphson method.
+            Letting
+            \[
+                \vect F(\vect x) = \vect x - \mat J_{f}(\vect x)^{-1} \vect f(\vect x),
+            \]
+            we observe that if~$\vect x_*$ is a solution to $\vect f(\vect x) = \vect 0$,
+            then $\vect x_*$ is also a fixed point of $\vect F(\vect x)$,
+            provided that $\vect J_{f}(\vect x_*)$ is nonsingular.
+            We can then use the iterative scheme~\eqref{eq:linear_system} in order to estimate $\vect x_*$.
+
+        \item
+            This is from the lecture notes.
+            By the fundamental theorem of calculus and the chain rule,
+            we have
+            \begin{align*}
+                \vect F(\vect x) - \vect F(\vect x_*)
+                &= \int_{0}^{1} \frac{\d}{\d t} \Bigl( \vect F\bigl(\vect x_* + t(\vect x - \vect x_*) \bigr) \Bigr) \d t
+                = \int_{0}^{1} \mat J_F\bigl(\vect x_* + t(\vect x - \vect x_*)\bigr) \left(\vect x - \vect x_* \right) \d t.
+            \end{align*}
+            Therefore,
+            it holds that
+            \begin{align*}
+                \norm{\vect F(\vect x) - \vect F(\vect x_*)}
+                &\leq \int_{0}^{1} \norm*{\mat J_F\bigl(\vect x + t(\vect x - \vect x_*)\bigr)}  \, \d t \, \norm{\vect x - \vect x_*} \\
+                &\leq \int_{0}^{1} L \, \d t \, \norm{\vect x - \vect x_*} = L \norm{\vect x - \vect x_*},
+            \end{align*}
+            which is the statement.
+    \end{enumerate}
+\end{solution}
+
+\newpage
+\begin{question}
+    [Error estimate for eigenvalue problem, \textbf{10 marks}]
+    Let $\norm{\placeholder}$ denote the Euclidean norm,
+    and assume that~$\mat A \in \real^{n \times n}$ is symmetric and nonsingular.
+
+    \begin{enumerate}
+        \item
+            (\textbf{5 marks})
+            Describe with words and pseudocode a simple numerical method for calculating the eigenvalue of $\mat A$ of smallest modulus,
+            as well as the corresponding eigenvector.
+            Assume for simplicity that this eigenvalue and the corresponding eigenvector are unique.
+
+        \item
+            (\textbf{1 mark})
+            Let $\mat M \in \real^{n \times n}$ denote a nonsingular symmetric matrix.
+            Prove that
+            \begin{equation}
+                \label{eq:intermediate_eigen}
+                \forall \vect x \in \real^n, \qquad
+                \norm{\mat M \vect x} \geq \norm{\mat M^{-1}}^{-1} \norm{\vect x}.
+            \end{equation}
+            Let $\lambda_{\min}(\mat M)$ denote the eigenvalue of~$\mat M$ of smallest modulus.
+            % What is the connection between $\norm{\mat M^{-1}}$ and $\lambda_{\min}(\mat M)$?
+            % \footnote{Remember that the 2-norm of a Hermitian matrix coincides with its spectral radius.}
+            Deduce from~\eqref{eq:intermediate_eigen} that
+            \begin{equation}
+                \label{eq:bound_eigen}
+                \forall \vect x \in \real^n, \qquad
+                \norm{\mat M \vect x} \geq \abs{\lambda_{\min}(\mat M)} \norm{\vect x}.
+            \end{equation}
+
+        \item
+            (\textbf{4 marks})
+            Assume that $\widehat \lambda \in \real$ and $\widehat{\vect v} \in \real^n$ are such that
+            \begin{equation}
+                \label{eq:bound}
+                \norm{\mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}} = \varepsilon > 0,
+                \qquad \norm{\widehat {\vect v}} = 1.
+            \end{equation}
+            Using~\eqref{eq:bound_eigen},
+            prove that there exists an eigenvalue~$\lambda$ of~$\mat A$ such that
+            \[
+                \abs{\lambda - \widehat \lambda} \leq \varepsilon.
+            \]
+
+        \item
+            (\textbf{Bonus +1}) Show that, in the more general case where $\mat A = \mat V \mat D \mat V^{-1}$ is diagonalizable but not necessarily Hermitian,
+            equation~\eqref{eq:bound} implies the existence of an eigenvalue~$\lambda$ of~$\mat A$ with
+            \[
+                \abs{\widehat \lambda - \lambda} \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon.
+            \]
+            \noindent{\textbf{Hint}:}
+            Introduce $\vect r = \mat A \widehat{\vect v} - \widehat{\lambda} \widehat{\vect v}$ and rewrite
+            \[
+                \norm{\widehat {\vect v}} = \norm{(\mat A - \widehat \lambda \mat I)^{-1}  {\vect r}}
+                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}.
+            \]
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    $~$
+    \begin{enumerate}
+        \item
+            Since our aim is to approximate the eigenvalue of smallest modulus,
+            a possible approach is to use the inverse power iteration with shift $\mu = 0$.
+            After an approximation of the eigenvector has been calculated,
+            an approximation of the eigenvalue may be calculated from the Rayleigh quotient.
+            A pseudocode for this approach is given in~\cref{algo:inverse_iteration}.
+            \begin{algorithm}
+                \caption{Inverse iteration}%
+                \label{algo:inverse_iteration}%
+                \begin{algorithmic}
+                    \State $\vect x \gets \vect x_0$
+                    \For{$i \in \{1, 2, \dotsc\}$}
+                    \State Solve $\mat A \vect y = \vect x$
+                    \State $\vect x \gets \vect y / \norm{\vect y}$
+                    \EndFor
+                    \State $\lambda \gets \vect x^* \mat A \vect x / \vect x^* \vect x$
+                    \State \Return $\vect x, \lambda$
+                \end{algorithmic}
+            \end{algorithm}
+
+        \item
+            The inequality~\eqref{eq:intermediate_eigen} follows from
+            \[
+                \norm{\vect x} = \norm{\mat M^{-1} \mat M \vect x} \leq \norm{\mat M^{-1}} \norm{\mat M \vect x}.
+            \]
+            Equation~\eqref{eq:bound_eigen} then follows from the fact that
+            \begin{equation}
+                \label{eq:norm_inverse}
+                \norm{\mat M^{-1}} = \abs{\lambda_{\max}(\mat M^{-1})} = \frac{1}{\abs{\lambda_{\min}(\mat M)}}.
+            \end{equation}
+
+        \item
+            Using~\eqref{eq:bound_eigen},
+            we deduce that
+            \[
+                \abs{\lambda_{\min}(\mat A - \widehat \lambda \mat I)} =
+                \abs{\lambda_{\min}(\mat A - \widehat \lambda \mat I)} \norm{\widehat {\vect v}}
+                \leq \norm{(\mat A - \widehat \lambda \mat I) \widehat {\vect v}} = \varepsilon.
+            \]
+            The eigenvalues of $\mat A - \widehat \lambda \mat I$ are given by $\{\lambda - \widehat \lambda : \lambda \in \sigma(\mat A)\}$,
+            where $\sigma(A)$ is the set of eigenvalues of~$\mat A$.
+            The statement then follows immediately.
+
+        \item
+            Following the hint and using the submultiplicative property of the norm,
+            we have
+            \[
+                1 = \norm{\widehat {\vect v}}
+                = \norm{\mat V (\mat D - \widehat \lambda \mat I)^{-1}  \mat V^{-1} {\vect r}}
+                \leq \norm{\mat V} \norm{(\mat D - \widehat \lambda \mat I)^{-1}} \norm{\mat V^{-1}} \norm{\vect r}
+                = \norm{\mat V} \norm{(\mat D - \widehat \lambda \mat I)^{-1}} \norm{\mat V^{-1}} \varepsilon.
+            \]
+            Rearranging this equation and using~\eqref{eq:norm_inverse},
+            we deduce that
+            \[
+                \abs{\lambda_{\min} (\mat D - \widehat \lambda \mat I)}
+                = \frac{1}{\norm{(\mat D - \widehat \lambda \mat I)^{-1}}}
+                \leq \norm{\mat V} \norm{\mat V^{-1}} \varepsilon,
+            \]
+            and the statement follows easily.
+            % Rearranging this equation,
+            % we obtain
+            % \[
+
+            % \]
+    \end{enumerate}
+\end{solution}
+
+\newpage
+\begin{question}
+    [Interpolation error, \textbf{10 marks}]
+    Let~$u$ denote the function
+    \begin{align*}
+        u\colon
+        &[0, 2\pi] \to \real; \\
+        &x \mapsto \cos(x).
+    \end{align*}
+    Let $p_n \colon [0, 2 \pi] \to \real$ denote the interpolating polynomial of~$u$ through at the nodes
+    \[
+        x_i = \frac{2 \pi i}{n}, \qquad i = 0, \dotsc, n.
+    \]
+    \begin{enumerate}
+        \item
+            (\textbf{3 marks})
+            Using a method of your choice,
+            calculate $p_n$ for $n = 2$.
+
+        \item
+            (\textbf{6 marks})
+            Let $n \in \nat_{>0}$ and $e_n(x) := u(x) - p_n(x)$.
+            Prove that
+            \[
+                \forall x \in [0, 2\pi], \qquad
+                \abs{e_n(x)}
+                \leq \frac{\lvert \omega_n(x) \rvert}{(n+1)!},
+            \]
+            where we introduced
+            \[
+                \omega_n(x) := \prod_{i=0}^{n} (x - x_i).
+            \]
+            \textbf{Hint:} You may find it useful to introduce the function
+            \[
+                g(t) = e_n(t) \omega_n(x) - e_n(x) \omega_n(t).
+            \]
+
+        \item
+            (\textbf{1 mark}) Does the maximum absolute error
+            \[
+                E_n := \sup_{x \in [0, 2\pi]} \abs{e_n(x)}
+            \]
+            tend to zero in the limit as $n \to \infty$?
+    \end{enumerate}
+
+    \noindent (\textbf{Bonus +1}) Using the Gregory--Newton formula,
+    find a closed expression for the sum
+    \[
+        S(n) = \sum_{k=0}^{n} k^2.
+    \]
+\end{question}
+\begin{solution}
+    $~$
+    \begin{enumerate}
+
+        \item
+            The parabola $p_n$ is required to pass through the points $(0, 1)$, $(\pi, -1)$ and $(2\pi, 1)$.
+            It is clear, therefore, that the axis of symmetry of $p_n$ is at $x = \pi$,
+            which suggests the ansatz
+            \[
+                p_n(x) = A + B (x - \pi)^2.
+            \]
+            The equations $p_n(\pi) = -1$ and $p_n(0) = 1$ imply that
+            $A = -1$ and then $B = 2\pi^{-2}$.
+            Therefore, it holds that
+            \[
+                p_n(x) = -1 + 2 \left(\frac{x}{\pi} - 1\right)^2.
+            \]
+
+        \item
+            This is a proof from the lecture notes.
+            The statement is obvious if $x \in \{x_0, \dotsc, x_n\}$,
+            so we assume that $x$ does not coincide with an interpolation node.
+            The function $g$ is smooth and takes the value~0 when evaluated at~$x_0, \dotsc, x_n, x$.
+            Therefore, by Rolle's theorem, the function~$g'$ has at least $n+1$ distinct roots in~$(0, 2\pi)$.
+            Repeating this reasoning, we deduce that $g^{(n+1)}$ has at least one root~$t_*$ in $(0, 2\pi)$.
+            We calculate that
+            \begin{equation}
+                \label{eq:interpolation_error_proof}
+                g^{(n+1)}(t) = e_n^{(n+1)}(t) \omega_n(x) - e_n(x) \omega_n^{(n+1)}(t)
+                = u^{(n+1)}(t) \omega_n(x) - e_n(x) (n+1)!,
+            \end{equation}
+            Because $p_n^{(n+1)} = 0$.
+            Evaluating~\eqref{eq:interpolation_error_proof} at~$t_*$ and rearranging,
+            we obtain that
+            \[
+                e_n(x) = \frac{u^{(n+1)}(t_*)}{(n+1)!} \omega_n(x).
+            \]
+            Finally, noticing that $\abs{u^{n+1}}$ is bounded from above uniformly by 1,
+            we deduce~\eqref{eq:inequality_interpolation}.
+
+            \item
+                Yes. In the limit as $n \to \infty$,
+                it holds that $\sup_{x \in [0, 2\pi]} \abs{\omega_n(x)} \to 0$ and $1/(n+1)! \to 0$.
+    \end{enumerate}
+
+
+    \noindent (\textbf{Bonus +1})
+    Since $\Delta S(n) = (n+1)^2$,
+    which is a second degree polynomial in $n$,
+    we deduce that $S(n)$ is a polynomial of degree 3.
+    Let us now determine its coefficients.
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        $n$    & $0$ & $1$ & $2$ & $3$ \\ \hline
+        $\Delta^0 S(n)$ & $\mathbf{0}$ & $1$ & $5$ & $14$ \\ \hline
+        $\Delta^1 S(n)$ & $\mathbf{1}$ & $4$ & $9$ &  \\ \hline
+        $\Delta^2 S(n)$ & $\mathbf{3}$ & $5$ & & \\ \hline
+        $\Delta^3 S(n)$ & $\mathbf{2}$ & & & \\ \hline
+    \end{tabular}
+    \end{center}
+    We conclude that
+    \[
+        S(n) = \mathbf{1} n + \frac{\mathbf{3}}{2!} n(n-1) + \frac{\mathbf{2}}{3!} n(n-1)(n-2)
+        = \frac{n (2n+1) (n+1)}{6}.
+    \]
+\end{solution}
+
+\newpage
+\begin{question}
+    [Numerical integration, \textbf{10 marks}]
+    The third exercise below is independent of the first two.
+    \begin{enumerate}
+        \item (\textbf{5 marks})
+            Construct an integration rule of the form
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx w_1 u\left(-\frac{1}{2} \right) + w_2 u(0) +  w_3 u\left(\frac{1}{2} \right)
+            \]
+            with a degree of precision equal to at least 2.
+
+        \item
+            (\textbf{1 mark})
+            What is the degree of precision of the rule constructed?
+
+        \item
+            (\textbf{4 marks})
+            The Gauss--Laguerre quadrature rule with~$n$ nodes is an approximation of the form
+            \[
+                \int_{0}^{\infty} u(x) \, \e^{-x} \, \d x \approx \sum_{i=1}^{n} w_i u(x_i),
+            \]
+            such that the rule is exact when $u$ is a polynomial of degree less than or equal to $2n-1$.
+            Find the Gauss--Laguerre rule with one node ($n = 1$).
+
+        \item (\textbf{Bonus +1})
+            Find the Gauss--Laguerre quadrature rule with two nodes ($n = 2$).
+            You may find it useful to first calculate the Laguerre polynomial of degree 2.
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    \begin{enumerate}
+        $~$
+        \item
+            The Lagrange polynomials associated with $-1/2$, $0$ and $1/2$ are respectively
+            \begin{align*}
+                p_{1}(x) &= 2x \left(x - \frac{1}{2}\right), \\
+                p_{2}(x)    &= - 4\left(x + \frac{1}{2}\right) \left(x - \frac{1}{2}\right), \\
+                p_{3}(x)  &= 2\left(x + \frac{1}{2}\right) x.
+            \end{align*}
+            We deduce that
+            \begin{align*}
+                w_1 &= \int_{-1}^1 p_{1}(x) = \frac{4}{3}, \\
+                w_2 &= \int_{-1}^1 p_{2}(x) = - \frac{2}{3}, \\
+                w_3 &= \int_{-1}^1 p_{3}(x) = \frac{4}{3}.
+            \end{align*}
+
+        \item
+            By construction,
+            the degree of precision is at least 2.
+            However, the integration rule is exact also when $u(x) = x^3$.
+            Since it is not exact for $u(x) = x^4$,
+            we conclude that the degree of precision is 3.
+
+        \item
+            We are looking for $w_1$ and $x_1$ such that
+            \[
+                \forall (a,b) \in \real^2, \qquad
+                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x = w_1 (a + b x_1).
+            \]
+            The left-hand side is equal to
+            \[
+                a \int_{0}^{\infty} \e^{-x} \, \d x + b \int_{0}^{\infty} x \e^{-x} \, \d x = 0
+                = a + b \int_{0}^{\infty} x \e^{-x} \, \d x.
+            \]
+            Using integration by parts,
+            we can find the value of the remaining integral on the right-hand side:
+            \begin{align*}
+                \int_{0}^{\infty} x \e^{-x}
+                &= \int_{0}^{\infty} - (x \e^{-x})' + \e^{-x} \, \d x \\
+                &= - (x \e^{-x}) \Big\vert_{x={\infty}} + (x \e^{-x}) \Big\vert_{x={0}} + \int_{0}^{\infty} \e^{-x} \, \d x \\
+                &= 1.
+            \end{align*}
+            (To be rigorous, we would need to write the first term on the second line as a limit.)
+            Therefore, we obtain
+            \[
+                a + b = w_1(a + b x_1),
+            \]
+            which implies that $w_1 = x_1 = 1$.
+
+        \item
+            The integration nodes are given by the roots of the Laguerre polynomials,
+            which are the orthogonal polynomials for the inner product
+            \[
+                \ip{f, g} :=
+                \int_{0}^{\infty} f(x) g(x) \, \e^{-x} \, \d x.
+            \]
+            The first polynomial is $\ell_0(x) = 1$.
+            It is simple to check that the only linear monomial orthogonal to $\ell_0$ is given by $\ell_1(x) = x - 1$.
+            Next, by integration by parts we calculate that
+            \[
+                \int_{0}^{\infty} x^2 \, \e^{-x} \, \d x
+                = \int_{0}^{\infty} - (x^2 \e^{-x})' + 2 x \e^{-x} \, \d x = 2.
+            \]
+            and, similarly,
+            \[
+                \int_{0}^{\infty} x^3 \, \e^{-x} \, \d x
+                = \int_{0}^{\infty} - (x^3 \e^{-x})' + 3 x^2 \e^{-x} \, \d x = 6.
+            \]
+            Consider the ansatz $\ell_2(x) = x^2 + a \ell_1(x) + b$.
+            In order for $\ell_2$ to be orthogonal to $\ell_0$ and~$\ell_1$,
+            it is necessary that
+            \begin{align*}
+                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_0(x) \, \e^{-x} \, \d x = 2 + b, \\
+                0 &= \int_{0}^{\infty} \ell_{2}(x) \, \ell_1(x) \, \e^{-x} \, \d x
+                = 4 + a \int_{0}^{\infty} \ell_1(x) \ell_1(x) \, \ d x = 4 + a.
+            \end{align*}
+            Therefore, we conclude that $a = -4$ and $b=-2$,
+            which gives
+            \[
+                \ell_2(x) = x^2 - 4 x + 2.
+            \]
+            The roots are given by $2 \pm \sqrt{2}$,
+            so we have $x_1 = 2 - \sqrt{2}$ and $x_2 = 2 + \sqrt{2}$.
+            It remains to find the weights.
+            To this end, we need only two additional equations,
+            it is sufficient to require that, for any $(a,b) \in \real^2$,
+            \begin{align*}
+                a + b =
+                \int_{0}^{\infty} (a + bx) \, \e^{-x} \, \d x
+                &= w_1 (a + b x_1) + w_2 (a + b x_2) \\
+                &= a (w_1 + w_2) + 2 b (w_1 + w_2) + \sqrt{2} b (w_2 - w_1),
+            \end{align*}
+            which enables to find $w_1$ and $w_2$.
+    \end{enumerate}
+\end{solution}
+
+\end{document}

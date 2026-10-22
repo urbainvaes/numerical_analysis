@@ -1,0 +1,569 @@
+\documentclass[10pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{fontawesome}
+\usepackage{svg}
+\usepackage[newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage[colorlinks=true]{hyperref}
+\theoremstyle{definition}
+\newtheorem{question}{{\normalfont \faGears}~Question}
+\newtheorem{compexercise}{{\normalfont \faLaptop}~Implementation exercise}
+\input{../../macros.tex}
+\renewcommand{\mymarks}[1]{\textbf{#1 marks}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Name: }
+\chead{Final exam}
+\rhead{Page \thepage}
+
+\begin{document}
+
+\title{Numerical Analysis: Final exam {\small (\mymarks{70})}}
+\author{Urbain Vaes}
+\date{Fall $(11111101001)_2$}
+\maketitle
+
+\noindent \emph{You are not required to complete every question.
+Although the total marks on the exam sum to 70 (not including bonus points),
+your final grade will be calculated out of 60.}
+\vspace{.3cm}
+
+\noindent \textbf{Academic integrity pledge:} $\square$ \textcolor{blue}{I certify that I will not give or receive any unauthorized help on this exam,
+and that all work will be my own. (Tick $\checkmark$ or copy the sentence on your answer sheet)}.
+\vspace{.3cm}
+
+\newpage
+\begin{question}
+    [Floating point arithmetic, \mymarks{10}]
+    True or false?
+    \begin{enumerate}
+        \item Let $(\placeholder)_2$ denote binary representation.
+            Then
+            \(
+                (1000000000)_2 \times (0.001)_2 = (1000000)_2.
+            \)
+
+        \item It holds that
+            \(
+                (0.111111)_2 + (0.000001)_2 = (1.001)_2.
+            \)
+
+        \item
+            It holds that $(0.\overline{1100})_2 = \frac{4}{5}$.
+
+        \item
+            Let $\varepsilon_{32}$ denote the machine epsilon for the \julia{Float32} format,
+            i.e.\ \julia{eps(Float32)}.
+            Then the number~3 is representable exactly in this format,
+            and the next representable number in the \julia{Float32} format is $3 + 2\varepsilon_{32}$.
+
+        \item
+            In Julia, \julia{Float64(3.25) == Float32(3.25)} evaluates to \julia{true}.
+
+        \item
+            The spacing (in absolute value) between successive half-precision (\julia{Float16}) floating point numbers is always greater than or equal to \julia{eps(Float16)}.
+
+        \item
+            In Julia, define \julia{f(x) = x == Inf ? - x : f(-2x)}.
+            Then \julia{f(5.0)} evaluates to \julia{Inf}.
+
+        \item
+            There exists $n \in \nat$ such that the machine epsilon for the \julia{Float64} format equals $2^{-n}$.
+            In other words, the machine epsilon is an exact negative power of two.
+
+        \item
+            In Julia, it holds that \julia{eps()/3 + eps()/3 + 1 > 1} evaluates to \julia{true}.
+
+        \item
+            In Julia, the expression \julia{1 + 1024eps() == 2} evaluates to \julia{true}.
+
+        \item
+            \textbf{Bonus.}
+            Does the Julia expression \julia{log2(2 + eps()) == 2} evaluate to \julia{true} or~\julia{false}.
+
+            \textit{Explain briefly:}
+            \vspace{1cm}
+
+        \item
+            \textbf{Bonus.}
+            Does the Julia expression \julia{sqrt(4 + 5eps()) == 2} evaluate to \julia{true} or \julia{false}?
+
+            \textit{Explain briefly:}
+            \vspace{1cm}
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Interpolation, \mymarks{10}]
+    The first part of this question is an open-ended question,
+    while the second part is a true/false.
+
+    \begin{enumerate}
+        \item (\mymarks{5}, open-ended question)
+            Describe the Gregory--Newton method to calculate the interpolation polynomial in the case of equally spaced interpolation nodes at $\{0, 1, 2, \cdots, n\}$ 
+            and corresponding values $\{f(0), f(1), f(2), \cdots, f(n)\}$.
+            In particular, address the following points:
+            \begin{itemize}
+                \item 
+                    Write down the expression for the interpolating polynomial;
+
+                \item
+                    Discuss the advantages and disadvantages of this interpolation method compared to Lagrange interpolation;
+
+                \item
+                    Illustrate the method on a concrete example of your choice.
+            \end{itemize}
+
+    \newpage
+    \item
+        (\mymarks{5}) Are the following assertions true or false?
+        \begin{itemize}
+            \item 
+                Let $f(x) = 2x^4 + x^2 - 3x - 1$,
+                and let $f_3 \in \mathcal P_3$ denote the polynomial interpolant of $f$ at four points $x_0 < x_1 < x_2 < x_3$.
+                Then
+                \[
+                    f(x) - f_3(x) = \frac{2}{4!} (x - x_0)(x - x_1)(x - x_2)(x - x_3) \, .
+                \]
+
+            \item 
+                Let $f \colon \real \to \real$ be the Runge function defined by $f(x) = (1 + 25 x^2)^{-1}$,
+                and let $f_n \in \mathcal P_{n}$ denote the polynomial interpolating $f$ at $n + 1$ equally spaced points in the interval~$[-1, 1]$.
+                Then, it holds that
+                \[
+                    \lim_{n \to \infty} \left( \max_{x \in [-1, 1]} \bigl\lvert f(x) - f_n(x) \bigr\rvert \right) = 0 \, .
+                \]
+
+            \item 
+                Let $f(x) = \sin(\pi x) + \e^x$,
+                and let $f_n$ denote the piecewise linear interpolation of $f$ at $n + 1$ equally spaced points in the interval $[-1, 1]$.
+                Then, it holds that
+                \[
+                    \lim_{n \to \infty} \biggl\lvert \int_{-1}^{1}  f(x) - f_n(x) \, \d x \biggr\rvert = 0 \, .
+                \]
+
+
+            \item
+                Consider the function $\vect F \colon \real^{n+1} \to \real$ defined by
+                \[
+                    F(\vect x) \coloneq \max_{z \in [-1, 1]} \Bigl\lvert (z - x_0)(z - x_1) \dotsb (z - x_n) \Bigr\rvert \, , 
+                    \qquad \vect x = (x_0, x_1, \dotsc, x_n) \in \real^{n+1} \, .
+                \]
+                Then $\vect F$ is \emph{maximized (as large as possible)} when the points $x_0, x_1, \dotsc, x_n$ are chosen as the roots of the Chebychev polynomial of degree $n + 1$.
+
+            \item
+                In the following code,
+                \julia{p} is the interpolating polynomial through the data in \julia{x} and \julia{y}.
+                Here, for an array \julia{y} of size $n$, the command \julia{diff(y)} returns the array of size $n-1$
+                whose $i$-th entry is equal to \julia{y[i+1] - y[i]}.
+        \begin{minted}{julia}
+x = [0, 1, 2, 3]
+y = [1, 2, 1, 2]
+
+function p(x)
+    return (y[1]
+            + diff(y)[1] * x
+            + 1/2 * diff(diff(y))[1] * x^2
+            + 1/6 * diff(diff(diff(y)))[1] * x^3)
+end
+        \end{minted}
+            \item {(\textbf{Bonus, 1 mark})}
+                Let $f(n) = 2^n$. Then for all $n \in \nat$, it holds that
+                \[
+                    f(n) = \sum_{i=0}^{+\infty} \frac{\Delta^i f(0)}{i!} n^{\underline{i}} \, ,
+                \]
+                where $\Delta$ denotes the forward difference operator,
+                meaning that $\Delta f(n) = f(n+1) - f(n)$,
+                Justify your answer.
+        \end{itemize}
+\end{enumerate}
+\end{question}
+
+\newpage
+\begin{question}
+    [Numerical interpolation, \mymarks{10}]
+    We wish to derive and implement Boole's rule for numerical integration.
+    Boole's rule is a Newton--Cotes quadrature rule based on five equally spaced points in the interval~$[-1, 1]$.
+    \begin{equation}
+        \label{eq:boole_rule}
+        I[u] \coloneq \int_{-1}^{1} u(x) \, \d x
+        \approx w_0 u(-1) + w_1 u{\left(- \frac{1}{2}\right)} + w_2 u(0) + w_3 u{\left(\frac{1}{2}\right)} + w_4 u(1)
+        \eqcolon \widehat I_5[u].
+    \end{equation}
+
+    \begin{enumerate}
+        \item
+            (\mymarks{5})
+            Calculate the weights $w_0, w_1, w_2, w_3, w_4$ to ensure that the quadrature rule $\widehat I_5$ is exact for all polynomials in $\mathcal P_d$,
+            where $d$ is as large as possible.
+            Include the details of your calculation.
+
+            \textit{\textbf{Hint}: It is useful to require that the quadrature rule is exact for the Lagrange basis polynomials.}
+
+            \textit{\textbf{Hint}: By symmetry, you can expect that $w_0 = w_4$ and $w_1 = w_3$.}
+
+            \textit{Your answer:}
+            \vspace{13cm}
+
+        \item
+            \mymark
+            What is the degree of precision of Boole's rule~\eqref{eq:boole_rule}?
+
+            \textit{Your answer:}
+
+        \newpage
+        \item
+            (\mymarks{4})
+            Write a function \julia{boole(u, a, b)} that returns, using Boole's rule appropriately adapted to the interval $[a, b]$,
+            an approximation of the integral
+            \begin{align}
+                \label{eq:integral_midpoint}
+                \int_{a}^{b} u(x) \, \d x \, .
+            \end{align}
+
+            \begin{minted}{julia}
+    function boole(u, a, b)
+        # Write your code here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    end
+            \end{minted}
+        \item
+            (\textbf{Bonus}, \mymarks{2})
+            Write a function \julia{composite_boole(u, a, b, N)}
+            that returns an approximation of the integral~\eqref{eq:integral_midpoint},
+            this time using a composite version of Boole's rule.
+            More precisely, the approximation should be obtained
+            by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying Boole's rule within each cell.
+            Your function should call the function \julia{boole} you wrote in the previous item.
+
+            \begin{minted}{julia}
+    function composite_boole(u, a, b, N)
+        # Write your code here
+
+
+
+
+
+
+
+
+
+
+
+    end
+            \end{minted}
+    \end{enumerate}
+\end{question}
+
+
+\newpage
+\begin{question}
+    [Iterative method for linear systems, \textbf{10 marks}]
+    Assume that $\mat A \in \real^{n \times n}$ is a nonsingular matrix and that $\vect b \in \real^n$.
+    We wish to solve the linear system
+    \begin{equation}
+        \label{eq:linear_system}
+        \mat A \vect x = \vect b
+    \end{equation}
+    using an iterative method where each iteration is of the form
+    \begin{equation}
+        \label{eq:iterative_scheme}
+        \mat M \vect x_{k+1} = \mat N \vect x_k + \vect b.
+    \end{equation}
+    Here $\mat A = \mat M - \mat N$ is a splitting of~$\mat A$ such that $\mat M$ is nonsingular,
+    and $\vect x_k \in \real^n$ denotes the $k$-th iterate of the numerical scheme.
+
+    \begin{enumerate}
+        \item
+            (\mymarks{3})
+            Let $\vect e_k \coloneq \vect x_k - \vect x_*$,
+            where $\vect x_*$ is the exact solution to~\eqref{eq:linear_system}.
+            Prove that the error satisfies the recurrence relation
+            \[
+                \vect e_{k+1} = \mat M^{-1} \mat N \vect e_k.
+            \]
+            \vspace{5cm}
+
+        \item
+            (\mymarks{3})
+            Let $L = \norm{\mat M^{-1} \mat N}_{1}$.
+            Prove that
+            \begin{equation}
+                \label{eq:inequality_interpolation}
+                \forall k \in \nat, \qquad
+                \norm{\vect e_k}_{1} \leq L^k \norm{\vect e_0}_{1}.
+            \end{equation}
+            \vspace{6cm}
+
+        \item
+            \mymark
+            In general, is the condition $\norm{\mat M^{-1} \mat N}_{1} < 1$ sufficient
+            for convergence (that it, does it ensure that $\vect x_k \to \vect x_*$ for every $\vect x_0$)?
+            Justify briefly your answer.
+            \vspace{3cm}
+
+        \item
+            \mymark
+            In general, is the condition $\norm{\mat M^{-1} \mat N}_{1} < 1$ necessary for convergence?
+            Justify briefly your answer.
+            \vspace{3cm}
+
+        \item
+            (\textbf{2 marks})
+            Let $\vect r_k \coloneq \mat A \vect x_k - \vect b$ denote the residual at iteration~$k$.
+            Prove that
+            \[
+                \vect r_{k+1} = \mat N \mat M^{-1} \vect r_k \, .
+            \]
+    \end{enumerate}
+\end{question}
+
+\newpage
+\begin{compexercise}
+    [Linear systems, \mymarks{10}]
+    Assume that $\mat A \in \real^{n \times n}$ is an \emph{upper triangular} matrix with nonzero diagonal entries (hence invertible) and that $\vect b \in \real^n$.
+    We wish to solve the linear system
+    \begin{equation}
+        \label{eq:linear_system_upper}
+        \mat A \vect x = \vect b.
+    \end{equation}
+    \begin{itemize}
+        \item
+            (\mymarks{3})
+            Solve the linear system~\eqref{eq:linear_system_upper} by backward substitution,
+            using pen and paper, in the specific case where~$\mat A$ and~$\vect b$ are given by
+            \begin{minted}{julia}
+    A = [1.0 2.0 3.0; 0.0 4.0 5.0; 0.0 0.0 6.0]
+    b = [6.0; 9.0; 6.0]
+            \end{minted}
+            \vspace{6cm}
+        \item
+            (\mymarks{4})
+            Suppose that~$\mat A$ is upper triangular.
+            Write a function \julia{backward_subs(A, b)} implementing the backward substitution algorithm for solving~\eqref{eq:linear_system_upper} in this case.
+            \begin{minted}{julia}
+    function backward_subs(A, b)
+        n = size(A, 1)
+        x = zeros(n)
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return x
+    end
+            \end{minted}
+
+        \item
+            (\mymarks{3})
+            How many floating point operations (additions, subtractions, multiplications, divisions) does your implementation of backward substitution perform in order to solve a linear system of size~$n$?
+            Include the details of your calculation.
+
+            \vspace{5cm}
+
+        \item
+            (\textbf{Bonus, 2 marks})
+            Assume now that $\mat A$ is a banded upper triangular matrix with bandwidth~$1$,
+            which means that nonzero entries are only on the main diagonal and first superdiagonal.
+            Write a function \julia{banded_backward_subs(A, b)} that implements an efficient version of backward substitution for this case.
+            \begin{minted}{julia}
+    function banded_backward_subs(A, b)
+        n = size(A, 1)
+        x = zeros(n)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return x
+    end
+            \end{minted}
+    \end{itemize}
+\end{compexercise}
+
+\newpage
+\begin{question}
+    [Iterative method for nonlinear equations, \textbf{10 marks}]
+    Consider the problem of finding a root of a nonlinear function $f \colon \real \to \real$.
+    \begin{itemize}
+        \item (\mymarks{2})
+            Assume that a numerical scheme of the form
+            \begin{equation}
+                \label{eq:iterative_nonlinear}
+                x_{k+1} = F(x_k)
+            \end{equation}
+            is employed to find a root of $f$,
+            where $F \colon \real \to \real$ is a given function.
+            Assume additionally that~$F$ is globally Lipschitz continuous with Lipschitz constant~$L < 1$,
+            and that there exists a fixed point~$x_*$ of~$F$.
+            First, prove that the fixed point~$x_*$ is unique.
+            \vspace{6cm}
+
+        \item
+            (\mymarks{3})
+            Under the same assumptions as in the previous item,
+            prove that the sequence of iterates $(x_k)_{k \in \nat}$ converges to~$x_*$ for any initial guess~$x_0$.
+            \vspace{6cm}
+
+        \newpage
+        \item
+            (\mymarks{3})
+            We wish to compute~$x_* = \sqrt[4]{2}$.
+            Propose an iterative scheme of the form~\eqref{eq:iterative_nonlinear} to approximate this value.
+            Write down the expression of the function~$F$ you propose.
+            Is the convergence of your scheme superlinear? Justify your answer by examining the value of $F'(x_*)$.
+            \vspace{6cm}
+
+        \item
+            (\mymarks{2})
+            Illustrate graphically the convergence of your scheme from the previous item,
+            for the specific case where the initial guess is $x_0 = 1$.
+    \end{itemize}
+\end{question}
+
+\newpage
+\begin{compexercise}
+    [Iterative methods for nonlinear equations, \mymarks{10}]
+    We wish to calculate the point $(x_*, y_*) \in \real^2$ on the parabolic curve $y = x^2$ that is closest to the point $(3, 1)$.
+    \begin{itemize}
+        \item
+            (\mymarks{2})
+            Find a function~$f \colon \real \to \real$ such that the root of~$f$ corresponds to the $x$-coordinate of this point:
+            \[
+                f(x) = \hspace{10cm}
+            \]
+
+        \item
+            (\mymarks{2})
+            Let~$\varepsilon$ denote the dual unit satisfying~$\varepsilon^2 = 0$.
+            Calculate $f(x + \varepsilon)$ for $x \in \real$,
+            and deduce from the result an expression for $f'(x)$.
+            \begin{align*}
+                f(x + \varepsilon) &= \hspace{10cm} \\
+                \\
+                f'(x) &= \hspace{10cm}
+            \end{align*}
+
+        \item
+            (\mymarks{4})
+            Implement the Newton--Raphson method to find an approximation of the root of a general differentiable function~$g \colon \real \to \real$,
+            starting from the initial guess $x_0$.
+            Use an appropriate stopping criterion, and use automatic differentiation to compute the derivative~$g'$.
+            Your function should return only the final approximation of the root.
+
+            \textbf{Hint:}
+            Recall that \julia{ForwardDiff.derivative(g, x)} computes the derivative of~$g$ at~$x$.
+            \begin{minted}{julia}
+    using ForwardDiff
+    function newton_raphson(f, x0; tol = 1e-12, maxiter = 10_000)
+        # Your code here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    end
+            \end{minted}
+
+        \item
+            (\mymarks{2})
+            Use your implementation of the Newton--Raphson method (i.e., call the function with appropriate arguments) to find an approximation of the point $(x_*, y_*)$ introduced above,
+            and print the result.
+            \begin{minted}{julia}
+    # Your code here
+
+
+
+
+
+
+            \end{minted}
+
+        \item
+            (\textbf{Bonus, 2 marks})
+            The secant method is an iterative method for finding a root of a function~$f \colon \real \to \real$,
+            where each iteration depends on the two previous iterates,
+            according to the formula
+            \[
+                x_{k+1} = x_k - f(x_k) \frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})} \, .
+            \]
+            Implement the secant method to find an approximation of the root of~$f$,
+            starting from the initial guesses $x_0$ and $x_1$.
+            \begin{minted}{julia}
+    function secant(f, x0, x1; tol = 1e-12, maxiter = 10_000)
+        # Your code here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    end
+            \end{minted}
+    \end{itemize}
+\end{compexercise}
+
+
+\end{document}
