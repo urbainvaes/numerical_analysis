@@ -1,10 +1,10 @@
-# Typst version of the lecture notes: `make` builds ../build/typst/main.pdf
+# Typst version of the lecture notes: `make` builds ../build/notes/main.pdf
 # and one PDF per chapter next to it.
 
 .PHONY: all clean
 
 # Fonts: see README.md. figures/ and references.bib are symlinked here.
-OUT := ../build/typst
+OUT := ../build/notes
 SOURCES := $(wildcard *.typ */*.typ) $(wildcard csl/*.csl) ../references.bib
 
 all: $(OUT)/main.pdf
