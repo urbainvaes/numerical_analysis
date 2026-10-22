@@ -3,9 +3,7 @@
 
 .PHONY: all clean
 
-# Fonts: those built into Typst, plus Font Awesome for icons (Arch package
-# otf-font-awesome). figures/ and references.bib are symlinked here.
-unexport TYPST_FONT_PATHS
+# Fonts: see README.md. figures/ and references.bib are symlinked here.
 OUT := ../build/typst
 SOURCES := $(wildcard *.typ */*.typ) $(wildcard csl/*.csl) ../references.bib
 
