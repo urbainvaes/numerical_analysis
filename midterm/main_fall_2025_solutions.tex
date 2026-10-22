@@ -1,0 +1,625 @@
+\documentclass[10pt]{article}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{fontawesome}
+\usepackage[newfloat]{minted}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{mdframed}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage[colorlinks=true]{hyperref}
+\theoremstyle{definition}
+\newtheorem{question}{{\normalfont \faGears}~Question}
+\newtheorem{compexercise}{{\normalfont \faLaptop}~Implementation exercise}
+\theoremstyle{remark}
+\newtheorem*{protosolution}{Solution}
+\usepackage{xcolor}
+\input{../macros.tex}
+\renewcommand{\mymarks}[1]{\textbf{#1 marks}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\chead{Midterm exam -- Solutions}
+\rhead{Page \thepage}
+
+\definecolor{lightgreen}{HTML}{f1faf8}
+\newenvironment{solutionframe}
+{%
+    \begin{mdframed}[
+        leftmargin=1cm,
+        skipabove=.3cm,
+        linecolor=blue,
+        backgroundcolor=lightgreen,
+        linewidth=0pt,
+        innerleftmargin=.5em,
+        innerrightmargin=.5em,
+        innertopmargin=.3em,
+        innerbottommargin=.6em,
+    ]
+}
+{
+    \end{mdframed}
+}
+
+\newenvironment{solution}
+{\pushQED{\qed}\renewcommand{\qedsymbol}{$\triangle$}
+\begin{solutionframe}\small \begin{protosolution}}
+{\popQED\end{protosolution}\end{solutionframe}}
+
+\begin{document}
+
+\title{Numerical Analysis: Midterm {\small (\mymarks{50})} \\ Solutions}
+\author{Urbain Vaes}
+\date{Fall 11111101001}
+\maketitle
+
+\begin{question}
+    [Floating point arithmetic, \mymarks{10}]
+    True or false?
+    \begin{enumerate}
+        \item Let $(\placeholder)_2$ denote binary representation.
+            Then
+            \(
+                (0.1101)_2 + (0.0011)_2 = (1.0)_2.
+            \)
+
+        \item
+            Let $\varepsilon_{64}$ denote the machine epsilon for the \julia{Float64} format,
+            i.e.\ \julia{eps(Float64)}.
+            Then the number~2 is representable exactly in this format,
+            and the next representable number is $2 + \varepsilon_{64}$.
+
+        \item It holds that
+            \(
+                (10000)_2 \times (0.1010)_2 = (1010)_2.
+            \)
+        \item
+            In Julia, \julia{Float64(.6) == Float32(.6)} evaluates to \julia{true}.
+
+        \item
+            The spacing (in absolute value) between successive single-precision (\julia{Float32}) floating point numbers is constant.
+
+        \item
+            Infinitely many distinct real numbers can be represented exactly in the~\julia{Float64} format,
+            but only finitely many can be represented exactly in the~\julia{Float32} format.
+
+        \item
+            It holds that $(0.\overline{101})_2 = \frac{5}{7}$.
+
+        \item
+            Machine addition~$\madd$ is an operation that is \emph{associative} but not \emph{commutative}.
+
+        \item
+            The machine epsilon is the smallest number of the form~$2^{-n}$ with $n \in \nat$ that can be represented exactly in a floating point format.
+
+        \item
+            In Julia, the expression \julia{1 + eps()/3 == 1 + eps()} evaluates to \julia{true}.
+
+        \item
+            \textbf{Bonus.}
+            In Julia, the expression \julia{exp(eps()/2) == 1 + eps()} evaluates to \julia{true}.
+
+        \item
+            \textbf{Bonus.}
+            In Julia, the expression \julia{cos(eps()) == 1} evaluates to \julia{true}.
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    Below, $\varepsilon = \varepsilon_{64} = 2^{-52}$.
+    \begin{enumerate}
+        \item \textbf{True}:
+            $(0.1101)_2 + (0.0011)_2 = \frac{13}{16} + \frac{3}{16} = 1$.
+
+        \item \textbf{False}:
+            the number 2 is representable as $2^1 \times (1.00\dots0)_2$,
+            but the spacing between successive \julia{Float64} numbers in $[2, 4)$ is $2^1 \times 2^{-52} = 2 \varepsilon$,
+            so the next representable number is $2 + 2\varepsilon$.
+
+        \item \textbf{True}:
+            multiplying by $(10000)_2 = 2^4$ shifts the binary point by four positions to the right,
+            so $(10000)_2 \times (0.1010)_2 = (1010)_2$.
+            In decimal notation, $16 \times 0.625 = 10$.
+
+        \item \textbf{False}:
+            the number $0.6 = (0.1\overline{0011})_2$ has an infinite binary expansion,
+            so it is rounded to 53 significant bits by \julia{Float64} and to 24 bits by \julia{Float32}.
+            The two results are different real numbers,
+            and the comparison, which converts the \julia{Float32} number to \julia{Float64} exactly, returns \julia{false}.
+
+        \item \textbf{False}:
+            the spacing is $2^{E} \times 2^{-23}$ between numbers with exponent~$E$,
+            so it doubles at every power of 2.
+
+        \item \textbf{False}:
+            both formats contain only finitely many numbers,
+            since they are encoded with finitely many bits (64 and 32, respectively).
+
+        \item \textbf{True}:
+            if $x = (0.\overline{101})_2$, then $2^3 x = (101.\overline{101})_2 = 5 + x$,
+            so $7x = 5$.
+
+        \item \textbf{False}:
+            it is the other way around.
+            Machine addition is commutative,
+            since $x \madd y = \operatorname{fl}(x + y) = \operatorname{fl}(y + x) = y \madd x$,
+            but it is not associative, because intermediate results are rounded.
+            For example, in \julia{Float64},
+            $(1 \madd \varepsilon/2) \madd \varepsilon/2 = 1$ whereas $1 \madd (\varepsilon/2 \madd \varepsilon/2) = 1 + \varepsilon$.
+
+        \item \textbf{False}:
+            much smaller powers of 2 can be represented exactly,
+            for example $2^{-1022}$ in \julia{Float64}.
+            The machine epsilon is the distance between 1 and the next representable number.
+
+        \item \textbf{False}:
+            the exact sum $1 + \varepsilon/3$ is closer to 1 than to $1 + \varepsilon$,
+            so \julia{1 + eps()/3} evaluates to~1,
+            which is different from \julia{1 + eps()}.
+
+        \item \textbf{True}:
+            by Taylor's theorem,
+            $\exp(\varepsilon/2) = 1 + \varepsilon/2 + \varepsilon^2/8 + \dotsb$,
+            which is slightly larger than $1 + \varepsilon/2$,
+            the midpoint between the successive floating point numbers $1$ and $1 + \varepsilon$.
+            Rounding to the nearest floating point number therefore gives $1 + \varepsilon$.
+
+        \item \textbf{True}:
+            $\cos(\varepsilon) = 1 - \varepsilon^2/2 + \dotsb$.
+            The floating point number preceding~1 is $1 - \varepsilon/2$,
+            and since $\varepsilon^2/2$ is much smaller than $\varepsilon/4$,
+            the nearest floating point number to $\cos(\varepsilon)$ is~1.
+    \end{enumerate}
+\end{solution}
+
+\begin{question}
+    [Interpolation and approximation, \mymarks{10}]
+    Are the following statements true or false? Prove or disprove.
+    Recall that~$\mathcal P_d$ denotes the set of polynomials of degree at most~$d$.
+
+    \begin{enumerate}
+        \item
+            Assume that $x_0 < x_1 < x_2 < x_3$ and $y_0, y_1, y_2, y_3$ are given real numbers.
+            Then there exists a polynomial~$p \in \mathcal P_3$ such that
+            \(
+                p(x_i) = y_i
+            \)
+            for all $i \in \{0, 1, 2, 3\}$.
+
+        \item
+            Assume that $x_0 < x_1 < x_2$ and $y_0, y_1, y_2$ are given real numbers.
+            Then, there can exist \emph{at most one} polynomial~$p \in \mathcal P_2$ such that
+            \(
+                p(x_i) = y_i
+            \)
+            for all $i \in \{0, 1, 2\}$.
+
+        \item
+            Let $p \in \mathcal P_d$ be a polynomial of degree $d > 0$,
+            and let $q\colon \real \to \real$ be given by $q(x) = p(x+1) - p(x)$.
+            Then it holds that~$q \in \mathcal P_{d-1}$.
+
+        \item
+            For $n \in \nat$, let $x^n_i = i/n$ for $i = 0, 1, \dotsc, n$.
+            Assume that $u \colon \real \to \real$ is the smooth function given by~$u(x) = \sin(3x) + x^3$,
+            and let $p_n \in \mathcal P_n$ denote the polynomial interpolation of~$u$ at the points $x^n_0, x^n_1, \dotsc, x^n_n$.
+            Then it holds that
+            \[
+                \lim_{n \to \infty} \left( \max_{x \in [0, 1]} \bigl\lvert u(x) - p_n(x) \bigr\rvert \right) = 0 \, .
+            \]
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    \begin{enumerate}
+        \item \textbf{True}:
+            the Lagrange interpolating polynomial
+            \[
+                p(x) = \sum_{i=0}^{3} y_i \, \ell_i(x),
+                \qquad
+                \ell_i(x) = \prod_{j \neq i} \frac{x - x_j}{x_i - x_j},
+            \]
+            belongs to $\mathcal P_3$ and satisfies $p(x_i) = y_i$,
+            because $\ell_i(x_j) = 1$ if $i = j$ and 0 otherwise.
+
+        \item \textbf{True}:
+            if $p, \widetilde p \in \mathcal P_2$ both satisfy the interpolation conditions,
+            then $p - \widetilde p \in \mathcal P_2$ has the three distinct roots $x_0, x_1, x_2$.
+            A nonzero polynomial of degree at most 2 has at most 2 roots,
+            so $p - \widetilde p = 0$.
+
+        \item \textbf{True}:
+            write $p(x) = \sum_{k=0}^{d} a_k x^k$.
+            By the binomial formula,
+            $(x+1)^k - x^k = \sum_{j=0}^{k-1} \binom{k}{j} x^j$ is a polynomial of degree $k - 1$ for $k \geq 1$,
+            and it is zero for $k = 0$.
+            Therefore $q(x) = \sum_{k=1}^{d} a_k \bigl((x+1)^k - x^k\bigr)$ belongs to $\mathcal P_{d-1}$.
+
+        \item \textbf{True}:
+            by the interpolation error formula,
+            for every $x \in [0, 1]$ there exists $\xi \in [0, 1]$ such that
+            \[
+                u(x) - p_n(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} \prod_{i=0}^{n} (x - x^n_i).
+            \]
+            Each factor of the product satisfies $\lvert x - x^n_i \rvert \leq 1$,
+            and, for $n \geq 3$, the derivatives of $x^3$ of order $n+1$ vanish,
+            so $\lvert u^{(n+1)}(\xi) \rvert = 3^{n+1} \lvert \sin^{(n+1)}(3 \xi) \rvert \leq 3^{n+1}$.
+            Consequently,
+            \[
+                \max_{x \in [0, 1]} \bigl\lvert u(x) - p_n(x) \bigr\rvert
+                \leq \frac{3^{n+1}}{(n+1)!}
+                \xrightarrow[n \to \infty]{} 0.
+            \]
+            Note that Runge's phenomenon does not occur here,
+            because all the derivatives of~$u$ are bounded by $3^{n+1}$, up to a constant.
+    \end{enumerate}
+\end{solution}
+
+\begin{question}
+    [Interpolation, open-ended question, \mymarks{5}]
+    In polynomial interpolation, the error depends both on the function being interpolated and the choice of interpolation nodes. Consider two families of nodes on the interval $[-1,1]$:
+    \begin{itemize}
+        \item Equally spaced nodes,
+        \item Chebyshev nodes.
+    \end{itemize}
+    Discuss qualitatively (and illustrate with examples or plots if you wish) how the interpolation error behaves as the degree
+    $n$ increases in each case.
+    Why does one choice of nodes perform better for large~$n$,
+    and what is the mathematical motivation for using Chebyshev nodes?
+    \emph{You may refer to Runge's phenomenon, but go beyond merely stating it.}
+\end{question}
+
+\begin{solution}
+    Many answers are possible; a good answer should contain the following elements.
+    For a smooth function $u$ and interpolation nodes $x_0, \dotsc, x_n$ in $[-1, 1]$,
+    the interpolation error satisfies
+    \[
+        u(x) - p_n(x) = \frac{u^{(n+1)}(\xi)}{(n+1)!} \, \omega_{n+1}(x),
+        \qquad
+        \omega_{n+1}(x) = \prod_{i=0}^{n} (x - x_i).
+    \]
+    The first factor depends only on the function~$u$,
+    while the second depends only on the nodes.
+    \begin{itemize}
+        \item
+            \emph{Equally spaced nodes.}
+            The function $\omega_{n+1}$ is small in the middle of the interval but very large near the endpoints,
+            where its maximum is larger than in the middle by a factor growing exponentially with~$n$.
+            If the derivatives of $u$ grow quickly,
+            as for the Runge function $u(x) = (1 + 25 x^2)^{-1}$,
+            whose $(n+1)$-th derivative grows roughly like $(n+1)! \, 5^{n+1}$,
+            the error grows with $n$ near the endpoints:
+            the interpolant oscillates with increasing amplitude there (Runge's phenomenon).
+            Equivalently, the Lebesgue constant of equally spaced nodes grows like $2^n$,
+            so the interpolation can be much worse than the best polynomial approximation,
+            and it is also very sensitive to rounding errors and noise in the data.
+
+        \item
+            \emph{Chebyshev nodes}
+            $x_i = \cos\bigl(\frac{(2i+1)\pi}{2(n+1)}\bigr)$, $i = 0, \dotsc, n$,
+            are the roots of the Chebyshev polynomial $T_{n+1}$.
+            They cluster near the endpoints,
+            precisely where equally spaced nodes perform poorly.
+            For these nodes, $\omega_{n+1} = 2^{-n} T_{n+1}$,
+            so that $\max_{[-1, 1]} \lvert \omega_{n+1} \rvert = 2^{-n}$,
+            and this is the smallest possible value over all choices of $n+1$ nodes:
+            Chebyshev nodes minimize the node-dependent factor in the error formula.
+            Their Lebesgue constant grows only logarithmically with $n$,
+            so the interpolant is close to the best polynomial approximation.
+            For the Runge function, or any function analytic in a neighborhood of $[-1, 1]$,
+            the error decreases exponentially with $n$.
+    \end{itemize}
+    A plot of the error $\max_{[-1, 1]} \lvert u - p_n \rvert$ against $n$ for the Runge function
+    shows exponential growth for equally spaced nodes and exponential decay for Chebyshev nodes.
+\end{solution}
+
+\begin{compexercise}
+    [Interpolation, \mymarks{5}]
+    Write Julia code that computes and plots the interpolating polynomial~$p \in \mathcal P_3$ through the following points:
+    $(0, 0)$, $(1, 4)$, $(2, 15)$, $(3, 40)$.
+    The plot should display both the interpolation points and the graph of the interpolating polynomial over an appropriate range.
+    Do not use any other library than the ones already imported.
+\end{compexercise}
+
+\begin{solution}
+    We solve the Vandermonde system for the coefficients of $p(x) = \alpha_0 + \alpha_1 x + \alpha_2 x^2 + \alpha_3 x^3$.
+    \begin{minted}{julia}
+using LinearAlgebra
+using Plots
+x = [0, 1, 2, 3]
+y = [0, 4, 15, 40]
+V = [xi^j for xi in x, j in 0:3]  # Vandermonde matrix
+α = V \ y
+p(t) = sum(α[j+1] * t^j for j in 0:3)
+t = range(-0.5, 3.5, length=200)
+plot(t, p.(t), label="Interpolating polynomial")
+scatter!(x, y, label="Interpolation points")
+    \end{minted}
+    The interpolating polynomial is $p(x) = \frac{17}{6} x + \frac{7}{6} x^3$.
+\end{solution}
+
+\begin{question}
+    [Numerical integration, \mymarks{5}]
+    Are the following statements true or false?
+    Justify briefly.
+    \begin{enumerate}
+        \item
+            The degree of precision of the following quadrature rule is 2:
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx 2u(0) \, .
+            \]
+
+        \item
+            The degree of precision of the following rule is equal to 3:
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx u \left(-\frac{1}{3}\right) + u \left(\frac{1}{3}\right).
+            \]
+
+        \item
+            For any natural number $N > 0$,
+            there exists a quadrature rule with a degree of precision equal to $2N - 1$ of the form
+            \[
+                \int_{-1}^{1} u(x) \, \d x \approx
+                \sum_{n=1}^{N} w_n u(x_n).
+            \]
+
+        \item
+            Let $x^N_i = i/N$ and consider the following approximation of $\int_{0}^{1} u(x) \, \d x$:
+            \begin{equation}
+                \label{eq:trapezium}
+                \widehat I_N = \frac{1}{2N} \Bigl( u\left(x^N_0\right) + 2 u\left(x^N_1\right) + 2 u\left(x^N_2\right) + \dotsc + 2 u\left(x^N_{N-2}\right) + 2 u\left(x^N_{N-1}\right) + u\left(x^N_N\right) \Bigr).
+            \end{equation}
+            Suppose first that $u$ is the Runge function, given by $u(x) = (1 + 25 x^2)^{-1}$.
+            Then $\widehat I_N$ diverges in the limit $N \to \infty$.
+
+        \item
+            Let $u(x) = \cos(3x)$ and let $\widehat I_N$ be as in~\eqref{eq:trapezium}.
+            Then it holds that
+            \[
+                \lim_{N \to +\infty}
+                \left( \left\lvert \widehat I_N - \int_{0}^1 u(x) \, \d x \right\rvert \right) = 0.
+            \]
+
+        \item
+            (\textbf{Bonus.})
+            Fix $u(x) = 2x - 1$ and let $\widehat I_N$ be as in~\eqref{eq:trapezium}.
+            Then $\widehat I_N = 0$ for all $N \geq 2$.
+    \end{enumerate}
+\end{question}
+
+\begin{solution}
+    \begin{enumerate}
+        \item \textbf{False}:
+            the rule is exact for $u(x) = 1$ and $u(x) = x$,
+            but not for $u(x) = x^2$,
+            since $\int_{-1}^{1} x^2 \, \d x = \frac{2}{3}$ whereas $2 \times 0^2 = 0$.
+            Its degree of precision is 1.
+
+        \item \textbf{False}:
+            the rule is exact for $u(x) = 1$ (both sides equal 2) and $u(x) = x$ (both sides equal 0),
+            but for $u(x) = x^2$ the rule gives $\frac{2}{9} \neq \frac{2}{3}$.
+            Its degree of precision is 1.
+            The rule with degree of precision 3 is the Gauss--Legendre rule with nodes $\pm 1/\sqrt{3}$.
+
+        \item \textbf{True}:
+            the Gauss--Legendre rule with $N$ nodes,
+            whose nodes are the roots of the Legendre polynomial of degree $N$,
+            has degree of precision $2N - 1$.
+
+        \item \textbf{False}:
+            $\widehat I_N$ is the composite trapezium rule.
+            Since the Runge function is smooth on $[0, 1]$,
+            the error satisfies $\bigl\lvert \widehat I_N - \int_0^1 u(x) \, \d x \bigr\rvert \leq \frac{1}{12 N^2} \max_{[0, 1]} \lvert u'' \rvert$,
+            so $\widehat I_N$ converges to the integral.
+            (Runge's phenomenon concerns interpolation by a single polynomial of high degree,
+            not composite rules.)
+
+        \item \textbf{True},
+            by the same error bound: the error is at most $\frac{9}{12 N^2}$, since $\lvert u'' \rvert \leq 9$.
+
+        \item \textbf{True}:
+            the trapezium rule is exact for polynomials of degree~1 on each subinterval,
+            so $\widehat I_N = \int_0^1 (2x - 1) \, \d x = 0$ for all $N \geq 1$.
+            This can also be checked directly,
+            since $u(x^N_i) + u(x^N_{N-i}) = 0$ and the weights are symmetric.
+    \end{enumerate}
+\end{solution}
+
+\begin{question}
+    [Gaussian--Hermite numerical integration, \mymarks{10}]
+
+The Gauss--Hermite quadrature formula with \(n\) nodes is an approximation of the form
+\[
+I(u) \coloneq \int_{-\infty}^{\infty} u(x)\, \e^{-x^{2}} \, \d x \approx \sum_{i=1}^n w_i\,u(x_i)=:\widehat I_n(u),
+\]
+which is exact when \(u\) is a polynomial of degree \(\le 2n-1\).
+Note that the nodes are numbered \(1,\dots,n\).
+For this question, we take for granted that, for integers \(i\ge 0\),
+it holds that
+\[
+    \int_{-\infty}^{\infty} x^{i} \e^{-x^{2}}\, \d x =
+    \begin{cases}
+        \displaystyle
+        0, & \text{if $i$ is odd},\\[2mm]
+        \displaystyle
+        (i-1)!! \, \sqrt{\frac{\pi}{2^i}}, & \text{if $i$ is even},
+    \end{cases}
+\]
+where
+\(
+    (i-1)!! \coloneq 1 \times 3 \times 5 \times \cdots \times (i-1) \, .
+\)
+In particular, with all the integrals being over $(-\infty, \infty)$,
+the following special cases may be useful in your computations:
+\[
+    \int \e^{-x^{2}}\, \d x = \sqrt{\pi}, \quad
+    \int x^2 \, \e^{-x^{2}}\, \d x = \frac{\sqrt{\pi}}{2}, \quad
+    \int x^4 \, \e^{-x^{2}}\, \d x = \frac{3}{4} \sqrt{\pi}, \quad
+    \int x^6 \, \e^{-x^{2}}\, \d x = \frac{15}{8} \sqrt{\pi}\, .
+\]
+
+\begin{enumerate}
+\item (\mymarks{5})
+Find the nodes and weights of the Gauss--Hermite rule with \(n=3\) nodes.
+By symmetry,
+we expect nodes of the form $(-z,0,z)$ and weights $(w_1,w_2,w_1)$,
+which reduces the number of unknowns to three.
+
+\begin{solution}
+    By symmetry, the rule is exact for all odd monomials.
+    Requiring exactness for $1$, $x^2$ and $x^4$ gives
+    \[
+        2 w_1 + w_2 = \sqrt{\pi},
+        \qquad
+        2 w_1 z^2 = \frac{\sqrt{\pi}}{2},
+        \qquad
+        2 w_1 z^4 = \frac{3}{4} \sqrt{\pi}.
+    \]
+    Dividing the third equation by the second gives $z^2 = \frac{3}{2}$,
+    and then $w_1 = \frac{\sqrt{\pi}}{4 z^2} = \frac{\sqrt{\pi}}{6}$ and $w_2 = \sqrt{\pi} - 2 w_1 = \frac{2\sqrt{\pi}}{3}$.
+    The nodes and weights are therefore
+    \[
+        (x_1, x_2, x_3) = \left(-\sqrt{\tfrac{3}{2}}, 0, \sqrt{\tfrac{3}{2}}\right),
+        \qquad
+        (w_1, w_2, w_3) = \left(\frac{\sqrt{\pi}}{6}, \frac{2\sqrt{\pi}}{3}, \frac{\sqrt{\pi}}{6}\right).
+    \]
+    The rule is exact for all polynomials of degree at most $5 = 2n - 1$, but not for $x^6$:
+    it gives $2 w_1 z^6 = \frac{9}{8} \sqrt{\pi} \neq \frac{15}{8} \sqrt{\pi}$.
+\end{solution}
+
+\item (\mymarks{5})
+    Let $\{H_0, H_1, \dotsc\}$ denote orthogonal polynomials for the inner product
+    \[
+        \ip{f, g} := \int_{-\infty}^{\infty} f(x) g(x) \, \e^{-x^2} \, \d x
+    \]
+    which, in addition,
+    satisfy the following two conditions:
+    \begin{itemize}
+        \item
+            For all $i \in \nat$, the polynomial $H_i$ is of degree $i$.
+        \item
+            The leading coefficient of $H_i$, which multiplies $x^i$, is equal to 1.
+    \end{itemize}
+    Calculate $H_0$, $H_1$, $H_2$ and $H_3$.
+    What is the relationship between \(H_3\) and the quadrature rule found in the first item?
+
+\begin{solution}
+    Since the weight $\e^{-x^2}$ is even,
+    $H_i$ is even when $i$ is even and odd when $i$ is odd,
+    so all odd-degree (resp.\ even-degree) inner products vanish automatically.
+    We obtain
+    \begin{itemize}
+        \item $H_0(x) = 1$;
+        \item $H_1(x) = x$, since $\ip{x, 1} = 0$;
+        \item $H_2(x) = x^2 - a$ with $\ip{x^2 - a, 1} = \frac{\sqrt{\pi}}{2} - a \sqrt{\pi} = 0$, so $H_2(x) = x^2 - \frac{1}{2}$;
+        \item $H_3(x) = x^3 - b x$ with $\ip{x^3 - bx, x} = \frac{3}{4}\sqrt{\pi} - b \frac{\sqrt{\pi}}{2} = 0$, so $H_3(x) = x^3 - \frac{3}{2} x$.
+    \end{itemize}
+    The roots of $H_3(x) = x \bigl(x^2 - \frac{3}{2}\bigr)$ are $0$ and $\pm \sqrt{3/2}$:
+    they are exactly the nodes of the Gauss--Hermite rule with 3 nodes.
+    This is a general fact: the nodes of the Gauss quadrature rule with $n$ nodes
+    are the roots of the orthogonal polynomial of degree $n$ for the corresponding weight.
+\end{solution}
+
+\item (Bonus, \mymarks{2})
+    Calculate $H_4$ and, using this result,
+    deduce the nodes and weights of the Gauss--Hermite quadrature with~$4$ points.
+
+\begin{solution}
+    By parity, $H_4(x) = x^4 + b x^2 + c$, and orthogonality to $1$ and $x^2$ gives
+    \[
+        \frac{3}{4} + \frac{b}{2} + c = 0,
+        \qquad
+        \frac{15}{8} + \frac{3b}{4} + \frac{c}{2} = 0.
+    \]
+    Subtracting the first equation from twice the second gives $3 + b = 0$,
+    so $b = -3$, $c = \frac{3}{4}$ and
+    \(
+        H_4(x) = x^4 - 3 x^2 + \frac{3}{4}.
+    \)
+    Its roots satisfy $x^2 = \frac{3 \pm \sqrt{6}}{2}$,
+    so the nodes of the rule are $\pm a$ and $\pm b$ with
+    \[
+        a = \sqrt{\frac{3 - \sqrt{6}}{2}} \approx 0.5246,
+        \qquad
+        b = \sqrt{\frac{3 + \sqrt{6}}{2}} \approx 1.6507.
+    \]
+    By symmetry, the weights are of the form $(w_b, w_a, w_a, w_b)$,
+    and the rule is exact for odd polynomials.
+    Exactness for $1$ and $x^2$ gives
+    $w_a + w_b = \frac{\sqrt{\pi}}{2}$ and $w_a a^2 + w_b b^2 = \frac{\sqrt{\pi}}{4}$,
+    whose solution is
+    \[
+        w_a = \frac{3 + \sqrt{6}}{12} \sqrt{\pi} \approx 0.8049,
+        \qquad
+        w_b = \frac{3 - \sqrt{6}}{12} \sqrt{\pi} \approx 0.0813.
+    \]
+    Since the nodes are the roots of $H_4$,
+    the rule is then exact for all polynomials of degree at most 7.
+\end{solution}
+\end{enumerate}
+\end{question}
+
+\begin{compexercise}
+    [Numerical integration, \mymarks{10}]
+    The midpoint quadrature rule reads
+    \[
+        \int_{-1}^{1} u(x) \, \d x
+        \approx 2 u(0) \, .
+    \]
+    \begin{itemize}
+        \item
+            (\mymarks{3})
+            Write a function \julia{midpoint(u, a, b)} that returns, using this quadrature rule,
+            an approximation of the integral
+            \begin{align}
+                \label{eq:integral_midpoint}
+                \int_{a}^{b} u(x) \, \d x \, .
+            \end{align}
+
+        \item
+            (\mymarks{4})
+            Write a function \julia{composite_midpoint(u, a, b, N)}
+            that returns an approximation of the integral~\eqref{eq:integral_midpoint},
+            this time using a composite version of the midpoint rule.
+            More precisely, the approximation should be obtained
+            by partitioning the integration interval $[a, b]$ into $N$ cells,
+            and applying the midpoint rule within each cell.
+
+        \item
+            (\mymarks{3})
+            Take $u(x) = \cos(x)$, $a = -1$ and $b = 1$.
+            In this setting, plot the evolution of the error for $N$ varying from 1 to 1000.
+    \end{itemize}
+\end{compexercise}
+
+\begin{solution}
+    By the change of variable $x = \frac{a+b}{2} + \frac{b-a}{2} t$,
+    the midpoint rule on $[a, b]$ reads $\int_a^b u(x) \, \d x \approx (b - a) \, u\bigl(\frac{a+b}{2}\bigr)$.
+    \begin{minted}{julia}
+function midpoint(u, a, b)
+    return (b - a) * u((a + b) / 2)
+end
+
+function composite_midpoint(u, a, b, N)
+    h = (b - a) / N
+    return sum(midpoint(u, a + (i-1)*h, a + i*h) for i in 1:N)
+end
+
+using Plots
+u(x) = cos(x)
+I = 2sin(1)  # Exact value of the integral
+Ns = 1:1000
+errors = [abs(composite_midpoint(u, -1, 1, N) - I) for N in Ns]
+plot(Ns, errors, xscale=:log10, yscale=:log10,
+     xlabel="N", ylabel="Error", label="Composite midpoint rule")
+plot!(Ns, Ns.^(-2), linestyle=:dash, label="1/N²")
+    \end{minted}
+    In logarithmic scale, the error decreases along a line of slope $-2$:
+    the composite midpoint rule converges at rate $\mathcal O(N^{-2})$.
+    More precisely, the error is approximately $\frac{h^2}{24} \bigl\lvert u'(b) - u'(a) \bigr\rvert = \frac{\sin(1)}{3N^2}$ with $h = 2/N$.
+    Note that the code template in the exam statement omits the argument~\julia{N} of \julia{composite_midpoint}.
+\end{solution}
+
+\end{document}
