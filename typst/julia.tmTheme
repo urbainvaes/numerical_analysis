@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Colors of the Pygments "default" style, used by minted in the LaTeX version.
+     Comments are upright: the LaTeX version uses Latin Modern Mono as italic font. -->
+<plist version="1.0">
+<dict>
+  <key>name</key>
+  <string>Pygments default</string>
+  <key>settings</key>
+  <array>
+    <dict>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#000000</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>Comment</string>
+      <key>scope</key>
+      <string>comment, punctuation.definition.comment</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#3D7B7B</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>Keyword</string>
+      <key>scope</key>
+      <string>keyword.control, keyword.other, storage.type.function, storage.modifier, keyword.declaration, constant.language</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#008000</string>
+        <key>fontStyle</key>
+        <string>bold</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>Type</string>
+      <key>scope</key>
+      <string>support.type, storage.type, entity.name.type</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#B00040</string>
+        <key>fontStyle</key>
+        <string>bold</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>Number and operator</string>
+      <key>scope</key>
+      <string>constant.numeric, keyword.operator</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#666666</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>String</string>
+      <key>scope</key>
+      <string>string, punctuation.definition.string</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#BA2121</string>
+      </dict>
+    </dict>
+    <dict>
+      <key>name</key>
+      <string>Macro</string>
+      <key>scope</key>
+      <string>support.function.macro, variable.macro, entity.name.function.macro, meta.macro</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#AA22FF</string>
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>
