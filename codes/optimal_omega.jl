@@ -26,4 +26,4 @@ for (i, μ) in enumerate(μgrid)
 end
 Plots.plot!()
 
-Plots.savefig("figures/optimal_omega.pdf")
+Plots.savefig("notes/figures/optimal_omega.pdf")

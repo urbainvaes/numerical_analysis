@@ -3,9 +3,9 @@
 
 .PHONY: all clean
 
-# Fonts: see README.md. figures/ and references.bib are symlinked here.
+# Fonts: see README.md.
 OUT := ../build/notes
-SOURCES := $(wildcard *.typ */*.typ) $(wildcard csl/*.csl) ../references.bib
+SOURCES := $(wildcard *.typ */*.typ) $(wildcard csl/*.csl) references.bib
 
 all: $(OUT)/main.pdf
 

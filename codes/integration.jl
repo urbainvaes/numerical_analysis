@@ -68,7 +68,7 @@ Plots.plot!(h -> abs(J₂(h) - 1), 0, .2, label=L"J_2(h)")
 Plots.plot!(h -> abs(J₃(h) - 1), 0, .2, label=L"J_3(h)")
 Plots.xlims!(10^(-10), 10)
 Plots.ylims!(10^(-10), 10)
-Plots.savefig("figures/richardson.pdf")
+Plots.savefig("notes/figures/richardson.pdf")
 
 
 function composite_trapezoidal(u, a, b, h)
@@ -100,4 +100,4 @@ Plots.scatter!(hs, abs.(1 .-J₃.(hs)), color=colors[4], label=L"|I - J_3(h)|~~~
 Plots.plot!(xlabel="h", xaxis=:log, yaxis=:log, size=(900,450), color=colors[1])
 Plots.plot!(bottom_margin=10Plots.mm, right_margin=4Plots.mm, size=(900,450), legend=:bottomright)
 Plots.xticks!((b-a)*2.0.^(-8:-3), [latexstring("\\frac{b-a}{2^{"* string(i) * "}}") for i in 8:-1:3])
-Plots.savefig("figures/romberg.pdf")
+Plots.savefig("notes/figures/romberg.pdf")

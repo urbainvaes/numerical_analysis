@@ -38,7 +38,7 @@ Plots.plot(x_plot, f.(x_plot), linewidth=4, ticks=false)
 Plots.plot!(x_plot, p.(x_plot), linewidth=4)
 Plots.scatter!(x, y, markersize=4)
 Plots.xlims!(-1, 1)
-# Plots.savefig("figures/chebychev_cover.pdf")
+# Plots.savefig("notes/figures/chebychev_cover.pdf")
 
 anim = Plots.Animation()
 for n in 2:50
@@ -69,7 +69,7 @@ Plots.plot!(x_plot, p.(x_plot), linewidth=4, label="Interpolating polynomial")
 Plots.scatter!(x, y, markersize=4, legend=:bottomright)
 Plots.title!("Chebychev interpolation")
 Plots.xlims!(-1, 1)
-# Plots.savefig("figures/chebychev.pdf")
+# Plots.savefig("notes/figures/chebychev.pdf")
 
 anim = Plots.Animation()
 series = decompose(x -> exp(log(exact0(x)) + x^2/2), dmax, quad)

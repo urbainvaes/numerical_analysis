@@ -21,7 +21,7 @@ Plots.xticks!(2.0.^(exp_min:exp_max), [latexstring("2^{"* string(i) * "}") for i
 Plots.title!("Absolute spacing between Float64 numbers")
 Plots.xlabel!(L"x")
 
-Plots.savefig("figures/float64_density.pdf")
+Plots.savefig("notes/figures/float64_density.pdf")
 
 Plots.plot(x_64, (distance_64./x_64) / eps_64, xaxis=:log, label=L"\frac{\Delta(x)}{x}",
            bottom_margin=2Plots.mm, size=(900,450))
@@ -30,7 +30,7 @@ yticks = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 Plots.yticks!(yticks, [latexstring(string(i) * "\\, \\varepsilon_M") for i in yticks])
 Plots.xlabel!(L"x")
 Plots.title!("Relative spacing between Float64 numbers")
-Plots.savefig("figures/float64_spacing.pdf")
+Plots.savefig("notes/figures/float64_spacing.pdf")
 
 eps_64 = eps(Float64)
 exp_min, exp_max = -1024, -1016
@@ -47,4 +47,4 @@ yticks = [1, 2, 3, 4]
 Plots.yticks!(yticks, [latexstring(string(i) * "\\, \\varepsilon_M") for i in yticks])
 Plots.xlabel!(L"x")
 Plots.title!("Relative spacing between Float64 numbers")
-Plots.savefig("figures/float64_spacing_denormalized.pdf")
+Plots.savefig("notes/figures/float64_spacing_denormalized.pdf")
