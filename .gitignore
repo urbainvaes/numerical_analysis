@@ -6,3 +6,6 @@
 *ipynb_checkpoints
 *jupyter_cache
 solutions/*.html
+
+/.quarto/
+**/*.quarto_ipynb
